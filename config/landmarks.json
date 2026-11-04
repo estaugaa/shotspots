@@ -1,0 +1,162 @@
+[
+ {
+  "id": "peak-hood",
+  "name": "Mt. Hood",
+  "lat": 45.3736,
+  "lon": -121.696,
+  "elev": 3429,
+  "kind": "peak"
+ },
+ {
+  "id": "peak-sthelens",
+  "name": "Mt. St. Helens",
+  "lat": 46.1912,
+  "lon": -122.1944,
+  "elev": 2549,
+  "kind": "peak"
+ },
+ {
+  "id": "peak-adams",
+  "name": "Mt. Adams",
+  "lat": 46.2024,
+  "lon": -121.4909,
+  "elev": 3743,
+  "kind": "peak"
+ },
+ {
+  "id": "peak-rainier",
+  "name": "Mt. Rainier",
+  "lat": 46.8529,
+  "lon": -121.7604,
+  "elev": 4392,
+  "kind": "peak"
+ },
+ {
+  "id": "peak-jefferson",
+  "name": "Mt. Jefferson",
+  "lat": 44.6743,
+  "lon": -121.7996,
+  "elev": 3199,
+  "kind": "peak"
+ },
+ {
+  "id": "t-vista",
+  "name": "Vista House (Crown Point)",
+  "lat": 45.5393,
+  "lon": -122.2442,
+  "elev": 243,
+  "kind": "landmark"
+ },
+ {
+  "id": "t-rooster",
+  "name": "Rooster Rock",
+  "lat": 45.5455,
+  "lon": -122.233,
+  "elev": 60,
+  "kind": "landmark"
+ },
+ {
+  "id": "t-angels",
+  "name": "Angel's Rest",
+  "lat": 45.5749,
+  "lon": -122.152,
+  "elev": 481,
+  "kind": "landmark"
+ },
+ {
+  "id": "t-larch",
+  "name": "Larch Mountain",
+  "lat": 45.5297,
+  "lon": -122.089,
+  "elev": 1238,
+  "kind": "landmark"
+ },
+ {
+  "id": "t-beacon",
+  "name": "Beacon Rock",
+  "lat": 45.6286,
+  "lon": -122.0216,
+  "elev": 258,
+  "kind": "landmark"
+ },
+ {
+  "id": "t-hamilton",
+  "name": "Hamilton Mountain",
+  "lat": 45.6548,
+  "lon": -122.0071,
+  "elev": 732,
+  "kind": "landmark"
+ },
+ {
+  "id": "t-silverstar",
+  "name": "Silver Star Mountain",
+  "lat": 45.7479,
+  "lon": -122.2395,
+  "elev": 1314,
+  "kind": "landmark"
+ },
+ {
+  "id": "t-prune",
+  "name": "Prune Hill",
+  "lat": 45.598,
+  "lon": -122.445,
+  "elev": 233,
+  "kind": "landmark"
+ },
+ {
+  "id": "t-pdx",
+  "name": "Downtown Portland towers",
+  "lat": 45.519,
+  "lon": -122.679,
+  "elev": 180,
+  "kind": "landmark"
+ },
+ {
+  "id": "t-tabor",
+  "name": "Mt. Tabor",
+  "lat": 45.511,
+  "lon": -122.594,
+  "elev": 194,
+  "kind": "landmark"
+ },
+ {
+  "id": "t-rockybutte",
+  "name": "Rocky Butte",
+  "lat": 45.546,
+  "lon": -122.565,
+  "elev": 186,
+  "kind": "landmark"
+ },
+ {
+  "id": "t-gjbridge",
+  "name": "I-205 Glenn Jackson Bridge",
+  "lat": 45.59,
+  "lon": -122.553,
+  "elev": 60,
+  "kind": "landmark"
+ },
+ {
+  "id": "t-mill",
+  "name": "Camas mill stacks",
+  "lat": 45.585,
+  "lon": -122.41,
+  "elev": 100,
+  "kind": "landmark"
+ },
+ {
+  "id": "t-defiance",
+  "name": "Mt. Defiance",
+  "lat": 45.649,
+  "lon": -121.722,
+  "elev": 1495,
+  "kind": "landmark"
+ },
+ {
+  "id": "t-bog",
+  "name": "Bridge of the Gods",
+  "lat": 45.662,
+  "lon": -121.896,
+  "elev": 70,
+  "kind": "landmark"
+ }
+]

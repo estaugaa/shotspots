@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ShotSpots</title>
+<meta name="theme-color" content="#1E2628">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ShotSpots">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <button class="loc" id="locBtn" aria-label="Change location"><span class="pin" aria-hidden="true"></span><span id="locName">Finding you…</span></button>
+  <div class="topr">
+    <span class="fresh" id="fresh"></span>
+    <button class="iconbtn" id="setBtn" aria-label="Settings and live data" title="Settings">⚙</button>
+    <button class="iconbtn" id="nightBtn" aria-pressed="false" aria-label="Night vision (red screen)" title="Night vision">◐</button>
+  </div>
+</header>
+
+<main id="main">
+  <section id="v-now" class="view" aria-label="Now"></section>
+  <section id="v-map" class="view" hidden aria-label="Map"><div id="map"></div><div class="maplegend" id="mapLegend"></div></section>
+  <section id="v-spots" class="view" hidden aria-label="Spots"></section>
+  <section id="v-sky" class="view" hidden aria-label="Night sky"></section>
+  <section id="v-cal" class="view" hidden aria-label="Calendar"></section>
+</main>
+
+<nav class="tabs" aria-label="Sections">
+  <button data-v="now" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="14" r="4"/><path d="M2 18h20M12 4v3M4.9 7.9l2 2M19.1 7.9l-2 2"/></svg><span>Now</span></button>
+  <button data-v="map"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/></svg><span>Map</span></button>
+  <button data-v="spots"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>Spots</span></button>
+  <button data-v="sky"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/><path d="M17 3v3M15.5 4.5h3"/></svg><span>Sky</span></button>
+  <button data-v="cal"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>Calendar</span></button>
+</nav>
+
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheetbar"><button class="iconbtn" id="sheetClose" aria-label="Close">✕</button></div>
+  <div class="sheetbody" id="sheetBody"></div>
+</div>
+
+<div class="sheet small" id="locSheet" hidden role="dialog" aria-modal="true" aria-labelledby="locTitle">
+  <div class="sheetbar"><b id="locTitle">Plan from</b><button class="iconbtn" id="locClose" aria-label="Close">✕</button></div>
+  <div class="sheetbody">
+    <button class="wide primary" id="useGps">Use my current location</button>
+    <form id="locForm" class="search"><input id="locQ" type="search" placeholder="Search a place or address" autocomplete="off" aria-label="Search a place"><button type="submit">Search</button></form>
+    <div id="locHits"></div>
+    <p class="label">Quick picks</p>
+    <div id="locPresets" class="chips"></div>
+    <p class="muted" id="locMsg"></p>
+  </div>
+</div>
+
+<div class="sheet small" id="setSheet" hidden role="dialog" aria-modal="true" aria-labelledby="setTitle">
+  <div class="sheetbar"><b id="setTitle">Live data</b><button class="iconbtn" id="setClose" aria-label="Close">✕</button></div>
+  <div class="sheetbody" id="setBody"></div>
+</div>
+
+<form name="outcome" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input name="bot-field"><input name="spot"><input name="t"><input name="kind"><input name="rating"><input name="keepers"><input name="sky"><input name="fog"><input name="color">
+  <input name="species"><input name="ebird"><input name="sqm"><textarea name="notes"></textarea><textarea name="pred"></textarea>
+</form>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="astro.js"></script>
+<script src="data.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
+<script src="app.js" defer></script>
+<script src="live.js" defer></script>
+<script src="sky.js" defer></script>
+<script src="feed.js" defer></script>
+<script src="shots.js" defer></script>
+</body>
+</html>

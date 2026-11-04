@@ -1,0 +1,73 @@
+"""python -m pipeline <job>   jobs: goes | conditions | daily | weekly | monthly | astrometry | deploy | all"""
+import sys
+from .common import run_module, write_json, utcnow, iso, FEED, read_json
+
+
+def job_goes():
+    from . import goes
+    run_module("goes", goes.run, "MEASURED", "GOES-18 clear-sky mask + cloud-top height")
+
+
+def job_conditions():
+    from . import hrrr
+    run_module("hrrr", hrrr.run, "MODELED", "HRRR neighbourhood + time-lagged probabilities")
+
+
+def job_daily():
+    from . import terrain, light, obs, sentinel, access, wildlife
+    run_module("terrain", terrain.run, "MODELED", "USGS 3DEP horizons")
+    run_module("light", light.daily, "MODELED", "terrain-aware sun/moon/Milky Way, 14 days")
+    run_module("sounding", obs.sounding, "MEASURED", "Salem radiosonde")
+    run_module("flow", obs.flow, "MEASURED", "USGS discharge vs daily percentiles")
+    run_module("sentinel", sentinel.run, "ESTIMATED", "Sentinel-2 colour/snow vs summer baseline")
+    run_module("access", access.run, "MEASURED", "PAD-US land status + USFS alerts")
+    run_module("fish", lambda: (wildlife.fish() and "ok"), "MEASURED", "DART Bonneville counts")
+
+
+def job_weekly():
+    from . import light, obs, wildlife, viirs, flickr
+    run_module("planner", light.plan_year, "MODELED", "365-day landmark alignments")
+    run_module("climatology", obs.climatology, "MEASURED", "10-year ASOS climatology")
+    run_module("phenology", obs.phenology, "MEASURED", "USA-NPN observations")
+    run_module("wildlife", wildlife.run, "ESTIMATED", "encounter rates")
+    run_module("darksky", viirs.run, "MODELED", "VIIRS Black Marble sky brightness")
+    run_module("originality", flickr.run, "MEASURED", "Flickr geotagged photos")
+
+
+def job_monthly():
+    from . import verify
+    run_module("verify_positions", verify.positions, "MEASURED", "JPL Horizons + USNO")
+    run_module("verify_outcomes", verify.outcomes, "MEASURED", "outing logs vs independent observations")
+
+
+def job_outcomes():
+    from . import verify
+    run_module("verify_outcomes", verify.outcomes, "MEASURED", "outing logs vs independent observations")
+
+
+def job_astrometry():
+    from . import verify
+    run_module("astrometry", verify.astrometry, "MEASURED", "nova.astrometry.net plate solving")
+
+
+def manifest():
+    st = read_json(FEED / "status.json", {})
+    files = sorted(p.name for p in FEED.glob("*.json") if p.name != "manifest.json")
+    write_json("manifest.json", {"gen": iso(utcnow()), "files": files, "status": st})
+
+
+JOBS = {"goes": job_goes, "conditions": job_conditions, "daily": job_daily, "weekly": job_weekly, "monthly": job_monthly,
+        "outcomes": job_outcomes, "astrometry": job_astrometry}
+
+if __name__ == "__main__":
+    for j in sys.argv[1:]:
+        if j == "all":
+            for f in JOBS.values():
+                f()
+        elif j == "deploy":
+            from . import deploy
+            manifest()
+            deploy.run()
+        else:
+            JOBS[j]()
+    manifest()

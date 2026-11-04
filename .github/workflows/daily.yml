@@ -1,0 +1,54 @@
+name: Daily light, flow, colour, access
+on:
+  schedule:
+    - cron: "15 12 * * *"
+  workflow_dispatch:
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      EBIRD_KEY: ${{ secrets.EBIRD_KEY }}
+      EBD_URL: ${{ secrets.EBD_URL }}
+      FLICKR_KEY: ${{ secrets.FLICKR_KEY }}
+      EARTHDATA_TOKEN: ${{ secrets.EARTHDATA_TOKEN }}
+      ASTROMETRY_KEY: ${{ secrets.ASTROMETRY_KEY }}
+      SS_CACHE: ${{ github.workspace }}/.cache
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: actions/cache/restore@v4
+        with:
+          path: .cache
+          key: ss-cache-daily-${{ github.run_id }}
+          restore-keys: |
+            ss-cache-daily-
+            ss-cache-
+      - run: pip install -r requirements.txt
+      - run: python -m pipeline daily
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .cache
+          key: ss-cache-daily-${{ github.run_id }}
+      - name: Commit feed
+        if: always()
+        run: |
+          git config user.name "shotspots-bot"
+          git config user.email "shotspots-bot@users.noreply.github.com"
+          git add -A feed data config inbox || true
+          git diff --cached --quiet || git commit -m "daily: update feed [skip ci]"
+          for i in 1 2 3; do git pull --rebase -X theirs && git push && break; sleep 5; done
+      - name: Deploy to Netlify
+        if: always()
+        run: python -m pipeline deploy
