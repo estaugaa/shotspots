@@ -66,8 +66,12 @@ if __name__ == "__main__":
                 f()
         elif j == "deploy":
             from . import deploy
+            from .common import secret, log
             manifest()
-            deploy.run()
+            if not secret("NETLIFY_TOKEN"):
+                log.warning("NETLIFY_TOKEN secret not set yet: skipping deploy")
+            else:
+                deploy.run()
         else:
             JOBS[j]()
     manifest()
