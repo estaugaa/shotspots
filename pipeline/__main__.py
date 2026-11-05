@@ -1,6 +1,6 @@
 """python -m pipeline <job>   jobs: goes | conditions | daily | weekly | monthly | astrometry | deploy | all"""
 import sys
-from .common import run_module, write_json, utcnow, iso, FEED, read_json
+from .common import run_module, write_json, utcnow, iso, FEED, read_json, all_status
 
 
 def job_goes():
@@ -51,8 +51,8 @@ def job_astrometry():
 
 
 def manifest():
-    st = read_json(FEED / "status.json", {})
-    files = sorted(p.name for p in FEED.glob("*.json") if p.name != "manifest.json")
+    st = all_status()
+    files = sorted(p.name for p in FEED.glob("*.json") if p.name not in ("manifest.json", "status.json"))
     write_json("manifest.json", {"gen": iso(utcnow()), "files": files, "status": st})
 
 

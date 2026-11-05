@@ -128,10 +128,18 @@ def r(x, n=2):
 
 # ---------- provenance / status ----------
 def status(source, ok, kind, note="", **extra):
-    """kind: MEASURED | MODELED | ESTIMATED"""
-    st = read_json(FEED / "status.json", {})
-    st[source] = {"ok": bool(ok), "kind": kind, "note": note, "at": iso(utcnow()), **extra}
-    write_json("status.json", st, compact=False)
+    """kind: MEASURED | MODELED | ESTIMATED. One small file per source so parallel jobs never overwrite each other."""
+    write_json(f"status/{source}.json", {"ok": bool(ok), "kind": kind, "note": note, "at": iso(utcnow()), **extra})
+
+
+def all_status():
+    out = {}
+    for p in sorted((FEED / "status").glob("*.json")):
+        try:
+            out[p.stem] = json.load(open(p))
+        except Exception:
+            pass
+    return out
 
 
 def run_module(name, fn, kind, note=""):
