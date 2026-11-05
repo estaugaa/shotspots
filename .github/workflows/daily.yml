@@ -1,7 +1,7 @@
 name: Daily light, flow, colour, access
 on:
   schedule:
-    - cron: "15 12 * * *"
+    - cron: "53 11 * * *"
   workflow_dispatch:
 concurrency:
   group: pipeline

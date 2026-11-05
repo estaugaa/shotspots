@@ -1,7 +1,7 @@
 name: GOES fog now
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "7,37 * * * *"
   workflow_dispatch:
 concurrency:
   group: pipeline
