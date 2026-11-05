@@ -19,16 +19,58 @@ def hav(a, b):
     return 6371000 * 2 * math.asin(math.sqrt(h))
 
 
-def fetch(lat, lon, r=3000):
+MIRRORS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass.private.coffee/api/interpreter"]
+STOP = {"the", "and", "of", "at", "to", "from", "via", "park", "state", "viewpoint", "view", "point", "area", "trail", "lake", "mt", "mount", "national", "&", "-", "(", ")"}
+
+
+def fetch(lat, lon, r=2500):
     q = f"""[out:json][timeout:90];
 (way(around:{r},{lat},{lon})[highway~"^({WALK})$"][access!~"^(private|no)$"];)->.w;
 .w out body geom;
-(node(around:{r},{lat},{lon})[amenity=parking];way(around:{r},{lat},{lon})[amenity=parking];node(around:{r},{lat},{lon})[highway=trailhead];);
+(node(around:{r},{lat},{lon})[amenity=parking];way(around:{r},{lat},{lon})[amenity=parking];node(around:{r},{lat},{lon})[highway=trailhead];
+ node(around:3000,{lat},{lon})[tourism=viewpoint][name];node(around:3000,{lat},{lon})[natural~"^(peak|cliff|saddle|arch|rock)$"][name];
+ node(around:3000,{lat},{lon})[waterway=waterfall][name];node(around:3000,{lat},{lon})[natural=water][name];way(around:3000,{lat},{lon})[natural=water][name];);
 out center tags;"""
-    return http(OVERPASS, method="POST", data={"data": q}, timeout=120, tries=3).json()["elements"]
+    last = None
+    for u in MIRRORS:
+        try:
+            return http(u, method="POST", data={"data": q}, timeout=120, tries=2).json()["elements"]
+        except Exception as e:
+            last = e
+    raise last
 
 
-def route(spot, els):
+def words(s):
+    import re
+    ws = {w for w in re.findall(r"[a-z0-9]+", s.lower().replace("'s", "").replace("’s", "").replace("'", "")) if w not in STOP and len(w) > 2}
+    return {w[:-1] if len(w) > 4 and w.endswith("s") else w for w in ws}
+
+
+def pin_check(spot, els):
+    """A named OSM feature (viewpoint, peak, waterfall, lake...) that matches the spot's name, if the pin is >150 m from it."""
+    sw = words(spot["name"].split("(")[0]) or words(spot["name"])
+    best = None
+    for e in els:
+        t = e.get("tags", {})
+        if not t.get("name") or not (t.get("tourism") == "viewpoint" or t.get("natural") or t.get("waterway") == "waterfall"):
+            continue
+        ow = words(t["name"])
+        if not ow:
+            continue
+        overlap = len(sw & ow) / max(1, min(len(sw), len(ow)))
+        if overlap < 0.67:
+            continue
+        c = (e["lat"], e["lon"]) if "lat" in e else (e["center"]["lat"], e["center"]["lon"])
+        d = hav((spot["lat"], spot["lon"]), c)
+        kind = t.get("tourism") or t.get("natural") or t.get("waterway")
+        if not best or (overlap, -d) > (best[0], -best[1]):
+            best = (overlap, d, c, t["name"], kind)
+    if best and best[1] > 150:
+        return {"name": best[3], "kind": best[4], "lat": round(best[2][0], 5), "lon": round(best[2][1], 5), "off_m": round(best[1]), "match": round(best[0], 2)}
+    return None
+
+
+def route(spot, els, target=None):
     coord, adj, wayname = {}, {}, {}
     parks = []
     for e in els:
@@ -48,7 +90,9 @@ def route(spot, els):
                           "fee": e["tags"].get("fee"), "th": e["tags"].get("highway") == "trailhead"})
     if not coord:
         return {"kind": "none"}
-    sp = (spot["lat"], spot["lon"])
+    if spot.get("park"):
+        parks.append({"lat": spot["park"][0], "lon": spot["park"][1], "name": "Trailhead parking", "fee": None, "th": True})
+    sp = target or (spot["lat"], spot["lon"])
     start = min(coord, key=lambda n: hav(sp, coord[n]))
     off = hav(sp, coord[start])
     if off > 400:
@@ -129,7 +173,11 @@ def run(budget_min=40):
         if time.time() - t0 > budget_min * 60:
             break
         try:
-            r = route(s, fetch(s["lat"], s["lon"]))
+            els = fetch(s["lat"], s["lon"])
+            pin = pin_check(s, els)
+            r = route(s, els, (pin["lat"], pin["lon"]) if pin and pin["off_m"] < 2500 else None)
+            if pin:
+                r["pin_suggest"] = pin
             if r.get("pts") and len(r["pts"]) > 1 and r["kind"] == "walk":
                 r["up_m"], r["down_m"], r["z_park"], r["z_spot"] = profile(r["pts"])
             r.pop("pts", None)
