@@ -2,7 +2,7 @@
    Every number shown from the feed carries its provenance (MEASURED / MODELED / ESTIMATED). */
 "use strict";
 const FEED = { m: null, d: {}, loading: {} };
-const EAGER = ["spots_extra", "research_status", "goes", "hrrr", "light", "climo", "flow", "sounding", "sentinel", "darksky", "access", "calibration", "phenology"];
+const EAGER = ["spots_extra", "research_status", "alerts", "goes", "hrrr", "light", "climo", "flow", "sounding", "sentinel", "darksky", "access", "calibration", "phenology"];
 const LAZY = ["planner", "wildlife", "originality", "report", "verify_positions", "solves", "outcomes_public"];
 async function feedGet(name) {
   if (FEED.d[name]) return FEED.d[name];
@@ -123,7 +123,7 @@ async function sheetFeed(s) {
   const hr = hrrrRow(s.id, new Date(Date.now() + 36e5));
   const H = fd("hrrr");
   if (H && H.spots[s.id]) { const now = Date.now() / 60000; const rows = H.t.map((t, i) => [t, H.spots[s.id][i]]).filter(([t]) => t >= now - 30).slice(0, 18);
-    h += `<h3>Odds next 18 hours ${tag("hrrr")}</h3><div class="hours odds">${rows.map(([t, r]) => `<div><small>${minToDate(t).toLocaleTimeString("en-US", { timeZone: TZ, hour: "numeric" }).replace(" ", "").toLowerCase()}</small><span title="fog">🌫${r[0] ?? "–"}</span><span title="clear">✦${r[2] ?? "–"}</span><span title="colour">🎨${r[3] ?? "–"}</span>${r[6] >= 12 ? `<span title="smoke µg/m³">🔥${Math.round(r[6])}</span>` : ""}</div>`).join("")}</div>
+    h += `<h3>Odds next 18 hours ${tag("hrrr")}</h3><div class="hours odds">${rows.map(([t, r]) => `<div><small>${minToDate(t).toLocaleTimeString("en-US", { timeZone: TZ, hour: "numeric" }).replace(" ", "").toLowerCase()}</small><span title="fog">🌫${r[0] ?? "–"}</span><span title="clear">✦${r[2] ?? "–"}</span><span title="colour">🎨${r[3] ?? "–"}</span>${r[6] >= 12 ? `<span title="smoke µg/m³">🔥${Math.round(r[6])}</span>` : r[7] >= 0.15 ? `<span title="smoke haze (aerosol optical depth)">haze ${r[7].toFixed(1)}</span>` : ""}</div>`).join("")}</div>
       <p class="muted" style="font-size:13px">% chance of fog, clear sky and sunset/sunrise colour from HRRR (${esc(H.method)}). Snow level ${hr && hr.snow_m ? Math.round(hr.snow_m) + " m" : "–"}${hr && hr.inv_c != null ? `; ${hr.inv_c > 0 ? "inversion " + hr.inv_c.toFixed(1) + " °C" : "no inversion"}` : ""}.</p>`; }
   const g = fd("goes"), gv = g && g.spots[s.id];
   if (gv) h += `<p><b>Right now from GOES-18</b> ${tag("goes")}: ${gv[0]}% cloud, ${gv[1]}% low cloud/fog${gv[2] ? `, tops ~${gv[2]} m` : ""} <span class="muted">(${fmtT(new Date(g.obs))})</span></p>`;

@@ -11,6 +11,12 @@ def job_goes():
 def job_conditions():
     from . import hrrr
     run_module("hrrr", hrrr.run, "MODELED", "HRRR neighbourhood + time-lagged probabilities")
+    job_alerts()
+
+
+def job_alerts():
+    from . import alerts
+    run_module("alerts", alerts.run, "MODELED", "fog / colour / alignment / dark-sky / smoke alerts from HRRR, planner and climatology")
 
 
 def job_daily():
@@ -22,6 +28,7 @@ def job_daily():
     run_module("sentinel", sentinel.run, "ESTIMATED", "Sentinel-2 colour/snow vs summer baseline")
     run_module("access", access.run, "MEASURED", "PAD-US land status + USFS alerts")
     run_module("fish", lambda: (wildlife.fish() and "ok"), "MEASURED", "DART Bonneville counts")
+    job_alerts()
 
 
 def job_weekly():
@@ -57,7 +64,7 @@ def manifest():
 
 
 JOBS = {"goes": job_goes, "conditions": job_conditions, "daily": job_daily, "weekly": job_weekly, "monthly": job_monthly,
-        "outcomes": job_outcomes, "astrometry": job_astrometry}
+        "outcomes": job_outcomes, "alerts": job_alerts, "astrometry": job_astrometry}
 
 if __name__ == "__main__":
     for j in sys.argv[1:]:

@@ -186,3 +186,10 @@ ul.plain li{margin:3px 0}
 
 .alertbox.research{border-left-color:var(--river)}
 .explore .btn{margin:6px 0}
+
+/* alerts */
+.headsup{margin-top:4px;margin-bottom:8px}
+.alertrow .pct{font-weight:700;font-size:18px;color:var(--moss);align-self:center;min-width:3ch;text-align:right}
+.alertrow.r-fog_above .pct{color:var(--river)} .alertrow.r-color .pct{color:var(--glow)} .alertrow.r-dark .pct{color:var(--blue)} .alertrow.r-smoke .pct{color:var(--warn)}
+.nearmiss .pct{color:var(--muted)}
+#alertBtn svg{display:block}

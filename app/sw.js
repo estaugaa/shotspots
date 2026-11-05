@@ -1,5 +1,5 @@
-const V="ss2-v10";
-const SHELL=["./","index.html","style.css","app.js","live.js","sky.js","feed.js","shots.js","research.js","astro.js","data.js","manifest.webmanifest","icon-180.png","icon-192.png",
+const V="ss2-v11";
+const SHELL=["./","index.html","style.css","app.js","live.js","sky.js","feed.js","shots.js","research.js","alerts.js","astro.js","data.js","manifest.webmanifest","icon-180.png","icon-192.png",
 "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js","https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>Promise.all(SHELL.map(u=>c.add(u).catch(()=>{})))).then(()=>self.skipWaiting()));});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V&&k!=="ss2-tiles"&&k!=="ss2-feed").map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
@@ -16,3 +16,9 @@ self.addEventListener("fetch",e=>{
     const net=fetch(e.request).then(n=>{if(n.ok||n.type==="opaque")c.put(e.request,n.clone());return n;}).catch(()=>r);
     return r||net;})));
 });
+
+// push alerts from the pipeline (alerts.py)
+self.addEventListener("push",e=>{let d={};try{d=e.data.json();}catch(x){d={title:"ShotSpots",body:e.data?e.data.text():""};}
+  e.waitUntil(self.registration.showNotification(d.title||"ShotSpots",{body:d.body||"",tag:d.tag||"ss",icon:"icon-192.png",badge:"icon-192.png",data:{url:d.url||"./#alerts"}}));});
+self.addEventListener("notificationclick",e=>{e.notification.close();const url=(e.notification.data&&e.notification.data.url)||"./#alerts";
+  e.waitUntil(clients.matchAll({type:"window",includeUncontrolled:true}).then(ws=>{for(const w of ws){if("focus"in w){w.postMessage({open:"alerts"});return w.focus();}}return clients.openWindow(url);}));});

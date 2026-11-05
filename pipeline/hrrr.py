@@ -8,14 +8,14 @@ verify.py then measures how calibrated they really are.
 
 Events: fog (vis < 1 km or cloud base < 150 m AGL with low cloud > 80%), low stratus (low cloud > 80%),
 clear (total cloud < 20%), colour sky (mid/high 20-80% with low < 40%).
-Also: near-surface and column smoke, snow level (0 C isotherm - 300 m), inversion strength (T925 - T2m), wind.
+Also: near-surface smoke (MASSDEN, ug/m3) and smoke aerosol optical depth (AOTK; haze you can see), snow level (0 C isotherm - 300 m), inversion strength (T925 - T2m), wind.
 """
 import datetime as dt, json
 import numpy as np
 from .common import spots, write_json, read_json, FEED, CACHE, log, utcnow, iso, r
 
 SEARCH = (":(TCDC|LCDC|MCDC|HCDC):|:VIS:surface|:TMP:2 m above|:RH:2 m above|:(UGRD|VGRD):10 m above|"
-          ":HGT:cloud base|:HGT:surface|:HGT:0C isotherm|:MASSDEN:8 m above|:COLMD:entire|:TMP:925 mb")
+          ":HGT:cloud base|:HGT:surface|:HGT:0C isotherm|:MASSDEN:8 m above|:AOTK:entire|:TMP:925 mb")
 NB = 3  # half-width of neighbourhood (7x7)
 
 
@@ -87,8 +87,8 @@ def one_hour(run, fxx, pts, idx_cache):
     cb = _pick(f, "gh:cloudBase")
     zs = _pick(f, "orog", "gh:surface", "hgt:surface")
     z0 = _pick(f, "gh:isothermZero")
-    smk = _pick(f, "mdens", "massden")
-    col = _pick(f, "colmd", "unknown:atmosphere")
+    smk = _pick(f, "mdens", "massden", "unknown:heightAboveGround")  # cfgrib has no name for MASSDEN
+    aod = _pick(f, "aotk", "unknown:atmosphereSingleLayer")  # smoke aerosol optical depth (unitless)
     t925 = _pick(f, "t:isobaricInhPa:925", "t:isobaricInhPa")
     rows = []
     for k in range(len(pts)):
@@ -107,7 +107,7 @@ def one_hour(run, fxx, pts, idx_cache):
             "fog": fog, "low": L > 80, "clear": T < 20, "color": color,
             "tcc": float(tcc[c]), "lcc": float(lcc[c]),
             "smoke": None if smk is None else float(smk[c]) * 1e9,
-            "smoke_col": None if col is None else float(col[c]) * 1e6,
+            "aod": None if aod is None else float(aod[c]),
             "snow": None if z0 is None else float(z0[c]) - 300,
             "inv": None if (t925 is None or t2 is None) else float(t925[c] - t2[c]),
             "wind": None if u10 is None else float(np.hypot(u10[c], v10[c])) * 2.237,
@@ -146,8 +146,8 @@ def run():
                 vals = [x for x in (v, None if not old else old.get(e)) if x is not None]
                 prob[e] = None if not vals else round(100 * sum(vals) / len(vals))
             per[p["id"]].append([prob["fog"], prob["low"], prob["clear"], prob["color"], r(row["tcc"], 0), r(row["lcc"], 0),
-                                  r(row["smoke"], 1), r(row["smoke_col"], 1), r(row["snow"], -1), r(row["inv"], 1), r(row["wind"], 0), r(row["rh"], 0), r(row["t"], 0)])
+                                  r(row["smoke"], 1), r(row["aod"], 3), r(row["snow"], -1), r(row["inv"], 1), r(row["wind"], 0), r(row["rh"], 0), r(row["t"], 0)])
     json.dump(members_now, open(CACHE / "hrrr_members.json", "w"))
-    write_json("hrrr.json", {"gen": iso(utcnow()), "run": iso(run_h.replace(tzinfo=dt.timezone.utc)), "cols": ["p_fog", "p_low", "p_clear", "p_color", "tcc", "lcc", "smoke_ugm3", "smoke_col_mgm2", "snow_m", "inv_c", "wind_mph", "rh", "t_f"],
+    write_json("hrrr.json", {"gen": iso(utcnow()), "run": iso(run_h.replace(tzinfo=dt.timezone.utc)), "cols": ["p_fog", "p_low", "p_clear", "p_color", "tcc", "lcc", "smoke_ugm3", "smoke_aod", "snow_m", "inv_c", "wind_mph", "rh", "t_f"],
                              "t": valid, "spots": per, "method": "7x7 neighbourhood (21 km) + previous-run time-lagged member"})
     return f"run {run_h:%m-%d %HZ}, {len(valid)} valid hours, {len(pts)} points"

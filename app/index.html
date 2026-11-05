@@ -71,6 +71,8 @@
 </form>
 
 <form name="research" data-netlify="true" hidden><input name="label"><input name="lat"><input name="lon"><input name="radius_km"><input name="focus"></form>
+<form name="push_sub" data-netlify="true" hidden><input name="action"><input name="sub"><input name="device"></form>
+<form name="alert_settings" data-netlify="true" hidden><input name="enabled"><input name="min_prob"><input name="max_per_day"><input name="max_km"><input name="max_km_dark"><input name="quiet_start"><input name="quiet_end"><input name="rules"><input name="push_rules"></form>
 <form name="research_settings" data-netlify="true" hidden><input name="enabled"><input name="regions_per_night"><input name="max_new_spots_per_night"><input name="max_web_searches_per_night"><input name="max_minutes_per_night"><input name="auto_expand"><input name="max_km_from_home"></form>
 
 <div class="toast" id="toast" role="status" hidden></div>
@@ -84,5 +86,6 @@
 <script src="feed.js" defer></script>
 <script src="shots.js" defer></script>
 <script src="research.js" defer></script>
+<script src="alerts.js" defer></script>
 </body>
 </html>
