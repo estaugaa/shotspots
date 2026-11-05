@@ -2,7 +2,7 @@
    Every number shown from the feed carries its provenance (MEASURED / MODELED / ESTIMATED). */
 "use strict";
 const FEED = { m: null, d: {}, loading: {} };
-const EAGER = ["spots_extra", "research_status", "alerts", "goes", "hrrr", "light", "climo", "flow", "sounding", "sentinel", "darksky", "access", "calibration", "phenology"];
+const EAGER = ["spots_extra", "research_status", "alerts", "goes", "hrrr", "light", "climo", "flow", "sounding", "sentinel", "darksky", "access", "calibration", "phenology", "snow", "access_rules"];
 const LAZY = ["planner", "wildlife", "originality", "report", "verify_positions", "solves", "outcomes_public"];
 async function feedGet(name) {
   if (FEED.d[name]) return FEED.d[name];

@@ -1,7 +1,7 @@
 /* Alerts: heads-up card on Now, an alerts sheet (bell), Web Push sign-up, alert settings, and smoke-aware scoring. */
 "use strict";
 const VAPID_PUBLIC = "BOt5ek966SAcZdZOxtvjB5B_x1W_i22n-mRrep97SA5N_3nNNJH3hi74XfqzVpbpuDKpZ_UCl8yiGnDc9IzZzmQ";
-const RULE_NAMES = { fog_above: "Sea of fog from high viewpoints", color: "Colourful sunrise or sunset", alignment: "Sun or moon behind a landmark", dark: "Clear, dark night", smoke: "Heavy smoke" };
+const RULE_NAMES = { fog_above: "Sea of fog from high viewpoints", color: "Colourful sunrise or sunset", alignment: "Sun or moon behind a landmark", dark: "Clear, dark night", aurora: "Aurora (northern lights)", smoke: "Heavy smoke" };
 const IS_IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 const STANDALONE = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
 const PUSH_OK = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
@@ -11,6 +11,12 @@ const _fitAl = fitFor;
 fitFor = function (s, w) {
   const f = _fitAl(s, w); if (!f || w.kind === "night") return f; const hr = hrrrRow(s.id, w.peak); if (!hr) return f;
   const aod = hr.smoke_aod || 0, pm = hr.smoke_ugm3 || 0; let n = f.n; const why = f.why.slice();
+  const H = fd("hrrr"); if (GOLDK.has(w.kind) && H && H.rays && H.rays[s.id] && s.cats.some(c => SKY.includes(c))) {
+    const tm = w.peak.getTime() / 60000; let bi = 0; H.t.forEach((x, i) => { if (Math.abs(x - tm) < Math.abs(H.t[bi] - tm)) bi = i; });
+    const op = Math.abs(H.t[bi] - tm) <= 100 && H.rays[s.id][bi] ? H.rays[s.id][bi][w.kind === "sunrise" ? 0 : 1] : null;
+    if (op != null && op < 40) { n -= 12; why.push(`low cloud deck toward the ${w.kind === "sunrise" ? "rising" : "setting"} sun (path ${op}% open)`); }
+    else if (op != null && op < 70) { n -= 5; why.push(`path toward the sun only ${op}% open`); }
+    else if (op != null) why.push(`clear path toward the sun (${op}% open)`); }
   const far = s.cats.some(c => ["mountain", "vista", "alignment"].includes(c));
   if (aod >= 1 || pm >= 35) { n -= far ? 20 : 10; why.unshift(`heavy smoke forecast (AOD ${aod.toFixed(1)}): muted light${far ? ", distant peaks hidden" : ""}`); }
   else if (aod >= 0.4) { n -= far ? 8 : 3; why.push(`smoky (AOD ${aod.toFixed(2)}): red sun${far ? ", far peaks faint" : ""}`); }
@@ -75,6 +81,7 @@ async function openAlerts() {
       ${Object.entries(RULE_NAMES).map(([k, v]) => `<label><input type="checkbox" name="push_${k}" ${push.includes(k) ? "checked" : ""} style="display:inline;width:auto"> ${v}</label>`).join("")}
       <label>Only spots within this distance of home (km)<input type="number" name="max_km" min="20" max="1000" step="10" value="${st.max_km || 150}"></label>
       <label>For dark-sky trips, within (km)<input type="number" name="max_km_dark" min="20" max="1000" step="10" value="${st.max_km_dark || 300}"></label>
+      <label>Aurora: alert at Kp (5 = camera only, 7 = likely visible to the eye)<input type="number" name="aurora_kp" min="4" max="9" value="${st.aurora_kp || 6}"></label>
       <label>Most notifications per day<input type="number" name="max_per_day" min="1" max="10" value="${st.max_per_day || 3}"></label>
       <label>Quiet from (hour, 0–23)<input type="number" name="quiet_start" min="0" max="23" value="${st.quiet_start ?? 22}"></label>
       <label>Quiet until (hour, 0–23)<input type="number" name="quiet_end" min="0" max="23" value="${st.quiet_end ?? 6}"></label>
@@ -109,7 +116,7 @@ document.addEventListener("submit", async e => {
   if (e.target.id !== "alForm") return; e.preventDefault(); const f = new FormData(e.target);
   const push = Object.keys(RULE_NAMES).filter(k => f.get("push_" + k));
   const rules = [...new Set([...(e.target.closest(".sheetbody")._rules || Object.keys(RULE_NAMES)), ...push])];
-  const ok = await postForm("alert_settings", { enabled: "true", min_prob: f.get("min_prob"), max_per_day: f.get("max_per_day"), max_km: f.get("max_km"), max_km_dark: f.get("max_km_dark"), quiet_start: f.get("quiet_start"), quiet_end: f.get("quiet_end"), rules: rules.join(","), push_rules: push.join(",") });
+  const ok = await postForm("alert_settings", { enabled: "true", min_prob: f.get("min_prob"), max_per_day: f.get("max_per_day"), max_km: f.get("max_km"), max_km_dark: f.get("max_km_dark"), aurora_kp: f.get("aurora_kp"), quiet_start: f.get("quiet_start"), quiet_end: f.get("quiet_end"), rules: rules.join(","), push_rules: push.join(",") });
   $("#alSheet").hidden = true; toast(ok ? "Saved. Applies from the next forecast check." : "Couldn't send. Try again when online.");
 });
 /* bell in the header + deep links from notifications */

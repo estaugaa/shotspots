@@ -6,6 +6,7 @@ from .common import run_module, write_json, utcnow, iso, FEED, read_json, all_st
 def job_goes():
     from . import goes
     run_module("goes", goes.run, "MEASURED", "GOES-18 clear-sky mask + cloud-top height")
+    job_alerts()  # every 30 min: catches a geomagnetic storm in progress
 
 
 def job_conditions():
@@ -28,6 +29,8 @@ def job_daily():
     run_module("sentinel", sentinel.run, "ESTIMATED", "Sentinel-2 colour/snow vs summer baseline")
     run_module("access", access.run, "MEASURED", "PAD-US land status + USFS alerts")
     run_module("fish", lambda: (wildlife.fish() and "ok"), "MEASURED", "DART Bonneville counts")
+    from . import snow
+    run_module("snow", snow.run, "MEASURED", "SNOTEL snow depth + researched seasonal road/permit rules")
     job_alerts()
 
 

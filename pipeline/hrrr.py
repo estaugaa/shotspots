@@ -68,6 +68,25 @@ def grid_index(lat, lon, pts):
     return np.unravel_index(i, lat.shape)
 
 
+RAY_KM = [25, 50, 100, 150, 200, 300]
+
+
+def ray_points(pts, light):
+    """Points along each spot's sunrise and sunset azimuth. The sun lights the sky over you through this path,
+    so a low deck out there kills the colour even when the sky overhead looks perfect."""
+    out = []
+    for p in pts:
+        d = (light or {}).get("spots", {}).get(p["id"])
+        saz = d[0].get("saz") if d else None
+        if not saz or saz[0] is None:
+            continue
+        for k, az in enumerate(saz):
+            for km in RAY_KM:
+                out.append({"lat": p["lat"] + km * np.cos(np.radians(az)) / 111.0,
+                            "lon": p["lon"] + km * np.sin(np.radians(az)) / (111.0 * np.cos(np.radians(p["lat"]))), "sid": p["id"], "k": k})
+    return out
+
+
 def one_hour(run, fxx, pts, idx_cache):
     from herbie import Herbie
     H = Herbie(run, model="hrrr", product="sfc", fxx=fxx, save_dir=str(CACHE / "herbie"), verbose=False)
@@ -80,6 +99,12 @@ def one_hour(run, fxx, pts, idx_cache):
     ny, nx = idx_cache["shape"]
     tcc = _pick(f, "tcc:atmosphere", "tcc")
     lcc, mcc, hcc = _pick(f, "lcc"), _pick(f, "mcc"), _pick(f, "hcc")
+    if idx_cache.get("rays") and "ray_idx" not in idx_cache:
+        idx_cache["ray_idx"] = grid_index(lat, lon, idx_cache["rays"])
+    if idx_cache.get("rays"):
+        ry, rx = idx_cache["ray_idx"]
+        blocked = (lcc[ry, rx] >= 70) | (tcc[ry, rx] >= 95)
+        idx_cache["ray_now"] = blocked
     vis = _pick(f, "vis")
     t2 = _pick(f, "2t", "t2m")
     rh = _pick(f, "2r", "r2")
@@ -126,6 +151,8 @@ def run():
     plan = [(run_h, f) for f in range(0, 19)] + [(run_s, f) for f in range(21, 49, 3) if run_s + dt.timedelta(hours=f) > run_h + dt.timedelta(hours=18)]
     prev = read_json(CACHE / "hrrr_members.json", {})  # previous run's per-spot event fractions keyed by valid time
     idx_cache, valid, per = {}, [], {p["id"]: [] for p in pts}
+    idx_cache["rays"] = ray_points([p for p in pts if not p["id"].startswith("grid-")], read_json(FEED / "light.json"))
+    rays = {}
     members_now = {}
     for rn, f in plan:
         vt = rn + dt.timedelta(hours=f)
@@ -134,6 +161,15 @@ def run():
         except Exception as e:
             log.warning("HRRR %s f%02d failed: %s", rn, f, e)
             continue
+        if idx_cache.get("rays"):
+            acc = {}
+            for rp, b in zip(idx_cache["rays"], idx_cache["ray_now"]):
+                acc.setdefault(rp["sid"], [[], []])[rp["k"]].append(bool(b))
+            for sid, (rise, sett) in acc.items():
+                rays.setdefault(sid, []).append([round(100 * (1 - np.mean(rise))) if rise else None, round(100 * (1 - np.mean(sett))) if sett else None])
+            for sid in per:
+                if sid not in acc and sid in rays:
+                    rays[sid].append([None, None])
         key = str(int(vt.replace(tzinfo=dt.timezone.utc).timestamp() // 60))
         valid.append(int(key))
         members_now[key] = {}
@@ -149,5 +185,5 @@ def run():
                                   r(row["smoke"], 1), r(row["aod"], 3), r(row["snow"], -1), r(row["inv"], 1), r(row["wind"], 0), r(row["rh"], 0), r(row["t"], 0)])
     json.dump(members_now, open(CACHE / "hrrr_members.json", "w"))
     write_json("hrrr.json", {"gen": iso(utcnow()), "run": iso(run_h.replace(tzinfo=dt.timezone.utc)), "cols": ["p_fog", "p_low", "p_clear", "p_color", "tcc", "lcc", "smoke_ugm3", "smoke_aod", "snow_m", "inv_c", "wind_mph", "rh", "t_f"],
-                             "t": valid, "spots": per, "method": "7x7 neighbourhood (21 km) + previous-run time-lagged member"})
+                             "t": valid, "spots": per, "rays": rays, "ray_note": "% of points 25-300 km toward sunrise / sunset azimuth without a low deck (low cloud <70%) or overcast (<95%)", "method": "7x7 neighbourhood (21 km) + previous-run time-lagged member"})
     return f"run {run_h:%m-%d %HZ}, {len(valid)} valid hours, {len(pts)} points"
