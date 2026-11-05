@@ -1,0 +1,16 @@
+{
+ "gen": "2026-11-05T01:10:59Z",
+ "outings": 0,
+ "events": {
+  "clear": null,
+  "fog": null,
+  "color": null,
+  "keeper": null,
+  "species": null
+ },
+ "sqm": {
+  "n": 0,
+  "bias": null,
+  "rmse": null
+ }
+}
