@@ -105,7 +105,7 @@ def gbif_profiles():
             with np.errstate(invalid="ignore", divide="ignore"):
                 share = np.where(tot > 0, cnt[k] / tot, 0)
             ext = np.r_[share[-1], share, share[0]]
-            xs = np.arange(-0.5, 12.5, 1.0)
+            xs = np.arange(-0.5, 13.0, 1.0)
             wk = np.interp(wk_mid, xs, ext)
             peak = float(share.max()) or 1
             rows.append({"sp": _name(k), "n": int(cnt[k].sum()), "wk": [int(round(x * 100)) for x in wk], "rel": [round(float(x) / peak, 2) for x in wk], "hr": None})
