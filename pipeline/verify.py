@@ -70,6 +70,18 @@ def positions():
         ra, dec, dist = ephem.radec(b, tt)
         alt, az = ephem.altaz(ra, dec, ephem.gast_deg(tt), HOME[0], HOME[1], dist if b == "moon" else None)
         e_pipe = [sep(h[1], h[2], float(z), float(a)) for h, a, z in zip(hz, alt, az)]
+        # diagnostic: Skyfield's own topocentric alt/az (no fast-formula shortcuts)
+        try:
+            from skyfield.api import wgs84
+            _, eph = ephem.load()
+            key = {"sun": "sun", "moon": "moon", "venus": "venus", "mars": "mars barycenter", "jupiter": "jupiter barycenter", "saturn": "saturn barycenter"}[b]
+            topo = (eph["earth"] + wgs84.latlon(HOME[0], HOME[1], 3)).at(tt).observe(eph[key]).apparent()
+            a2, z2, _ = topo.altaz()
+            e_sky = [sep(h[1], h[2], float(zz), float(aa)) for h, aa, zz in zip(hz, a2.degrees, z2.degrees)]
+            fast_vs_sky = [sep(float(z), float(a), float(zz), float(aa)) for a, z, aa, zz in zip(alt, az, a2.degrees, z2.degrees)]
+        except Exception as e:
+            e_sky, fast_vs_sky = None, None
+            log.warning("skyfield topo diag: %s", e)
         try:
             app = app_positions(times, [b])[b]
             e_app = [sep(h[1], h[2], z, a) for h, (a, z) in zip(hz, app)]
@@ -77,6 +89,8 @@ def positions():
             e_app = None
             log.warning("app positions: %s", e)
         out["bodies"][b] = {"n": len(hz), "pipeline_max_arcmin": r(max(e_pipe), 2), "pipeline_mean_arcmin": r(np.mean(e_pipe), 2),
+                            "skyfield_topo_max_arcmin": r(max(e_sky), 2) if e_sky else None, "fast_vs_skyfield_arcmin": r(max(fast_vs_sky), 2) if fast_vs_sky else None,
+                            "sample": {"t": iso(times[0]), "horizons_az_el": [hz[0][1], hz[0][2]], "pipeline": [r(float(az[0]), 4), r(float(alt[0]), 4)]},
                             "app_max_arcmin": r(max(e_app), 1) if e_app else None, "app_mean_arcmin": r(np.mean(e_app), 1) if e_app else None}
     # USNO rise/set vs the app
     try:
