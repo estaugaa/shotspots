@@ -6,53 +6,11 @@
   "at": "2026-11-04T23:26:21Z",
   "secs": 0.0
  },
- "terrain": {
+ "hrrr": {
   "ok": true,
   "kind": "MODELED",
-  "note": "241 spots done (241 new this run, 0 still to do); bare-earth 3DEP, trees not modeled",
-  "at": "2026-11-05T00:31:31Z",
-  "secs": 200.7
- },
- "light": {
-  "ok": true,
-  "kind": "MODELED",
-  "note": "241 spots x 14 days; terrain-aware sun, moon and Milky Way core",
-  "at": "2026-11-05T00:31:34Z",
-  "secs": 2.9
- },
- "sounding": {
-  "ok": true,
-  "kind": "MEASURED",
-  "note": "2 soundings",
-  "at": "2026-11-05T00:31:35Z",
-  "secs": 0.8
- },
- "flow": {
-  "ok": true,
-  "kind": "MEASURED",
-  "note": "4 gauges",
-  "at": "2026-11-05T00:31:35Z",
-  "secs": 0.4
- },
- "sentinel": {
-  "ok": true,
-  "kind": "ESTIMATED",
-  "note": "119 spots",
-  "at": "2026-11-05T00:42:02Z",
-  "secs": 626.6
- },
- "access": {
-  "ok": true,
-  "kind": "MEASURED",
-  "note": "241 spots, 11 forest alerts",
-  "at": "2026-11-05T00:42:57Z",
-  "secs": 55.2
- },
- "fish": {
-  "ok": true,
-  "kind": "MEASURED",
-  "note": "ok",
-  "at": "2026-11-05T00:42:57Z",
-  "secs": 0.2
+  "note": "run 11-04 23Z, 28 valid hours, 256 points",
+  "at": "2026-11-05T00:45:08Z",
+  "secs": 71.1
  }
 }
