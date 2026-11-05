@@ -35,14 +35,30 @@ def iso(t):
 
 
 def spots(cats=None):
+    """Curated Gorge spots plus every spot added by nightly research (data/research/spots/*.json)."""
     s = json.load(open(CONFIG / "spots.json"))
+    rdir = DATA / "research" / "spots"
+    if rdir.exists():
+        for p in sorted(rdir.glob("*.json")):
+            try:
+                s += [x for x in json.load(open(p)) if not x.get("removed")]
+            except Exception:
+                pass
     if cats:
         s = [x for x in s if set(x["cats"]) & set(cats)]
     return s
 
 
 def landmarks():
-    return json.load(open(CONFIG / "landmarks.json"))
+    lm = json.load(open(CONFIG / "landmarks.json"))
+    p = DATA / "research" / "landmarks.json"
+    if p.exists():
+        lm += json.load(open(p))
+    return lm
+
+
+def in_conus(lat, lon):
+    return 24.0 <= lat <= 49.5 and -125.0 <= lon <= -66.0
 
 
 def links():

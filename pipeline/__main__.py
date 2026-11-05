@@ -64,8 +64,24 @@ if __name__ == "__main__":
         if j == "all":
             for f in JOBS.values():
                 f()
+        elif j == "research_plan":
+            from . import research
+            research.plan()
+            sys.exit(0)
+        elif j == "research_add":
+            from . import research
+            research.add(sys.argv[2])
+            research.export()
+            sys.exit(0)
+        elif j == "research_sync":
+            from . import research
+            run_module("research_sync", research.sync, "MEASURED", "requests and limits from the app")
         elif j == "deploy":
-            from . import deploy
+            from . import deploy, research
+            try:
+                research.export()
+            except Exception as e:
+                print("research export failed:", e)
             from .common import secret, log
             manifest()
             if not secret("NETLIFY_TOKEN"):

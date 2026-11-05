@@ -44,7 +44,10 @@ def alerts():
 def run():
     al = alerts()
     res = {}
+    from .common import in_conus
     for s in spots():
+        if not in_conus(s["lat"], s["lon"]):
+            continue  # PAD-US and these forest alerts cover the US only
         rec = {}
         try:
             la, lo = s["park"] if s.get("park") else (s["lat"], s["lon"])

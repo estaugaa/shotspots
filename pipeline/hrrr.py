@@ -120,7 +120,7 @@ def one_hour(run, fxx, pts, idx_cache):
 def run():
     pts = spots()
     grid = json.load(open(FEED.parent / "config" / "grid.json")) if (FEED.parent / "config" / "grid.json").exists() else []
-    pts = pts + grid
+    pts = [p for p in pts + grid if 21 < p["lat"] < 52.5 and -134 < p["lon"] < -61]  # HRRR CONUS domain
     run_h = latest_run()
     run_s = latest_run(synoptic=True)
     plan = [(run_h, f) for f in range(0, 19)] + [(run_s, f) for f in range(21, 49, 3) if run_s + dt.timedelta(hours=f) > run_h + dt.timedelta(hours=18)]

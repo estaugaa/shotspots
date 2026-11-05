@@ -65,7 +65,7 @@ def run():
     bcm = m["BCM"].values
     ht = h["HT"].values
     tstamp = m.attrs.get("time_coverage_end") or iso(utcnow())
-    pts = spots()
+    pts = [p for p in spots() if -170 < p["lon"] < -100 and -60 < p["lat"] < 60]  # GOES-18 (West) usable disk
     iy, ix = to_index(m, [p["lat"] for p in pts], [p["lon"] for p in pts])
     hy, hx = to_index(h, [p["lat"] for p in pts], [p["lon"] for p in pts])
     out = {}
@@ -98,8 +98,12 @@ def run():
     # rolling 120-day history: one line per scan, two digits per spot (cloud tenth, low-cloud tenth)
     hp = DATA / "goes_history.txt"
     lines = hp.read_text().splitlines() if hp.exists() else []
-    if not lines or not lines[0].startswith("#"):
-        lines = ["#ids " + ",".join(p["id"] for p in pts)] + [l for l in lines if not l.startswith("#")]
+    hdr = "#ids " + ",".join(p["id"] for p in pts)
+    if lines and lines[0] != hdr:  # spot list changed (e.g. new researched spots): start a new history file
+        hp.rename(DATA / f"goes_history_{utcnow():%Y%m%d%H%M}.txt")
+        lines = []
+    if not lines:
+        lines = [hdr]
     lines.append(f"{tstamp} {''.join(hist)}")
     cut = (utcnow() - dt.timedelta(days=120)).strftime("%Y-%m-%d")
     lines = [lines[0]] + [l for l in lines[1:] if l[:10] >= cut]

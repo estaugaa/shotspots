@@ -106,6 +106,8 @@ def run():
     rmse = math.sqrt(best[0] / len(refs))
     out = {}
     for s in spots():
+        if not (44.5 < s["lat"] < 47.0 and -124.5 < s["lon"] < -119.5):  # mosaic covers 43.5-48 N, 125.5-118.5 W; keep 1 deg margin
+            continue
         z, sec = contributions(a, geo, s["lat"], s["lon"])
         q = 22.0 - 2.5 * math.log10(1 + C * z)
         tot = sec.sum() or 1

@@ -151,15 +151,20 @@ def submissions():
 
 
 def goes_at(spot_id, t):
-    p = DATA / "goes_history.txt"
-    if not p.exists():
-        return None
-    lines = p.read_text().splitlines()
-    ids = lines[0][5:].split(",")
-    if spot_id not in ids:
-        return None
-    k = ids.index(spot_id)
     best = None
+    for p in sorted(DATA.glob("goes_history*.txt")):
+        lines = p.read_text().splitlines()
+        if not lines:
+            continue
+        ids = lines[0][5:].split(",")
+        if spot_id not in ids:
+            continue
+        k = ids.index(spot_id)
+        best = _scan(lines, k, t, best)
+    return None if best is None else {"cloud_pct": best[1], "lowcloud_pct": best[2], "dt_min": round(best[0] / 60)}
+
+
+def _scan(lines, k, t, best):
     for l in lines[1:]:
         ts, code = l.split(" ", 1)
         try:
@@ -169,7 +174,7 @@ def goes_at(spot_id, t):
         dtm = abs((tt - t).total_seconds())
         if dtm <= 3600 and (best is None or dtm < best[0]):
             best = (dtm, int(code[2 * k]) * 11, int(code[2 * k + 1]) * 11)
-    return None if best is None else {"cloud_pct": best[1], "lowcloud_pct": best[2], "dt_min": round(best[0] / 60)}
+    return best
 
 
 def ebird_checklist(sub_id):

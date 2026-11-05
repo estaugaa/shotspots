@@ -35,7 +35,7 @@ jobs:
             ss-cache-conditions-
             ss-cache-
       - run: pip install -r requirements.txt
-      - run: python -m pipeline conditions
+      - run: python -m pipeline conditions research_sync
       - uses: actions/cache/save@v4
         if: always()
         with:

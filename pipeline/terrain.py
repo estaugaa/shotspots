@@ -43,8 +43,45 @@ class Grid:
         return a * (1 - fr) + b * fr
 
 
+COP = "https://copernicus-dem-30m.s3.amazonaws.com"
+
+
+def fetch_cop(bbox, size, name):
+    """Copernicus GLO-30 (global 30 m surface model, public on AWS) for spots outside the US 3DEP coverage.
+    Note: Copernicus is a surface model, so forests and buildings are partly included (unlike 3DEP bare earth)."""
+    p = CACHE / "dem" / f"{name}.npy"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    if p.exists():
+        return Grid(np.load(p), bbox)
+    import rasterio
+    from rasterio.warp import reproject, Resampling
+    from rasterio.transform import from_bounds
+    x0, y0, x1, y1 = bbox
+    out = np.zeros((size[1], size[0]), np.float32)
+    dst_t = from_bounds(x0, y0, x1, y1, size[0], size[1])
+    for la in range(math.floor(y0), math.floor(y1) + 1):
+        for lo in range(math.floor(x0), math.floor(x1) + 1):
+            ns, ew = ("N" if la >= 0 else "S"), ("E" if lo >= 0 else "W")
+            tid = f"Copernicus_DSM_COG_10_{ns}{abs(la):02d}_00_{ew}{abs(lo):03d}_00_DEM"
+            url = f"{COP}/{tid}/{tid}.tif"
+            try:
+                with rasterio.Env(GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR", AWS_NO_SIGN_REQUEST="YES"), rasterio.open(url) as ds:
+                    tmp = np.full_like(out, np.nan)
+                    reproject(rasterio.band(ds, 1), tmp, dst_transform=dst_t, dst_crs="EPSG:4326", resampling=Resampling.bilinear, dst_nodata=np.nan)
+                    m = np.isfinite(tmp)
+                    out[m] = tmp[m]
+            except Exception as e:  # ocean tiles do not exist
+                log.info("copernicus %s: %s", tid, e)
+    np.save(p, out)
+    return Grid(out, bbox)
+
+
 def fetch_dem(bbox, size, name):
-    """Download a DEM chunk as float32 GeoTIFF in EPSG:4326. Cached in .cache/dem/."""
+    """Download a DEM chunk as float32 GeoTIFF in EPSG:4326. Cached in .cache/dem/. Outside the US -> Copernicus."""
+    from .common import in_conus
+    cy, cx = (bbox[1] + bbox[3]) / 2, (bbox[0] + bbox[2]) / 2
+    if not in_conus(cy, cx):
+        return fetch_cop(bbox, size, name)
     p = CACHE / "dem" / f"{name}.npy"
     p.parent.mkdir(parents=True, exist_ok=True)
     if p.exists():
@@ -78,6 +115,19 @@ def far_grid():
     z = np.vstack(rows)
     np.save(p, z)
     return Grid(z, FAR_BOX)
+
+
+def in_far(lat, lon):
+    return FAR_BOX[0] + 1.5 < lon < FAR_BOX[2] - 1.5 and FAR_BOX[1] + 1.1 < lat < FAR_BOX[3] - 1.1
+
+
+def far_for(lat, lon, sid, far):
+    """Shared regional mosaic for the Gorge area; a 240 km box per spot elsewhere."""
+    if in_far(lat, lon):
+        return far
+    dlat = 120 / 111.2
+    dlon = 120 / (111.2 * math.cos(math.radians(lat)))
+    return fetch_dem((lon - dlon, lat - dlat, lon + dlon, lat + dlat), (1000, 1000), f"far_{sid}")
 
 
 def spot_grids(lat, lon, sid):
@@ -151,14 +201,14 @@ def run(only=None, budget_min=40):
 
     def fetch(item):
         s, _ = item
-        return item, spot_grids(s["lat"], s["lon"], s["id"])
+        return item, spot_grids(s["lat"], s["lon"], s["id"]) + (far_for(s["lat"], s["lon"], s["id"], far),)
 
     with ThreadPoolExecutor(6) as ex:
         for (s, key), grids in ex.map(lambda it: _safe(fetch, it), todo):
             if grids is None:
                 continue
-            near, mid = grids
-            alt, bd, h0 = horizon(s["lat"], s["lon"], [near, mid, far])
+            near, mid, fg = grids
+            alt, bd, h0 = horizon(s["lat"], s["lon"], [near, mid, fg])
             old[s["id"]] = {"key": key, "elev": round(h0 - 1.7, 1), "alt": [round(float(x), 2) for x in alt], "bkm": [round(float(x) / 1000, 2) for x in bd]}
             n += 1
             if n % 20 == 0:
