@@ -66,7 +66,7 @@ def far_grid():
     if p.exists():
         return Grid(np.load(p), FAR_BOX)
     # tile the regional mosaic in 4x3 chunks of 1000 px (~110 m)
-    nx, ny, px = 4, 3, 1000
+    nx, ny, px = 4, 3, 1000  # ~110-130 m regional mosaic
     x0, y0, x1, y1 = FAR_BOX
     rows = []
     for j in range(ny):
@@ -85,8 +85,8 @@ def spot_grids(lat, lon, sid):
         dlat = half_km / 111.2
         dlon = half_km / (111.2 * math.cos(math.radians(lat)))
         return (lon - dlon, lat - dlat, lon + dlon, lat + dlat)
-    near = fetch_dem(box(3), (1000, 1000), f"near_{sid}")
-    mid = fetch_dem(box(20), (1000, 1000), f"mid_{sid}")
+    near = fetch_dem(box(3), (600, 600), f"near_{sid}")    # ~10 m
+    mid = fetch_dem(box(20), (500, 500), f"mid_{sid}")     # ~80 m
     return near, mid
 
 
@@ -129,34 +129,60 @@ def horizon(lat, lon, grids, h_extra=1.7, dist=DIST):
     return out, bd, h0
 
 
-def run(only=None):
-    """Compute horizons for every spot (cached forever; recomputed only for new/moved spots)."""
-    cache = CACHE / "horizons.json"
-    old = json.load(open(cache)) if cache.exists() else {}
+def run(only=None, budget_min=40):
+    """Compute horizons for every spot. Results persist in data/horizons.json (committed), so a run that hits its
+    time budget simply continues where it left off next time. Downloads run 6 at a time."""
+    import time
+    from concurrent.futures import ThreadPoolExecutor
+    from .common import DATA
+    store = DATA / "horizons.json"
+    old = json.load(open(store)) if store.exists() else {}
+    t0 = time.time()
     far = far_grid()
-    res, n = {}, 0
+    todo = []
     for s in spots():
         if only and s["id"] not in only:
             continue
         key = f'{s["lat"]:.5f},{s["lon"]:.5f}'
-        if s["id"] in old and old[s["id"]]["key"] == key:
-            res[s["id"]] = old[s["id"]]
+        if s["id"] in old and old[s["id"]].get("key") == key:
             continue
-        try:
-            near, mid = spot_grids(s["lat"], s["lon"], s["id"])
+        todo.append((s, key))
+    n = 0
+
+    def fetch(item):
+        s, _ = item
+        return item, spot_grids(s["lat"], s["lon"], s["id"])
+
+    with ThreadPoolExecutor(6) as ex:
+        for (s, key), grids in ex.map(lambda it: _safe(fetch, it), todo):
+            if grids is None:
+                continue
+            near, mid = grids
             alt, bd, h0 = horizon(s["lat"], s["lon"], [near, mid, far])
-            res[s["id"]] = {"key": key, "elev": round(h0 - 1.7, 1), "alt": [round(float(x), 2) for x in alt], "bkm": [round(float(x) / 1000, 2) for x in bd]}
+            old[s["id"]] = {"key": key, "elev": round(h0 - 1.7, 1), "alt": [round(float(x), 2) for x in alt], "bkm": [round(float(x) / 1000, 2) for x in bd]}
             n += 1
-        except Exception as e:
-            log.warning("horizon %s failed: %s", s["id"], e)
-    json.dump(res, open(cache, "w"))
-    # Feed: compact horizons (1 deg) for the app
-    write_json("horizons.json", {k: {"elev": v["elev"], "alt": [round(max(v["alt"][2 * i], v["alt"][2 * i + 1]), 1) for i in range(360)]} for k, v in res.items()})
-    return f"{len(res)} spots ({n} recomputed); bare-earth 3DEP, trees not modeled"
+            if n % 20 == 0:
+                json.dump(old, open(store, "w"), separators=(",", ":"))
+            if time.time() - t0 > budget_min * 60:
+                log.warning("terrain: time budget reached after %d spots; continuing next run", n)
+                break
+    json.dump(old, open(store, "w"), separators=(",", ":"))
+    write_json("horizons.json", {k: {"elev": v["elev"], "alt": [round(max(v["alt"][2 * i], v["alt"][2 * i + 1]), 1) for i in range(360)]} for k, v in old.items()})
+    left = len(todo) - n
+    return f"{len(old)} spots done ({n} new this run, {max(0, left)} still to do); bare-earth 3DEP, trees not modeled"
+
+
+def _safe(fn, item):
+    try:
+        return fn(item)
+    except Exception as e:
+        log.warning("horizon %s failed: %s", item[0]["id"], e)
+        return item, None
 
 
 def load():
-    p = CACHE / "horizons.json"
+    from .common import DATA
+    p = DATA / "horizons.json"
     return json.load(open(p)) if p.exists() else {}
 
 

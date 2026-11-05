@@ -15,7 +15,7 @@ def job_conditions():
 
 def job_daily():
     from . import terrain, light, obs, sentinel, access, wildlife
-    run_module("terrain", terrain.run, "MODELED", "USGS 3DEP horizons")
+    run_module("terrain", lambda: terrain.run(budget_min=25), "MODELED", "USGS 3DEP horizons")
     run_module("light", light.daily, "MODELED", "terrain-aware sun/moon/Milky Way, 14 days")
     run_module("sounding", obs.sounding, "MEASURED", "Salem radiosonde")
     run_module("flow", obs.flow, "MEASURED", "USGS discharge vs daily percentiles")
