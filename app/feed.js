@@ -22,6 +22,7 @@ const ST = n => (FEED.m && FEED.m.status && FEED.m.status[n]) || null;
 const KIND_TAG = { MEASURED: "measured", MODELED: "modeled", ESTIMATED: "estimate" };
 function tag(src) { const s = ST(src); return s ? `<span class="prov p-${(s.kind || "").toLowerCase()}" title="${esc(s.note || "")}">${KIND_TAG[s.kind] || s.kind}</span>` : ""; }
 const minToDate = m => new Date(m * 60000);
+const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] || "th");
 
 /* ---------- lookups ---------- */
 function hrrrRow(id, t) {
@@ -125,9 +126,9 @@ async function sheetFeed(s) {
   const g = fd("goes"), gv = g && g.spots[s.id];
   if (gv) h += `<p><b>Right now from GOES-18</b> ${tag("goes")}: ${gv[0]}% cloud, ${gv[1]}% low cloud/fog${gv[2] ? `, tops ~${gv[2]} m` : ""} <span class="muted">(${fmtT(new Date(g.obs))})</span></p>`;
   const fl = fd("flow"), gid = (D.GAUGES || {})[s.id], fv = fl && gid && fl.gauges[gid];
-  if (fv && fv.pct != null) h += `<p><b>River</b> ${tag("flow")}: ${fv.cfs ? Math.round(fv.cfs).toLocaleString() + " cfs, " : ""}${fv.pct}${typeof fv.pct === "number" ? "th" : ""} percentile for this date${fv.median_today ? ` (median ${Math.round(fv.median_today).toLocaleString()} cfs)` : ""}.</p>`;
+  if (fv && fv.pct != null) h += `<p><b>River</b> ${tag("flow")}: ${fv.cfs ? Math.round(fv.cfs).toLocaleString() + " cfs, " : ""}${typeof fv.pct === "number" ? ordinal(fv.pct) : fv.pct} percentile for this date${fv.median_today ? ` (median ${Math.round(fv.median_today).toLocaleString()} cfs)` : ""}.</p>`;
   const se = fd("sentinel"), sv = se && se.spots[s.id];
-  if (sv) h += `<p><b>Satellite (${sv.date})</b> ${tag("sentinel")}: ${sv.stage ? `foliage ${sv.stage}` : ""}${sv.snow >= 10 ? `${sv.stage ? "; " : ""}${sv.snow}% snow cover` : ""}.</p>`;
+  if (sv && (sv.stage || sv.snow >= 10)) h += `<p><b>Satellite (${sv.date})</b> ${tag("sentinel")}: ${sv.stage ? `foliage ${sv.stage}` : ""}${sv.snow >= 10 ? `${sv.stage ? "; " : ""}${sv.snow}% snow cover` : ""}.</p>`;
   // wildlife
   const wl = wildlifeFor(s.id);
   if (wl) { const ts = topSpecies(s.id, new Date(), 8); const wkind = wl.kind.startsWith("eBird") ? "eBird checklists within 2 km (effort-corrected)" : "share of GBIF/iNaturalist records (presence-only, not effort-corrected)";
@@ -150,7 +151,7 @@ async function sheetFeed(s) {
     ${ov.under.length || ov.quiet_months.length ? `<p><b>Under-photographed:</b> ${[ov.under.length ? ov.under.map(k => ({ blue: "blue hour", night: "night", golden: "golden hour" }[k])).join(", ") : "", ov.quiet_months.length ? "in-season months " + ov.quiet_months.map(m => "JFMAMJJASOND"[m - 1]).join(" ") : ""].filter(Boolean).join("; ")}.</p>` : ""}`;
   // access
   const ac = fd("access"), av = ac && ac.spots[s.id];
-  if (av) h += `<h3>Access ${tag("access")}</h3><p>${av.land && av.land.manager ? `${esc(av.land.unit || "")} (${esc(av.land.manager)})${av.land.access ? ", public access: " + esc(av.land.access) : ""}.` : av.land && !av.land.error ? "" : ""}${!av.land ? "<b>Not on mapped public land</b> (PAD-US): likely private or road right-of-way, so check before you park." : ""}</p>${av.alerts ? `<ul class="plain">${av.alerts.map(a => `<li><a href="${a.url}" target="_blank" rel="noopener">${esc(a.title)}</a></li>`).join("")}</ul>` : ""}`;
+  if (av) h += `<h3>Access ${tag("access")}</h3><p>${av.land && av.land.manager ? `${esc(av.land.unit || "")} (${esc(av.land.manager)})${av.land.access ? ", public access: " + esc(av.land.access) : ""}.` : av.land && !av.land.error ? "" : ""}${!av.land ? "<b>Not inside a mapped public-land boundary</b> (PAD-US, within 150 m). It may be a roadside pull-off or private land: check where to park." : ""}</p>${av.alerts ? `<ul class="plain">${av.alerts.map(a => `<li><a href="${a.url}" target="_blank" rel="noopener">${esc(a.title)}</a></li>`).join("")}</ul>` : ""}`;
   if (!h) return;
   const box = document.createElement("div"); box.className = "live feedbox"; box.innerHTML = h;
   const anchor = body.querySelector("details"); anchor ? body.insertBefore(box, anchor) : body.appendChild(box);

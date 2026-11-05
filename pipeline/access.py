@@ -15,7 +15,7 @@ STOP = set("the and of at on in a to from road rd trail falls park area state po
 
 
 def padus(lat, lon):
-    j = http(PADUS, params={"geometry": f"{lon},{lat}", "geometryType": "esriGeometryPoint", "inSR": 4326, "spatialRel": "esriSpatialRelIntersects",
+    j = http(PADUS, params={"geometry": f"{lon},{lat}", "geometryType": "esriGeometryPoint", "inSR": 4326, "spatialRel": "esriSpatialRelIntersects", "distance": 150, "units": "esriSRUnit_Meter",
                             "outFields": "*", "returnGeometry": "false", "f": "json"}).json()
     feats = j.get("features", [])
     if not feats:
