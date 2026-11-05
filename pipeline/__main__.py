@@ -73,6 +73,12 @@ if __name__ == "__main__":
             research.add(sys.argv[2])
             research.export()
             sys.exit(0)
+        elif j == "research_import":
+            import json as _j
+            from . import research
+            print(research.ingest(_j.load(open(sys.argv[2]))))
+            research.export()
+            sys.exit(0)
         elif j == "research_sync":
             from . import research
             run_module("research_sync", research.sync, "MEASURED", "requests and limits from the app")

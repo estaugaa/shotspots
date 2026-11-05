@@ -62,18 +62,27 @@ def sync():
             break
         subs += j
         page += 1
+    return ingest(subs)
+
+
+def ingest(subs):
+    """Store research requests and the newest limits from a list of Netlify form submissions
+    (from the API in sync(), or saved from the Netlify connector by the nightly task: research_import)."""
+    if isinstance(subs, dict):
+        subs = subs.get("submissions") or subs.get("data") or []
     req = load("requests.json", [])
     seen = {r["sub"] for r in req}
     newest_settings = None
     for s in sorted(subs, key=lambda x: x.get("created_at", "")):
         d = s.get("data", {})
-        if s.get("form_name") == "research" and s["id"] not in seen:
+        fname = s.get("form_name") or (s.get("form") or {}).get("name") if isinstance(s.get("form"), dict) else s.get("form_name")
+        if fname == "research" and s["id"] not in seen:
             try:
                 req.append({"sub": s["id"], "at": s.get("created_at"), "label": d.get("label") or "Requested place", "lat": float(d["lat"]), "lon": float(d["lon"]),
                             "radius_km": float(d.get("radius_km") or 25), "focus": d.get("focus") or "", "status": "queued"})
             except Exception as e:
                 log.warning("bad research request %s: %s", s["id"], e)
-        if s.get("form_name") == "research_settings":
+        if fname == "research_settings":
             newest_settings = d
     save("requests.json", req)
     if newest_settings:

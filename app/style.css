@@ -183,3 +183,6 @@ ul.plain li{margin:3px 0}
 .shot small{display:block}
 .stack label{display:block;margin:10px 0;font-size:15px;color:var(--muted)}
 .stack input,.stack select,.stack textarea{display:block;width:100%;margin-top:4px;font:inherit;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+
+.alertbox.research{border-left-color:var(--river)}
+.explore .btn{margin:6px 0}

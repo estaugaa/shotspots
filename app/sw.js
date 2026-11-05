@@ -1,5 +1,5 @@
-const V="ss2-v9";
-const SHELL=["./","index.html","style.css","app.js","live.js","sky.js","feed.js","shots.js","astro.js","data.js","manifest.webmanifest","icon-180.png","icon-192.png",
+const V="ss2-v10";
+const SHELL=["./","index.html","style.css","app.js","live.js","sky.js","feed.js","shots.js","research.js","astro.js","data.js","manifest.webmanifest","icon-180.png","icon-192.png",
 "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js","https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>Promise.all(SHELL.map(u=>c.add(u).catch(()=>{})))).then(()=>self.skipWaiting()));});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V&&k!=="ss2-tiles"&&k!=="ss2-feed").map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});

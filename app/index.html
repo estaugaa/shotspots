@@ -70,6 +70,9 @@
   <input name="species"><input name="ebird"><input name="sqm"><textarea name="notes"></textarea><textarea name="pred"></textarea>
 </form>
 
+<form name="research" data-netlify="true" hidden><input name="label"><input name="lat"><input name="lon"><input name="radius_km"><input name="focus"></form>
+<form name="research_settings" data-netlify="true" hidden><input name="enabled"><input name="regions_per_night"><input name="max_new_spots_per_night"><input name="max_web_searches_per_night"><input name="max_minutes_per_night"><input name="auto_expand"><input name="max_km_from_home"></form>
+
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script src="astro.js"></script>
@@ -80,5 +83,6 @@
 <script src="sky.js" defer></script>
 <script src="feed.js" defer></script>
 <script src="shots.js" defer></script>
+<script src="research.js" defer></script>
 </body>
 </html>

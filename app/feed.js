@@ -2,7 +2,7 @@
    Every number shown from the feed carries its provenance (MEASURED / MODELED / ESTIMATED). */
 "use strict";
 const FEED = { m: null, d: {}, loading: {} };
-const EAGER = ["goes", "hrrr", "light", "climo", "flow", "sounding", "sentinel", "darksky", "access", "calibration", "phenology"];
+const EAGER = ["spots_extra", "research_status", "goes", "hrrr", "light", "climo", "flow", "sounding", "sentinel", "darksky", "access", "calibration", "phenology"];
 const LAZY = ["planner", "wildlife", "originality", "report", "verify_positions", "solves", "outcomes_public"];
 async function feedGet(name) {
   if (FEED.d[name]) return FEED.d[name];
@@ -42,7 +42,7 @@ function soundingTop() { const s = fd("sounding"); const o = s && s.obs && s.obs
 const __climoSt = {};
 function climoFor(s, t) {
   const c = fd("climo"); if (!c) return null; let best = __climoSt[s.id], bd = 1e9;
-  if (!best) { for (const [k, v] of Object.entries(c.stations)) { const d = km(s, v); if (d < bd) { bd = d; best = [k, v]; } } __climoSt[s.id] = best; }
+  if (best === undefined) { for (const [k, v] of Object.entries(c.stations)) { const d = km(s, v); if (d < bd) { bd = d; best = [k, v]; } } if (bd > 80) best = null; __climoSt[s.id] = best; }
   if (!best) return null; const mo = +laYMD(t).slice(5, 7) - 1, hr = +t.toLocaleString("en-US", { timeZone: TZ, hour: "numeric", hourCycle: "h23" });
   const v = best[1]; return { station: best[0], fog: v.fog[mo][hr], clear: v.clear12k[mo][hr], lowovc: v.lowovc[mo][hr] };
 }
