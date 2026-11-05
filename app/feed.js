@@ -79,7 +79,9 @@ fitFor = function (s, w) {
   const se = fd("sentinel"), sv = se && se.spots[s.id];
   if (sv && sv.stage && s.cats.includes("fallcolor") && !NIGHT.includes(w.kind)) { const adj = { "near peak": 10, turning: 4, green: -8, "past (leaves dropping)": -12 }[sv.stage] || 0; n += adj; why.push(`satellite: ${sv.stage} (${sv.date.slice(5)})`); }
   // wildlife encounter rates
-  if (LIFE.some(c => s.cats.includes(c))) { const ts = topSpecies(s.id, w.peak, 3); if (ts.length) { const p = ts[0].p; n += Math.min(10, (p - 30) / 6); why.push(`${ts[0].sp} ${p}%${wildlifeFor(s.id).kind.startsWith("eBird") ? " of checklists" : " of records"} this week`); } }
+  if (LIFE.some(c => s.cats.includes(c))) { const W = wildlifeFor(s.id), ts = topSpecies(s.id, w.peak, 3);
+    if (ts.length && W.kind.startsWith("eBird")) { const p = ts[0].p; n += Math.min(10, (p - 30) / 6); why.push(`${ts[0].sp} on ${p}% of checklists this week`); }
+    else if (ts.length) why.push(`${ts[0].sp}: ${ts[0].p}% of records here this week`); }
   // access
   const ac = fd("access"), av = ac && ac.spots[s.id]; if (av && av.alerts && av.alerts.length) why.push("forest alert: check access");
   return { ...f, n: Math.round(clamp(n, 0, 100)), why };

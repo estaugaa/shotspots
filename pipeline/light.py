@@ -181,7 +181,19 @@ def plan_year(days=365):
                 continue
             seen.add(k)
             keep.append(e)
-        if keep:
-            events[s["id"]] = keep[:200]
+        # sun and moon: every event; sky objects: the best one per landmark per month (they repeat nightly)
+        best = {}
+        final = []
+        for e in keep:
+            if e["obj"] in ("sun", "moon"):
+                final.append(e)
+                continue
+            k = (e["obj"], e["lm"], e["t"] // (60 * 24 * 30))
+            if k not in best or abs(e["daz"]) < abs(best[k]["daz"]):
+                best[k] = e
+        final += best.values()
+        final.sort(key=lambda e: e["t"])
+        if final:
+            events[s["id"]] = final[:150]
     write_json("planner.json", {"gen": iso(now), "events": events})
     return f"{sum(len(v) for v in events.values())} alignments at {len(events)} spots over {days} days"

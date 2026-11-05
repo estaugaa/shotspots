@@ -59,40 +59,57 @@ def hour_of(ed):
     return h
 
 
+_names = {}
+
+
+def _name(key):
+    if key not in _names:
+        try:
+            j = http(f"https://api.gbif.org/v1/species/{key}").json()
+            v = http(f"https://api.gbif.org/v1/species/{key}/vernacularNames", params={"limit": 50}).json().get("results", [])
+            en = next((x["vernacularName"] for x in v if x.get("language") == "eng"), None)
+            _names[key] = (en or j.get("canonicalName") or str(key)).title() if en else (j.get("canonicalName") or str(key))
+        except Exception:
+            _names[key] = str(key)
+    return _names[key]
+
+
 def gbif_profiles():
+    """Monthly species shares from GBIF facets (no record cap, every year 10 years back), interpolated to weeks."""
     out = {}
+    y1 = utcnow().year
     for s in spots():
         if not (set(s["cats"]) & LIFE):
             continue
+        d = 0.0135
+        dl = d / math.cos(math.radians(s["lat"]))
+        base = {"decimalLatitude": f'{s["lat"]-d},{s["lat"]+d}', "decimalLongitude": f'{s["lon"]-dl},{s["lon"]+dl}', "year": f"{y1-10},{y1}",
+                "classKey": [212, 359], "occurrenceStatus": "PRESENT", "hasCoordinate": "true", "limit": 0}
         try:
-            recs = gbif_spot(s)
+            tot = np.zeros(12)
+            cnt = {}
+            for m in range(1, 13):
+                j = http(GBIF, params={**base, "month": m, "facet": "speciesKey", "facetLimit": 40}).json()
+                tot[m - 1] = j.get("count", 0)
+                for f in (j.get("facets") or [{}])[0].get("counts", []):
+                    cnt.setdefault(int(f["name"]), np.zeros(12))[m - 1] = f["count"]
         except Exception as e:
             log.warning("gbif %s: %s", s["id"], e)
             continue
-        if len(recs) < 30:
+        if tot.sum() < 50:
             continue
-        tot = np.zeros(52)
-        by = {}
-        hrs = {}
-        for sp, ed in recs:
-            w = week_of(ed)
-            if w is None:
-                continue
-            tot[w] += 1
-            by.setdefault(sp, np.zeros(52))[w] += 1
-            h = hour_of(ed)
-            if h is not None:
-                hrs.setdefault(sp, np.zeros(8))[h // 3] += 1
-        top = sorted(by, key=lambda k: -by[k].sum())[:30]
-        sm = lambda a: np.convolve(np.r_[a[-2:], a, a[:2]], np.ones(5) / 5, "valid")
-        tots = sm(tot)
+        top = sorted(cnt, key=lambda k: -cnt[k].sum())[:30]
+        wk_mid = (np.arange(52) + 0.5) * 7 / 30.44  # week centre in months (0-12)
         rows = []
-        for sp in top:
+        for k in top:
             with np.errstate(invalid="ignore", divide="ignore"):
-                share = np.where(tots > 0, sm(by[sp]) / tots, 0)
-            rows.append({"sp": sp, "n": int(by[sp].sum()), "wk": [int(round(x * 100)) for x in share],
-                         "hr": hrs[sp].astype(int).tolist() if sp in hrs and hrs[sp].sum() >= 10 else None})
-        out[s["id"]] = {"n": len(recs), "kind": "presence-only share of records (GBIF: eBird EOD + iNaturalist)", "species": rows}
+                share = np.where(tot > 0, cnt[k] / tot, 0)
+            ext = np.r_[share[-1], share, share[0]]
+            xs = np.arange(-0.5, 12.5, 1.0)
+            wk = np.interp(wk_mid, xs, ext)
+            peak = float(share.max()) or 1
+            rows.append({"sp": _name(k), "n": int(cnt[k].sum()), "wk": [int(round(x * 100)) for x in wk], "rel": [round(float(x) / peak, 2) for x in wk], "hr": None})
+        out[s["id"]] = {"n": int(tot.sum()), "kind": "presence-only share of records (GBIF: eBird EOD + iNaturalist)", "species": rows}
     return out
 
 
