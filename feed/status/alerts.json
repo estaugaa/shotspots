@@ -1,1 +1,1 @@
-{"ok":false,"kind":"MODELED","note":"ModuleNotFoundError: No module named 'cryptography'","at":"2026-11-05T22:12:08Z","secs":0.9}
+{"ok":true,"kind":"MODELED","note":"3 alerts (19 candidates); 1 devices, 2 new alerts, 3 pushes sent, 0 failed","at":"2026-11-05T22:16:29Z","secs":1.9}
