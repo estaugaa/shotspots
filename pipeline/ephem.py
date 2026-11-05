@@ -30,10 +30,19 @@ def load():
     return _ts, _eph
 
 
-def times_utc(t0_unix, t1_unix, step_s):
+def ts_unix(u):
+    """Skyfield Time from Unix seconds. Unix time has no leap seconds, so split into whole days + seconds of day
+    (ts.utc(1970,1,1,0,0,u) would silently add the 27 leap seconds since 1970: a 6.7 arcminute error that
+    verify.py caught against JPL Horizons)."""
     ts, _ = load()
+    u = np.asarray(u, dtype=np.float64)
+    days = np.floor(u / 86400.0)
+    return ts.utc(1970, 1, 1 + days, 0, 0, u - days * 86400.0)
+
+
+def times_utc(t0_unix, t1_unix, step_s):
     u = np.arange(t0_unix, t1_unix, step_s, dtype=np.float64)
-    return u, ts.utc(1970, 1, 1, 0, 0, u)
+    return u, ts_unix(u)
 
 
 def radec(body, t):

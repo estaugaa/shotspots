@@ -66,7 +66,7 @@ def positions():
         times = [x[0] for x in hz]
         u = np.array([t.timestamp() for t in times])
         ts, _ = ephem.load()
-        tt = ts.utc(1970, 1, 1, 0, 0, u)
+        tt = ephem.ts_unix(u)
         ra, dec, dist = ephem.radec(b, tt)
         alt, az = ephem.altaz(ra, dec, ephem.gast_deg(tt), HOME[0], HOME[1], dist if b == "moon" else None)
         e_pipe = [sep(h[1], h[2], float(z), float(a)) for h, a, z in zip(hz, alt, az)]
@@ -356,7 +356,7 @@ def astrometry():
             if spot and meta.get("t"):
                 tt_unix = dt.datetime.fromisoformat(meta["t"]).timestamp()
                 ts, _ = ephem.load()
-                tt = ts.utc(1970, 1, 1, 0, 0, np.array([tt_unix]))
+                tt = ephem.ts_unix(np.array([tt_unix]))
                 # frame centre RA/Dec (J2000) -> alt/az at the spot (precession ignored: <0.4 deg; fine for a pointing check)
                 alt, az = ephem.altaz(np.array([cal["ra"]]), np.array([cal["dec"]]), ephem.gast_deg(tt), spot["lat"], spot["lon"])
                 row.update({"spot": spot["id"], "center_alt": r(float(alt[0]), 2), "center_az": r(float(az[0]), 2)})

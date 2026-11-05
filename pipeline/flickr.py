@@ -68,7 +68,7 @@ def run():
                 continue
             t_local.append(t); lat.append(float(p["latitude"])); lon.append(float(p["longitude"]))
         u = np.array([t.timestamp() for t in t_local])
-        tt = ts.utc(1970, 1, 1, 0, 0, u)
+        tt = ephem.ts_unix(u)
         ra, dec, _ = ephem.radec("sun", tt)
         alt, _ = ephem.altaz(ra, dec, ephem.gast_deg(tt), s["lat"], s["lon"])
         kinds = [window_kind(a) for a in alt]
