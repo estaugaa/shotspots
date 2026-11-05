@@ -63,12 +63,12 @@ _names = {}
 
 
 def _name(key):
+    """English name: GBIF's preferred vernacular name for the species, else the scientific name."""
     if key not in _names:
         try:
             j = http(f"https://api.gbif.org/v1/species/{key}").json()
-            v = http(f"https://api.gbif.org/v1/species/{key}/vernacularNames", params={"limit": 50}).json().get("results", [])
-            en = next((x["vernacularName"] for x in v if x.get("language") == "eng"), None)
-            _names[key] = (en or j.get("canonicalName") or str(key)).title() if en else (j.get("canonicalName") or str(key))
+            v = j.get("vernacularName")
+            _names[key] = v if v else (j.get("canonicalName") or str(key))
         except Exception:
             _names[key] = str(key)
     return _names[key]
