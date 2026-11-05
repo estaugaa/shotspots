@@ -113,5 +113,85 @@
   "confidence": "high",
   "researched": "2026-11-05",
   "reviewed": false
+ },
+ {
+  "id": "r-edgefield-historic-multnomah-county-poor-farm-tr",
+  "name": "Edgefield (historic Multnomah County Poor Farm), Troutdale",
+  "region": "Troutdale \u00b7 Edgefield",
+  "cats": [
+   "historic",
+   "garden",
+   "fallcolor"
+  ],
+  "lat": 45.53713,
+  "lon": -122.40685,
+  "months": [
+   4,
+   5,
+   6,
+   9,
+   10,
+   11
+  ],
+  "effort": "road",
+  "light": "both",
+  "tip": "The 1911 county poor farm, now on the National Register and restored by McMenamins since 1990. Its main lodge, outbuildings and grounds make an easy historic-architecture walk. The free, self-guided gardens include woodland, herb, kitchen, pond (big Gunnera leaves) and dry trough gardens, plus a pear orchard and Syrah vineyard rows that turn color in autumn. Golden-hour side light suits the brick and the vineyard rows; overcast days suit garden close-ups. A 1938 planting map of the farm hangs inside the main building.",
+  "lens": "16-50 for the lodge facade and vineyard rows; 27 for detail and garden frames; 70-300 to isolate rooflines, chimneys and orchard trees.",
+  "alert": "This is a working hotel, restaurant and concert venue: stay on public paths, expect crowds and closures on concert nights, and ask before any staged or commercial shoot.",
+  "sources": [
+   [
+    "Oregon Encyclopedia: Multnomah County Poor Farm (Edgefield)",
+    "https://oregonencyclopedia.org/articles/multnomah_county_poor_farm_edgefield_/"
+   ],
+   [
+    "Multnomah County: Sight #6 Edgefield",
+    "https://multco.us/info/sight-6-edgefield"
+   ],
+   [
+    "Portland Parks Foundation: Edgefield Gardens",
+    "https://www.portlandpf.org/edgefield-gardens"
+   ]
+  ],
+  "confidence": "high",
+  "researched": "2026-11-05",
+  "reviewed": false
+ },
+ {
+  "id": "r-salish-ponds-wetland-park-east-pond-silver-star-",
+  "name": "Salish Ponds Wetland Park (East Pond, Silver Star view)",
+  "region": "Fairview \u00b7 Fairview Creek",
+  "cats": [
+   "reflection",
+   "birds",
+   "wildlife"
+  ],
+  "lat": 45.53068,
+  "lon": -122.44478,
+  "months": [
+   1,
+   2,
+   3,
+   10,
+   11,
+   12
+  ],
+  "effort": "short",
+  "light": "sunset",
+  "tip": "Two restored gravel-pit ponds in Fairview. From the southwest side of East Pond, Silver Star Mountain sits to the northeast across the water, and calm evenings give a reflection with the summit catching late light. Winter is the season: the willow-lined shore looks its best, coots and mallards work the John Pettis Dock area, and beaver sign is common along the shore. In wet months, use the higher East Pond Trail, because the West Pond Trail often floods.",
+  "lens": "16-50 for the pond and mountain reflection; 70-300 for Silver Star compressed above the far shore and for waterfowl from the dock.",
+  "alert": "Park at Salish Ponds Elementary (the former Reynolds HS site) or in the 10 reserved spaces off Glisan. Dogs on leash; the restroom may be locked. Trail details come from an anecdotal hiker guide, so check conditions.",
+  "park": [
+   45.529834,
+   -122.452735
+  ],
+  "sources": [
+   [
+    "Oregon Hikers Field Guide: Salish Ponds Hike",
+    "https://www.oregonhikers.org/field_guide/Salish_Ponds_Hike"
+   ]
+  ],
+  "confidence": "high",
+  "researched": "2026-11-05",
+  "reviewed": false
  }
 ]

@@ -1,0 +1,39 @@
+[
+ {
+  "id": "r-government-island-state-recreation-area-boat-in",
+  "name": "Government Island State Recreation Area (boat-in)",
+  "region": "Columbia River \u00b7 Government Island",
+  "cats": [
+   "birds",
+   "wildlife",
+   "mountain"
+  ],
+  "lat": 45.58239,
+  "lon": -122.5292,
+  "months": [
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "effort": "hike",
+  "light": "both",
+  "tip": "A boat-only chain of Columbia River islands, with about 15 miles of shoreline, Mt. Hood views, and wildlife including threatened Columbia white-tailed deer, wading birds, bald eagles and buffleheads. Land at Government Island Landing (west) or Bartlett Landing (east), or the north-side floating tie-up, and walk the shoreline trails on the north sides of Lemon and Government Islands. The beaches give low, clean foregrounds for Hood at sunrise and for the river at sunset. Camping below the vegetation line lets you stay for both light windows.",
+  "lens": "70-300 for deer and eagles from the beach edge; 16-50 for beach-and-Hood frames; 27 for camp scenes at dusk.",
+  "alert": "Boat or paddle only; the nearest Metro ramp is M. James Gleason (by Broughton Beach). The interior is closed without a Port of Portland permit. No potable water, only pit toilets, fire restrictions apply, and secure your valuables. Big-river wind and boat wakes are a real hazard for paddlers.",
+  "sources": [
+   [
+    "Travel Oregon: Government Island State Recreation Area",
+    "https://traveloregon.com/things-to-do/destinations/parks-forests-wildlife-areas/government-island-state-recreation-area"
+   ],
+   [
+    "Islands.com: Columbia River island with paddle-in beach camping",
+    "https://www.islands.com/2199169/just-minutes-from-portland-columbia-river-scenic-island-paddle-beach-camping-postcard-mountain-views/"
+   ]
+  ],
+  "confidence": "medium",
+  "researched": "2026-11-05",
+  "reviewed": false
+ }
+]

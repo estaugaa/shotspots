@@ -6,6 +6,10 @@
     {
      "date": "2026-11-05",
      "added": 3
+    },
+    {
+     "date": "2026-11-05",
+     "added": 2
     }
    ]
   },
@@ -23,7 +27,12 @@
   },
   "45.50_-122.75": {
    "status": "open",
-   "runs": []
+   "runs": [
+    {
+     "date": "2026-11-05",
+     "added": 1
+    }
+   ]
   },
   "45.50_-123.00": {
    "status": "open",
@@ -234,6 +243,19 @@
    ],
    "rejected": [],
    "notes": "Frontier cell around Camas/Washougal is heavily covered on the WA side, so tonight focused on the Oregon side (Fairview, Troutdale, Gresham) inside the 18 km radius. Considered but skipped: Dabney SRA (thin photo info, Oxbow already covers Sandy River salmon), Salish Ponds (minor; Silver Star view noted for a future pass), Edgefield. Netlify forms had no submissions."
+  },
+  {
+   "at": "2026-11-05T14:53:50Z",
+   "target": "45.50_-122.50",
+   "searches": 7,
+   "minutes": 6,
+   "added": [
+    "r-edgefield-historic-multnomah-county-poor-farm-tr",
+    "r-salish-ponds-wetland-park-east-pond-silver-star-",
+    "r-government-island-state-recreation-area-boat-in"
+   ],
+   "rejected": [],
+   "notes": "Supervised test run, limited to 4 spots and 15 searches. Second pass on the same frontier cell, Oregon side. Salish Ponds facts and pin come from pages read earlier tonight (Oregon Hikers field guide, TomTom). Skipped Dabney SRA again: not enough photo-specific information."
   }
  ]
 }
