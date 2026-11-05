@@ -18,5 +18,7 @@
  "quiet_end": 6,
  "max_per_day": 3,
  "max_km": 150,
- "max_km_dark": 300
+ "max_km_dark": 300,
+ "aurora_kp": 6,
+ "aurora_overrides_quiet": true
 }
