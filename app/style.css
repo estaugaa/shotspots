@@ -194,3 +194,4 @@ ul.plain li{margin:3px 0}
 .nearmiss .pct{color:var(--muted)}
 #alertBtn svg{display:block}
 .alertrow.r-aurora .pct{color:var(--moss)}
+.votes{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 4px}

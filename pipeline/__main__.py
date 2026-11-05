@@ -13,11 +13,17 @@ def job_conditions():
     from . import hrrr
     run_module("hrrr", hrrr.run, "MODELED", "HRRR neighbourhood + time-lagged probabilities")
     job_alerts()
+    job_weekend()
 
 
 def job_alerts():
     from . import alerts
     run_module("alerts", alerts.run, "MODELED", "fog / colour / alignment / dark-sky / smoke alerts from HRRR, planner and climatology")
+
+
+def job_weekend():
+    from . import weekend
+    run_module("weekend", weekend.run, "MODELED", "weekend plan: alert rules over 4 days (HRRR, then Open-Meteo), wildlife peaks, satellite colour")
 
 
 def job_daily():
@@ -44,6 +50,11 @@ def job_weekly():
     run_module("originality", flickr.run, "MEASURED", "Flickr geotagged photos")
 
 
+def job_trails():
+    from . import trails
+    run_module("trails", lambda: trails.run(budget_min=40), "MEASURED", "OpenStreetMap walking route from parking + DEM climb")
+
+
 def job_monthly():
     from . import verify
     run_module("verify_positions", verify.positions, "MEASURED", "JPL Horizons + USNO")
@@ -67,7 +78,7 @@ def manifest():
 
 
 JOBS = {"goes": job_goes, "conditions": job_conditions, "daily": job_daily, "weekly": job_weekly, "monthly": job_monthly,
-        "outcomes": job_outcomes, "alerts": job_alerts, "astrometry": job_astrometry}
+        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry}
 
 if __name__ == "__main__":
     for j in sys.argv[1:]:

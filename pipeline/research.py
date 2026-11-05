@@ -84,6 +84,13 @@ def ingest(subs):
                 log.warning("bad research request %s: %s", s["id"], e)
         if fname == "research_settings":
             newest_settings = d
+        if fname == "spot_feedback" and d.get("id"):
+            fb = load("feedback.json", {})
+            fb[d["id"]] = {"vote": d.get("vote"), "at": s.get("created_at"), "name": d.get("name", ""), "cats": [c for c in str(d.get("cats", "")).split(",") if c],
+                           "note": (d.get("note") or "")[:300]}
+            if d.get("vote") == "clear":
+                fb.pop(d["id"], None)
+            save("feedback.json", fb)
     save("requests.json", req)
     if newest_settings:
         out = {}
@@ -155,7 +162,25 @@ def plan():
             la, lo = cell_center(c)
             targets.append({"kind": "frontier", "cell": c, "label": f"Area around {la:.2f}, {lo:.2f}", "lat": la, "lon": lo, "radius_km": 18,
                             "runs_so_far": len(cells.get(c, {}).get("runs", [])), "known_spots": _nearby(la, lo, 20)})
-    print(json.dumps({"settings": cfg, "targets": targets, "schema": SCHEMA_DOC}, indent=1))
+    print(json.dumps({"settings": cfg, "targets": targets, "taste": taste(), "schema": SCHEMA_DOC}, indent=1))
+
+
+def taste():
+    """What Eric has liked and disliked, from the thumbs on spot pages. Steers what research looks for."""
+    fb = load("feedback.json", {})
+    up = [v | {"id": k} for k, v in fb.items() if v.get("vote") == "up"]
+    down = [v | {"id": k} for k, v in fb.items() if v.get("vote") == "down"]
+    cats = {}
+    for v in up:
+        for c in v["cats"]:
+            cats[c] = cats.get(c, 0) + 1
+    for v in down:
+        for c in v["cats"]:
+            cats[c] = cats.get(c, 0) - 1
+    return {"liked": [{"name": v["name"], "cats": v["cats"], "note": v["note"]} for v in up][-25:],
+            "disliked": [{"name": v["name"], "cats": v["cats"], "note": v["note"]} for v in down][-25:],
+            "category_score": dict(sorted(cats.items(), key=lambda x: -x[1])),
+            "how_to_use": "Look harder for spots like the liked ones and their categories; skip spots like the disliked ones unless they're exceptional. Notes say why."}
 
 
 SCHEMA_DOC = {

@@ -25,6 +25,23 @@ openSpot = function (id) {
     <div class="chips" style="margin-top:6px">${rev ? "" : `<button class="chip" data-review="${s.id}">Looks right</button>`}<button class="chip" data-hide="${s.id}">Hide this spot</button></div></div>`);
 };
 
+/* ---------- your take: thumbs on every spot (steers nightly research and alerts) ---------- */
+let VOTES = store.get("votes", {});
+function voteHtml(id) { const v = VOTES[id];
+  return `<div class="votes" data-voteid="${id}"><span class="muted" style="font-size:14px">Your take:</span>
+    <button class="chip" data-vote="up" aria-pressed="${v === "up"}">More like this</button><button class="chip" data-vote="down" aria-pressed="${v === "down"}">Not for me</button></div>`; }
+const _openV = openSpot;
+openSpot = function (id) { _openV(id); const b = $("#sheetBody"); if (!b || b.querySelector(".votes")) return; const anchor = b.querySelector(".alertbox.research") || b.querySelector(".sub"); anchor?.insertAdjacentHTML("afterend", voteHtml(id)); };
+document.addEventListener("click", async e => {
+  const t = e.target.closest("[data-vote]"); if (!t) return; const id = t.closest("[data-voteid]").dataset.voteid, s = byId[id]; if (!s) return;
+  const vote = VOTES[id] === t.dataset.vote ? "clear" : t.dataset.vote; let note = "";
+  if (vote !== "clear") note = prompt(vote === "up" ? "What do you like about it? (optional, helps research find more like it)" : "What's not right about it? (optional)") || "";
+  if (vote === "clear") delete VOTES[id]; else VOTES[id] = vote; store.set("votes", VOTES);
+  t.parentElement.outerHTML = voteHtml(id);
+  const ok = await postForm("spot_feedback", { id, vote, name: s.name, cats: (s.cats || []).join(","), note });
+  toast(vote === "clear" ? "Cleared" : ok ? (vote === "up" ? "Noted: research will look for more like this" : "Noted: research will skip spots like this, and alerts won't suggest it") : "Saved here; couldn't reach the server");
+});
+
 /* ---------- Spots tab: explore section ---------- */
 function researchHtml() {
   const st = fd("research_status"); const cfg = st ? st.settings : null;

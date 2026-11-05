@@ -1,7 +1,7 @@
 /* Alerts: heads-up card on Now, an alerts sheet (bell), Web Push sign-up, alert settings, and smoke-aware scoring. */
 "use strict";
 const VAPID_PUBLIC = "BOt5ek966SAcZdZOxtvjB5B_x1W_i22n-mRrep97SA5N_3nNNJH3hi74XfqzVpbpuDKpZ_UCl8yiGnDc9IzZzmQ";
-const RULE_NAMES = { fog_above: "Sea of fog from high viewpoints", color: "Colourful sunrise or sunset", alignment: "Sun or moon behind a landmark", dark: "Clear, dark night", aurora: "Aurora (northern lights)", smoke: "Heavy smoke" };
+const RULE_NAMES = { fog_above: "Sea of fog from high viewpoints", color: "Colourful sunrise or sunset", alignment: "Sun or moon behind a landmark", dark: "Clear, dark night", aurora: "Aurora (northern lights)", weekend: "Weekend plan (Friday afternoon)", smoke: "Heavy smoke" };
 const IS_IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 const STANDALONE = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
 const PUSH_OK = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
@@ -69,7 +69,7 @@ async function openAlerts() {
   else if (ps.denied) notif = `<p>Notifications are blocked for ShotSpots. Turn them on in your device's settings for this app, then come back here.</p>`;
   else notif = ps.on ? `<p>Notifications are <b>on</b> for this device.</p><div class="chips"><button class="chip" id="pushOff">Turn off on this device</button></div>`
     : `<p>Get a notification when a shot lines up, usually the evening before.</p><button class="btn primary wide" id="pushOn">Turn on notifications</button>`;
-  const rules = st.rules || Object.keys(RULE_NAMES), push = st.push_rules || ["fog_above", "color", "alignment", "dark"];
+  const rules = st.rules || Object.keys(RULE_NAMES), push = st.push_rules || ["fog_above", "color", "alignment", "dark", "aurora", "weekend"];
   el.querySelector(".sheetbody").innerHTML = `
     <div class="sect">${u.length ? u.map(alertRow).join("") : `<p class="muted">Nothing lined up in the next three days at ${st.min_prob || 60}% or better. ${nm.length ? "Closest calls are below." : ""}</p>`}</div>
     ${nm.length ? `<h3 style="margin-top:22px">Close calls (under your ${st.min_prob || 60}% bar)</h3><div class="sect nearmiss">${nm.slice(0, 4).map(alertRow).join("")}</div>` : ""}
@@ -115,7 +115,7 @@ document.addEventListener("click", e => {
 document.addEventListener("submit", async e => {
   if (e.target.id !== "alForm") return; e.preventDefault(); const f = new FormData(e.target);
   const push = Object.keys(RULE_NAMES).filter(k => f.get("push_" + k));
-  const rules = [...new Set([...(e.target.closest(".sheetbody")._rules || Object.keys(RULE_NAMES)), ...push])];
+  const rules = [...new Set([...(e.target.closest(".sheetbody")._rules || Object.keys(RULE_NAMES)), ...push])].filter(k => k !== "weekend");
   const ok = await postForm("alert_settings", { enabled: "true", min_prob: f.get("min_prob"), max_per_day: f.get("max_per_day"), max_km: f.get("max_km"), max_km_dark: f.get("max_km_dark"), aurora_kp: f.get("aurora_kp"), quiet_start: f.get("quiet_start"), quiet_end: f.get("quiet_end"), rules: rules.join(","), push_rules: push.join(",") });
   $("#alSheet").hidden = true; toast(ok ? "Saved. Applies from the next forecast check." : "Couldn't send. Try again when online.");
 });
@@ -127,3 +127,16 @@ document.addEventListener("submit", async e => {
   (async () => { for (let i = 0; i < 60 && !FEED.m; i++) await new Promise(r => setTimeout(r, 250)); await feedGet("alerts"); if (UI.view === "now") renderNow(); go(); })();
   if (navigator.serviceWorker) navigator.serviceWorker.addEventListener("message", ev => { if (ev.data && ev.data.open === "alerts") openAlerts(); });
 })();
+
+/* ---------- weekend plan (Thu-Sun) ---------- */
+function weekendHtml() {
+  const w = fd("weekend"); if (!w || !w.picks || !w.picks.length) return ""; const end = new Date(w.sun + "T23:59:00"); if (end < new Date()) return "";
+  const d = x => new Date(x + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return `<div class="sect weekend"><h3>This weekend <span class="muted" style="font-size:15px;font-weight:400">${d(w.sat)}–${d(w.sun)}</span></h3>
+    ${w.picks.map(p => { const sp = (p.spots || [])[0];
+      return `<button class="lrow alertrow r-${p.rule}" ${sp && byId[sp] ? `data-spot="${sp}"` : ""}><span><b>${esc(p.title)}</b><small>${esc(p.body)}${p.lens ? `<br><i>Lens:</i> ${esc(p.lens)}` : ""}</small></span><span class="pct">${p.p != null ? p.p + "%" : ""}</span></button>`; }).join("")}
+    <p class="muted" style="font-size:13px">${esc(w.note || "")}</p></div>`;
+}
+const _renderNowWk = renderNow;
+renderNow = function () { _renderNowWk(); const v = $("#v-now"); const h = weekendHtml(); if (!v || !h) return; const hu = v.querySelector(".headsup"); (hu || v).insertAdjacentHTML(hu ? "afterend" : "afterbegin", h); };
+(async () => { for (let i = 0; i < 60 && !FEED.m; i++) await new Promise(r => setTimeout(r, 250)); if (FEED.m && FEED.m.files.includes("weekend.json")) { await feedGet("weekend"); if (UI.view === "now") renderNow(); } })();

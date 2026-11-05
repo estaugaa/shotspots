@@ -18,12 +18,13 @@ from .common import spots, write_json, read_json, FEED, DATA, http, secret, log,
 LA = ZoneInfo("America/Los_Angeles")
 ADIR = DATA / "alerts"
 DEFAULTS = {"enabled": True, "min_prob": 60, "rules": ["fog_above", "color", "alignment", "dark", "aurora", "smoke"],
-            "push_rules": ["fog_above", "color", "alignment", "dark", "aurora"], "quiet_start": 22, "quiet_end": 6, "max_per_day": 3, "max_km": 150, "max_km_dark": 300,
+            "push_rules": ["fog_above", "color", "alignment", "dark", "aurora", "weekend"], "quiet_start": 22, "quiet_end": 6, "max_per_day": 3, "max_km": 150, "max_km_dark": 300,
             "aurora_kp": 6, "aurora_overrides_quiet": True}
 SKY = {"vista", "mountain", "reflection", "coast", "city", "alignment", "geology", "historic"}
 FOG_ABOVE = ["cape-horn-lookout", "womens-forum", "vista-house", "jonsrud", "scout-cape-horn-uplands", "angels-rest", "larch-mtn",
              "scout-capehorn-foothill-sunset", "silver-star", "council-crest", "pittock", "scout-angels-hood", "scout-mt-norway-sunset"]
 VALLEY = ["steigerwald", "washougal-waterfront"]
+HZ = {"days": 3}                                  # how many days ahead the rules look (the weekend plan widens it)
 AOD_HAZE, AOD_SMOKY, AOD_HEAVY = 0.15, 0.4, 1.0   # smoke aerosol optical depth: light haze / smoky / heavy
 PM_HEAVY = 35.0                                   # near-surface smoke, ug/m3 (EPA "unhealthy for sensitive groups")
 
@@ -43,14 +44,20 @@ class Feed:
         self.dk = read_json(FEED / "darksky.json")
         self.cal = read_json(FEED / "calibration.json")
 
+    om = None   # optional Open-Meteo rows {sid: {tmin: row}} beyond the HRRR horizon (weekend plan)
+
     def hrrr(self, sid, tmin, tol=100):
         h = self.h
-        if not h or sid not in h["spots"]:
-            return None
-        i = min(range(len(h["t"])), key=lambda j: abs(h["t"][j] - tmin))
-        if abs(h["t"][i] - tmin) > tol:
-            return None
-        return dict(zip(h["cols"], h["spots"][sid][i]))
+        if h and sid in h["spots"]:
+            i = min(range(len(h["t"])), key=lambda j: abs(h["t"][j] - tmin))
+            if abs(h["t"][i] - tmin) <= tol:
+                return dict(zip(h["cols"], h["spots"][sid][i]))
+        if self.om and sid in self.om:
+            rows = self.om[sid]
+            k = min(rows, key=lambda t: abs(t - tmin)) if rows else None
+            if k is not None and abs(k - tmin) <= 40:
+                return rows[k]
+        return None
 
     def ray(self, sid, tmin, kind):
         """% of the path toward the rising/setting sun (25-300 km) free of a low deck; None if unknown."""
@@ -132,7 +139,7 @@ def rule_fog_above(F, S, now):
     ref = next((S[v] for v in VALLEY if v in S), None)
     if not ref:
         return out
-    for k in range(3):
+    for k in range(HZ["days"]):
         dy = (dt.datetime.now(LA) + dt.timedelta(days=k)).strftime("%Y-%m-%d")
         d = F.day(ref["id"], dy)
         if not d or not d.get("or") or d["or"] < now + 30:
@@ -162,7 +169,7 @@ def rule_fog_above(F, S, now):
 def rule_color(F, S, now):
     out = []
     sky = [s for s in S.values() if set(s["cats"]) & SKY and F.h and s["id"] in F.h["spots"]]
-    for k in range(3):
+    for k in range(HZ["days"]):
         dy = (dt.datetime.now(LA) + dt.timedelta(days=k)).strftime("%Y-%m-%d")
         for kind, fld in (("sunrise", "or"), ("sunset", "os")):
             cands = []
@@ -198,7 +205,7 @@ def rule_color(F, S, now):
 
 
 def rule_alignment(F, S, now):
-    out, horizon = [], now + 3 * 1440
+    out, horizon = [], now + HZ["days"] * 1440
     best = {}
     for sid, evs in F.P.items():
         s = S.get(sid)
@@ -221,7 +228,7 @@ def rule_alignment(F, S, now):
     for (obj, lm, dy), (pc, s, e, src) in best.items():
         p = round(pc)
         what = "Sun" if obj == "sun" else "Moon"
-        out.append({"rule": "alignment", "key": f"alignment:{obj}:{lm}:{dy}", "t": e["t"], "p": p, "spots": [s["id"]],
+        out.append({"rule": "alignment", "key": f"alignment:{obj}:{lm}:{dy}", "t": e["t"], "p": p, "spots": [s["id"]], "lm": lm,
                     "title": f"{what} behind {lm} {fmt(e['t'])}",
                     "body": f"From {s['name']}: the {what.lower()} lines up with {lm} at {fmt(e['t'], False)} for ~{e['dur']} min. Use ~{e['fl']} mm. {p}% chance of clear sky.",
                     "why": [f"{p}% clear-sky odds ({src})", f"{lm} is {e['dkm']:.0f} km away at azimuth {e['laz']:.0f}°"]})
@@ -234,7 +241,7 @@ def rule_dark(F, S, now):
     if not night or not F.h:
         return out
     ref = night[0]["id"]
-    for k in range(2):
+    for k in range(HZ["days"] - 1):
         dy = (dt.datetime.now(LA) + dt.timedelta(days=k)).strftime("%Y-%m-%d")
         nxt = (dt.datetime.now(LA) + dt.timedelta(days=k + 1)).strftime("%Y-%m-%d")
         d, d2 = F.day(ref, dy), F.day(ref, nxt)
@@ -424,7 +431,7 @@ def settings():
             st["enabled"] = str(d["enabled"]).lower() in ("1", "true", "on", "yes")
         for k in ("rules", "push_rules"):
             if k in d:
-                st[k] = [x for x in str(d[k]).split(",") if x in RULES]
+                st[k] = [x for x in str(d[k]).split(",") if x in RULES or x == "weekend"]
         ADIR.mkdir(parents=True, exist_ok=True)
         json.dump(st, open(ADIR / "settings.json", "w"), indent=1)
     return st
@@ -466,7 +473,8 @@ def run():
     # drop spots you can't drive to right now (seasonal gates, multi-year closures)
     from .snow import closed_now
     rules = read_json(FEED / "access_rules.json", {}) or read_json(DATA.parent / "config" / "access_rules.json", {})
-    S = {k: v for k, v in S.items() if not closed_now(rules, k)}
+    fb = read_json(DATA / "research" / "feedback.json", {})
+    S = {k: v for k, v in S.items() if not closed_now(rules, k) and (fb.get(k) or {}).get("vote") != "down"}
     near = {k: v for k, v in S.items() if km_home(v) <= st["max_km"]}
     far = {k: v for k, v in S.items() if km_home(v) <= st["max_km_dark"]}
     for name in st["rules"]:
@@ -501,7 +509,7 @@ def push(shown, st, now):
     dead = set(read_json(ADIR / "dead.json", []))
     hour = dt.datetime.now(LA).hour
     qs, qe = st["quiet_start"], st["quiet_end"]
-    quiet = (hour >= qs or hour < qe) if qs > qe else (qs <= hour < qe)
+    quiet = False if qs == qe else (hour >= qs or hour < qe) if qs > qe else (qs <= hour < qe)
     today = dt.datetime.now(LA).strftime("%Y-%m-%d")
     n_today = sum(1 for v in sent["keys"].values() if v.startswith(today))
     msgs = []

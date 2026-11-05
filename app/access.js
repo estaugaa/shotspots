@@ -11,6 +11,8 @@ function closedRule(id, d) { return accessRules(id).find(r => (r.type === "close
 const MD = s => { const [m, d] = s.split("-").map(Number); return new Date(2000, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric" }); };
 function reopenText(r) { return r.until ? `expected to reopen ${new Date(r.until + "T12:00").toLocaleDateString("en-US", { month: "long", year: "numeric" })}` : r.type === "open_only" ? `usually open ${MD(r.from)}–${MD(r.to)}` : `usually reopens around ${MD(r.to)}`; }
 
+function w0Dark(s) { const tr = (fd("trails") || { spots: {} }).spots[s.id]; const d = lightDay(s.id, new Date(Date.now() + 864e5)); if (!tr || !d || !d.or || tr.kind !== "walk") return null;
+  const mins = tr.m / 1609.34 / 2.5 * 60 + (tr.up_m || 0) * 3.281 / 1000 * 30 + 20; return fmtT(minToDate(d.or - mins)); }
 const _fitAc = fitFor;
 fitFor = function (s, w) {
   const f = _fitAc(s, w); if (!f) return f; const r = closedRule(s.id, w.peak); if (!r) return f;
@@ -21,8 +23,18 @@ openSpot = function (id) {
   _openAc(id); const s = byId[id]; if (!s) return;
   const rules = accessRules(id), sn = (fd("snow") || { spots: {} }).spots[id], el = spotElev(id), now = new Date();
   const hr = hrrrRow(id, new Date(Date.now() + 18 * 36e5)) || hrrrRow(id, now);
-  if (!rules.length && !sn) return;
+  const tr = (fd("trails") || { spots: {} }).spots[id];
+  if (!rules.length && !sn && !tr) return;
   let h = `<h3>Getting there</h3>`;
+  if (tr && tr.kind !== "none" && tr.park) {
+    const mi = tr.m / 1609.34, ft = x => Math.round(x * 3.281).toLocaleString();
+    const mins = Math.round(mi / 2.5 * 60 + (tr.up_m || 0) * 3.281 / 1000 * 30);
+    const dir = `https://maps.apple.com/?daddr=${tr.park.lat},${tr.park.lon}&q=${encodeURIComponent(tr.park.name)}`;
+    h += tr.kind === "roadside"
+      ? `<p style="font-size:15px"><b>Roadside:</b> ${Math.round(tr.m * 3.281)} ft from <a href="${dir}" target="_blank" rel="noopener">${esc(tr.park.name)}</a>.</p>`
+      : `<p style="font-size:15px"><b>${mi.toFixed(mi < 3 ? 1 : 0)} mi one way</b> from <a href="${dir}" target="_blank" rel="noopener">${esc(tr.park.name)}</a>${tr.up_m != null ? `, about ${ft(tr.up_m)} ft up and ${ft(tr.down_m)} ft down` : ""} (roughly ${mins >= 60 ? Math.floor(mins / 60) + " h " + (mins % 60) + " min" : mins + " min"} in)${tr.trails && tr.trails.length ? ` on ${tr.trails.map(esc).join(", ")}` : ""}.${tr.park.fee === "yes" ? " Parking fee or pass." : ""} <span class="muted">${tag("trails")}</span></p>`;
+    if (tr.kind === "walk" && tr.m > 400 && (s.light === "sunrise" || (s.cats || []).includes("fog")) && w0Dark(s)) h += `<p class="muted" style="font-size:14px">For sunrise, start walking by about ${w0Dark(s)}: bring a headlamp.</p>`;
+  }
   const c = closedRule(id, now);
   if (c) h += `<div class="alertbox warn"><b>No car access right now.</b> ${esc(c.text)} <span class="muted">(${reopenText(c)})</span></div>`;
   for (const r of rules) { if (r === c) continue; const on = ruleActive(r, now);

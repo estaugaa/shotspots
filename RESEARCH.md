@@ -19,6 +19,13 @@ Gorge spots: real sources, verified pins, specific local notes. Quality over qua
 - Count every web search and page fetch; stop at `max_web_searches_per_night`.
 - Stop working at `max_minutes_per_night`. Record searches and minutes in the output file.
 
+## 1b. Eric's taste
+
+`research_plan` prints a `taste` block built from the thumbs up/down on spot pages: spots and categories he
+liked or disliked, with his notes. Weight the search toward what he liked (e.g. more wildlife and mountain
+viewpoints if those score high) and skip candidates like the disliked ones unless they're genuinely
+exceptional. If `taste` is empty, use the default mix.
+
 ## 2. Find candidates for each target (radius around lat/lon; `focus` if given)
 Use several independent routes, like the Gorge build did:
 - Photo-location sites: PhotoHound, Locationscout, PIXEO; local photography guides and blogs.
