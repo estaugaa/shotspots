@@ -1,0 +1,117 @@
+[
+ {
+  "id": "r-blue-lake-regional-park-west-shore-mt-hood-down-",
+  "name": "Blue Lake Regional Park (west shore, Mt. Hood down the lake)",
+  "region": "Fairview \u00b7 Columbia South Shore",
+  "cats": [
+   "reflection",
+   "mountain",
+   "birds",
+   "wildlife"
+  ],
+  "lat": 45.55596,
+  "lon": -122.45242,
+  "months": [
+   1,
+   2,
+   6,
+   7,
+   8,
+   11,
+   12
+  ],
+  "effort": "road",
+  "light": "sunrise",
+  "tip": "The 61-acre lake runs almost 0.9 mi east-west, so from the west end Metro's 'Mount Hood framed by the shores of the lake' shot works: Hood at the far end over calm water, best in the still air right after the gate opens. In summer, osprey and bald eagles commute between the Columbia and the lake, and herons and turtles use the wetland and ponds north and west of the lake. In winter, look for red-tailed hawks, Canada geese and eagles. Calm, clear winter mornings give the best reflection.",
+  "lens": "70-300 for Hood over the far shore and for osprey diving (fast shutter, AF-C); 16-50 at the shoreline for the full lake reflection; 27 for a quiet heron-in-the-reeds frame in the wetland.",
+  "alert": "Open 8 a.m. to legal sunset, closed Dec 25 and Jan 1. The vehicle fee is $5, but walk-ins and cyclists enter free. Because of the 8 a.m. gate, true sunrise is only reachable in the darkest weeks (about late Nov to Jan) unless you walk in from Marine Drive.",
+  "sources": [
+   [
+    "Oregon Metro: Blue Lake Park field guide",
+    "https://www.oregonmetro.gov/sites/default/files/2022/02/09/Blue-Lake-field-guide-20211215.pdf"
+   ],
+   [
+    "Wikipedia: Blue Lake Regional Park",
+    "https://en.wikipedia.org/wiki/Blue_Lake_Regional_Park"
+   ]
+  ],
+  "confidence": "high",
+  "researched": "2026-11-05",
+  "reviewed": false
+ },
+ {
+  "id": "r-chinook-landing-marine-park-entrance-ponds-colum",
+  "name": "Chinook Landing Marine Park (entrance ponds & Columbia shore)",
+  "region": "Fairview \u00b7 Columbia South Shore",
+  "cats": [
+   "birds",
+   "wildlife",
+   "reflection"
+  ],
+  "lat": 45.56005,
+  "lon": -122.44199,
+  "months": [
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ],
+  "effort": "road",
+  "light": "both",
+  "tip": "Skip the six-lane boat ramp and work the seasonal ponds by the entrance and the archery range, where Metro notes great blue herons and snowy egrets hunting and osprey fishing overhead. Low sun from either side lights the white egrets against dark water. Early morning before ramp traffic is quietest. The riverside picnic areas give open Columbia water for osprey and gull flight shots, and the Marine Drive Trail links on foot to Blue Lake about 1 km away.",
+  "lens": "70-300 for egrets and herons from the pond edges (stay on the paths and let the birds settle); 16-50 for river-and-sky frames at the picnic areas.",
+  "alert": "Metro day-use parking is $5 per vehicle (free with the annual pass). Seasonal hours vary, so check Metro before going. Leashed pets are allowed.",
+  "sources": [
+   [
+    "Oregon Metro: Boat Ramps field guide (2022)",
+    "https://www.oregonmetro.gov/sites/default/files/2022/05/12/Boat-Ramps-2022.pdf"
+   ]
+  ],
+  "confidence": "high",
+  "researched": "2026-11-05",
+  "reviewed": false
+ },
+ {
+  "id": "r-troutdale-sandy-river-bridge-1914-truss-from-gle",
+  "name": "Troutdale Sandy River Bridge (1914 truss) from Glenn Otto Park",
+  "region": "Troutdale \u00b7 Sandy River",
+  "cats": [
+   "historic",
+   "fallcolor",
+   "reflection"
+  ],
+  "lat": 45.53643,
+  "lon": -122.37765,
+  "months": [
+   3,
+   4,
+   10,
+   11
+  ],
+  "effort": "road",
+  "light": "sunset",
+  "tip": "The western gateway of the Historic Columbia River Highway: a steel Pratt truss started in 1912 and opened in 1914, narrow enough for two small cars, with a wooden walkway. From the Glenn Otto Park gravel bar just upstream, frame the truss over the Sandy, with riverside fall color in late October and November. Evening light from the west rakes across the steel,; look for calm patches near the bar for a reflection. This is a different subject from Broughton's Bluff across the river (Lewis & Clark SRS).",
+  "lens": "16-50 at the water's edge for the full truss and its reflection; 70-300 to compress the truss lattice or a car crossing; 27 for street-level frames from the walkway.",
+  "alert": "The river is swift and only a few feet deep under the bridge, so don't wade near the piers when the Sandy is high. Glenn Otto is a busy summer swim beach; shoot off-season or early.",
+  "sources": [
+   [
+    "City of Troutdale: Troutdale Bridge",
+    "https://www.troutdaleoregon.gov/community/page/troutdale-bridge"
+   ],
+   [
+    "Sandy River Bridge (Wikipedia mirror)",
+    "https://wiki.riteme.site/wiki/Sandy_River_Bridge"
+   ],
+   [
+    "Peter Kun Frary, photographer: Columbia Gorge 30",
+    "https://fraryguitar.com/columbia_gorge_pages/columbia_gorge_30.htm"
+   ]
+  ],
+  "confidence": "high",
+  "researched": "2026-11-05",
+  "reviewed": false
+ }
+]
