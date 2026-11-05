@@ -184,11 +184,11 @@ def taste():
 
 
 SCHEMA_DOC = {
-    "spot": {"name": "str (place name as signed/locally used)", "lat": "float (verified pin: the viewpoint, falls or parking you'd stand at)", "lon": "float",
+    "spot": {"name": "str (place name as signed/locally used)", "lat": "float (verified pin: exactly where you stand to shoot: the summit, viewpoint or falls overlook, NOT the trailhead; light, horizons and walking routes are computed from it)", "lon": "float",
              "region": "str (e.g. 'Banff · Bow Valley')", "cats": "list from " + ", ".join(sorted(CATS)), "months": "list of best months 1-12",
              "effort": "road | short | hike | hard", "light": "sunrise | sunset | both | overcast | night",
              "tip": "2-4 sentences: what the shot is, when, and how (specific, local, checked)", "lens": "optional: focal length advice for an X-T5 with 16-50, 27 and 70-300",
-             "alert": "optional: access/permit/closure/safety", "park": "optional [lat, lon] of the trailhead/parking if different from the pin",
+             "alert": "optional: access/permit/closure/safety", "park": "[lat, lon] of the trailhead/parking; required for effort hike/hard",
              "sources": "list of [title, url] you actually read; at least one", "confidence": "high | medium | low (pin accuracy and facts)"},
     "file": "{'target': <target label or cell>, 'searches_used': int, 'minutes_used': int, 'spots': [spot, ...], 'landmarks': optional [{name, lat, lon, elev}], 'notes': str}",
 }
