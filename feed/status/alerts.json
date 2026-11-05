@@ -1,1 +1,1 @@
-{"ok":true,"kind":"MODELED","note":"3 alerts (19 candidates); no VAPID key; push skipped","at":"2026-11-05T21:40:45Z","secs":0.8}
+{"ok":false,"kind":"MODELED","note":"ModuleNotFoundError: No module named 'cryptography'","at":"2026-11-05T22:12:08Z","secs":0.9}

@@ -1,0 +1,22 @@
+{
+ "enabled": true,
+ "min_prob": 60,
+ "rules": [
+  "fog_above",
+  "color",
+  "alignment",
+  "dark",
+  "smoke"
+ ],
+ "push_rules": [
+  "fog_above",
+  "color",
+  "alignment",
+  "dark"
+ ],
+ "quiet_start": 22,
+ "quiet_end": 6,
+ "max_per_day": 3,
+ "max_km": 150,
+ "max_km_dark": 300
+}
