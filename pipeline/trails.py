@@ -1,6 +1,6 @@
 """Getting to the spot on foot (MEASURED geometry, MODELED elevation).
 
-For each spot: pull the walkable network and parking within 4 km from OpenStreetMap (Overpass), route from the spot
+For each spot: pull the walkable network and parking within 3 km from OpenStreetMap (Overpass), route from the spot
 to the nearest-by-walking parking area or trailhead, and measure the route's length, the trails it uses, and its
 climb from the Copernicus 90 m DEM (Open-Meteo elevation API). Resumable with a time budget; results kept in
 data/trails.json and published as feed/trails.json. Refreshed every ~120 days.
@@ -19,10 +19,10 @@ def hav(a, b):
     return 6371000 * 2 * math.asin(math.sqrt(h))
 
 
-def fetch(lat, lon, r=4000):
+def fetch(lat, lon, r=3000):
     q = f"""[out:json][timeout:90];
 (way(around:{r},{lat},{lon})[highway~"^({WALK})$"][access!~"^(private|no)$"];)->.w;
-.w out geom tags;
+.w out body geom;
 (node(around:{r},{lat},{lon})[amenity=parking];way(around:{r},{lat},{lon})[amenity=parking];node(around:{r},{lat},{lon})[highway=trailhead];);
 out center tags;"""
     return http(OVERPASS, method="POST", data={"data": q}, timeout=120, tries=3).json()["elements"]
