@@ -12,7 +12,7 @@ import json, math, re
 import numpy as np
 from .common import http, spots, write_json, read_json, CACHE, CONFIG, log, utcnow, iso, r, secret
 
-LAADS = "https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/5000/VNP46A4"
+LAADS_C = ["https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/5200/VNP46A4", "https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/5000/VNP46A4"]  # collection 2 first
 TILES = ["h05v04", "h06v04"]  # 120-130 W and 110-120 W, 40-50 N
 REF = {"home": (45.582, -122.353, 19.66), "capehorn": (45.60, -122.19, 21.21), "washougalrd": (45.69, -122.13, 21.56), "larch": (45.53, -122.088, 21.53)}
 
@@ -21,7 +21,16 @@ def fetch_tile(year, tile, token):
     p = CACHE / f"vnp46a4_{year}_{tile}.npy"
     if p.exists():
         return np.load(p)
-    lst = http(f"{LAADS}/{year}/001.json", headers={"Authorization": f"Bearer {token}"}).json()
+    lst, LAADS = None, None
+    for base in LAADS_C:
+        try:
+            lst = http(f"{base}/{year}/001.json", headers={"Authorization": f"Bearer {token}"}, tries=2).json()
+            LAADS = base
+            break
+        except Exception as e:
+            log.info("VNP46A4 %s %s: %s", base.split("/")[-2], year, e)
+    if lst is None:
+        raise RuntimeError(f"no VNP46A4 listing for {year}")
     items = lst.get("content", lst) if isinstance(lst, dict) else lst
     name = next(x["name"] for x in items if tile in x["name"])
     import h5py, io
@@ -48,7 +57,7 @@ def _walk(f, pre=""):
 def mosaic(token):
     year = utcnow().year - 1
     arrs = None
-    for y in (year, year - 1):
+    for y in (year, year - 1, year - 2):
         try:
             arrs = [fetch_tile(y, t, token) for t in TILES]
             break
