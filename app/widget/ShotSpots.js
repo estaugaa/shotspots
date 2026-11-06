@@ -1,10 +1,10 @@
 // ShotSpots widget for Scriptable (free, App Store). Shows the next light at home with its odds, your top alerts
-// and the weekend plan, from https://shotspots-eric.netlify.app/feed/widget.json (refreshed by the pipeline).
+// and the weekend plan, from https://estaugaa.github.io/shotspots/feed/widget.json (refreshed by the pipeline).
 // Sizes: small, medium, large, and Lock Screen (rectangular / inline). Tap opens ShotSpots.
 // icon-color: deep-green; icon-glyph: mountain;
 
-const FEED = "https://shotspots-eric.netlify.app/feed/widget.json";
-const APP = "https://shotspots-eric.netlify.app/";
+const FEED = "https://estaugaa.github.io/shotspots/feed/widget.json";
+const APP = "https://estaugaa.github.io/shotspots/";
 const C = {
   bg: Color.dynamic(new Color("#E3E9E6"), new Color("#10171C")),
   ink: Color.dynamic(new Color("#1E2628"), new Color("#E5ECEA")),

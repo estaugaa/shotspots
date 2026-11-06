@@ -135,19 +135,8 @@ def app_day_events(d):
 
 # ---------------- outcomes ----------------
 def submissions():
-    tok, site = secret("NETLIFY_TOKEN"), secret("NETLIFY_SITE_ID")
-    if not tok or not site:
-        return []
-    out, page = [], 1
-    while True:
-        j = http(f"https://api.netlify.com/api/v1/sites/{site}/submissions", params={"per_page": 100, "page": page}, headers={"Authorization": f"Bearer {tok}"}).json()
-        if not j:
-            break
-        out += [x for x in j if (x.get("form_name") or "") == "outcome"]
-        page += 1
-        if page > 20:
-            break
-    return out
+    from .forms import submissions as subs
+    return subs("outcome")
 
 
 def goes_at(spot_id, t):

@@ -5,11 +5,8 @@ Gorge spots: real sources, verified pins, specific local notes. Quality over qua
 
 ## 0. Setup
 1. `add_repo` estaugaa/shotspots with push access, clone it, `cd` into it.
-2. Pull research requests and limits from the app:
-   - If the Netlify connector is available: read form submissions for site `a54b42ef-afe7-4c95-922e-7d174dff4e98`
-     (forms `research` and `research_settings`), save the list as JSON to `/tmp/subs.json`, then run
-     `python3 -m pipeline research_import /tmp/subs.json`.
-   - Otherwise skip; the GitHub Actions job syncs them every 3 hours.
+2. Research requests, leads, limits and votes from the app are synced into `data/research/` by the GitHub
+   Actions conditions job every 3 hours (from the Cloudflare forms Worker). Nothing to do here: no connector needed.
 3. Run `python3 -m pipeline research_plan` and read its JSON: `settings` (the nightly limits), `targets`
    (what to research tonight, with the spots already known there) and `schema`.
 4. If `targets` is empty or settings say paused, stop.

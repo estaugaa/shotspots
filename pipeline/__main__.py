@@ -1,4 +1,4 @@
-"""python -m pipeline <job>   jobs: goes | conditions | daily | weekly | monthly | astrometry | deploy | all"""
+"""python -m pipeline <job>   jobs: goes | conditions | daily | weekly | monthly | astrometry | build_site | all"""
 import sys
 from .common import run_module, write_json, utcnow, iso, FEED, read_json, all_status
 
@@ -103,18 +103,14 @@ if __name__ == "__main__":
         elif j == "research_sync":
             from . import research
             run_module("research_sync", research.sync, "MEASURED", "requests and limits from the app")
-        elif j == "deploy":
+        elif j in ("deploy", "build_site"):
             from . import deploy, research
             try:
                 research.export()
             except Exception as e:
                 print("research export failed:", e)
-            from .common import secret, log
             manifest()
-            if not secret("NETLIFY_TOKEN"):
-                log.warning("NETLIFY_TOKEN secret not set yet: skipping deploy")
-            else:
-                deploy.run()
+            print(deploy.build_site())
         else:
             JOBS[j]()
     manifest()

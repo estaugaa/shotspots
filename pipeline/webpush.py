@@ -12,7 +12,7 @@ from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
-SUBJECT = "https://shotspots-eric.netlify.app"
+SUBJECT = "https://estaugaa.github.io/shotspots/"
 
 
 def b64d(s):

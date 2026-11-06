@@ -155,7 +155,7 @@ function renderSettings() {
     <form class="field" id="ebForm"><input id="ebKey" placeholder="eBird API key" value="${esc(EBIRD_KEY)}" autocomplete="off"><button class="btn" type="submit">Save</button></form>
     <p class="label">Data</p>
     <p class="muted" style="font-size:15px">Saved spots: ${Object.keys(SAVED).length}. Shot log: ${LOG.length} entries. Stored only on this phone.</p>
-    <button class="btn" id="exportLog">Export shot log</button>`;
+    <button class="btn" id="exportLog">Export shot log</button> <button class="btn" id="moveOpen">Move my data to another device</button>`;
 }
 document.addEventListener("click", e => {
   const t = e.target.closest("#setBtn,#setClose,#exportLog"); if (!t) return;

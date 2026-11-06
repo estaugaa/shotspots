@@ -394,22 +394,8 @@ RULES = {"aurora": rule_aurora, "fog_above": rule_fog_above, "color": rule_color
 
 # ---------------- settings + subscriptions (Netlify forms) ----------------
 def _submissions(form):
-    tok, site = secret("NETLIFY_TOKEN"), secret("NETLIFY_SITE_ID")
-    if not tok or not site:
-        return []
-    forms = http(f"https://api.netlify.com/api/v1/sites/{site}/forms", headers={"Authorization": f"Bearer {tok}"}).json()
-    f = next((x for x in forms if x.get("name") == form), None)
-    if not f:
-        return []
-    out, page = [], 1
-    while page <= 10:
-        j = http(f"https://api.netlify.com/api/v1/forms/{f['id']}/submissions", params={"per_page": 100, "page": page},
-                 headers={"Authorization": f"Bearer {tok}"}).json()
-        if not j:
-            break
-        out += j
-        page += 1
-    return sorted(out, key=lambda x: x.get("created_at", ""))
+    from .forms import submissions
+    return submissions(form)
 
 
 def settings():

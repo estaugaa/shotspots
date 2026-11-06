@@ -50,19 +50,10 @@ def settings():
     return s
 
 
-# ---------------- sync from the app (Netlify Forms) ----------------
+# ---------------- sync from the app (forms Worker / legacy Netlify Forms) ----------------
 def sync():
-    tok, site = secret("NETLIFY_TOKEN"), secret("NETLIFY_SITE_ID")
-    if not tok or not site:
-        return "no Netlify token; nothing synced"
-    subs, page = [], 1
-    while page <= 10:
-        j = http(f"https://api.netlify.com/api/v1/sites/{site}/submissions", params={"per_page": 100, "page": page}, headers={"Authorization": f"Bearer {tok}"}).json()
-        if not j:
-            break
-        subs += j
-        page += 1
-    return ingest(subs)
+    from .forms import submissions
+    return ingest(submissions())
 
 
 def ingest(subs):

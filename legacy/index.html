@@ -1,0 +1,15 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ShotSpots has moved</title><meta name="theme-color" content="#1E2628">
+<style>body{font:17px/1.5 system-ui,sans-serif;background:#E3E9E6;color:#1E2628;max-width:34em;margin:0 auto;padding:40px 16px}a{color:#3D6A49;font-weight:600}</style></head>
+<body><h1>ShotSpots has moved</h1><p>Taking you to <a id="go" href="https://estaugaa.github.io/shotspots/">estaugaa.github.io/shotspots</a> with your saved spots, shot list and log…</p>
+<p>After it opens, add it to your Home Screen again (Share → Add to Home Screen) and turn notifications back on from the bell.</p>
+<script>
+// Carry this address's on-device data to the new one, then retire the old service worker.
+const KEYS=["saved","shots","log","votes","hiddenSpots","reviewedSpots","seenResearched","loc","drives","ebirdKey","outq"];
+const o={};for(const k of KEYS){try{const v=localStorage.getItem("ss2:"+k);if(v!==null)o[k]=JSON.parse(v);}catch(e){}}
+const code=btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+const url="https://estaugaa.github.io/shotspots/"+(Object.keys(o).length?"#import="+code:"");
+document.getElementById("go").href=url;
+(async()=>{try{const rs=await navigator.serviceWorker?.getRegistrations?.();for(const r of rs||[])await r.unregister();for(const k of await caches.keys())await caches.delete(k);}catch(e){}
+  setTimeout(()=>location.replace(url),600);})();
+</script></body></html>
