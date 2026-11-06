@@ -1,17 +1,11 @@
 """Scratch diagnostics run on Actions (workflow 'Diagnostic'). Safe to overwrite."""
-import time, sys
+import sys, requests, collections
 sys.path.insert(0, ".")
-from pipeline import trails
-from pipeline.common import spots
-S = {s["id"]: s for s in spots()}
-for sid in ["angels-rest", "vista-house", "steigerwald", "larch-mtn", "ecola"]:
-    t = time.time()
-    try:
-        els = trails.fetch(S[sid]["lat"], S[sid]["lon"]); t1 = time.time() - t
-        r = trails.route(S[sid], els)
-        if r.get("pts") and r["kind"] == "walk":
-            r["up_m"], r["down_m"], r["z_park"], r["z_spot"] = trails.profile(r["pts"])
-        r.pop("pts", None)
-        print("TRAIL", sid, f"overpass {t1:.1f}s total {time.time()-t:.1f}s", len(els), r)
-    except Exception as e:
-        import traceback; traceback.print_exc(); print("TRAIL", sid, "ERR", e)
+from pipeline import forms
+W = "https://shotspots-forms.shotspots-eric.workers.dev"
+print("HEALTH", requests.get(W + "/health", timeout=20).text)
+r = requests.post(W + "/f/spot_feedback", data={"id": "diag-test", "vote": "clear", "name": "pipeline self-test"}, headers={"Origin": "https://estaugaa.github.io"}, timeout=20)
+print("POST", r.status_code, r.text, r.headers.get("Access-Control-Allow-Origin"))
+s = forms.submissions()
+print("READ", len(s), collections.Counter(x["form_name"] for x in s), [x["id"] for x in s][-3:])
+print("D1 rows", forms.d1("SELECT COUNT(*) AS n FROM submissions"))
