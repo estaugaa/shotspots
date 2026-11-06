@@ -195,3 +195,46 @@ ul.plain li{margin:3px 0}
 #alertBtn svg{display:block}
 .alertrow.r-aurora .pct{color:var(--moss)}
 .votes{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 4px}
+
+/* ---------- Desktop: rail + list column + permanent map; spot page docks over the map ---------- */
+@media (min-width:1100px){
+  :root{--rail:84px;--col:min(480px,34vw);--top:60px;--panel:min(540px,38vw)}
+  body{padding-bottom:0;padding-left:var(--rail)}
+  .top{position:fixed;left:var(--rail);right:0;top:0;height:var(--top);padding:8px 20px;border-bottom:1px solid var(--line);background:var(--mist);backdrop-filter:none}
+  .loc{font-size:18px}
+  /* rail */
+  .tabs{top:0;bottom:0;right:auto;width:var(--rail);grid-template-columns:1fr;grid-auto-rows:min-content;align-content:start;gap:4px;padding:calc(var(--top) + 8px) 6px 12px;border-top:0;border-right:1px solid var(--line)}
+  .tabs button{height:64px;border-radius:12px;font-size:12.5px}
+  .tabs button:hover{background:color-mix(in srgb,var(--ink) 6%,transparent);color:var(--ink)}
+  .tabs button[aria-current=page]{background:color-mix(in srgb,var(--moss) 14%,transparent)}
+  .tabs button[data-v=map]{display:none}
+  .tabs::before{content:"";position:absolute;top:14px;left:50%;width:30px;height:30px;margin-left:-15px;border-radius:50%;
+    background:radial-gradient(circle at 50% 62%,var(--golden) 0 34%,transparent 35%),linear-gradient(var(--day) 0 58%,var(--moss) 58%);box-shadow:inset 0 0 0 1px var(--line)}
+  /* list column */
+  #main{position:fixed;top:var(--top);bottom:0;left:var(--rail);right:0}
+  .view{position:absolute;top:0;bottom:0;left:0;width:var(--col);max-width:none;margin:0;overflow:auto;padding:12px 22px 40px;border-right:1px solid var(--line);background:var(--mist)}
+  /* the map is always there */
+  #v-map,#v-map[hidden]{display:block!important;position:absolute;top:0;bottom:0;left:var(--col);right:0;width:auto;padding:0;overflow:hidden;border:0}
+  #map{height:100%!important}
+  .maplegend{left:16px;bottom:16px}
+  .leaflet-top.leaflet-right{right:auto;left:0}
+  /* spot page: docked panel on the map's right edge */
+  #sheet{inset:var(--top) 0 0 auto;width:var(--panel);border-left:1px solid var(--line);box-shadow:-12px 0 32px rgba(20,30,32,.18);animation:dock .2s ease-out}
+  #sheet .sheetbar{padding:10px 20px 4px}
+  #sheet .sheetbody{padding:0 24px 32px}
+  @keyframes dock{from{transform:translateX(24px);opacity:.5}to{transform:none;opacity:1}}
+  /* other sheets: centred dialogs */
+  .sheet:not(#sheet),.sheet.small{inset:auto;top:50%;left:calc(50% + var(--rail) / 2);transform:translate(-50%,-50%);width:min(640px,calc(100vw - var(--rail) - 64px));max-height:min(86vh,900px);border-radius:16px;box-shadow:0 20px 60px rgba(10,20,22,.35);animation:none}
+  .sheet:not(#sheet) .sheetbar,.sheet.small .sheetbar{padding:14px 20px 6px}
+  .sheet:not(#sheet) .sheetbody{padding:0 20px 24px}
+  .scrim{position:fixed;inset:0;z-index:45;background:rgba(15,22,24,.32)}
+  .toast{left:auto;right:24px;bottom:24px;max-width:420px}
+  /* comfortable reading in the column */
+  .view h2{font-size:26px}
+  .lrow:hover,.item:hover{background:color-mix(in srgb,var(--ink) 4%,transparent)}
+  .item.sel,.lrow.sel{background:color-mix(in srgb,var(--moss) 12%,transparent)}
+  .leaflet-container{background:var(--day)}
+  .pulse{animation:pulse 1.6s ease-out 2}
+  @keyframes pulse{from{stroke-width:10;stroke-opacity:.8}to{stroke-width:2;stroke-opacity:1}}
+}
+@media (min-width:1100px) and (prefers-reduced-motion:reduce){#sheet{animation:none}.pulse{animation:none}}

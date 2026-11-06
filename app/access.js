@@ -28,11 +28,11 @@ openSpot = function (id) {
   let h = `<h3>Getting there</h3>`;
   if (tr && tr.kind !== "none" && tr.park) {
     const mi = tr.m / 1609.34, ft = x => Math.round(x * 3.281).toLocaleString();
-    const mins = Math.round(mi / 2.5 * 60 + (tr.up_m || 0) * 3.281 / 1000 * 30);
+    const mins = Math.round(mi / 2.5 * 60 + (tr.m >= 800 ? tr.up_m || 0 : 0) * 3.281 / 1000 * 30);
     const dir = `https://maps.apple.com/?daddr=${tr.park.lat},${tr.park.lon}&q=${encodeURIComponent(tr.park.name)}`;
     h += tr.kind === "roadside"
       ? `<p style="font-size:15px"><b>Roadside:</b> ${Math.round(tr.m * 3.281)} ft from <a href="${dir}" target="_blank" rel="noopener">${esc(tr.park.name)}</a>.</p>`
-      : `<p style="font-size:15px"><b>${mi.toFixed(mi < 3 ? 1 : 0)} mi one way</b> from <a href="${dir}" target="_blank" rel="noopener">${esc(tr.park.name)}</a>${tr.up_m != null ? `, about ${ft(tr.up_m)} ft up and ${ft(tr.down_m)} ft down` : ""} (roughly ${mins >= 60 ? Math.floor(mins / 60) + " h " + (mins % 60) + " min" : mins + " min"} in)${tr.trails && tr.trails.length ? ` on ${tr.trails.map(esc).join(", ")}` : ""}.${tr.park.fee === "yes" ? " Parking fee or pass." : ""} <span class="muted">${tag("trails")}</span></p>`;
+      : `<p style="font-size:15px"><b>${mi.toFixed(mi < 3 ? 1 : 0)} mi one way</b> from <a href="${dir}" target="_blank" rel="noopener">${esc(tr.park.name)}</a>${tr.up_m != null && tr.m >= 800 ? `, about ${ft(tr.up_m)} ft up and ${ft(tr.down_m)} ft down` : ""} (roughly ${mins >= 60 ? Math.floor(mins / 60) + " h " + (mins % 60) + " min" : mins + " min"} in)${tr.trails && tr.trails.length ? ` on ${tr.trails.map(esc).join(", ")}` : ""}.${tr.park.fee === "yes" ? " Parking fee or pass." : ""} <span class="muted">${tag("trails")}</span></p>`;
     if (tr.kind === "walk" && tr.m > 400 && (s.light === "sunrise" || (s.cats || []).includes("fog")) && w0Dark(s)) h += `<p class="muted" style="font-size:14px">For sunrise, start walking by about ${w0Dark(s)}: bring a headlamp.</p>`;
   }
   const c = closedRule(id, now);
