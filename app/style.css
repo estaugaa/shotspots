@@ -243,3 +243,10 @@ ul.plain li{margin:3px 0}
 .tabs .badge{position:absolute;top:6px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--gold);color:#fff;font-size:11px;font-weight:700;line-height:18px;text-align:center}
 .newtag{display:inline-block;margin-left:4px;padding:0 6px;border-radius:6px;background:color-mix(in srgb,var(--gold) 22%,transparent);color:var(--ink);font-size:12px;font-weight:700;vertical-align:1px}
 ul.newest{list-style:none;padding:0}
+
+.impcard{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0;background:var(--paper)}
+.impcard select{width:100%;padding:9px;border-radius:10px;border:1px solid var(--line);background:var(--mist);margin:4px 0 6px}
+.impkeep{display:flex;gap:8px;align-items:center}
+.impq{display:grid;grid-template-columns:72px 1fr;align-items:center;gap:6px;margin:4px 0}
+.impq span{font-size:14px;color:var(--muted)}
+.impq .chips{margin:0}
