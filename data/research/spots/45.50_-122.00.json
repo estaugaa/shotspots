@@ -1,0 +1,42 @@
+[
+ {
+  "id": "r-wauna-viewpoint-over-bonneville-dam",
+  "name": "Wauna Viewpoint (over Bonneville Dam)",
+  "region": "Columbia Gorge \u00b7 Eagle Creek",
+  "cats": [
+   "vista",
+   "historic"
+  ],
+  "lat": 45.637,
+  "lon": -121.9281,
+  "months": [
+   4,
+   5,
+   6,
+   10,
+   11
+  ],
+  "effort": "hike",
+  "light": "sunset",
+  "tip": "Probably the best aerial view of Bonneville Dam and its two navigation locks, with Bridge of the Gods and Stevenson upriver, Table Mountain and Greenleaf Peak across the river, Hamilton Mountain and Beacon Rock to the west and Mount Adams on clear days. You look north, so the sun is behind you all day; late afternoon into sunset gives warm side-light on Table Mountain and the dam. The viewpoint is at a power-line pylon, so pick angles that keep the wires out or use them as a deliberate leading line. Time a barge in the locks for scale.",
+  "lens": "70-300 for the locks, a barge or Bridge of the Gods (around 200-300 mm); 16-50 at 30-50 for the river bend with Table Mountain. The 27 is fine for the overview but you'll miss the telephoto details.",
+  "alert": "Northwest Forest Pass or America the Beautiful pass at Eagle Creek; lot fills early on weekends. 3.4 mi round trip, ~1,030 ft gain. Burned 2017 (standing dead trees), poison oak, and an active slide to cross just before the viewpoint.",
+  "park": [
+   45.6401,
+   -121.9243
+  ],
+  "sources": [
+   [
+    "USFS: Wauna Viewpoint Trail #402",
+    "https://fs.usda.gov/r06/columbiarivergorge/recreation/trails/wauna-viewpoint-trail-402"
+   ],
+   [
+    "Oregon Hikers Field Guide: Wauna Viewpoint from Eagle Creek",
+    "https://www.oregonhikers.org/field_guide/Wauna_Viewpoint_from_Eagle_Creek_Hike"
+   ]
+  ],
+  "confidence": "high",
+  "researched": "2026-11-06",
+  "reviewed": false
+ }
+]

@@ -15,7 +15,12 @@
   },
   "45.50_-122.25": {
    "status": "open",
-   "runs": []
+   "runs": [
+    {
+     "date": "2026-11-06",
+     "added": 4
+    }
+   ]
   },
   "45.75_-122.50": {
    "status": "open",
@@ -40,7 +45,12 @@
   },
   "45.50_-122.00": {
    "status": "open",
-   "runs": []
+   "runs": [
+    {
+     "date": "2026-11-06",
+     "added": 1
+    }
+   ]
   },
   "45.50_-121.75": {
    "status": "open",
@@ -256,6 +266,21 @@
    ],
    "rejected": [],
    "notes": "Supervised test run, limited to 4 spots and 15 searches. Second pass on the same frontier cell, Oregon side. Salish Ponds facts and pin come from pages read earlier tonight (Oregon Hikers field guide, TomTom). Skipped Dabney SRA again: not enough photo-specific information."
+  },
+  {
+   "at": "2026-11-06T09:32:06Z",
+   "target": "45.50_-122.25",
+   "searches": 24,
+   "minutes": 14,
+   "added": [
+    "r-three-corner-rock-old-lookout-summit",
+    "r-wauna-viewpoint-over-bonneville-dam",
+    "r-dalton-point-boat-ramp-river-level-gorge-view",
+    "r-oneonta-tunnel-historic-columbia-river-highway",
+    "r-benson-lake-mist-falls-view"
+   ],
+   "rejected": [],
+   "notes": "Heavily covered cell (60 known spots), so targeted gaps: a high-country 360 summit, a dam/bridge aerial viewpoint, a river-level Oregon-side vista, a historic tunnel and an under-shot waterfall. Rejected: Naked Falls (Washougal River) - public access closed by Weyerhaeuser since 2016 and now a private Hipcamp listing; St. Peter's Dome roadside view - no current source with a usable standing spot found; Doetsch day use - TomTom only returned Sams Walker (already known). Netlify connector needed a"
   }
  ]
 }

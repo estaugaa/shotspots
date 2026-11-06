@@ -1,0 +1,160 @@
+[
+ {
+  "id": "r-three-corner-rock-old-lookout-summit",
+  "name": "Three Corner Rock (old lookout summit)",
+  "region": "Skamania \u00b7 Rock Creek Pass",
+  "cats": [
+   "mountain",
+   "vista",
+   "wildflowers"
+  ],
+  "lat": 45.7323,
+  "lon": -122.049,
+  "months": [
+   6,
+   7,
+   8,
+   9,
+   10
+  ],
+  "effort": "hike",
+  "light": "both",
+  "tip": "A basalt pyramid on the Gorge skyline where a fire lookout once stood: concrete steps take you to within about 12 ft of the top, then a short scramble to a flat summit with a full 360. Hood and Jefferson sit to the south beyond Birkenfeld and Table Mountain, St. Helens and Rainier rise to the north and Adams to the northeast, so it works at both ends of the day: sunrise alpenglow on Hood/Jefferson, sunset side-light on St. Helens and Rainier. June adds beargrass in the meadows along the PCT. Bring a jacket; the summit gets strong wind blasts.",
+  "lens": "70-300 is the main lens here: compress Hood behind the Birkenfeld/Table Mountain ridges or isolate Adams and Rainier at 200-300 mm. 16-50 at 16 for the lookout steps and rock with a volcano behind; use the 27 for a light walk-up kit only if you skip the telephoto (you shouldn't).",
+  "alert": "Discover Pass required. Long gravel DNR roads (CG 2000 / CG 2090) with logging trucks and unreliable cell service; carry printed directions. Limited parking for a few cars, faded signage, badly eroded old jeep track near the top, final 12 ft is a scramble.",
+  "park": [
+   45.7493,
+   -122.0433
+  ],
+  "sources": [
+   [
+    "WTA: Three Corner Rock",
+    "https://www.wta.org/go-hiking/hikes/three-corner-rock"
+   ],
+   [
+    "Oregon Hikers Field Guide: Three Corner Rock Hike",
+    "https://www.oregonhikers.org/field_guide/Three_Corner_Rock_Hike"
+   ]
+  ],
+  "confidence": "high",
+  "researched": "2026-11-06",
+  "reviewed": false
+ },
+ {
+  "id": "r-dalton-point-boat-ramp-river-level-gorge-view",
+  "name": "Dalton Point boat ramp (river-level Gorge view)",
+  "region": "Columbia Gorge \u00b7 Dalton Point",
+  "cats": [
+   "vista",
+   "reflection"
+  ],
+  "lat": 45.5687,
+  "lon": -122.1644,
+  "months": [
+   4,
+   5,
+   6,
+   7,
+   8
+  ],
+  "effort": "road",
+  "light": "sunset",
+  "tip": "One of the few places on the Oregon side where you can stand at the water's edge: Cape Horn's cliffs face you across the river to the northwest with Phoca Rock in the channel. Around early summer the sun sets toward the Cape Horn end of the river, so stay for silhouettes of the cliffs and glow on the water; calm mornings give reflections. It's usually quiet, and spring brings wildflowers along the shoreline trail. Shoreline and trail change with river level (high water in May can cut the path).",
+  "lens": "16-50 for river-level foreground with Cape Horn; 70-300 to stack Cape Horn's cliffs and Phoca Rock or catch a passing barge.",
+  "alert": "Reachable only from I-84 westbound Exit 29 (eastbound drivers must turn around at Warrendale-Dodson). Free day-use, restrooms, rough lot. Waterfowl hunting is allowed in season; wind and barge traffic if launching a kayak.",
+  "sources": [
+   [
+    "Lower Columbia Estuary Partnership: Dalton Point launch",
+    "https://estuarypartnership.org/locations/launch-point/dalton-point"
+   ],
+   [
+    "Cyclotram: Dalton Point",
+    "https://cyclotram.blogspot.com/2018/04/dalton-point.html"
+   ]
+  ],
+  "confidence": "high",
+  "researched": "2026-11-06",
+  "reviewed": false
+ },
+ {
+  "id": "r-oneonta-tunnel-historic-columbia-river-highway",
+  "name": "Oneonta Tunnel (Historic Columbia River Highway)",
+  "region": "Columbia Gorge \u00b7 Oneonta",
+  "cats": [
+   "historic",
+   "fallcolor"
+  ],
+  "lat": 45.5896,
+  "lon": -122.0754,
+  "months": [
+   4,
+   5,
+   10,
+   11
+  ],
+  "effort": "road",
+  "light": "overcast",
+  "tip": "The 1914 highway tunnel through Oneonta Bluff, closed to traffic in 1948, restored for walkers and cyclists in 2009, burned in the 2017 Eagle Creek Fire and reopened in 2021. Frame the portal straight-on from the old road grade with the bluff and mossy walls around it; overcast or shade keeps contrast manageable and late-October/November maples add color. Go early: parking at the Oneonta trailhead is limited.",
+  "lens": "16-50 at 16-24 for the portal and bluff; 27 for a natural through-the-tunnel view with someone walking for scale.",
+  "alert": "Bikes and pedestrians only. The Historic Highway east of Multnomah Falls reopened in May 2026 after viaduct work (vehicles under 35 ft). Check USFS for the status of the separate Oneonta Gorge creek walk before wading.",
+  "sources": [
+   [
+    "BikePortland: Oneonta Tunnel reopens (2021)",
+    "https://bikeportland.org/2021/05/06/closed-after-gorge-fire-in-2017-the-oneonta-tunnel-is-now-open-and-ready-to-ride-330774"
+   ],
+   [
+    "ODOT: Historic Highway reopens east of Multnomah Falls (May 2026)",
+    "https://content.govdelivery.com/accounts/ORDOT/bulletins/4173189"
+   ],
+   [
+    "ODOT: Historic Highway news, March 2026 (Oneonta parking)",
+    "https://content.govdelivery.com/accounts/ORDOT/bulletins/40b3ee9"
+   ]
+  ],
+  "confidence": "high",
+  "researched": "2026-11-06",
+  "reviewed": false
+ },
+ {
+  "id": "r-benson-lake-mist-falls-view",
+  "name": "Benson Lake & Mist Falls view",
+  "region": "Columbia Gorge \u00b7 Benson State Recreation Area",
+  "cats": [
+   "waterfall",
+   "reflection"
+  ],
+  "lat": 45.5788,
+  "lon": -122.1236,
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   11,
+   12
+  ],
+  "effort": "short",
+  "light": "overcast",
+  "tip": "Mist Falls drops about 520 ft in two plunges but can't be seen from the Historic Highway; the full view is from Benson State Recreation Area, walking west from the lake along the old road between I-84 and the large pond. It's a thin spring-fed ribbon that runs year-round but is fullest in winter and spring after rain, and the north-facing cliff is in shade most of the day, so flat overcast is ideal. Benson Lake itself gives still-water reflections of the Gorge wall on calm mornings, a quieter alternative to the Multnomah crowds next door.",
+  "lens": "70-300 to isolate the falls ribbon against the cliff (100-200 mm); 16-50 for the pond and cliff with reflections. A tripod helps for slow shutter on the thin water.",
+  "alert": "The Benson exit off I-84 is reachable only from eastbound lanes. The scramble path to the falls base (pullout 1/4 mi west of Wahkeena) is on extremely unstable talus; not recommended.",
+  "park": [
+   45.5788,
+   -122.1236
+  ],
+  "sources": [
+   [
+    "Northwest Waterfall Survey: Mist Falls",
+    "https://www.waterfallsnorthwest.com/waterfall/4056"
+   ],
+   [
+    "Wikipedia: Benson State Recreation Area",
+    "https://en.wikipedia.org/wiki/Benson_State_Recreation_Area"
+   ]
+  ],
+  "confidence": "medium",
+  "researched": "2026-11-06",
+  "reviewed": false
+ }
+]
