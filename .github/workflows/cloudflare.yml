@@ -32,7 +32,7 @@ jobs:
           if [ -z "$SUB" ]; then
             for s in shotspots-eric shotspots-estaugaa shotspots-$RANDOM; do
               R=$(curl -s -X PUT -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" --data "{\"subdomain\":\"$s\"}" $API)
-              echo "$R" | grep -q '"success":true' && SUB=$s && break
+              echo "$R" | grep -Eq '"success": ?true' && SUB=$s && break
               echo "subdomain $s: $R"
             done
           fi
