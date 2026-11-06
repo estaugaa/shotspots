@@ -7,3 +7,4 @@ CREATE TABLE IF NOT EXISTS submissions (
 );
 CREATE INDEX IF NOT EXISTS idx_sub_form ON submissions(form, id);
 CREATE INDEX IF NOT EXISTS idx_sub_ip ON submissions(ip, created_at);
+CREATE TABLE IF NOT EXISTS ticks (at TEXT NOT NULL, job TEXT NOT NULL, result TEXT);
