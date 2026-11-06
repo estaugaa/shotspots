@@ -37,7 +37,7 @@ def fetch_tile(year, tile, token):
     r = http(f"{LAADS}/{year}/001/{name}", headers={"Authorization": f"Bearer {token}"}, timeout=600)
     b = r.content
     if not b.startswith(b"\x89HDF"):
-        raise RuntimeError(f"download of {name} returned {r.headers.get('content-type')} from {r.url.split('?')[0][:90]} ({len(b)} bytes): {b[:160]!r}")
+        raise RuntimeError(f"download of {name} returned {r.headers.get('content-type')} from {r.url[:220]} ({len(b)} bytes): {b[:160]!r}")
     with h5py.File(io.BytesIO(b), "r") as f:
         dsn = next(k for k in _walk(f) if k.endswith("NearNadir_Composite_Snow_Free"))
         a = f[dsn][()].astype(np.float32)
