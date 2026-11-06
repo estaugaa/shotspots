@@ -4,7 +4,12 @@
 const FORMS_DEFAULT = "https://shotspots-forms.shotspots-eric.workers.dev";
 let FORMS_URL = store.get("formsUrl", FORMS_DEFAULT);
 fetch("endpoints.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { if (j && j.forms) { FORMS_URL = j.forms; store.set("formsUrl", j.forms); } }).catch(() => { });
+/* owner: unlocked once on each of the owner's devices via a private #owner=... link (the Worker checks the key) */
+(function () { const m = location.hash.match(/^#owner=([A-Za-z0-9_-]{20,})/); if (!m) return;
+  store.set("ownerKey", m[1]); history.replaceState(null, "", location.pathname); setTimeout(() => toast("This device is set up as the owner's"), 900); setTimeout(() => render(), 50); })();
+let DEV = store.get("dev", null); if (!DEV) { DEV = Math.random().toString(36).slice(2, 12); store.set("dev", DEV); }
 async function sendForm(name, data) {
+  data = { ...data, _dev: DEV }; const k = store.get("ownerKey", null); if (k) data._k = k;
   try {
     const r = await fetch(`${FORMS_URL}/f/${name}`, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams(data).toString() });
     return r.ok;
@@ -57,3 +62,20 @@ document.addEventListener("click", async e => {
   if (t.id === "moveImport") { const v = ($("#moveIn").value || "").trim(); const code = (v.match(/#import=([A-Za-z0-9_-]+)/) || [])[1] || v;
     try { const n = importData(code); toast(`Imported ${n} kinds of data`); setTimeout(() => location.reload(), 900); } catch (er) { toast("That doesn't look like a ShotSpots data link"); } }
 });
+
+/* guests: a one-time welcome, and the default start point isn't called anyone's "home" */
+if (!isOwner() && LOC.src === "home") LOC.label = "Washougal";
+function welcomeHtml() {
+  if (isOwner() || store.get("welcomed", false)) return "";
+  return `<div class="welcome"><h3>Welcome to ShotSpots</h3>
+    <p>It plans photo outings around Portland, Washougal and the Columbia Gorge: pick a day and a light window above, and it ranks the spots for that light, the forecast and the drive.</p>
+    <p>Drive times start from Washougal. Set your own starting point so they fit you.</p>
+    <div class="chips"><button class="chip" id="welcomeLoc">Set my starting point</button><button class="chip" data-openalerts="1">Get alerts</button><button class="chip" id="welcomeOk">Got it</button></div></div>`;
+}
+const _renderNowF = renderNow;
+renderNow = function () { _renderNowF(); const h = welcomeHtml(); const v = $("#v-now"); if (h && v && !v.querySelector(".welcome")) { const d = v.querySelector("#winDetail"); (d || v).insertAdjacentHTML(d ? "beforebegin" : "afterbegin", h); } };
+document.addEventListener("click", e => {
+  const t = e.target.closest("#welcomeOk,#welcomeLoc"); if (!t) return;
+  store.set("welcomed", true); if (t.id === "welcomeLoc") { const b = $("#locBtn") || document.querySelector(".loc"); b && b.click(); } render();
+});
+setTimeout(() => { if (!isOwner()) render(); }, 0);

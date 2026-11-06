@@ -76,7 +76,7 @@ async function openAlerts() {
     ${nm.length ? `<h3 style="margin-top:22px">Close calls (under your ${st.min_prob || 60}% bar)</h3><div class="sect nearmiss">${nm.slice(0, 4).map(alertRow).join("")}</div>` : ""}
     ${weekendHtml(true)}
     <h3>Notifications</h3>${notif}
-    <h3>Alert settings</h3>
+    ${!isOwner() ? `<p class="muted" style="font-size:14px">Alerts are tuned for the Washougal, Portland and Columbia Gorge area: fog, colourful skies, sun or moon alignments, dark skies and aurora within about 150 km.</p>` : `<h3>Alert settings</h3>
     <form id="alForm" class="stack">
       <label>Only alert at this chance or better (%)<input type="number" name="min_prob" min="20" max="95" step="5" value="${st.min_prob || 60}"></label>
       <p class="label">Notify me about</p>
@@ -89,7 +89,7 @@ async function openAlerts() {
       <label>Quiet until (hour, 0–23)<input type="number" name="quiet_end" min="0" max="23" value="${st.quiet_end ?? 6}"></label>
       <button class="btn primary wide" type="submit">Save alert settings</button>
       <p class="muted" style="font-size:13px">Alerts are checked every 3 hours with each new forecast. Odds are raw model probabilities for now; logging your outings lets ShotSpots calibrate them.</p>
-    </form>`;
+    </form>`}`;
   el.querySelector(".sheetbody")._rules = rules; el.hidden = false;
 }
 function b64u(s) { const p = "=".repeat((4 - s.length % 4) % 4); const b = atob((s + p).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from(b, c => c.charCodeAt(0)); }

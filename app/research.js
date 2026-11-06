@@ -66,11 +66,14 @@ document.addEventListener("click", async e => {
   if (vote === "clear") delete VOTES[id]; else VOTES[id] = vote; store.set("votes", VOTES);
   t.parentElement.outerHTML = voteHtml(id);
   const ok = await postForm("spot_feedback", { id, vote, name: s.name, cats: (s.cats || []).join(","), note });
-  toast(vote === "clear" ? "Cleared" : ok ? (vote === "up" ? "Noted: research will look for more like this" : "Noted: research will skip spots like this, and alerts won't suggest it") : "Saved here; couldn't reach the server");
+  toast(vote === "clear" ? "Cleared" : !isOwner() ? "Saved" : ok ? (vote === "up" ? "Noted: research will look for more like this" : "Noted: research will skip spots like this, and alerts won't suggest it") : "Saved here; couldn't reach the server");
 });
 
 /* ---------- Spots tab: explore section ---------- */
+function isOwner() { return !!store.get("ownerKey", null); }
 function researchHtml() {
+  if (!isOwner()) { const st = fd("research_status");
+    return `<div class="sect explore"><h3>Explore new areas</h3><p class="muted">New spots are researched each night and added here.${st ? ` ${st.totals.researched_spots} so far.` : ""}</p>${typeof newestHtml === "function" ? newestHtml() : ""}</div>`; }
   const st = fd("research_status"); const cfg = st ? st.settings : null;
   let h = `<div class="sect explore"><h3>Explore new areas <button class="chip" id="resLimits" style="float:right">Limits</button></h3>
     <p class="muted">Each night, Claude researches spots the way the Gorge list was built: guides, photo sites, agency pages, map checks. It starts with places you ask for, then works outward from home to the nearest area with more to find.</p>

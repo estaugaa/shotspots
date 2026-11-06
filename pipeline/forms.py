@@ -61,7 +61,13 @@ def _from_netlify(form):
             break
         out += [x for x in j if not form or (x.get("form_name") or "") == form]
         page += 1
+    for x in out:   # everything sent to Netlify came from the owner (before the app was shared)
+        x.setdefault("data", {})["_owner"] = 1
     return out
+
+
+def is_owner(sub):
+    return str((sub.get("data") or {}).get("_owner", "0")) in ("1", "True", "true")
 
 
 def submissions(form=None):

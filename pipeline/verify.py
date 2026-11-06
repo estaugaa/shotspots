@@ -135,8 +135,8 @@ def app_day_events(d):
 
 # ---------------- outcomes ----------------
 def submissions():
-    from .forms import submissions as subs
-    return subs("outcome")
+    from .forms import submissions as subs, is_owner
+    return [x for x in subs("outcome") if is_owner(x)]   # guests' logs aren't used for calibration (yet)
 
 
 def goes_at(spot_id, t):

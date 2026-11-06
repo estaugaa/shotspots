@@ -3,6 +3,11 @@
 const FORMS = new Set(["outcome", "research", "research_settings", "alert_settings", "push_sub", "spot_feedback", "lead"]);
 const ORIGINS = ["https://estaugaa.github.io", "https://shotspots-eric.netlify.app", "http://localhost:8765"];
 const MAX = 20000;
+// Owner-only forms: they change shared settings or spend the owner's Claude usage. The owner's devices send the
+// owner key (set once via the #owner= link); only its SHA-256 lives here.
+const OWNER_HASH = "960c6a09c50ff6f4bba3993a8c350f23e12ce3f0abfce5704ee5c39fb57b5fe5";
+const OWNER_ONLY = new Set(["research", "research_settings", "alert_settings", "lead"]);
+async function sha256hex(t) { return [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)))].map(b => b.toString(16).padStart(2, "0")).join(""); }
 
 function cors(req) {
   const o = req.headers.get("Origin") || "";
@@ -56,6 +61,11 @@ export default {
     try { data = ct.includes("application/json") ? JSON.parse(body) : Object.fromEntries(new URLSearchParams(body)); }
     catch (e) { return json(req, { ok: false, error: "bad body" }, 400); }
     delete data["form-name"]; delete data["bot-field"];
+    const key = data._k || ""; delete data._k;
+    const owner = key ? (await sha256hex(key)) === OWNER_HASH : false;
+    if (OWNER_ONLY.has(form) && !owner) return json(req, { ok: false, error: "owner only" }, 403);
+    data._owner = owner ? 1 : 0;
+    const dev = (data._dev || "").slice(0, 24); delete data._dev; if (dev) data._dev = dev;
     // light abuse guard: at most 60 submissions per IP per hour
     const ip = req.headers.get("CF-Connecting-IP") || "";
     const ipHash = [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(ip + (env.SALT || "ss"))))].slice(0, 8).map(b => b.toString(16).padStart(2, "0")).join("");

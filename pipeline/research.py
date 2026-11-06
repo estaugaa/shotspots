@@ -75,7 +75,7 @@ def ingest(subs):
                 log.warning("bad research request %s: %s", s["id"], e)
         if fname == "research_settings":
             newest_settings = d
-        if fname == "spot_feedback" and d.get("id"):
+        if fname == "spot_feedback" and d.get("id") and str(d.get("_owner", "1")) in ("1", "True", "true"):   # only the owner's taste steers research
             fb = load("feedback.json", {})
             fb[d["id"]] = {"vote": d.get("vote"), "at": s.get("created_at"), "name": d.get("name", ""), "cats": [c for c in str(d.get("cats", "")).split(",") if c],
                            "note": (d.get("note") or "")[:300]}
