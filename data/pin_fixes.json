@@ -1,0 +1,130 @@
+[
+ {
+  "id": "lucia",
+  "name": "Lucia Falls",
+  "old": [
+   45.828,
+   -122.427
+  ],
+  "new": [
+   45.83954,
+   -122.44663
+  ],
+  "osm": "Lucia Falls",
+  "kind": "waterfall",
+  "off_m": 1990,
+  "at": "2026-11-06T02:06:17Z"
+ },
+ {
+  "id": "cathedral-park",
+  "name": "Cathedral Park & St. Johns Bridge",
+  "old": [
+   45.58616,
+   -122.76162
+  ],
+  "new": [
+   45.58274,
+   -122.76892
+  ],
+  "osm": "Bridge Viewpoint",
+  "kind": "viewpoint",
+  "off_m": 683,
+  "at": "2026-11-06T02:06:17Z"
+ },
+ {
+  "id": "elowah",
+  "name": "Elowah Falls",
+  "old": [
+   45.612,
+   -122.003
+  ],
+  "new": [
+   45.61187,
+   -121.99457
+  ],
+  "osm": "Elowah Falls",
+  "kind": "waterfall",
+  "off_m": 656,
+  "at": "2026-11-06T02:06:17Z"
+ },
+ {
+  "id": "wahclella",
+  "name": "Wahclella Falls",
+  "old": [
+   45.63,
+   -121.954
+  ],
+  "new": [
+   45.61818,
+   -121.95141
+  ],
+  "osm": "Wahclella Falls",
+  "kind": "waterfall",
+  "off_m": 1330,
+  "at": "2026-11-06T02:06:17Z"
+ },
+ {
+  "id": "punch-bowl",
+  "name": "Punch Bowl Falls (Eagle Creek)",
+  "old": [
+   45.617,
+   -121.892
+  ],
+  "new": [
+   45.62168,
+   -121.89464
+  ],
+  "osm": "Punch Bowl Falls",
+  "kind": "waterfall",
+  "off_m": 559,
+  "at": "2026-11-06T02:06:17Z"
+ },
+ {
+  "id": "dog-mtn",
+  "name": "Dog Mountain",
+  "old": [
+   45.699,
+   -121.708
+  ],
+  "new": [
+   45.71695,
+   -121.70045
+  ],
+  "osm": "Dog Mountain",
+  "kind": "peak",
+  "off_m": 2081,
+  "at": "2026-11-06T02:06:17Z"
+ },
+ {
+  "id": "tamanawas",
+  "name": "Tamanawas Falls",
+  "old": [
+   45.397,
+   -121.569
+  ],
+  "new": [
+   45.40101,
+   -121.58938
+  ],
+  "osm": "Tamanawas Falls",
+  "kind": "waterfall",
+  "off_m": 1652,
+  "at": "2026-11-06T02:06:17Z"
+ },
+ {
+  "id": "smith-rock",
+  "name": "Smith Rock State Park",
+  "old": [
+   44.367,
+   -121.137
+  ],
+  "new": [
+   44.36379,
+   -121.14664
+  ],
+  "osm": "Smith Rock",
+  "kind": "peak",
+  "off_m": 846,
+  "at": "2026-11-06T02:06:17Z"
+ }
+]

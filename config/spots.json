@@ -1,5322 +1,5350 @@
 [
-{
-"id": "steigerwald",
-"name": "Steigerwald Lake National Wildlife Refuge",
-"region": "Camas & Washougal",
-"cats": [
-"wildlife",
-"mountain",
-"birds"
-],
-"lat": 45.57068,
-"lon": -122.31292,
-"light": "sunrise",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "washougal-waterfront",
-"name": "Washougal Waterfront Park & Parkers Landing",
-"region": "Camas & Washougal",
-"cats": [
-"mountain",
-"vista"
-],
-"lat": 45.57805,
-"lon": -122.37211,
-"light": "both",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "lacamas",
-"name": "Lacamas Regional Park: Pothole Falls, Round Lake & camas lilies",
-"region": "Camas & Washougal",
-"cats": [
-"waterfall",
-"wildflowers",
-"fallcolor"
-],
-"lat": 45.60556,
-"lon": -122.40579,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-10,
-11,
-12
-]
-},
-{
-"id": "cape-horn-lookout",
-"name": "Cape Horn Lookout (SR 14 pullout)",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"vista"
-],
-"lat": 45.59,
-"lon": -122.197,
-"light": "sunrise",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "cape-horn-trail",
-"name": "Cape Horn Trail & Nancy Russell Overlook",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"vista",
-"waterfall"
-],
-"lat": 45.589,
-"lon": -122.178,
-"light": "sunrise",
-"effort": "hike",
-"months": [
-10,
-11,
-12,
-1,
-2,
-3,
-4,
-5
-]
-},
-{
-"id": "silver-star",
-"name": "Silver Star Mountain",
-"region": "Close to home",
-"cats": [
-"vista",
-"wildflowers",
-"aurora"
-],
-"lat": 45.748,
-"lon": -122.24,
-"light": "sunset",
-"effort": "hard",
-"months": [
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "moulton",
-"name": "Moulton Falls Regional Park",
-"region": "Close to home",
-"cats": [
-"waterfall",
-"fallcolor"
-],
-"lat": 45.832,
-"lon": -122.39,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-10,
-11,
-12
-]
-},
-{
-"id": "lucia",
-"name": "Lucia Falls",
-"region": "Close to home",
-"cats": [
-"waterfall"
-],
-"lat": 45.828,
-"lon": -122.427,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-10,
-11,
-12
-]
-},
-{
-"id": "ridgefield",
-"name": "Ridgefield National Wildlife Refuge",
-"region": "Close to home",
-"cats": [
-"wildlife",
-"fallcolor",
-"birds"
-],
-"lat": 45.79616,
-"lon": -122.74713,
-"light": "sunrise",
-"effort": "road",
-"months": [
-10,
-11,
-12,
-1,
-2,
-3
-]
-},
-{
-"id": "pittock",
-"name": "Pittock Mansion viewpoint",
-"region": "Portland",
-"cats": [
-"city",
-"mountain"
-],
-"lat": 45.525,
-"lon": -122.716,
-"light": "sunrise",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-10,
-11,
-12
-]
-},
-{
-"id": "japanese-garden",
-"name": "Portland Japanese Garden",
-"region": "Portland",
-"cats": [
-"fallcolor",
-"city"
-],
-"lat": 45.519,
-"lon": -122.708,
-"light": "overcast",
-"effort": "short",
-"months": [
-4,
-5,
-10,
-11
-]
-},
-{
-"id": "rose-garden",
-"name": "International Rose Test Garden",
-"region": "Portland",
-"cats": [
-"city",
-"mountain"
-],
-"lat": 45.519,
-"lon": -122.705,
-"light": "sunrise",
-"effort": "short",
-"months": [
-5,
-6,
-7
-]
-},
-{
-"id": "cathedral-park",
-"name": "Cathedral Park & St. Johns Bridge",
-"region": "Portland",
-"cats": [
-"city"
-],
-"lat": 45.58616,
-"lon": -122.76162,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "mt-tabor",
-"name": "Mount Tabor Park",
-"region": "Portland",
-"cats": [
-"city",
-"fallcolor"
-],
-"lat": 45.511,
-"lon": -122.594,
-"light": "sunset",
-"effort": "short",
-"months": [
-10,
-11,
-4,
-5
-]
-},
-{
-"id": "rocky-butte",
-"name": "Rocky Butte",
-"region": "Portland",
-"cats": [
-"city",
-"vista"
-],
-"lat": 45.546,
-"lon": -122.565,
-"light": "sunset",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "womens-forum",
-"name": "Portland Women's Forum (Chanticleer Point)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"vista",
-"aurora"
-],
-"lat": 45.53448,
-"lon": -122.26091,
-"light": "sunrise",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "vista-house",
-"name": "Vista House at Crown Point",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"vista"
-],
-"lat": 45.539,
-"lon": -122.244,
-"light": "sunrise",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "latourell",
-"name": "Latourell Falls",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall"
-],
-"lat": 45.537,
-"lon": -122.2178,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-10,
-11,
-12
-]
-},
-{
-"id": "shepperds-dell",
-"name": "Shepperd's Dell",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall"
-],
-"lat": 45.548,
-"lon": -122.197,
-"light": "overcast",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-10,
-11,
-12
-]
-},
-{
-"id": "bridal-veil",
-"name": "Bridal Veil Falls",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall"
-],
-"lat": 45.554,
-"lon": -122.183,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-10,
-11,
-12
-]
-},
-{
-"id": "larch-mtn",
-"name": "Larch Mountain: Sherrard Point",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"mountain",
-"vista",
-"aurora"
-],
-"lat": 45.53,
-"lon": -122.088,
-"light": "both",
-"effort": "short",
-"months": [
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "wahkeena",
-"name": "Wahkeena Falls",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall"
-],
-"lat": 45.574,
-"lon": -122.127,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-10,
-11,
-12
-]
-},
-{
-"id": "multnomah",
-"name": "Multnomah Falls",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall"
-],
-"lat": 45.576,
-"lon": -122.116,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-10,
-11,
-12
-]
-},
-{
-"id": "horsetail",
-"name": "Horsetail & Ponytail Falls",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall",
-"fallcolor"
-],
-"lat": 45.59,
-"lon": -122.068,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-10,
-11
-]
-},
-{
-"id": "elowah",
-"name": "Elowah Falls",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall"
-],
-"lat": 45.612,
-"lon": -122.003,
-"light": "overcast",
-"effort": "short",
-"months": [
-3,
-4,
-5,
-6,
-10,
-11
-]
-},
-{
-"id": "wahclella",
-"name": "Wahclella Falls",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall"
-],
-"lat": 45.63,
-"lon": -121.954,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-10,
-11,
-12
-]
-},
-{
-"id": "punch-bowl",
-"name": "Punch Bowl Falls (Eagle Creek)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall"
-],
-"lat": 45.617,
-"lon": -121.892,
-"light": "overcast",
-"effort": "hike",
-"months": [
-4,
-5,
-6,
-10
-]
-},
-{
-"id": "starvation",
-"name": "Starvation Creek, Cabin Creek & Hole-in-the-Wall Falls",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall"
-],
-"lat": 45.689,
-"lon": -121.69,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-11,
-12
-]
-},
-{
-"id": "beacon-rock",
-"name": "Beacon Rock",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"vista"
-],
-"lat": 45.629,
-"lon": -122.021,
-"light": "both",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "hamilton",
-"name": "Rodney & Hardy Falls (Hamilton Mountain)",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"waterfall",
-"fallcolor"
-],
-"lat": 45.63277,
-"lon": -122.0201,
-"light": "overcast",
-"effort": "hike",
-"months": [
-3,
-4,
-5,
-10,
-11
-]
-},
-{
-"id": "dog-mtn",
-"name": "Dog Mountain",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"wildflowers",
-"vista"
-],
-"lat": 45.699,
-"lon": -121.708,
-"light": "sunset",
-"effort": "hard",
-"months": [
-4,
-5,
-6
-]
-},
-{
-"id": "panther-creek",
-"name": "Panther Creek Falls",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"waterfall",
-"fallcolor"
-],
-"lat": 45.867,
-"lon": -121.826,
-"light": "overcast",
-"effort": "short",
-"months": [
-4,
-5,
-6,
-9,
-10,
-11
-]
-},
-{
-"id": "falls-creek",
-"name": "Falls Creek Falls",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"waterfall"
-],
-"lat": 45.91,
-"lon": -121.913,
-"light": "overcast",
-"effort": "hike",
-"months": [
-4,
-5,
-6,
-10
-]
-},
-{
-"id": "cook-underwood",
-"name": "Cook-Underwood Road pullouts",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"mountain",
-"vista"
-],
-"lat": 45.727,
-"lon": -121.533,
-"light": "sunrise",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "coyote-wall",
-"name": "Coyote Wall",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"wildflowers",
-"vista",
-"geology"
-],
-"lat": 45.7,
-"lon": -121.4,
-"light": "sunset",
-"effort": "hike",
-"months": [
-3,
-4,
-5
-]
-},
-{
-"id": "catherine-creek",
-"name": "Catherine Creek Natural Arch",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"wildflowers",
-"geology",
-"birds"
-],
-"lat": 45.711,
-"lon": -121.362,
-"light": "both",
-"effort": "short",
-"months": [
-3,
-4,
-5,
-10
-]
-},
-{
-"id": "panorama-point",
-"name": "Panorama Point (Hood River)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"mountain",
-"fallcolor",
-"vista",
-"aurora"
-],
-"lat": 45.68722,
-"lon": -121.50007,
-"light": "sunset",
-"effort": "road",
-"months": [
-4,
-9,
-10
-]
-},
-{
-"id": "mosier-plateau",
-"name": "Mosier Plateau",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"wildflowers"
-],
-"lat": 45.68633,
-"lon": -121.38842,
-"light": "sunset",
-"effort": "hike",
-"months": [
-3,
-4,
-5
-]
-},
-{
-"id": "rowena",
-"name": "Rowena Crest & Tom McCall Preserve",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"wildflowers",
-"vista"
-],
-"lat": 45.683,
-"lon": -121.299,
-"light": "both",
-"effort": "short",
-"months": [
-4,
-5,
-10
-]
-},
-{
-"id": "lyle-cherry",
-"name": "Lyle Cherry Orchard",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"wildflowers",
-"vista"
-],
-"lat": 45.68616,
-"lon": -121.26564,
-"light": "sunset",
-"effort": "hike",
-"months": [
-3,
-4,
-5
-]
-},
-{
-"id": "dalles-mtn",
-"name": "Columbia Hills: Dalles Mountain Ranch",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"wildflowers",
-"mountain"
-],
-"lat": 45.698,
-"lon": -121.124,
-"light": "both",
-"effort": "short",
-"months": [
-4,
-5
-]
-},
-{
-"id": "horsethief",
-"name": "Horsethief Butte",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"geology",
-"vista"
-],
-"lat": 45.65,
-"lon": -121.096,
-"light": "sunrise",
-"effort": "short",
-"months": [
-3,
-4,
-5,
-9,
-10
-]
-},
-{
-"id": "stonehenge",
-"name": "Maryhill Stonehenge",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"vista",
-"night"
-],
-"lat": 45.694,
-"lon": -120.806,
-"light": "sunset",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "goldendale",
-"name": "Goldendale Observatory State Park",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"night",
-"aurora"
-],
-"lat": 45.839,
-"lon": -120.815,
-"light": "night",
-"effort": "road",
-"months": [
-5,
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "brooks",
-"name": "Brooks Memorial State Park",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"night",
-"aurora"
-],
-"lat": 45.93381,
-"lon": -120.66416,
-"light": "night",
-"effort": "road",
-"months": [
-5,
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "trillium",
-"name": "Trillium Lake",
-"region": "Mt. Hood",
-"cats": [
-"mountain",
-"reflection"
-],
-"lat": 45.271,
-"lon": -121.737,
-"light": "sunrise",
-"effort": "short",
-"months": [
-6,
-7,
-8,
-9,
-10,
-1,
-2
-]
-},
-{
-"id": "mirror-lake",
-"name": "Mirror Lake",
-"region": "Mt. Hood",
-"cats": [
-"mountain",
-"reflection"
-],
-"lat": 45.297,
-"lon": -121.793,
-"light": "sunrise",
-"effort": "hike",
-"months": [
-7,
-8,
-9,
-10
-],
-"park": [
-45.302708,
--121.768864
-]
-},
-{
-"id": "lost-lake",
-"name": "Lost Lake",
-"region": "Mt. Hood",
-"cats": [
-"mountain",
-"reflection",
-"night",
-"fallcolor"
-],
-"lat": 45.495,
-"lon": -121.822,
-"light": "sunrise",
-"effort": "short",
-"months": [
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "tamanawas",
-"name": "Tamanawas Falls",
-"region": "Mt. Hood",
-"cats": [
-"waterfall",
-"fallcolor"
-],
-"lat": 45.397,
-"lon": -121.569,
-"light": "overcast",
-"effort": "hike",
-"months": [
-6,
-7,
-10,
-11
-],
-"park": [
-45.397245,
--121.57155
-]
-},
-{
-"id": "ramona",
-"name": "Ramona Falls",
-"region": "Mt. Hood",
-"cats": [
-"waterfall"
-],
-"lat": 45.381,
-"lon": -121.775,
-"light": "overcast",
-"effort": "hike",
-"months": [
-7,
-8,
-9,
-10
-],
-"park": [
-45.387,
--121.8321
-]
-},
-{
-"id": "silver-falls",
-"name": "Silver Falls State Park: Trail of Ten Falls",
-"region": "Willamette Valley",
-"cats": [
-"waterfall",
-"fallcolor"
-],
-"lat": 44.878,
-"lon": -122.655,
-"light": "overcast",
-"effort": "hike",
-"months": [
-2,
-3,
-4,
-5,
-10
-]
-},
-{
-"id": "coldwater",
-"name": "Coldwater Lake & Science and Learning Center",
-"region": "Mt. St. Helens",
-"cats": [
-"mountain",
-"reflection"
-],
-"lat": 46.29,
-"lon": -122.268,
-"light": "sunset",
-"effort": "short",
-"months": [
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "castle-lake",
-"name": "Castle Lake Viewpoint",
-"region": "Mt. St. Helens",
-"cats": [
-"mountain",
-"vista"
-],
-"lat": 46.2967,
-"lon": -122.2994,
-"light": "sunset",
-"effort": "road",
-"months": [
-5,
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "jro",
-"name": "Johnston Ridge Observatory",
-"region": "Mt. St. Helens",
-"cats": [
-"mountain",
-"wildflowers"
-],
-"lat": 46.276,
-"lon": -122.217,
-"light": "sunset",
-"effort": "road",
-"months": [
-6,
-7,
-8,
-9
-]
-},
-{
-"id": "windy-ridge",
-"name": "Windy Ridge Viewpoint",
-"region": "Mt. St. Helens",
-"cats": [
-"mountain",
-"vista"
-],
-"lat": 46.2496,
-"lon": -122.1369,
-"light": "sunrise",
-"effort": "short",
-"months": [
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "lahar",
-"name": "Lahar Viewpoint",
-"region": "Mt. St. Helens",
-"cats": [
-"mountain",
-"geology"
-],
-"lat": 46.15951,
-"lon": -122.09534,
-"light": "both",
-"effort": "road",
-"months": [
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "lower-lewis",
-"name": "Lower Lewis River Falls",
-"region": "Lewis River",
-"cats": [
-"waterfall",
-"fallcolor"
-],
-"lat": 46.154,
-"lon": -121.88,
-"light": "overcast",
-"effort": "short",
-"months": [
-5,
-6,
-9,
-10
-]
-},
-{
-"id": "curly-creek",
-"name": "Curly Creek Falls",
-"region": "Lewis River",
-"cats": [
-"waterfall",
-"geology"
-],
-"lat": 46.058,
-"lon": -121.972,
-"light": "overcast",
-"effort": "short",
-"months": [
-4,
-5,
-6,
-10
-]
-},
-{
-"id": "trout-lake",
-"name": "Trout Lake valley",
-"region": "Mt. Adams",
-"cats": [
-"mountain",
-"aurora"
-],
-"lat": 45.997,
-"lon": -121.528,
-"light": "sunrise",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "takhlakh",
-"name": "Takhlakh Lake",
-"region": "Mt. Adams",
-"cats": [
-"mountain",
-"reflection",
-"night"
-],
-"lat": 46.278,
-"lon": -121.598,
-"light": "sunrise",
-"effort": "short",
-"months": [
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "bird-creek",
-"name": "Bird Creek Meadows",
-"region": "Mt. Adams",
-"cats": [
-"wildflowers",
-"mountain",
-"waterfall"
-],
-"lat": 46.15096,
-"lon": -121.44758,
-"light": "sunrise",
-"effort": "hike",
-"months": [
-7,
-8
-]
-},
-{
-"id": "reflection-lakes",
-"name": "Reflection Lakes",
-"region": "Mt. Rainier",
-"cats": [
-"mountain",
-"reflection",
-"wildflowers"
-],
-"lat": 46.768,
-"lon": -121.731,
-"light": "sunrise",
-"effort": "road",
-"months": [
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "tipsoo",
-"name": "Tipsoo Lake",
-"region": "Mt. Rainier",
-"cats": [
-"mountain",
-"reflection",
-"fallcolor"
-],
-"lat": 46.869,
-"lon": -121.519,
-"light": "sunrise",
-"effort": "road",
-"months": [
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "cannon-beach",
-"name": "Cannon Beach & Haystack Rock",
-"region": "Coast",
-"cats": [
-"coast"
-],
-"lat": 45.884,
-"lon": -123.968,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "ecola",
-"name": "Ecola State Park: Ecola Point & Indian Beach",
-"region": "Coast",
-"cats": [
-"coast",
-"vista"
-],
-"lat": 45.919,
-"lon": -123.977,
-"light": "sunrise",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "hug-point",
-"name": "Hug Point",
-"region": "Coast",
-"cats": [
-"coast",
-"waterfall"
-],
-"lat": 45.83131,
-"lon": -123.96183,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "cape-kiwanda",
-"name": "Cape Kiwanda",
-"region": "Coast",
-"cats": [
-"coast",
-"geology"
-],
-"lat": 45.222,
-"lon": -123.972,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "neskowin",
-"name": "Neskowin Ghost Forest",
-"region": "Coast",
-"cats": [
-"coast"
-],
-"lat": 45.103,
-"lon": -123.983,
-"light": "sunset",
-"effort": "short",
-"months": [
-11,
-12,
-1,
-2,
-3
-]
-},
-{
-"id": "cape-disappointment",
-"name": "Cape Disappointment & North Head Lighthouse",
-"region": "Coast",
-"cats": [
-"coast"
-],
-"lat": 46.299,
-"lon": -124.078,
-"light": "sunset",
-"effort": "short",
-"months": [
-10,
-11,
-12,
-1,
-2,
-3
-]
-},
-{
-"id": "smith-rock",
-"name": "Smith Rock State Park",
-"region": "Central Oregon",
-"cats": [
-"geology",
-"mountain"
-],
-"lat": 44.367,
-"lon": -121.137,
-"light": "sunrise",
-"effort": "short",
-"months": [
-3,
-4,
-5,
-9,
-10,
-11
-]
-},
-{
-"id": "painted-hills",
-"name": "Painted Hills (John Day Fossil Beds)",
-"region": "Central Oregon",
-"cats": [
-"geology"
-],
-"lat": 44.659,
-"lon": -120.264,
-"light": "sunset",
-"effort": "short",
-"months": [
-4,
-5,
-6,
-9,
-10
-]
-},
-{
-"id": "lacamas-lake",
-"name": "Lacamas Lake from Heritage Park & the Heritage Trail",
-"region": "Camas & Washougal",
-"cats": [
-"reflection",
-"mountain",
-"wildflowers",
-"birds"
-],
-"lat": 45.637,
-"lon": -122.46,
-"light": "sunrise",
-"effort": "short",
-"months": [
-11,
-12,
-1,
-2,
-3,
-4,
-5
-]
-},
-{
-"id": "greenway",
-"name": "Washougal River Greenway footbridge",
-"region": "Camas & Washougal",
-"cats": [
-"mountain",
-"wildlife"
-],
-"lat": 45.5871,
-"lon": -122.39079,
-"light": "both",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "dougan",
-"name": "Dougan Falls & Dougan Creek Falls",
-"region": "Camas & Washougal",
-"cats": [
-"waterfall",
-"fallcolor",
-"wildlife"
-],
-"lat": 45.675,
-"lon": -122.152,
-"light": "overcast",
-"effort": "road",
-"months": [
-10,
-11,
-12,
-1,
-2,
-3,
-4,
-5
-]
-},
-{
-"id": "salmon-falls",
-"name": "Salmon Falls Bridge & Washougal Hatchery",
-"region": "Camas & Washougal",
-"cats": [
-"wildlife"
-],
-"lat": 45.6148,
-"lon": -122.2019,
-"light": "overcast",
-"effort": "road",
-"months": [
-9,
-10,
-11
-]
-},
-{
-"id": "prindle",
-"name": "Prindle Mountain & Enchanted Forest",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"vista",
-"wildflowers"
-],
-"lat": 45.588,
-"lon": -122.155,
-"light": "overcast",
-"effort": "hard",
-"months": [
-3,
-4,
-5,
-6,
-10
-]
-},
-{
-"id": "archer",
-"name": "Archer Mountain: Scott Point & Arrow Point",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"vista",
-"wildflowers",
-"waterfall"
-],
-"lat": 45.633,
-"lon": -122.082,
-"light": "sunrise",
-"effort": "hard",
-"months": [
-3,
-4,
-5,
-10,
-11
-]
-},
-{
-"id": "hardy-ridge",
-"name": "Hardy Ridge: Phlox Point",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"vista",
-"wildflowers"
-],
-"lat": 45.655,
-"lon": -122.02,
-"light": "sunset",
-"effort": "hard",
-"months": [
-5,
-6,
-9,
-10
-],
-"park": [
-45.659826,
--122.030664
-]
-},
-{
-"id": "hamilton-springs",
-"name": "Hamilton Creek & Ives Island chum salmon",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"wildlife"
-],
-"lat": 45.638,
-"lon": -121.968,
-"light": "overcast",
-"effort": "short",
-"months": [
-11,
-12
-]
-},
-{
-"id": "franz-lake",
-"name": "Franz Lake overlook (tundra swans)",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"wildlife"
-],
-"lat": 45.60476,
-"lon": -122.07755,
-"light": "sunrise",
-"effort": "road",
-"months": [
-11,
-12,
-1,
-2,
-3
-]
-},
-{
-"id": "sandy-delta",
-"name": "Sandy River Delta",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"wildlife",
-"reflection",
-"mountain"
-],
-"lat": 45.54995,
-"lon": -122.36719,
-"light": "sunrise",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "lewis-clark-srs",
-"name": "Lewis & Clark State Recreation Site (Broughton's Bluff)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"vista"
-],
-"lat": 45.53921,
-"lon": -122.37583,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-10,
-11,
-12
-]
-},
-{
-"id": "rooster-rock",
-"name": "Rooster Rock State Park beach",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"vista",
-"night"
-],
-"lat": 45.547,
-"lon": -122.239,
-"light": "sunrise",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "angels-rest",
-"name": "Angel's Rest (and Devil's Rest viewpoints)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"vista",
-"fallcolor",
-"wildflowers"
-],
-"lat": 45.575,
-"lon": -122.152,
-"light": "both",
-"effort": "hike",
-"months": [
-1,
-2,
-3,
-4,
-5,
-10,
-11,
-12
-],
-"park": [
-45.560627,
--122.17233
-]
-},
-{
-"id": "jonsrud",
-"name": "Jonsrud Viewpoint (Sandy)",
-"region": "Mt. Hood",
-"cats": [
-"mountain",
-"vista",
-"aurora"
-],
-"lat": 45.405,
-"lon": -122.265,
-"light": "sunrise",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "cascade-locks",
-"name": "Cascade Locks Marine Park & Thunder Island",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"vista",
-"city",
-"night"
-],
-"lat": 45.669,
-"lon": -121.897,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "bonneville-hatchery",
-"name": "Bonneville Fish Hatchery",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"wildlife"
-],
-"lat": 45.633,
-"lon": -121.957,
-"light": "overcast",
-"effort": "road",
-"months": [
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "wind-mtn",
-"name": "Wind Mountain",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"vista"
-],
-"lat": 45.716,
-"lon": -121.789,
-"light": "sunset",
-"effort": "hike",
-"months": [
-4,
-5,
-6,
-7,
-9,
-10,
-11
-],
-"park": [
-45.7136,
--121.7522
-]
-},
-{
-"id": "mitchell-point",
-"name": "Mitchell Point Tunnel (Historic Highway State Trail)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"vista"
-],
-"lat": 45.705,
-"lon": -121.617,
-"light": "overcast",
-"effort": "hike",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "sunset-falls",
-"name": "Sunset Falls (East Fork Lewis)",
-"region": "Camas & Washougal",
-"cats": [
-"waterfall"
-],
-"lat": 45.818,
-"lon": -122.254,
-"light": "overcast",
-"effort": "short",
-"months": [
-10,
-11,
-12,
-1,
-2,
-3,
-4,
-5,
-6
-]
-},
-{
-"id": "hidden-falls",
-"name": "Hidden Falls (Tarbell Trail)",
-"region": "Camas & Washougal",
-"cats": [
-"waterfall"
-],
-"lat": 45.785,
-"lon": -122.295,
-"light": "overcast",
-"effort": "hike",
-"months": [
-3,
-4,
-5,
-10,
-11
-]
-},
-{
-"id": "laurance-lake",
-"name": "Laurance Lake & Parkdale",
-"region": "Hood River Valley",
-"cats": [
-"mountain",
-"reflection"
-],
-"lat": 45.452,
-"lon": -121.66,
-"light": "sunset",
-"effort": "road",
-"months": [
-5,
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "fruit-loop",
-"name": "Hood River Fruit Loop orchards",
-"region": "Hood River Valley",
-"cats": [
-"mountain",
-"fallcolor",
-"wildflowers"
-],
-"lat": 45.56,
-"lon": -121.59,
-"light": "sunset",
-"effort": "road",
-"months": [
-4,
-9,
-10
-]
-},
-{
-"id": "green-mtn-camas",
-"name": "Green Mountain Open Space (Camas)",
-"region": "Camas & Washougal",
-"cats": [
-"fallcolor",
-"geology"
-],
-"lat": 45.65,
-"lon": -122.482,
-"light": "overcast",
-"effort": "hike",
-"months": [
-10,
-11,
-4,
-5
-]
-},
-{
-"id": "fallen-leaf",
-"name": "Fallen Leaf Lake Park",
-"region": "Camas & Washougal",
-"cats": [
-"reflection",
-"fallcolor"
-],
-"lat": 45.60019,
-"lon": -122.41134,
-"light": "overcast",
-"effort": "short",
-"months": [
-10,
-11,
-4,
-5
-]
-},
-{
-"id": "hathaway",
-"name": "Hathaway & Schmid Family Parks (Washougal River bend)",
-"region": "Camas & Washougal",
-"cats": [
-"fallcolor",
-"wildlife"
-],
-"lat": 45.58295,
-"lon": -122.34466,
-"light": "overcast",
-"effort": "short",
-"months": [
-10,
-11,
-12,
-1,
-2,
-3,
-4
-]
-},
-{
-"id": "washougal-river-mp3",
-"name": "Washougal River Road, mileposts 3\u20135 (rock shelves)",
-"region": "Camas & Washougal",
-"cats": [
-"waterfall",
-"fallcolor"
-],
-"lat": 45.6239,
-"lon": -122.3313,
-"light": "overcast",
-"effort": "road",
-"months": [
-10,
-11,
-12,
-1,
-2,
-3,
-4
-]
-},
-{
-"id": "camas-mill",
-"name": "Camas paper mill skyline (photograph it while it lasts)",
-"region": "Camas & Washougal",
-"cats": [
-"city"
-],
-"lat": 45.585,
-"lon": -122.408,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "scout-vista-hood",
-"name": "Scout pick: Vista House stacked under Mt. Hood, from Marina Park",
-"region": "Camas & Washougal",
-"cats": [
-"alignment",
-"mountain",
-"vista"
-],
-"lat": 45.5785,
-"lon": -122.38,
-"light": "sunrise",
-"effort": "road",
-"months": [
-10,
-11,
-12,
-1,
-2,
-3
-]
-},
-{
-"id": "scout-hood-hides",
-"name": "Scout note: Where Larch Mountain hides Mt. Hood (Fern Prairie & Mount Norway heights)",
-"region": "Camas & Washougal",
-"cats": [
-"mountain"
-],
-"lat": 45.628,
-"lon": -122.316,
-"light": "both",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "scout-dark-washougal",
-"name": "Scout pick: Dark-sky pull-offs up Washougal River Road",
-"region": "Camas & Washougal",
-"cats": [
-"night"
-],
-"lat": 45.69,
-"lon": -122.13,
-"light": "night",
-"effort": "road",
-"months": [
-5,
-6,
-7,
-8,
-9
-]
-},
-{
-"id": "scout-crown-glow",
-"name": "Scout pick: Summer sunset light on Crown Point from Steigerwald",
-"region": "Camas & Washougal",
-"cats": [
-"vista"
-],
-"lat": 45.567,
-"lon": -122.296,
-"light": "sunset",
-"effort": "short",
-"months": [
-5,
-6,
-7,
-8
-]
-},
-{
-"id": "scout-camas-slough",
-"name": "Scout pick: Camas Slough & Lady Island by kayak or boat",
-"region": "Camas & Washougal",
-"cats": [
-"reflection",
-"mountain",
-"city"
-],
-"lat": 45.575,
-"lon": -122.412,
-"light": "sunrise",
-"effort": "short",
-"months": [
-3,
-4,
-9,
-10,
-11
-]
-},
-{
-"id": "scout-angels-hood",
-"name": "Scout pick: Mt. Hood rising over Angel's Rest, from Nancy Russell Overlook",
-"region": "Camas & Washougal",
-"cats": [
-"alignment",
-"mountain",
-"vista"
-],
-"lat": 45.594,
-"lon": -122.196,
-"light": "sunrise",
-"effort": "short",
-"months": [
-11,
-12,
-1
-]
-},
-{
-"id": "scout-capehorn-foothill-sunset",
-"name": "Scout pick: Washougal foothills sunset calendar (Strunk Rd, Nancy Russell & Pioneer Point)",
-"region": "Camas & Washougal",
-"cats": [
-"alignment",
-"city",
-"vista"
-],
-"lat": 45.597,
-"lon": -122.188,
-"light": "sunset",
-"effort": "short",
-"months": [
-9,
-10,
-2,
-3
-]
-},
-{
-"id": "scout-fern-prairie-sunset",
-"name": "Scout pick: Fern Prairie by Grove Field (sunrise & sunset alignments)",
-"region": "Camas & Washougal",
-"cats": [
-"alignment",
-"city",
-"mountain"
-],
-"lat": 45.6285,
-"lon": -122.3995,
-"light": "both",
-"effort": "road",
-"months": [
-9,
-10,
-11,
-12,
-1,
-2,
-3
-]
-},
-{
-"id": "scout-mt-norway-sunset",
-"name": "Scout pick: Mount Norway uplands sunsets (about 1,100 ft)",
-"region": "Camas & Washougal",
-"cats": [
-"alignment",
-"city"
-],
-"lat": 45.615,
-"lon": -122.29,
-"light": "sunset",
-"effort": "road",
-"months": [
-10,
-11,
-1,
-2,
-3
-]
-},
-{
-"id": "scout-riverfront-sunsets",
-"name": "Scout pick: Washougal riverfront sunset calendar (Marina Park, Cottonwood Beach, Steigerwald)",
-"region": "Camas & Washougal",
-"cats": [
-"alignment",
-"city",
-"reflection"
-],
-"lat": 45.574,
-"lon": -122.355,
-"light": "sunset",
-"effort": "short",
-"months": [
-4,
-5,
-8,
-10,
-11,
-2,
-3
-]
-},
-{
-"id": "scout-rooster-hood",
-"name": "Scout pick: Rooster Rock pillar under Mt. Hood, from the Steigerwald dike",
-"region": "Camas & Washougal",
-"cats": [
-"alignment",
-"mountain"
-],
-"lat": 45.5655,
-"lon": -122.2985,
-"light": "sunrise",
-"effort": "short",
-"months": [
-10,
-11,
-2
-]
-},
-{
-"id": "scout-capehorn-lookout-sunrise",
-"name": "Scout pick: Sunrise behind Angel's Rest from the Cape Horn Lookout (SR 14)",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"alignment",
-"vista"
-],
-"lat": 45.5895,
-"lon": -122.1985,
-"light": "sunrise",
-"effort": "road",
-"months": [
-10,
-11,
-1,
-2
-]
-},
-{
-"id": "scout-broughton-bridge-hood",
-"name": "Scout pick: I-205 Glenn Jackson Bridge under Mt. Hood, from Broughton Beach",
-"region": "Portland",
-"cats": [
-"alignment",
-"mountain",
-"city"
-],
-"lat": 45.598,
-"lon": -122.585,
-"light": "sunrise",
-"effort": "short",
-"months": [
-10,
-11,
-2
-]
-},
-{
-"id": "scout-womens-forum-sunrise",
-"name": "Scout pick: Summer sunrise behind Angel's Rest & Beacon Rock, from Women's Forum",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"alignment",
-"vista"
-],
-"lat": 45.5345,
-"lon": -122.2614,
-"light": "sunrise",
-"effort": "road",
-"months": [
-5,
-7
-]
-},
-{
-"id": "woodburn-falls",
-"name": "Woodburn Falls (Lake to Lake Trail)",
-"region": "Camas & Washougal",
-"cats": [
-"waterfall",
-"fallcolor",
-"wildflowers"
-],
-"lat": 45.617,
-"lon": -122.397,
-"light": "overcast",
-"effort": "hike",
-"months": [
-10,
-11,
-12,
-1,
-2,
-3,
-4,
-5
-]
-},
-{
-"id": "husum-falls",
-"name": "Husum Falls (White Salmon River)",
-"region": "East Gorge \u00b7 Washington",
-"cats": [
-"waterfall",
-"fallcolor"
-],
-"lat": 45.7997,
-"lon": -121.4866,
-"light": "overcast",
-"effort": "road",
-"months": [
-7,
-8,
-9,
-10,
-11
-]
-},
-{
-"id": "klickitat-narrows",
-"name": "Klickitat River Narrows (Lyle)",
-"region": "East Gorge \u00b7 Washington",
-"cats": [
-"fallcolor",
-"geology"
-],
-"lat": 45.6965,
-"lon": -121.2895,
-"light": "overcast",
-"effort": "short",
-"months": [
-3,
-4,
-5,
-10,
-11
-]
-},
-{
-"id": "balfour-klickitat",
-"name": "Balfour-Klickitat overlook loop",
-"region": "East Gorge \u00b7 Washington",
-"cats": [
-"vista",
-"wildflowers",
-"fallcolor",
-"birds"
-],
-"lat": 45.6935,
-"lon": -121.2965,
-"light": "sunset",
-"effort": "short",
-"months": [
-12,
-1,
-2,
-3,
-4,
-5,
-10
-]
-},
-{
-"id": "swale-canyon",
-"name": "Swale Canyon (Klickitat Rail Trail)",
-"region": "East Gorge \u00b7 Washington",
-"cats": [
-"geology",
-"wildflowers"
-],
-"lat": 45.7224,
-"lon": -121.061,
-"light": "both",
-"effort": "hike",
-"months": [
-3,
-4,
-5,
-10,
-11
-]
-},
-{
-"id": "maryhill-loops",
-"name": "Maryhill Loops Road (switchbacks)",
-"region": "East Gorge \u00b7 Washington",
-"cats": [
-"vista",
-"geology"
-],
-"lat": 45.6786,
-"lon": -120.862,
-"light": "sunset",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "mosier-tunnels",
-"name": "Mosier Twin Tunnels (Historic Hwy State Trail)",
-"region": "East Gorge \u00b7 Oregon",
-"cats": [
-"vista",
-"geology",
-"fallcolor"
-],
-"lat": 45.6858,
-"lon": -121.3921,
-"light": "both",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "memaloose-overlook",
-"name": "Memaloose Overlook (Historic Hwy)",
-"region": "East Gorge \u00b7 Oregon",
-"cats": [
-"vista"
-],
-"lat": 45.695,
-"lon": -121.348,
-"light": "sunset",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "white-river-falls",
-"name": "White River Falls State Park",
-"region": "East Gorge \u00b7 Oregon",
-"cats": [
-"waterfall",
-"geology"
-],
-"lat": 45.24133,
-"lon": -121.0897,
-"light": "sunset",
-"effort": "short",
-"months": [
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "deschutes-confluence",
-"name": "Deschutes River mouth (Deschutes River SRA)",
-"region": "East Gorge \u00b7 Oregon",
-"cats": [
-"geology",
-"vista"
-],
-"lat": 45.632,
-"lon": -120.908,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "sleeping-beauty",
-"name": "Sleeping Beauty Peak (Mt. Adams view)",
-"region": "Mt. Adams",
-"cats": [
-"mountain",
-"vista",
-"fallcolor"
-],
-"lat": 46.076,
-"lon": -121.661,
-"light": "sunrise",
-"effort": "hike",
-"months": [
-7,
-8,
-9,
-10
-],
-"park": [
-46.085,
--121.6581
-]
-},
-{
-"id": "conboy-lake",
-"name": "Conboy Lake NWR (Willard Springs)",
-"region": "Mt. Adams",
-"cats": [
-"wildlife",
-"mountain",
-"fallcolor",
-"aurora",
-"birds"
-],
-"lat": 45.96496,
-"lon": -121.34346,
-"light": "both",
-"effort": "short",
-"months": [
-3,
-4,
-5,
-9,
-10,
-11
-]
-},
-{
-"id": "trout-lake-preserve",
-"name": "Trout Lake Natural Area Preserve deck",
-"region": "Mt. Adams",
-"cats": [
-"mountain",
-"reflection",
-"wildflowers"
-],
-"lat": 46.02401,
-"lon": -121.56542,
-"light": "sunrise",
-"effort": "road",
-"months": [
-5,
-6,
-7,
-9,
-10
-]
-},
-{
-"id": "satus-pass",
-"name": "Satus Pass (US 97 summit)",
-"region": "East Gorge \u00b7 Washington",
-"cats": [
-"night",
-"aurora"
-],
-"lat": 45.985,
-"lon": -120.653,
-"light": "night",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "vancouver-lake-birding",
-"name": "Vancouver Lake & Shillapoo wildlife areas",
-"region": "Close to home",
-"cats": [
-"birds",
-"wildlife",
-"reflection"
-],
-"lat": 45.6826,
-"lon": -122.7412,
-"light": "sunrise",
-"effort": "short",
-"months": [
-8,
-9,
-10,
-11,
-12,
-1,
-2,
-3
-]
-},
-{
-"id": "sauvie-birding",
-"name": "Sauvie Island Wildlife Area (Reeder Rd & Rentenaar Rd)",
-"region": "Portland",
-"cats": [
-"birds",
-"wildlife",
-"mountain"
-],
-"lat": 45.7685,
-"lon": -122.7707,
-"light": "sunrise",
-"effort": "road",
-"months": [
-10,
-11,
-12,
-1,
-2,
-3
-]
-},
-{
-"id": "dalles-dam-eagles",
-"name": "The Dalles Dam & waterfront (winter eagles)",
-"region": "East Gorge \u00b7 Oregon",
-"cats": [
-"birds",
-"wildlife"
-],
-"lat": 45.6054,
-"lon": -121.1323,
-"light": "overcast",
-"effort": "road",
-"months": [
-12,
-1,
-2
-]
-},
-{
-"id": "bonney-butte",
-"name": "Bonney Butte HawkWatch (Mt. Hood)",
-"region": "Mt. Hood",
-"cats": [
-"birds",
-"wildlife",
-"vista"
-],
-"lat": 45.26282,
-"lon": -121.59299,
-"light": "both",
-"effort": "short",
-"months": [
-9,
-10
-]
-},
-{
-"id": "frenchmans-bar",
-"name": "Frenchman's Bar Park (dawn goose & crane flyover)",
-"region": "Close to home",
-"cats": [
-"birds",
-"wildlife",
-"mountain"
-],
-"lat": 45.6803,
-"lon": -122.7677,
-"light": "sunrise",
-"effort": "short",
-"months": [
-11,
-12,
-1,
-2
-]
-},
-{
-"id": "sandy-river-delta",
-"name": "Sandy River Delta (Thousand Acres)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"birds",
-"wildlife",
-"fallcolor"
-],
-"lat": 45.5499,
-"lon": -122.3672,
-"light": "sunrise",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "larch-wa-migration",
-"name": "Larch Mountain, Clark Co. (Migration Corner & spring viewpoint)",
-"region": "Close to home",
-"cats": [
-"birds",
-"wildlife",
-"vista"
-],
-"lat": 45.728,
-"lon": -122.32,
-"light": "sunrise",
-"effort": "road",
-"months": [
-3,
-4,
-5,
-8,
-9
-]
-},
-{
-"id": "oneonta-triple",
-"name": "Triple Falls & the Oneonta Trail falls",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall",
-"fallcolor"
-],
-"lat": 45.5786,
-"lon": -122.0725,
-"light": "overcast",
-"effort": "hike",
-"months": [
-3,
-4,
-5,
-6,
-10,
-11
-],
-"park": [
-45.5896,
--122.0755
-]
-},
-{
-"id": "stacker-butte",
-"name": "Stacker Butte (Columbia Hills)",
-"region": "East Gorge \u00b7 Washington",
-"cats": [
-"wildflowers",
-"mountain",
-"vista"
-],
-"lat": 45.6949,
-"lon": -121.0925,
-"light": "both",
-"effort": "hike",
-"months": [
-4,
-5
-]
-},
-{
-"id": "sams-walker",
-"name": "Sams Walker Day Use Area (oaks & river meadows)",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"vista",
-"birds",
-"fallcolor"
-],
-"lat": 45.6118,
-"lon": -122.0519,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "elk-rock",
-"name": "Elk Rock Viewpoint (SR 504, milepost 37)",
-"region": "Mt. St. Helens",
-"cats": [
-"mountain",
-"vista",
-"geology"
-],
-"lat": 46.3,
-"lon": -122.35,
-"light": "sunset",
-"effort": "road",
-"months": [
-5,
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "silver-lake-msh",
-"name": "Silver Lake & Mount St. Helens Visitor Center",
-"region": "Mt. St. Helens",
-"cats": [
-"reflection",
-"mountain",
-"birds"
-],
-"lat": 46.2945,
-"lon": -122.8222,
-"light": "sunrise",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "ape-cave",
-"name": "Ape Cave lava tube",
-"region": "Mt. St. Helens",
-"cats": [
-"geology"
-],
-"lat": 46.1118,
-"lon": -122.2125,
-"light": "overcast",
-"effort": "short",
-"months": [
-5,
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "lava-canyon",
-"name": "Lava Canyon",
-"region": "Mt. St. Helens",
-"cats": [
-"waterfall",
-"geology"
-],
-"lat": 46.166,
-"lon": -122.0883,
-"light": "overcast",
-"effort": "hike",
-"months": [
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "timberline",
-"name": "Timberline Lodge & Silcox Hut",
-"region": "Mt. Hood",
-"cats": [
-"mountain",
-"night",
-"vista"
-],
-"lat": 45.3307,
-"lon": -121.7103,
-"light": "both",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "white-river-west",
-"name": "White River West Sno-Park (Hood & the White River)",
-"region": "Mt. Hood",
-"cats": [
-"mountain",
-"night"
-],
-"lat": 45.3039,
-"lon": -121.6746,
-"light": "both",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "bald-mtn-hood",
-"name": "Bald Mountain meadow via Top Spur (Mt. Hood)",
-"region": "Mt. Hood",
-"cats": [
-"mountain",
-"wildflowers",
-"vista"
-],
-"lat": 45.4077,
-"lon": -121.7857,
-"light": "both",
-"effort": "hike",
-"months": [
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "mciver-viewpoint",
-"name": "Milo McIver Memorial Viewpoint",
-"region": "Mt. Hood",
-"cats": [
-"mountain",
-"vista"
-],
-"lat": 45.298,
-"lon": -122.3728,
-"light": "both",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "hr-lavender",
-"name": "Hood River Lavender Farms",
-"region": "Hood River Valley",
-"cats": [
-"wildflowers",
-"mountain"
-],
-"lat": 45.612,
-"lon": -121.5479,
-"light": "both",
-"effort": "short",
-"months": [
-6,
-7,
-8
-]
-},
-{
-"id": "council-crest",
-"name": "Council Crest Park",
-"region": "Portland",
-"cats": [
-"city",
-"mountain",
-"vista"
-],
-"lat": 45.499,
-"lon": -122.7081,
-"light": "both",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "powell-butte",
-"name": "Powell Butte Nature Park",
-"region": "Portland",
-"cats": [
-"mountain",
-"city",
-"wildflowers"
-],
-"lat": 45.4947,
-"lon": -122.497,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "eastbank-esplanade",
-"name": "Eastbank Esplanade & Tilikum Crossing (night skyline)",
-"region": "Portland",
-"cats": [
-"city",
-"night"
-],
-"lat": 45.5178,
-"lon": -122.6672,
-"light": "night",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "hoyt-arboretum",
-"name": "Hoyt Arboretum (fall maples)",
-"region": "Portland",
-"cats": [
-"fallcolor"
-],
-"lat": 45.5157,
-"lon": -122.7157,
-"light": "overcast",
-"effort": "short",
-"months": [
-10,
-11
-]
-},
-{
-"id": "smith-bybee",
-"name": "Smith & Bybee Wetlands",
-"region": "Portland",
-"cats": [
-"birds",
-"wildlife"
-],
-"lat": 45.6198,
-"lon": -122.745,
-"light": "sunrise",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "tualatin-nwr",
-"name": "Tualatin River National Wildlife Refuge",
-"region": "Portland",
-"cats": [
-"birds",
-"wildlife"
-],
-"lat": 45.3822,
-"lon": -122.8322,
-"light": "sunrise",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "woodland-bottoms",
-"name": "Woodland Bottoms (Dike Road)",
-"region": "Close to home",
-"cats": [
-"birds",
-"wildlife"
-],
-"lat": 45.8719,
-"lon": -122.7768,
-"light": "sunrise",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "neahkahnie",
-"name": "Neahkahnie Viewpoint (US 101)",
-"region": "Coast",
-"cats": [
-"coast",
-"vista"
-],
-"lat": 45.742,
-"lon": -123.955,
-"light": "sunset",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "cape-meares",
-"name": "Cape Meares Lighthouse & Three Arch Rocks",
-"region": "Coast",
-"cats": [
-"coast",
-"wildlife"
-],
-"lat": 45.4865,
-"lon": -123.9783,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "stub-stewart",
-"name": "L.L. Stub Stewart State Park hilltop (dark sky)",
-"region": "Coast",
-"cats": [
-"night"
-],
-"lat": 45.7288,
-"lon": -123.1879,
-"light": "night",
-"effort": "road",
-"months": [
-4,
-5,
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "cape-horn-falls",
-"name": "Cape Horn lower loop: Cape Horn Falls & Oak View overlooks",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"waterfall",
-"vista"
-],
-"lat": 45.5835,
-"lon": -122.1885,
-"light": "overcast",
-"effort": "hike",
-"months": [
-10,
-11,
-12,
-1,
-2,
-3,
-4,
-5
-]
-},
-{
-"id": "steamboat-landing",
-"name": "Steamboat Landing Park dock (Washougal)",
-"region": "Camas & Washougal",
-"cats": [
-"reflection",
-"city",
-"birds"
-],
-"lat": 45.5756,
-"lon": -122.3543,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "grant-street-pier",
-"name": "Grant Street Pier (Vancouver Waterfront)",
-"region": "Close to home",
-"cats": [
-"city",
-"reflection"
-],
-"lat": 45.6238,
-"lon": -122.681,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "cedar-creek-grist-mill",
-"name": "Cedar Creek Grist Mill & covered bridge",
-"region": "Close to home",
-"cats": [
-"historic",
-"fallcolor"
-],
-"lat": 45.9384,
-"lon": -122.5832,
-"light": "overcast",
-"effort": "short",
-"months": [
-10,
-11,
-1,
-2,
-3,
-4,
-5
-]
-},
-{
-"id": "battle-ground-lake",
-"name": "Battle Ground Lake State Park (volcanic crater lake)",
-"region": "Close to home",
-"cats": [
-"reflection",
-"geology",
-"fallcolor"
-],
-"lat": 45.803,
-"lon": -122.4914,
-"light": "sunrise",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "lewisville-park",
-"name": "Lewisville Regional Park (East Fork Lewis River)",
-"region": "Close to home",
-"cats": [
-"fallcolor",
-"wildlife"
-],
-"lat": 45.8213,
-"lon": -122.5356,
-"light": "overcast",
-"effort": "short",
-"months": [
-9,
-10,
-11,
-12,
-1,
-2,
-3,
-4,
-5
-]
-},
-{
-"id": "fort-vancouver",
-"name": "Fort Vancouver (reconstructed stockade)",
-"region": "Close to home",
-"cats": [
-"historic",
-"city"
-],
-"lat": 45.6232,
-"lon": -122.6617,
-"light": "both",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "portland-tram",
-"name": "Portland Aerial Tram (upper patio)",
-"region": "Portland",
-"cats": [
-"city",
-"mountain"
-],
-"lat": 45.4988,
-"lon": -122.6714,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "crystal-springs",
-"name": "Crystal Springs Rhododendron Garden",
-"region": "Portland",
-"cats": [
-"garden",
-"birds",
-"fallcolor",
-"wildflowers"
-],
-"lat": 45.4786,
-"lon": -122.636,
-"light": "overcast",
-"effort": "short",
-"months": [
-4,
-5,
-10,
-11,
-12,
-1,
-2
-]
-},
-{
-"id": "stone-house",
-"name": "Stone House ('Witch's Castle') on the Lower Macleay Trail",
-"region": "Portland",
-"cats": [
-"historic",
-"waterfall"
-],
-"lat": 45.5359,
-"lon": -122.7125,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-10,
-11,
-12
-]
-},
-{
-"id": "lan-su-garden",
-"name": "Lan Su Chinese Garden",
-"region": "Portland",
-"cats": [
-"garden",
-"fallcolor",
-"city"
-],
-"lat": 45.5254,
-"lon": -122.6732,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "laurelhurst-park",
-"name": "Laurelhurst Park (fall tupelos & pond)",
-"region": "Portland",
-"cats": [
-"fallcolor",
-"reflection"
-],
-"lat": 45.5211,
-"lon": -122.6269,
-"light": "overcast",
-"effort": "short",
-"months": [
-10,
-11
-]
-},
-{
-"id": "leach-garden",
-"name": "Leach Botanical Garden",
-"region": "Portland",
-"cats": [
-"garden",
-"fallcolor"
-],
-"lat": 45.4745,
-"lon": -122.5351,
-"light": "overcast",
-"effort": "short",
-"months": [
-10,
-11
-]
-},
-{
-"id": "hulda-klager",
-"name": "Hulda Klager Lilac Gardens",
-"region": "Close to home",
-"cats": [
-"garden",
-"wildflowers",
-"historic"
-],
-"lat": 45.8972,
-"lon": -122.7533,
-"light": "overcast",
-"effort": "short",
-"months": [
-4,
-5
-]
-},
-{
-"id": "abernethy-swifts",
-"name": "Abernethy Elementary chimney (Vaux's swift roost)",
-"region": "Portland",
-"cats": [
-"birds",
-"wildlife",
-"city"
-],
-"lat": 45.5058,
-"lon": -122.6517,
-"light": "sunset",
-"effort": "short",
-"months": [
-8,
-9,
-10
-]
-},
-{
-"id": "willamette-falls-overlook",
-"name": "Willamette Falls overlook (Hwy 99E, Oregon City)",
-"region": "Portland",
-"cats": [
-"waterfall",
-"birds",
-"wildlife"
-],
-"lat": 45.3529,
-"lon": -122.6124,
-"light": "overcast",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "higgins-point-eagles",
-"name": "Wolf Lodge Bay eagles (Higgins Point, Lake Coeur d'Alene)",
-"region": "Road trip \u00b7 Idaho",
-"cats": [
-"birds",
-"wildlife",
-"reflection"
-],
-"lat": 47.6269,
-"lon": -116.6807,
-"light": "sunrise",
-"effort": "short",
-"months": [
-11,
-12,
-1
-]
-},
-{
-"id": "skagit-eagles",
-"name": "Skagit River eagles (Howard Miller Steelhead Park, Rockport)",
-"region": "Road trip \u00b7 North Cascades",
-"cats": [
-"birds",
-"wildlife"
-],
-"lat": 48.4849,
-"lon": -121.609,
-"light": "overcast",
-"effort": "short",
-"months": [
-12,
-1,
-2
-]
-},
-{
-"id": "othello-cranes",
-"name": "Othello sandhill cranes (Columbia Basin)",
-"region": "Road trip \u00b7 Eastern WA",
-"cats": [
-"birds",
-"wildlife"
-],
-"lat": 46.8201,
-"lon": -119.1653,
-"light": "both",
-"effort": "road",
-"months": [
-3,
-4
-]
-},
-{
-"id": "jewell-meadows",
-"name": "Jewell Meadows Wildlife Area (Roosevelt elk)",
-"region": "North Coast Range",
-"cats": [
-"wildlife"
-],
-"lat": 45.9489,
-"lon": -123.5262,
-"light": "both",
-"effort": "road",
-"months": [
-11,
-12,
-1,
-2,
-3,
-4
-]
-},
-{
-"id": "oak-creek-elk",
-"name": "Oak Creek elk feeding station (Naches)",
-"region": "Road trip \u00b7 Yakima",
-"cats": [
-"wildlife"
-],
-"lat": 46.7274,
-"lon": -120.8119,
-"light": "both",
-"effort": "road",
-"months": [
-12,
-1,
-2
-]
-},
-{
-"id": "cleman-bighorn",
-"name": "Cleman Mountain bighorn sheep (Old Naches Hwy)",
-"region": "Road trip \u00b7 Yakima",
-"cats": [
-"wildlife",
-"geology"
-],
-"lat": 46.7488,
-"lon": -120.7742,
-"light": "both",
-"effort": "road",
-"months": [
-12,
-1,
-2,
-3
-]
-},
-{
-"id": "oxbow-salmon",
-"name": "Oxbow Regional Park (Sandy River salmon)",
-"region": "Portland",
-"cats": [
-"wildlife",
-"fallcolor",
-"birds"
-],
-"lat": 45.4953,
-"lon": -122.2914,
-"light": "overcast",
-"effort": "short",
-"months": [
-9,
-10,
-11
-]
-},
-{
-"id": "bonneville-dam-fish",
-"name": "Bonneville Dam fish ladder windows (Bradford Island)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"wildlife",
-"historic"
-],
-"lat": 45.6416,
-"lon": -121.9436,
-"light": "overcast",
-"effort": "short",
-"months": [
-5,
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "astoria-sea-lions",
-"name": "Astoria East Mooring Basin sea lions",
-"region": "North Coast",
-"cats": [
-"wildlife",
-"city"
-],
-"lat": 46.1946,
-"lon": -123.8018,
-"light": "both",
-"effort": "short",
-"months": [
-9,
-10,
-11,
-12,
-1,
-2,
-3,
-4,
-5
-]
-},
-{
-"id": "bowerman-basin",
-"name": "Bowerman Basin (Grays Harbor NWR shorebirds)",
-"region": "Road trip \u00b7 WA coast",
-"cats": [
-"birds",
-"wildlife"
-],
-"lat": 46.9778,
-"lon": -123.9414,
-"light": "both",
-"effort": "short",
-"months": [
-4,
-5
-]
-},
-{
-"id": "government-cove",
-"name": "Government Cove peninsula (Cascade Locks)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"vista",
-"reflection"
-],
-"lat": 45.6886,
-"lon": -121.8425,
-"light": "sunrise",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "bridge-of-gods",
-"name": "Bridge of the Gods (Cascade Locks)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"vista",
-"historic",
-"fallcolor"
-],
-"lat": 45.6617,
-"lon": -121.8985,
-"light": "sunrise",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "eagle-creek-bridge",
-"name": "Eagle Creek Bridge (Historic Columbia River Highway)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"historic",
-"fallcolor"
-],
-"lat": 45.6413,
-"lon": -121.9288,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-10,
-11,
-12
-]
-},
-{
-"id": "ruckel-creek",
-"name": "Ruckel Creek falls & stone bridge",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall",
-"historic"
-],
-"lat": 45.6451,
-"lon": -121.9186,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-11,
-12
-]
-},
-{
-"id": "moffett-creek-bridge",
-"name": "Moffett Creek Bridge (Historic Hwy State Trail)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"historic"
-],
-"lat": 45.624,
-"lon": -121.9774,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "dry-creek-falls",
-"name": "Dry Creek Falls (PCT from Bridge of the Gods)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall"
-],
-"lat": 45.6572,
-"lon": -121.867,
-"light": "overcast",
-"effort": "hike",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-10,
-11,
-12
-]
-},
-{
-"id": "gorton-creek-falls",
-"name": "Gorton Creek Falls (Wyeth)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall"
-],
-"lat": 45.6817,
-"lon": -121.7722,
-"light": "overcast",
-"effort": "hike",
-"months": [
-1,
-2,
-3,
-4,
-5,
-11,
-12
-]
-},
-{
-"id": "spirit-falls",
-"name": "Spirit Falls (Little White Salmon River)",
-"region": "Gorge \u00b7 Washington",
-"cats": [
-"waterfall"
-],
-"lat": 45.726,
-"lon": -121.6339,
-"light": "overcast",
-"effort": "hard",
-"months": [
-4,
-5,
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "hood-river-bridge",
-"name": "Hood River\u2013White Salmon Interstate Bridge",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"vista",
-"historic",
-"city"
-],
-"lat": 45.7229,
-"lon": -121.4925,
-"light": "both",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "rock-slide-viaduct",
-"name": "Rock Slide Viaduct (Hatfield trail, Hood River\u2013Mosier)",
-"region": "East Gorge \u00b7 Oregon",
-"cats": [
-"historic",
-"vista"
-],
-"lat": 45.6952,
-"lon": -121.4624,
-"light": "sunrise",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "fairy-falls",
-"name": "Fairy Falls (Wahkeena Trail)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall"
-],
-"lat": 45.5717,
-"lon": -122.1222,
-"light": "overcast",
-"effort": "hike",
-"months": [
-1,
-2,
-3,
-4,
-5,
-10,
-11,
-12
-]
-},
-{
-"id": "multnomah-creek-falls",
-"name": "Wiesendanger, Dutchman & Ecola Falls (Multnomah Creek)",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"waterfall"
-],
-"lat": 45.5653,
-"lon": -122.1053,
-"light": "overcast",
-"effort": "hike",
-"months": [
-1,
-2,
-3,
-4,
-5,
-10,
-11,
-12
-]
-},
-{
-"id": "wishram-overlook",
-"name": "Wishram scenic overlook (Celilo Falls view)",
-"region": "East Gorge \u00b7 Washington",
-"cats": [
-"vista",
-"historic",
-"geology"
-],
-"lat": 45.6615,
-"lon": -120.9647,
-"light": "sunset",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "maryhill-museum",
-"name": "Maryhill Museum of Art grounds",
-"region": "East Gorge \u00b7 Washington",
-"cats": [
-"historic",
-"vista",
-"garden"
-],
-"lat": 45.6775,
-"lon": -120.8648,
-"light": "sunset",
-"effort": "short",
-"months": [
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11
-]
-},
-{
-"id": "shaker-church",
-"name": "Indian Shaker Church & Gulick Homestead (The Dalles)",
-"region": "East Gorge \u00b7 Oregon",
-"cats": [
-"historic"
-],
-"lat": 45.6058,
-"lon": -121.1341,
-"light": "sunset",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "astoria-column",
-"name": "Astoria Column & Megler Bridge view",
-"region": "North Coast",
-"cats": [
-"vista",
-"historic",
-"city"
-],
-"lat": 46.1813,
-"lon": -123.8176,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "peter-iredale",
-"name": "Peter Iredale shipwreck (Fort Stevens)",
-"region": "North Coast",
-"cats": [
-"coast",
-"historic"
-],
-"lat": 46.1784,
-"lon": -123.9811,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "short-sand",
-"name": "Short Sand Beach (Oswald West State Park)",
-"region": "Coast",
-"cats": [
-"coast",
-"waterfall"
-],
-"lat": 45.7622,
-"lon": -123.9608,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "twin-rocks",
-"name": "Twin Rocks (Rockaway Beach)",
-"region": "Coast",
-"cats": [
-"coast",
-"geology"
-],
-"lat": 45.6012,
-"lon": -123.9479,
-"light": "sunset",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "cape-lookout",
-"name": "Cape Lookout State Park",
-"region": "Coast",
-"cats": [
-"coast",
-"vista",
-"wildlife"
-],
-"lat": 45.3644,
-"lon": -123.9654,
-"light": "sunset",
-"effort": "hike",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "cascade-head",
-"name": "Cascade Head Preserve meadows",
-"region": "Coast",
-"cats": [
-"coast",
-"vista",
-"wildflowers"
-],
-"lat": 45.044,
-"lon": -123.985,
-"light": "sunset",
-"effort": "hike",
-"months": [
-4,
-5,
-6,
-7,
-8,
-9,
-10
-]
-},
-{
-"id": "lake-sacajawea",
-"name": "Lake Sacajawea Park (Longview)",
-"region": "Lower Columbia \u00b7 St. Helens views",
-"cats": [
-"reflection",
-"fallcolor",
-"birds"
-],
-"lat": 46.1365,
-"lon": -122.9519,
-"light": "sunrise",
-"effort": "short",
-"months": [
-3,
-4,
-5,
-10,
-11
-]
-},
-{
-"id": "rainier-hwy30",
-"name": "US 30 Mt. St. Helens viewpoints & Trojan Park (Rainier)",
-"region": "Lower Columbia \u00b7 St. Helens views",
-"cats": [
-"mountain",
-"vista",
-"reflection"
-],
-"lat": 46.0325,
-"lon": -122.8879,
-"light": "sunrise",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "buxton-trestle",
-"name": "Buxton Trestle (Banks\u2013Vernonia State Trail)",
-"region": "North Coast Range",
-"cats": [
-"historic",
-"fallcolor"
-],
-"lat": 45.692,
-"lon": -123.187,
-"light": "overcast",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "gallon-house-bridge",
-"name": "Gallon House Covered Bridge (Silverton)",
-"region": "Willamette Valley",
-"cats": [
-"historic",
-"fallcolor"
-],
-"lat": 45.0322,
-"lon": -122.7895,
-"light": "sunset",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "abiqua-falls",
-"name": "Abiqua Falls",
-"region": "Willamette Valley",
-"cats": [
-"waterfall",
-"geology"
-],
-"lat": 44.9263,
-"lon": -122.5673,
-"light": "overcast",
-"effort": "hike",
-"months": [
-3,
-4,
-5,
-6,
-10,
-11
-]
-},
-{
-"id": "hawthorne-bridge",
-"name": "Hawthorne Bridge & Waterfront Park",
-"region": "Portland",
-"cats": [
-"city",
-"night"
-],
-"lat": 45.5133,
-"lon": -122.6714,
-"light": "night",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "scout-sandyhenge",
-"name": "Scout pick: \"Sandyhenge\", the sun down NE Sandy Blvd",
-"region": "Portland",
-"cats": [
-"alignment",
-"city"
-],
-"lat": 45.5384,
-"lon": -122.615,
-"light": "both",
-"effort": "road",
-"months": [
-11,
-1,
-5,
-7
-]
-},
-{
-"id": "scout-burnsidehenge",
-"name": "Scout pick: Burnside equinox sunsets & sunrises",
-"region": "Portland",
-"cats": [
-"alignment",
-"city"
-],
-"lat": 45.5235,
-"lon": -122.623,
-"light": "both",
-"effort": "road",
-"months": [
-3,
-9
-]
-},
-{
-"id": "scout-evergreenhenge",
-"name": "Scout pick: Officers Row henge on E Evergreen Blvd (Vancouver)",
-"region": "Close to home",
-"cats": [
-"alignment",
-"historic",
-"city"
-],
-"lat": 45.6261,
-"lon": -122.6406,
-"light": "both",
-"effort": "road",
-"months": [
-3,
-4,
-9,
-10
-]
-},
-{
-"id": "scout-camas-4th-moonset",
-"name": "Scout pick: Moonset down NE 4th Ave into the Camas mill (lunar standstill)",
-"region": "Camas & Washougal",
-"cats": [
-"alignment",
-"city",
-"night"
-],
-"lat": 45.5876,
-"lon": -122.4007,
-"light": "night",
-"effort": "road",
-"months": [
-5,
-6,
-8
-]
-},
-{
-"id": "scout-frenchmans-three",
-"name": "Scout pick: Three volcanoes from the sand at Frenchman's Bar",
-"region": "Close to home",
-"cats": [
-"alignment",
-"mountain",
-"reflection"
-],
-"lat": 45.6803,
-"lon": -122.7677,
-"light": "sunrise",
-"effort": "short",
-"months": [
-5,
-7,
-10,
-2
-]
-},
-{
-"id": "scout-sauvie-adams",
-"name": "Scout pick: Summer sunrise behind Mt. Adams from Sauvie Island",
-"region": "Portland",
-"cats": [
-"alignment",
-"mountain",
-"birds"
-],
-"lat": 45.7685,
-"lon": -122.7707,
-"light": "sunrise",
-"effort": "road",
-"months": [
-5,
-7,
-11,
-1
-]
-},
-{
-"id": "scout-pittock-moon-adams",
-"name": "Scout pick: Full moon rising behind Mt. Adams from Pittock Mansion",
-"region": "Portland",
-"cats": [
-"alignment",
-"mountain",
-"city"
-],
-"lat": 45.525,
-"lon": -122.716,
-"light": "sunset",
-"effort": "short",
-"months": [
-10,
-11,
-12,
-1,
-2
-]
-},
-{
-"id": "scout-grant-pier-hood",
-"name": "Scout pick: Sunrise behind Mt. Hood from Grant Street Pier",
-"region": "Close to home",
-"cats": [
-"alignment",
-"mountain",
-"city",
-"reflection"
-],
-"lat": 45.6238,
-"lon": -122.681,
-"light": "sunrise",
-"effort": "short",
-"months": [
-10,
-2,
-4,
-7
-]
-},
-{
-"id": "scout-silver-lake-helens",
-"name": "Scout pick: Sunrise behind St. Helens over Silver Lake",
-"region": "Mt. St. Helens",
-"cats": [
-"alignment",
-"mountain",
-"reflection"
-],
-"lat": 46.2945,
-"lon": -122.8222,
-"light": "sunrise",
-"effort": "short",
-"months": [
-3,
-10
-]
-},
-{
-"id": "scout-rainier-helens",
-"name": "Scout pick: Sunrise behind St. Helens from Rainier, OR",
-"region": "Lower Columbia \u00b7 St. Helens views",
-"cats": [
-"alignment",
-"mountain"
-],
-"lat": 46.0325,
-"lon": -122.8879,
-"light": "sunrise",
-"effort": "road",
-"months": [
-4,
-8
-]
-},
-{
-"id": "scout-mciver-hood",
-"name": "Scout pick: Sunrise behind Mt. Hood from the McIver viewpoint",
-"region": "Mt. Hood",
-"cats": [
-"alignment",
-"mountain"
-],
-"lat": 45.298,
-"lon": -122.3728,
-"light": "sunrise",
-"effort": "road",
-"months": [
-4,
-8
-]
-},
-{
-"id": "scout-jonsrud-equinox",
-"name": "Scout pick: Equinox sunrise behind Mt. Hood from Jonsrud Viewpoint",
-"region": "Mt. Hood",
-"cats": [
-"alignment",
-"mountain"
-],
-"lat": 45.405,
-"lon": -122.265,
-"light": "sunrise",
-"effort": "road",
-"months": [
-3,
-9
-]
-},
-{
-"id": "scout-council-crest-hood",
-"name": "Scout pick: Sunrise behind Mt. Hood from Council Crest",
-"region": "Portland",
-"cats": [
-"alignment",
-"mountain",
-"city"
-],
-"lat": 45.499,
-"lon": -122.7081,
-"light": "sunrise",
-"effort": "road",
-"months": [
-3,
-10,
-2
-]
-},
-{
-"id": "scout-silverstar-moon-hood",
-"name": "Scout pick: Summer full moons rising behind Hood from Silver Star",
-"region": "Close to home",
-"cats": [
-"alignment",
-"mountain",
-"night"
-],
-"lat": 45.748,
-"lon": -122.24,
-"light": "sunset",
-"effort": "hike",
-"months": [
-4,
-5,
-6,
-7,
-8
-]
-},
-{
-"id": "sunnyside-cherries",
-"name": "Sunnyside cherry blocks (SE Salmon & SE Yamhill, 32nd\u201339th)",
-"region": "Portland",
-"cats": [
-"wildflowers",
-"city",
-"garden"
-],
-"lat": 45.5143,
-"lon": -122.6282,
-"light": "overcast",
-"effort": "road",
-"months": [
-4
-]
-},
-{
-"id": "ladds-elms",
-"name": "Ladd's Addition elms & rose circle",
-"region": "Portland",
-"cats": [
-"fallcolor",
-"garden",
-"city"
-],
-"lat": 45.5087,
-"lon": -122.6494,
-"light": "overcast",
-"effort": "road",
-"months": [
-5,
-6,
-10,
-11
-]
-},
-{
-"id": "omaha-elms",
-"name": "N Omaha Ave elm canopy (Overlook/Arbor Lodge)",
-"region": "Portland",
-"cats": [
-"fallcolor",
-"city"
-],
-"lat": 45.5663,
-"lon": -122.6901,
-"light": "overcast",
-"effort": "road",
-"months": [
-5,
-6,
-10,
-11
-]
-},
-{
-"id": "eastmoreland-elms",
-"name": "Eastmoreland elm streets (SE 29th Ave & Reed College Pl)",
-"region": "Portland",
-"cats": [
-"fallcolor",
-"city"
-],
-"lat": 45.4684,
-"lon": -122.6334,
-"light": "overcast",
-"effort": "road",
-"months": [
-5,
-6,
-10,
-11
-]
-},
-{
-"id": "downtown-ginkgos",
-"name": "Downtown ginkgo gold (SW Salmon & SW Alder) + Reed's heritage ginkgos",
-"region": "Portland",
-"cats": [
-"fallcolor",
-"city"
-],
-"lat": 45.5181,
-"lon": -122.6828,
-"light": "overcast",
-"effort": "road",
-"months": [
-11
-]
-},
-{
-"id": "waterfront-cherries",
-"name": "Japanese American Historical Plaza cherries (Waterfront Park)",
-"region": "Portland",
-"cats": [
-"wildflowers",
-"city",
-"garden",
-"historic"
-],
-"lat": 45.5239,
-"lon": -122.6697,
-"light": "sunrise",
-"effort": "short",
-"months": [
-3,
-4
-]
-},
-{
-"id": "clark-college-cherries",
-"name": "Clark College cherry grove (Vancouver)",
-"region": "Close to home",
-"cats": [
-"wildflowers",
-"garden"
-],
-"lat": 45.6343,
-"lon": -122.6525,
-"light": "overcast",
-"effort": "short",
-"months": [
-4
-]
-},
-{
-"id": "old-apple-tree",
-"name": "Old Apple Tree Park (Vancouver, 1826)",
-"region": "Close to home",
-"cats": [
-"historic",
-"garden"
-],
-"lat": 45.622,
-"lon": -122.6701,
-"light": "sunrise",
-"effort": "road",
-"months": [
-4,
-10
-]
-},
-{
-"id": "columbia-springs",
-"name": "Columbia Springs wildflower trails (Vancouver)",
-"region": "Close to home",
-"cats": [
-"wildflowers",
-"birds"
-],
-"lat": 45.6003,
-"lon": -122.5455,
-"light": "overcast",
-"effort": "short",
-"months": [
-4,
-5
-]
-},
-{
-"id": "parkers-landing-trees",
-"name": "Parker's Landing heritage trees (Washougal)",
-"region": "Camas & Washougal",
-"cats": [
-"historic",
-"garden",
-"fallcolor"
-],
-"lat": 45.5785,
-"lon": -122.3805,
-"light": "sunset",
-"effort": "road",
-"months": [
-4,
-6,
-10
-]
-},
-{
-"id": "maddax-heronry",
-"name": "Maddax Woods heron colony (West Linn)",
-"region": "Portland",
-"cats": [
-"birds",
-"wildlife"
-],
-"lat": 45.3695,
-"lon": -122.6138,
-"light": "sunrise",
-"effort": "short",
-"months": [
-3,
-4,
-5,
-6
-]
-},
-{
-"id": "gorge-pikas",
-"name": "Experimental: Low-elevation pikas in Gorge talus",
-"region": "Gorge \u00b7 Oregon",
-"cats": [
-"wildlife"
-],
-"lat": 45.64,
-"lon": -121.93,
-"light": "overcast",
-"effort": "hike",
-"months": [
-6,
-7,
-8,
-9
-]
-},
-{
-"id": "wintler-park",
-"name": "Wintler Community Park beach (Vancouver)",
-"region": "Close to home",
-"cats": [
-"reflection",
-"city",
-"vista"
-],
-"lat": 45.6115,
-"lon": -122.6053,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "marine-park-vancouver",
-"name": "Marine Park & Water Resources Center (Vancouver)",
-"region": "Close to home",
-"cats": [
-"reflection",
-"city",
-"historic"
-],
-"lat": 45.615,
-"lon": -122.6255,
-"light": "sunset",
-"effort": "short",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "scout-hood-sunrise",
-"name": "Scout pick: Mt. Hood sunrise calendar for Camas & Washougal",
-"region": "Camas & Washougal",
-"cats": [
-"alignment",
-"mountain"
-],
-"lat": 45.571,
-"lon": -122.34,
-"light": "sunrise",
-"effort": "short",
-"months": [
-10,
-11,
-2
-]
-},
-{
-"id": "scout-prune-hill",
-"name": "Scout pick: Prune Hill (Camas)",
-"region": "Camas & Washougal",
-"cats": [
-"vista",
-"city"
-],
-"lat": 45.598,
-"lon": -122.445,
-"light": "sunset",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-10,
-11,
-12
-]
-},
-{
-"id": "scout-cape-horn-uplands",
-"name": "Scout pick: Cape Horn upland roads (Strunk & Salmon Falls Rd)",
-"region": "Camas & Washougal",
-"cats": [
-"vista",
-"fallcolor"
-],
-"lat": 45.6,
-"lon": -122.19,
-"light": "sunrise",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-10,
-11,
-12
-]
-},
-{
-"id": "cottonwood-canyon",
-"name": "Cottonwood Canyon State Park (International Dark Sky Park)",
-"region": "Road trip \u00b7 Eastern Oregon",
-"cats": [
-"night",
-"geology",
-"aurora"
-],
-"lat": 45.46988,
-"lon": -120.44264,
-"light": "night",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-},
-{
-"id": "prineville-reservoir",
-"name": "Prineville Reservoir State Park (International Dark Sky Park)",
-"region": "Central Oregon",
-"cats": [
-"night",
-"reflection",
-"geology"
-],
-"lat": 44.13193,
-"lon": -120.7259,
-"light": "night",
-"effort": "road",
-"months": [
-1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-11,
-12
-]
-}
+ {
+  "id": "steigerwald",
+  "name": "Steigerwald Lake National Wildlife Refuge",
+  "region": "Camas & Washougal",
+  "cats": [
+   "wildlife",
+   "mountain",
+   "birds"
+  ],
+  "lat": 45.57068,
+  "lon": -122.31292,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "washougal-waterfront",
+  "name": "Washougal Waterfront Park & Parkers Landing",
+  "region": "Camas & Washougal",
+  "cats": [
+   "mountain",
+   "vista"
+  ],
+  "lat": 45.57805,
+  "lon": -122.37211,
+  "light": "both",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "lacamas",
+  "name": "Lacamas Regional Park: Pothole Falls, Round Lake & camas lilies",
+  "region": "Camas & Washougal",
+  "cats": [
+   "waterfall",
+   "wildflowers",
+   "fallcolor"
+  ],
+  "lat": 45.60556,
+  "lon": -122.40579,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "cape-horn-lookout",
+  "name": "Cape Horn Lookout (SR 14 pullout)",
+  "region": "Gorge · Washington",
+  "cats": [
+   "vista"
+  ],
+  "lat": 45.59,
+  "lon": -122.197,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "cape-horn-trail",
+  "name": "Cape Horn Trail & Nancy Russell Overlook",
+  "region": "Gorge · Washington",
+  "cats": [
+   "vista",
+   "waterfall"
+  ],
+  "lat": 45.589,
+  "lon": -122.178,
+  "light": "sunrise",
+  "effort": "hike",
+  "months": [
+   10,
+   11,
+   12,
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "silver-star",
+  "name": "Silver Star Mountain",
+  "region": "Close to home",
+  "cats": [
+   "vista",
+   "wildflowers",
+   "aurora"
+  ],
+  "lat": 45.748,
+  "lon": -122.24,
+  "light": "sunset",
+  "effort": "hard",
+  "months": [
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "moulton",
+  "name": "Moulton Falls Regional Park",
+  "region": "Close to home",
+  "cats": [
+   "waterfall",
+   "fallcolor"
+  ],
+  "lat": 45.832,
+  "lon": -122.39,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "lucia",
+  "name": "Lucia Falls",
+  "region": "Close to home",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.83954,
+  "lon": -122.44663,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ],
+  "park": [
+   45.828,
+   -122.427
+  ]
+ },
+ {
+  "id": "ridgefield",
+  "name": "Ridgefield National Wildlife Refuge",
+  "region": "Close to home",
+  "cats": [
+   "wildlife",
+   "fallcolor",
+   "birds"
+  ],
+  "lat": 45.79616,
+  "lon": -122.74713,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   10,
+   11,
+   12,
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "id": "pittock",
+  "name": "Pittock Mansion viewpoint",
+  "region": "Portland",
+  "cats": [
+   "city",
+   "mountain"
+  ],
+  "lat": 45.525,
+  "lon": -122.716,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "japanese-garden",
+  "name": "Portland Japanese Garden",
+  "region": "Portland",
+  "cats": [
+   "fallcolor",
+   "city"
+  ],
+  "lat": 45.519,
+  "lon": -122.708,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   4,
+   5,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "rose-garden",
+  "name": "International Rose Test Garden",
+  "region": "Portland",
+  "cats": [
+   "city",
+   "mountain"
+  ],
+  "lat": 45.519,
+  "lon": -122.705,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   5,
+   6,
+   7
+  ]
+ },
+ {
+  "id": "cathedral-park",
+  "name": "Cathedral Park & St. Johns Bridge",
+  "region": "Portland",
+  "cats": [
+   "city"
+  ],
+  "lat": 45.58274,
+  "lon": -122.76892,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ],
+  "park": [
+   45.58616,
+   -122.76162
+  ]
+ },
+ {
+  "id": "mt-tabor",
+  "name": "Mount Tabor Park",
+  "region": "Portland",
+  "cats": [
+   "city",
+   "fallcolor"
+  ],
+  "lat": 45.511,
+  "lon": -122.594,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   10,
+   11,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "rocky-butte",
+  "name": "Rocky Butte",
+  "region": "Portland",
+  "cats": [
+   "city",
+   "vista"
+  ],
+  "lat": 45.546,
+  "lon": -122.565,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "womens-forum",
+  "name": "Portland Women's Forum (Chanticleer Point)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "vista",
+   "aurora"
+  ],
+  "lat": 45.53448,
+  "lon": -122.26091,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "vista-house",
+  "name": "Vista House at Crown Point",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "vista"
+  ],
+  "lat": 45.539,
+  "lon": -122.244,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "latourell",
+  "name": "Latourell Falls",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.537,
+  "lon": -122.2178,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "shepperds-dell",
+  "name": "Shepperd's Dell",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.548,
+  "lon": -122.197,
+  "light": "overcast",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "bridal-veil",
+  "name": "Bridal Veil Falls",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.554,
+  "lon": -122.183,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "larch-mtn",
+  "name": "Larch Mountain: Sherrard Point",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "mountain",
+   "vista",
+   "aurora"
+  ],
+  "lat": 45.53,
+  "lon": -122.088,
+  "light": "both",
+  "effort": "short",
+  "months": [
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "wahkeena",
+  "name": "Wahkeena Falls",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.574,
+  "lon": -122.127,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "multnomah",
+  "name": "Multnomah Falls",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.576,
+  "lon": -122.116,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "horsetail",
+  "name": "Horsetail & Ponytail Falls",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall",
+   "fallcolor"
+  ],
+  "lat": 45.59,
+  "lon": -122.068,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "elowah",
+  "name": "Elowah Falls",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.61187,
+  "lon": -121.99457,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   3,
+   4,
+   5,
+   6,
+   10,
+   11
+  ],
+  "park": [
+   45.612,
+   -122.003
+  ]
+ },
+ {
+  "id": "wahclella",
+  "name": "Wahclella Falls",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.61818,
+  "lon": -121.95141,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ],
+  "park": [
+   45.63,
+   -121.954
+  ]
+ },
+ {
+  "id": "punch-bowl",
+  "name": "Punch Bowl Falls (Eagle Creek)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.62168,
+  "lon": -121.89464,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   4,
+   5,
+   6,
+   10
+  ],
+  "park": [
+   45.617,
+   -121.892
+  ]
+ },
+ {
+  "id": "starvation",
+  "name": "Starvation Creek, Cabin Creek & Hole-in-the-Wall Falls",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.689,
+  "lon": -121.69,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "beacon-rock",
+  "name": "Beacon Rock",
+  "region": "Gorge · Washington",
+  "cats": [
+   "vista"
+  ],
+  "lat": 45.629,
+  "lon": -122.021,
+  "light": "both",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "hamilton",
+  "name": "Rodney & Hardy Falls (Hamilton Mountain)",
+  "region": "Gorge · Washington",
+  "cats": [
+   "waterfall",
+   "fallcolor"
+  ],
+  "lat": 45.63277,
+  "lon": -122.0201,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   3,
+   4,
+   5,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "dog-mtn",
+  "name": "Dog Mountain",
+  "region": "Gorge · Washington",
+  "cats": [
+   "wildflowers",
+   "vista"
+  ],
+  "lat": 45.71695,
+  "lon": -121.70045,
+  "light": "sunset",
+  "effort": "hard",
+  "months": [
+   4,
+   5,
+   6
+  ],
+  "park": [
+   45.699,
+   -121.708
+  ]
+ },
+ {
+  "id": "panther-creek",
+  "name": "Panther Creek Falls",
+  "region": "Gorge · Washington",
+  "cats": [
+   "waterfall",
+   "fallcolor"
+  ],
+  "lat": 45.867,
+  "lon": -121.826,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   4,
+   5,
+   6,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "falls-creek",
+  "name": "Falls Creek Falls",
+  "region": "Gorge · Washington",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.91,
+  "lon": -121.913,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   4,
+   5,
+   6,
+   10
+  ]
+ },
+ {
+  "id": "cook-underwood",
+  "name": "Cook-Underwood Road pullouts",
+  "region": "Gorge · Washington",
+  "cats": [
+   "mountain",
+   "vista"
+  ],
+  "lat": 45.727,
+  "lon": -121.533,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "coyote-wall",
+  "name": "Coyote Wall",
+  "region": "Gorge · Washington",
+  "cats": [
+   "wildflowers",
+   "vista",
+   "geology"
+  ],
+  "lat": 45.7,
+  "lon": -121.4,
+  "light": "sunset",
+  "effort": "hike",
+  "months": [
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "catherine-creek",
+  "name": "Catherine Creek Natural Arch",
+  "region": "Gorge · Washington",
+  "cats": [
+   "wildflowers",
+   "geology",
+   "birds"
+  ],
+  "lat": 45.711,
+  "lon": -121.362,
+  "light": "both",
+  "effort": "short",
+  "months": [
+   3,
+   4,
+   5,
+   10
+  ]
+ },
+ {
+  "id": "panorama-point",
+  "name": "Panorama Point (Hood River)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "mountain",
+   "fallcolor",
+   "vista",
+   "aurora"
+  ],
+  "lat": 45.68722,
+  "lon": -121.50007,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   4,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "mosier-plateau",
+  "name": "Mosier Plateau",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "wildflowers"
+  ],
+  "lat": 45.68633,
+  "lon": -121.38842,
+  "light": "sunset",
+  "effort": "hike",
+  "months": [
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "rowena",
+  "name": "Rowena Crest & Tom McCall Preserve",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "wildflowers",
+   "vista"
+  ],
+  "lat": 45.683,
+  "lon": -121.299,
+  "light": "both",
+  "effort": "short",
+  "months": [
+   4,
+   5,
+   10
+  ]
+ },
+ {
+  "id": "lyle-cherry",
+  "name": "Lyle Cherry Orchard",
+  "region": "Gorge · Washington",
+  "cats": [
+   "wildflowers",
+   "vista"
+  ],
+  "lat": 45.68616,
+  "lon": -121.26564,
+  "light": "sunset",
+  "effort": "hike",
+  "months": [
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "dalles-mtn",
+  "name": "Columbia Hills: Dalles Mountain Ranch",
+  "region": "Gorge · Washington",
+  "cats": [
+   "wildflowers",
+   "mountain"
+  ],
+  "lat": 45.698,
+  "lon": -121.124,
+  "light": "both",
+  "effort": "short",
+  "months": [
+   4,
+   5
+  ]
+ },
+ {
+  "id": "horsethief",
+  "name": "Horsethief Butte",
+  "region": "Gorge · Washington",
+  "cats": [
+   "geology",
+   "vista"
+  ],
+  "lat": 45.65,
+  "lon": -121.096,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   3,
+   4,
+   5,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "stonehenge",
+  "name": "Maryhill Stonehenge",
+  "region": "Gorge · Washington",
+  "cats": [
+   "vista",
+   "night"
+  ],
+  "lat": 45.694,
+  "lon": -120.806,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "goldendale",
+  "name": "Goldendale Observatory State Park",
+  "region": "Gorge · Washington",
+  "cats": [
+   "night",
+   "aurora"
+  ],
+  "lat": 45.839,
+  "lon": -120.815,
+  "light": "night",
+  "effort": "road",
+  "months": [
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "brooks",
+  "name": "Brooks Memorial State Park",
+  "region": "Gorge · Washington",
+  "cats": [
+   "night",
+   "aurora"
+  ],
+  "lat": 45.93381,
+  "lon": -120.66416,
+  "light": "night",
+  "effort": "road",
+  "months": [
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "trillium",
+  "name": "Trillium Lake",
+  "region": "Mt. Hood",
+  "cats": [
+   "mountain",
+   "reflection"
+  ],
+  "lat": 45.271,
+  "lon": -121.737,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   6,
+   7,
+   8,
+   9,
+   10,
+   1,
+   2
+  ]
+ },
+ {
+  "id": "mirror-lake",
+  "name": "Mirror Lake",
+  "region": "Mt. Hood",
+  "cats": [
+   "mountain",
+   "reflection"
+  ],
+  "lat": 45.297,
+  "lon": -121.793,
+  "light": "sunrise",
+  "effort": "hike",
+  "months": [
+   7,
+   8,
+   9,
+   10
+  ],
+  "park": [
+   45.302708,
+   -121.768864
+  ]
+ },
+ {
+  "id": "lost-lake",
+  "name": "Lost Lake",
+  "region": "Mt. Hood",
+  "cats": [
+   "mountain",
+   "reflection",
+   "night",
+   "fallcolor"
+  ],
+  "lat": 45.495,
+  "lon": -121.822,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "tamanawas",
+  "name": "Tamanawas Falls",
+  "region": "Mt. Hood",
+  "cats": [
+   "waterfall",
+   "fallcolor"
+  ],
+  "lat": 45.40101,
+  "lon": -121.58938,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   6,
+   7,
+   10,
+   11
+  ],
+  "park": [
+   45.397245,
+   -121.57155
+  ]
+ },
+ {
+  "id": "ramona",
+  "name": "Ramona Falls",
+  "region": "Mt. Hood",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.381,
+  "lon": -121.775,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   7,
+   8,
+   9,
+   10
+  ],
+  "park": [
+   45.387,
+   -121.8321
+  ]
+ },
+ {
+  "id": "silver-falls",
+  "name": "Silver Falls State Park: Trail of Ten Falls",
+  "region": "Willamette Valley",
+  "cats": [
+   "waterfall",
+   "fallcolor"
+  ],
+  "lat": 44.878,
+  "lon": -122.655,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   2,
+   3,
+   4,
+   5,
+   10
+  ]
+ },
+ {
+  "id": "coldwater",
+  "name": "Coldwater Lake & Science and Learning Center",
+  "region": "Mt. St. Helens",
+  "cats": [
+   "mountain",
+   "reflection"
+  ],
+  "lat": 46.29,
+  "lon": -122.268,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "castle-lake",
+  "name": "Castle Lake Viewpoint",
+  "region": "Mt. St. Helens",
+  "cats": [
+   "mountain",
+   "vista"
+  ],
+  "lat": 46.2967,
+  "lon": -122.2994,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "jro",
+  "name": "Johnston Ridge Observatory",
+  "region": "Mt. St. Helens",
+  "cats": [
+   "mountain",
+   "wildflowers"
+  ],
+  "lat": 46.276,
+  "lon": -122.217,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   6,
+   7,
+   8,
+   9
+  ]
+ },
+ {
+  "id": "windy-ridge",
+  "name": "Windy Ridge Viewpoint",
+  "region": "Mt. St. Helens",
+  "cats": [
+   "mountain",
+   "vista"
+  ],
+  "lat": 46.2496,
+  "lon": -122.1369,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "lahar",
+  "name": "Lahar Viewpoint",
+  "region": "Mt. St. Helens",
+  "cats": [
+   "mountain",
+   "geology"
+  ],
+  "lat": 46.15951,
+  "lon": -122.09534,
+  "light": "both",
+  "effort": "road",
+  "months": [
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "lower-lewis",
+  "name": "Lower Lewis River Falls",
+  "region": "Lewis River",
+  "cats": [
+   "waterfall",
+   "fallcolor"
+  ],
+  "lat": 46.154,
+  "lon": -121.88,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   5,
+   6,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "curly-creek",
+  "name": "Curly Creek Falls",
+  "region": "Lewis River",
+  "cats": [
+   "waterfall",
+   "geology"
+  ],
+  "lat": 46.058,
+  "lon": -121.972,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   4,
+   5,
+   6,
+   10
+  ]
+ },
+ {
+  "id": "trout-lake",
+  "name": "Trout Lake valley",
+  "region": "Mt. Adams",
+  "cats": [
+   "mountain",
+   "aurora"
+  ],
+  "lat": 45.997,
+  "lon": -121.528,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "takhlakh",
+  "name": "Takhlakh Lake",
+  "region": "Mt. Adams",
+  "cats": [
+   "mountain",
+   "reflection",
+   "night"
+  ],
+  "lat": 46.278,
+  "lon": -121.598,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "bird-creek",
+  "name": "Bird Creek Meadows",
+  "region": "Mt. Adams",
+  "cats": [
+   "wildflowers",
+   "mountain",
+   "waterfall"
+  ],
+  "lat": 46.15096,
+  "lon": -121.44758,
+  "light": "sunrise",
+  "effort": "hike",
+  "months": [
+   7,
+   8
+  ]
+ },
+ {
+  "id": "reflection-lakes",
+  "name": "Reflection Lakes",
+  "region": "Mt. Rainier",
+  "cats": [
+   "mountain",
+   "reflection",
+   "wildflowers"
+  ],
+  "lat": 46.768,
+  "lon": -121.731,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "tipsoo",
+  "name": "Tipsoo Lake",
+  "region": "Mt. Rainier",
+  "cats": [
+   "mountain",
+   "reflection",
+   "fallcolor"
+  ],
+  "lat": 46.869,
+  "lon": -121.519,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "cannon-beach",
+  "name": "Cannon Beach & Haystack Rock",
+  "region": "Coast",
+  "cats": [
+   "coast"
+  ],
+  "lat": 45.884,
+  "lon": -123.968,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "ecola",
+  "name": "Ecola State Park: Ecola Point & Indian Beach",
+  "region": "Coast",
+  "cats": [
+   "coast",
+   "vista"
+  ],
+  "lat": 45.919,
+  "lon": -123.977,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "hug-point",
+  "name": "Hug Point",
+  "region": "Coast",
+  "cats": [
+   "coast",
+   "waterfall"
+  ],
+  "lat": 45.83131,
+  "lon": -123.96183,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "cape-kiwanda",
+  "name": "Cape Kiwanda",
+  "region": "Coast",
+  "cats": [
+   "coast",
+   "geology"
+  ],
+  "lat": 45.222,
+  "lon": -123.972,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "neskowin",
+  "name": "Neskowin Ghost Forest",
+  "region": "Coast",
+  "cats": [
+   "coast"
+  ],
+  "lat": 45.103,
+  "lon": -123.983,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   11,
+   12,
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "id": "cape-disappointment",
+  "name": "Cape Disappointment & North Head Lighthouse",
+  "region": "Coast",
+  "cats": [
+   "coast"
+  ],
+  "lat": 46.299,
+  "lon": -124.078,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   10,
+   11,
+   12,
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "id": "smith-rock",
+  "name": "Smith Rock State Park",
+  "region": "Central Oregon",
+  "cats": [
+   "geology",
+   "mountain"
+  ],
+  "lat": 44.36379,
+  "lon": -121.14664,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   3,
+   4,
+   5,
+   9,
+   10,
+   11
+  ],
+  "park": [
+   44.367,
+   -121.137
+  ]
+ },
+ {
+  "id": "painted-hills",
+  "name": "Painted Hills (John Day Fossil Beds)",
+  "region": "Central Oregon",
+  "cats": [
+   "geology"
+  ],
+  "lat": 44.659,
+  "lon": -120.264,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   4,
+   5,
+   6,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "lacamas-lake",
+  "name": "Lacamas Lake from Heritage Park & the Heritage Trail",
+  "region": "Camas & Washougal",
+  "cats": [
+   "reflection",
+   "mountain",
+   "wildflowers",
+   "birds"
+  ],
+  "lat": 45.637,
+  "lon": -122.46,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   11,
+   12,
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "greenway",
+  "name": "Washougal River Greenway footbridge",
+  "region": "Camas & Washougal",
+  "cats": [
+   "mountain",
+   "wildlife"
+  ],
+  "lat": 45.5871,
+  "lon": -122.39079,
+  "light": "both",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "dougan",
+  "name": "Dougan Falls & Dougan Creek Falls",
+  "region": "Camas & Washougal",
+  "cats": [
+   "waterfall",
+   "fallcolor",
+   "wildlife"
+  ],
+  "lat": 45.675,
+  "lon": -122.152,
+  "light": "overcast",
+  "effort": "road",
+  "months": [
+   10,
+   11,
+   12,
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "salmon-falls",
+  "name": "Salmon Falls Bridge & Washougal Hatchery",
+  "region": "Camas & Washougal",
+  "cats": [
+   "wildlife"
+  ],
+  "lat": 45.6148,
+  "lon": -122.2019,
+  "light": "overcast",
+  "effort": "road",
+  "months": [
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "prindle",
+  "name": "Prindle Mountain & Enchanted Forest",
+  "region": "Gorge · Washington",
+  "cats": [
+   "vista",
+   "wildflowers"
+  ],
+  "lat": 45.588,
+  "lon": -122.155,
+  "light": "overcast",
+  "effort": "hard",
+  "months": [
+   3,
+   4,
+   5,
+   6,
+   10
+  ]
+ },
+ {
+  "id": "archer",
+  "name": "Archer Mountain: Scott Point & Arrow Point",
+  "region": "Gorge · Washington",
+  "cats": [
+   "vista",
+   "wildflowers",
+   "waterfall"
+  ],
+  "lat": 45.633,
+  "lon": -122.082,
+  "light": "sunrise",
+  "effort": "hard",
+  "months": [
+   3,
+   4,
+   5,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "hardy-ridge",
+  "name": "Hardy Ridge: Phlox Point",
+  "region": "Gorge · Washington",
+  "cats": [
+   "vista",
+   "wildflowers"
+  ],
+  "lat": 45.655,
+  "lon": -122.02,
+  "light": "sunset",
+  "effort": "hard",
+  "months": [
+   5,
+   6,
+   9,
+   10
+  ],
+  "park": [
+   45.659826,
+   -122.030664
+  ]
+ },
+ {
+  "id": "hamilton-springs",
+  "name": "Hamilton Creek & Ives Island chum salmon",
+  "region": "Gorge · Washington",
+  "cats": [
+   "wildlife"
+  ],
+  "lat": 45.638,
+  "lon": -121.968,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   11,
+   12
+  ]
+ },
+ {
+  "id": "franz-lake",
+  "name": "Franz Lake overlook (tundra swans)",
+  "region": "Gorge · Washington",
+  "cats": [
+   "wildlife"
+  ],
+  "lat": 45.60476,
+  "lon": -122.07755,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   11,
+   12,
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "id": "sandy-delta",
+  "name": "Sandy River Delta",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "wildlife",
+   "reflection",
+   "mountain"
+  ],
+  "lat": 45.54995,
+  "lon": -122.36719,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "lewis-clark-srs",
+  "name": "Lewis & Clark State Recreation Site (Broughton's Bluff)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "vista"
+  ],
+  "lat": 45.53921,
+  "lon": -122.37583,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "rooster-rock",
+  "name": "Rooster Rock State Park beach",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "vista",
+   "night"
+  ],
+  "lat": 45.547,
+  "lon": -122.239,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "angels-rest",
+  "name": "Angel's Rest (and Devil's Rest viewpoints)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "vista",
+   "fallcolor",
+   "wildflowers"
+  ],
+  "lat": 45.575,
+  "lon": -122.152,
+  "light": "both",
+  "effort": "hike",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ],
+  "park": [
+   45.560627,
+   -122.17233
+  ]
+ },
+ {
+  "id": "jonsrud",
+  "name": "Jonsrud Viewpoint (Sandy)",
+  "region": "Mt. Hood",
+  "cats": [
+   "mountain",
+   "vista",
+   "aurora"
+  ],
+  "lat": 45.405,
+  "lon": -122.265,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "cascade-locks",
+  "name": "Cascade Locks Marine Park & Thunder Island",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "vista",
+   "city",
+   "night"
+  ],
+  "lat": 45.669,
+  "lon": -121.897,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "bonneville-hatchery",
+  "name": "Bonneville Fish Hatchery",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "wildlife"
+  ],
+  "lat": 45.633,
+  "lon": -121.957,
+  "light": "overcast",
+  "effort": "road",
+  "months": [
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "wind-mtn",
+  "name": "Wind Mountain",
+  "region": "Gorge · Washington",
+  "cats": [
+   "vista"
+  ],
+  "lat": 45.716,
+  "lon": -121.789,
+  "light": "sunset",
+  "effort": "hike",
+  "months": [
+   4,
+   5,
+   6,
+   7,
+   9,
+   10,
+   11
+  ],
+  "park": [
+   45.7136,
+   -121.7522
+  ]
+ },
+ {
+  "id": "mitchell-point",
+  "name": "Mitchell Point Tunnel (Historic Highway State Trail)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "vista"
+  ],
+  "lat": 45.705,
+  "lon": -121.617,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "sunset-falls",
+  "name": "Sunset Falls (East Fork Lewis)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.818,
+  "lon": -122.254,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   10,
+   11,
+   12,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6
+  ]
+ },
+ {
+  "id": "hidden-falls",
+  "name": "Hidden Falls (Tarbell Trail)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.785,
+  "lon": -122.295,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   3,
+   4,
+   5,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "laurance-lake",
+  "name": "Laurance Lake & Parkdale",
+  "region": "Hood River Valley",
+  "cats": [
+   "mountain",
+   "reflection"
+  ],
+  "lat": 45.452,
+  "lon": -121.66,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "fruit-loop",
+  "name": "Hood River Fruit Loop orchards",
+  "region": "Hood River Valley",
+  "cats": [
+   "mountain",
+   "fallcolor",
+   "wildflowers"
+  ],
+  "lat": 45.56,
+  "lon": -121.59,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   4,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "green-mtn-camas",
+  "name": "Green Mountain Open Space (Camas)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "fallcolor",
+   "geology"
+  ],
+  "lat": 45.65,
+  "lon": -122.482,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   10,
+   11,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "fallen-leaf",
+  "name": "Fallen Leaf Lake Park",
+  "region": "Camas & Washougal",
+  "cats": [
+   "reflection",
+   "fallcolor"
+  ],
+  "lat": 45.60019,
+  "lon": -122.41134,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   10,
+   11,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "hathaway",
+  "name": "Hathaway & Schmid Family Parks (Washougal River bend)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "fallcolor",
+   "wildlife"
+  ],
+  "lat": 45.58295,
+  "lon": -122.34466,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   10,
+   11,
+   12,
+   1,
+   2,
+   3,
+   4
+  ]
+ },
+ {
+  "id": "washougal-river-mp3",
+  "name": "Washougal River Road, mileposts 3–5 (rock shelves)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "waterfall",
+   "fallcolor"
+  ],
+  "lat": 45.6239,
+  "lon": -122.3313,
+  "light": "overcast",
+  "effort": "road",
+  "months": [
+   10,
+   11,
+   12,
+   1,
+   2,
+   3,
+   4
+  ]
+ },
+ {
+  "id": "camas-mill",
+  "name": "Camas paper mill skyline (photograph it while it lasts)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "city"
+  ],
+  "lat": 45.585,
+  "lon": -122.408,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "scout-vista-hood",
+  "name": "Scout pick: Vista House stacked under Mt. Hood, from Marina Park",
+  "region": "Camas & Washougal",
+  "cats": [
+   "alignment",
+   "mountain",
+   "vista"
+  ],
+  "lat": 45.5785,
+  "lon": -122.38,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   10,
+   11,
+   12,
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "id": "scout-hood-hides",
+  "name": "Scout note: Where Larch Mountain hides Mt. Hood (Fern Prairie & Mount Norway heights)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "mountain"
+  ],
+  "lat": 45.628,
+  "lon": -122.316,
+  "light": "both",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "scout-dark-washougal",
+  "name": "Scout pick: Dark-sky pull-offs up Washougal River Road",
+  "region": "Camas & Washougal",
+  "cats": [
+   "night"
+  ],
+  "lat": 45.69,
+  "lon": -122.13,
+  "light": "night",
+  "effort": "road",
+  "months": [
+   5,
+   6,
+   7,
+   8,
+   9
+  ]
+ },
+ {
+  "id": "scout-crown-glow",
+  "name": "Scout pick: Summer sunset light on Crown Point from Steigerwald",
+  "region": "Camas & Washougal",
+  "cats": [
+   "vista"
+  ],
+  "lat": 45.567,
+  "lon": -122.296,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   5,
+   6,
+   7,
+   8
+  ]
+ },
+ {
+  "id": "scout-camas-slough",
+  "name": "Scout pick: Camas Slough & Lady Island by kayak or boat",
+  "region": "Camas & Washougal",
+  "cats": [
+   "reflection",
+   "mountain",
+   "city"
+  ],
+  "lat": 45.575,
+  "lon": -122.412,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   3,
+   4,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "scout-angels-hood",
+  "name": "Scout pick: Mt. Hood rising over Angel's Rest, from Nancy Russell Overlook",
+  "region": "Camas & Washougal",
+  "cats": [
+   "alignment",
+   "mountain",
+   "vista"
+  ],
+  "lat": 45.594,
+  "lon": -122.196,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   11,
+   12,
+   1
+  ]
+ },
+ {
+  "id": "scout-capehorn-foothill-sunset",
+  "name": "Scout pick: Washougal foothills sunset calendar (Strunk Rd, Nancy Russell & Pioneer Point)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "alignment",
+   "city",
+   "vista"
+  ],
+  "lat": 45.597,
+  "lon": -122.188,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   9,
+   10,
+   2,
+   3
+  ]
+ },
+ {
+  "id": "scout-fern-prairie-sunset",
+  "name": "Scout pick: Fern Prairie by Grove Field (sunrise & sunset alignments)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "alignment",
+   "city",
+   "mountain"
+  ],
+  "lat": 45.6285,
+  "lon": -122.3995,
+  "light": "both",
+  "effort": "road",
+  "months": [
+   9,
+   10,
+   11,
+   12,
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "id": "scout-mt-norway-sunset",
+  "name": "Scout pick: Mount Norway uplands sunsets (about 1,100 ft)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "alignment",
+   "city"
+  ],
+  "lat": 45.615,
+  "lon": -122.29,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   10,
+   11,
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "id": "scout-riverfront-sunsets",
+  "name": "Scout pick: Washougal riverfront sunset calendar (Marina Park, Cottonwood Beach, Steigerwald)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "alignment",
+   "city",
+   "reflection"
+  ],
+  "lat": 45.574,
+  "lon": -122.355,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   4,
+   5,
+   8,
+   10,
+   11,
+   2,
+   3
+  ]
+ },
+ {
+  "id": "scout-rooster-hood",
+  "name": "Scout pick: Rooster Rock pillar under Mt. Hood, from the Steigerwald dike",
+  "region": "Camas & Washougal",
+  "cats": [
+   "alignment",
+   "mountain"
+  ],
+  "lat": 45.5655,
+  "lon": -122.2985,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   10,
+   11,
+   2
+  ]
+ },
+ {
+  "id": "scout-capehorn-lookout-sunrise",
+  "name": "Scout pick: Sunrise behind Angel's Rest from the Cape Horn Lookout (SR 14)",
+  "region": "Gorge · Washington",
+  "cats": [
+   "alignment",
+   "vista"
+  ],
+  "lat": 45.5895,
+  "lon": -122.1985,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   10,
+   11,
+   1,
+   2
+  ]
+ },
+ {
+  "id": "scout-broughton-bridge-hood",
+  "name": "Scout pick: I-205 Glenn Jackson Bridge under Mt. Hood, from Broughton Beach",
+  "region": "Portland",
+  "cats": [
+   "alignment",
+   "mountain",
+   "city"
+  ],
+  "lat": 45.598,
+  "lon": -122.585,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   10,
+   11,
+   2
+  ]
+ },
+ {
+  "id": "scout-womens-forum-sunrise",
+  "name": "Scout pick: Summer sunrise behind Angel's Rest & Beacon Rock, from Women's Forum",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "alignment",
+   "vista"
+  ],
+  "lat": 45.5345,
+  "lon": -122.2614,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   5,
+   7
+  ]
+ },
+ {
+  "id": "woodburn-falls",
+  "name": "Woodburn Falls (Lake to Lake Trail)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "waterfall",
+   "fallcolor",
+   "wildflowers"
+  ],
+  "lat": 45.617,
+  "lon": -122.397,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   10,
+   11,
+   12,
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "husum-falls",
+  "name": "Husum Falls (White Salmon River)",
+  "region": "East Gorge · Washington",
+  "cats": [
+   "waterfall",
+   "fallcolor"
+  ],
+  "lat": 45.7997,
+  "lon": -121.4866,
+  "light": "overcast",
+  "effort": "road",
+  "months": [
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "klickitat-narrows",
+  "name": "Klickitat River Narrows (Lyle)",
+  "region": "East Gorge · Washington",
+  "cats": [
+   "fallcolor",
+   "geology"
+  ],
+  "lat": 45.6965,
+  "lon": -121.2895,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   3,
+   4,
+   5,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "balfour-klickitat",
+  "name": "Balfour-Klickitat overlook loop",
+  "region": "East Gorge · Washington",
+  "cats": [
+   "vista",
+   "wildflowers",
+   "fallcolor",
+   "birds"
+  ],
+  "lat": 45.6935,
+  "lon": -121.2965,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   12,
+   1,
+   2,
+   3,
+   4,
+   5,
+   10
+  ]
+ },
+ {
+  "id": "swale-canyon",
+  "name": "Swale Canyon (Klickitat Rail Trail)",
+  "region": "East Gorge · Washington",
+  "cats": [
+   "geology",
+   "wildflowers"
+  ],
+  "lat": 45.7224,
+  "lon": -121.061,
+  "light": "both",
+  "effort": "hike",
+  "months": [
+   3,
+   4,
+   5,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "maryhill-loops",
+  "name": "Maryhill Loops Road (switchbacks)",
+  "region": "East Gorge · Washington",
+  "cats": [
+   "vista",
+   "geology"
+  ],
+  "lat": 45.6786,
+  "lon": -120.862,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "mosier-tunnels",
+  "name": "Mosier Twin Tunnels (Historic Hwy State Trail)",
+  "region": "East Gorge · Oregon",
+  "cats": [
+   "vista",
+   "geology",
+   "fallcolor"
+  ],
+  "lat": 45.6858,
+  "lon": -121.3921,
+  "light": "both",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "memaloose-overlook",
+  "name": "Memaloose Overlook (Historic Hwy)",
+  "region": "East Gorge · Oregon",
+  "cats": [
+   "vista"
+  ],
+  "lat": 45.695,
+  "lon": -121.348,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "white-river-falls",
+  "name": "White River Falls State Park",
+  "region": "East Gorge · Oregon",
+  "cats": [
+   "waterfall",
+   "geology"
+  ],
+  "lat": 45.24133,
+  "lon": -121.0897,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "deschutes-confluence",
+  "name": "Deschutes River mouth (Deschutes River SRA)",
+  "region": "East Gorge · Oregon",
+  "cats": [
+   "geology",
+   "vista"
+  ],
+  "lat": 45.632,
+  "lon": -120.908,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "sleeping-beauty",
+  "name": "Sleeping Beauty Peak (Mt. Adams view)",
+  "region": "Mt. Adams",
+  "cats": [
+   "mountain",
+   "vista",
+   "fallcolor"
+  ],
+  "lat": 46.076,
+  "lon": -121.661,
+  "light": "sunrise",
+  "effort": "hike",
+  "months": [
+   7,
+   8,
+   9,
+   10
+  ],
+  "park": [
+   46.085,
+   -121.6581
+  ]
+ },
+ {
+  "id": "conboy-lake",
+  "name": "Conboy Lake NWR (Willard Springs)",
+  "region": "Mt. Adams",
+  "cats": [
+   "wildlife",
+   "mountain",
+   "fallcolor",
+   "aurora",
+   "birds"
+  ],
+  "lat": 45.96496,
+  "lon": -121.34346,
+  "light": "both",
+  "effort": "short",
+  "months": [
+   3,
+   4,
+   5,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "trout-lake-preserve",
+  "name": "Trout Lake Natural Area Preserve deck",
+  "region": "Mt. Adams",
+  "cats": [
+   "mountain",
+   "reflection",
+   "wildflowers"
+  ],
+  "lat": 46.02401,
+  "lon": -121.56542,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   5,
+   6,
+   7,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "satus-pass",
+  "name": "Satus Pass (US 97 summit)",
+  "region": "East Gorge · Washington",
+  "cats": [
+   "night",
+   "aurora"
+  ],
+  "lat": 45.985,
+  "lon": -120.653,
+  "light": "night",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "vancouver-lake-birding",
+  "name": "Vancouver Lake & Shillapoo wildlife areas",
+  "region": "Close to home",
+  "cats": [
+   "birds",
+   "wildlife",
+   "reflection"
+  ],
+  "lat": 45.6826,
+  "lon": -122.7412,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   8,
+   9,
+   10,
+   11,
+   12,
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "id": "sauvie-birding",
+  "name": "Sauvie Island Wildlife Area (Reeder Rd & Rentenaar Rd)",
+  "region": "Portland",
+  "cats": [
+   "birds",
+   "wildlife",
+   "mountain"
+  ],
+  "lat": 45.7685,
+  "lon": -122.7707,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   10,
+   11,
+   12,
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "id": "dalles-dam-eagles",
+  "name": "The Dalles Dam & waterfront (winter eagles)",
+  "region": "East Gorge · Oregon",
+  "cats": [
+   "birds",
+   "wildlife"
+  ],
+  "lat": 45.6054,
+  "lon": -121.1323,
+  "light": "overcast",
+  "effort": "road",
+  "months": [
+   12,
+   1,
+   2
+  ]
+ },
+ {
+  "id": "bonney-butte",
+  "name": "Bonney Butte HawkWatch (Mt. Hood)",
+  "region": "Mt. Hood",
+  "cats": [
+   "birds",
+   "wildlife",
+   "vista"
+  ],
+  "lat": 45.26282,
+  "lon": -121.59299,
+  "light": "both",
+  "effort": "short",
+  "months": [
+   9,
+   10
+  ]
+ },
+ {
+  "id": "frenchmans-bar",
+  "name": "Frenchman's Bar Park (dawn goose & crane flyover)",
+  "region": "Close to home",
+  "cats": [
+   "birds",
+   "wildlife",
+   "mountain"
+  ],
+  "lat": 45.6803,
+  "lon": -122.7677,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   11,
+   12,
+   1,
+   2
+  ]
+ },
+ {
+  "id": "sandy-river-delta",
+  "name": "Sandy River Delta (Thousand Acres)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "birds",
+   "wildlife",
+   "fallcolor"
+  ],
+  "lat": 45.5499,
+  "lon": -122.3672,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "larch-wa-migration",
+  "name": "Larch Mountain, Clark Co. (Migration Corner & spring viewpoint)",
+  "region": "Close to home",
+  "cats": [
+   "birds",
+   "wildlife",
+   "vista"
+  ],
+  "lat": 45.728,
+  "lon": -122.32,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   3,
+   4,
+   5,
+   8,
+   9
+  ]
+ },
+ {
+  "id": "oneonta-triple",
+  "name": "Triple Falls & the Oneonta Trail falls",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall",
+   "fallcolor"
+  ],
+  "lat": 45.5786,
+  "lon": -122.0725,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   3,
+   4,
+   5,
+   6,
+   10,
+   11
+  ],
+  "park": [
+   45.5896,
+   -122.0755
+  ]
+ },
+ {
+  "id": "stacker-butte",
+  "name": "Stacker Butte (Columbia Hills)",
+  "region": "East Gorge · Washington",
+  "cats": [
+   "wildflowers",
+   "mountain",
+   "vista"
+  ],
+  "lat": 45.6949,
+  "lon": -121.0925,
+  "light": "both",
+  "effort": "hike",
+  "months": [
+   4,
+   5
+  ]
+ },
+ {
+  "id": "sams-walker",
+  "name": "Sams Walker Day Use Area (oaks & river meadows)",
+  "region": "Gorge · Washington",
+  "cats": [
+   "vista",
+   "birds",
+   "fallcolor"
+  ],
+  "lat": 45.6118,
+  "lon": -122.0519,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "elk-rock",
+  "name": "Elk Rock Viewpoint (SR 504, milepost 37)",
+  "region": "Mt. St. Helens",
+  "cats": [
+   "mountain",
+   "vista",
+   "geology"
+  ],
+  "lat": 46.3,
+  "lon": -122.35,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "silver-lake-msh",
+  "name": "Silver Lake & Mount St. Helens Visitor Center",
+  "region": "Mt. St. Helens",
+  "cats": [
+   "reflection",
+   "mountain",
+   "birds"
+  ],
+  "lat": 46.2945,
+  "lon": -122.8222,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "ape-cave",
+  "name": "Ape Cave lava tube",
+  "region": "Mt. St. Helens",
+  "cats": [
+   "geology"
+  ],
+  "lat": 46.1118,
+  "lon": -122.2125,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "lava-canyon",
+  "name": "Lava Canyon",
+  "region": "Mt. St. Helens",
+  "cats": [
+   "waterfall",
+   "geology"
+  ],
+  "lat": 46.166,
+  "lon": -122.0883,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "timberline",
+  "name": "Timberline Lodge & Silcox Hut",
+  "region": "Mt. Hood",
+  "cats": [
+   "mountain",
+   "night",
+   "vista"
+  ],
+  "lat": 45.3307,
+  "lon": -121.7103,
+  "light": "both",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "white-river-west",
+  "name": "White River West Sno-Park (Hood & the White River)",
+  "region": "Mt. Hood",
+  "cats": [
+   "mountain",
+   "night"
+  ],
+  "lat": 45.3039,
+  "lon": -121.6746,
+  "light": "both",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "bald-mtn-hood",
+  "name": "Bald Mountain meadow via Top Spur (Mt. Hood)",
+  "region": "Mt. Hood",
+  "cats": [
+   "mountain",
+   "wildflowers",
+   "vista"
+  ],
+  "lat": 45.4077,
+  "lon": -121.7857,
+  "light": "both",
+  "effort": "hike",
+  "months": [
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "mciver-viewpoint",
+  "name": "Milo McIver Memorial Viewpoint",
+  "region": "Mt. Hood",
+  "cats": [
+   "mountain",
+   "vista"
+  ],
+  "lat": 45.298,
+  "lon": -122.3728,
+  "light": "both",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "hr-lavender",
+  "name": "Hood River Lavender Farms",
+  "region": "Hood River Valley",
+  "cats": [
+   "wildflowers",
+   "mountain"
+  ],
+  "lat": 45.612,
+  "lon": -121.5479,
+  "light": "both",
+  "effort": "short",
+  "months": [
+   6,
+   7,
+   8
+  ]
+ },
+ {
+  "id": "council-crest",
+  "name": "Council Crest Park",
+  "region": "Portland",
+  "cats": [
+   "city",
+   "mountain",
+   "vista"
+  ],
+  "lat": 45.499,
+  "lon": -122.7081,
+  "light": "both",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "powell-butte",
+  "name": "Powell Butte Nature Park",
+  "region": "Portland",
+  "cats": [
+   "mountain",
+   "city",
+   "wildflowers"
+  ],
+  "lat": 45.4947,
+  "lon": -122.497,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "eastbank-esplanade",
+  "name": "Eastbank Esplanade & Tilikum Crossing (night skyline)",
+  "region": "Portland",
+  "cats": [
+   "city",
+   "night"
+  ],
+  "lat": 45.5178,
+  "lon": -122.6672,
+  "light": "night",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "hoyt-arboretum",
+  "name": "Hoyt Arboretum (fall maples)",
+  "region": "Portland",
+  "cats": [
+   "fallcolor"
+  ],
+  "lat": 45.5157,
+  "lon": -122.7157,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   10,
+   11
+  ]
+ },
+ {
+  "id": "smith-bybee",
+  "name": "Smith & Bybee Wetlands",
+  "region": "Portland",
+  "cats": [
+   "birds",
+   "wildlife"
+  ],
+  "lat": 45.6198,
+  "lon": -122.745,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "tualatin-nwr",
+  "name": "Tualatin River National Wildlife Refuge",
+  "region": "Portland",
+  "cats": [
+   "birds",
+   "wildlife"
+  ],
+  "lat": 45.3822,
+  "lon": -122.8322,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "woodland-bottoms",
+  "name": "Woodland Bottoms (Dike Road)",
+  "region": "Close to home",
+  "cats": [
+   "birds",
+   "wildlife"
+  ],
+  "lat": 45.8719,
+  "lon": -122.7768,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "neahkahnie",
+  "name": "Neahkahnie Viewpoint (US 101)",
+  "region": "Coast",
+  "cats": [
+   "coast",
+   "vista"
+  ],
+  "lat": 45.742,
+  "lon": -123.955,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "cape-meares",
+  "name": "Cape Meares Lighthouse & Three Arch Rocks",
+  "region": "Coast",
+  "cats": [
+   "coast",
+   "wildlife"
+  ],
+  "lat": 45.4865,
+  "lon": -123.9783,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "stub-stewart",
+  "name": "L.L. Stub Stewart State Park hilltop (dark sky)",
+  "region": "Coast",
+  "cats": [
+   "night"
+  ],
+  "lat": 45.7288,
+  "lon": -123.1879,
+  "light": "night",
+  "effort": "road",
+  "months": [
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "cape-horn-falls",
+  "name": "Cape Horn lower loop: Cape Horn Falls & Oak View overlooks",
+  "region": "Gorge · Washington",
+  "cats": [
+   "waterfall",
+   "vista"
+  ],
+  "lat": 45.5835,
+  "lon": -122.1885,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   10,
+   11,
+   12,
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "steamboat-landing",
+  "name": "Steamboat Landing Park dock (Washougal)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "reflection",
+   "city",
+   "birds"
+  ],
+  "lat": 45.5756,
+  "lon": -122.3543,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "grant-street-pier",
+  "name": "Grant Street Pier (Vancouver Waterfront)",
+  "region": "Close to home",
+  "cats": [
+   "city",
+   "reflection"
+  ],
+  "lat": 45.6238,
+  "lon": -122.681,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "cedar-creek-grist-mill",
+  "name": "Cedar Creek Grist Mill & covered bridge",
+  "region": "Close to home",
+  "cats": [
+   "historic",
+   "fallcolor"
+  ],
+  "lat": 45.9384,
+  "lon": -122.5832,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   10,
+   11,
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "battle-ground-lake",
+  "name": "Battle Ground Lake State Park (volcanic crater lake)",
+  "region": "Close to home",
+  "cats": [
+   "reflection",
+   "geology",
+   "fallcolor"
+  ],
+  "lat": 45.803,
+  "lon": -122.4914,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "lewisville-park",
+  "name": "Lewisville Regional Park (East Fork Lewis River)",
+  "region": "Close to home",
+  "cats": [
+   "fallcolor",
+   "wildlife"
+  ],
+  "lat": 45.8213,
+  "lon": -122.5356,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   9,
+   10,
+   11,
+   12,
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "fort-vancouver",
+  "name": "Fort Vancouver (reconstructed stockade)",
+  "region": "Close to home",
+  "cats": [
+   "historic",
+   "city"
+  ],
+  "lat": 45.6232,
+  "lon": -122.6617,
+  "light": "both",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "portland-tram",
+  "name": "Portland Aerial Tram (upper patio)",
+  "region": "Portland",
+  "cats": [
+   "city",
+   "mountain"
+  ],
+  "lat": 45.4988,
+  "lon": -122.6714,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "crystal-springs",
+  "name": "Crystal Springs Rhododendron Garden",
+  "region": "Portland",
+  "cats": [
+   "garden",
+   "birds",
+   "fallcolor",
+   "wildflowers"
+  ],
+  "lat": 45.4786,
+  "lon": -122.636,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   4,
+   5,
+   10,
+   11,
+   12,
+   1,
+   2
+  ]
+ },
+ {
+  "id": "stone-house",
+  "name": "Stone House ('Witch's Castle') on the Lower Macleay Trail",
+  "region": "Portland",
+  "cats": [
+   "historic",
+   "waterfall"
+  ],
+  "lat": 45.5359,
+  "lon": -122.7125,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "lan-su-garden",
+  "name": "Lan Su Chinese Garden",
+  "region": "Portland",
+  "cats": [
+   "garden",
+   "fallcolor",
+   "city"
+  ],
+  "lat": 45.5254,
+  "lon": -122.6732,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "laurelhurst-park",
+  "name": "Laurelhurst Park (fall tupelos & pond)",
+  "region": "Portland",
+  "cats": [
+   "fallcolor",
+   "reflection"
+  ],
+  "lat": 45.5211,
+  "lon": -122.6269,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   10,
+   11
+  ]
+ },
+ {
+  "id": "leach-garden",
+  "name": "Leach Botanical Garden",
+  "region": "Portland",
+  "cats": [
+   "garden",
+   "fallcolor"
+  ],
+  "lat": 45.4745,
+  "lon": -122.5351,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   10,
+   11
+  ]
+ },
+ {
+  "id": "hulda-klager",
+  "name": "Hulda Klager Lilac Gardens",
+  "region": "Close to home",
+  "cats": [
+   "garden",
+   "wildflowers",
+   "historic"
+  ],
+  "lat": 45.8972,
+  "lon": -122.7533,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   4,
+   5
+  ]
+ },
+ {
+  "id": "abernethy-swifts",
+  "name": "Abernethy Elementary chimney (Vaux's swift roost)",
+  "region": "Portland",
+  "cats": [
+   "birds",
+   "wildlife",
+   "city"
+  ],
+  "lat": 45.5058,
+  "lon": -122.6517,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "willamette-falls-overlook",
+  "name": "Willamette Falls overlook (Hwy 99E, Oregon City)",
+  "region": "Portland",
+  "cats": [
+   "waterfall",
+   "birds",
+   "wildlife"
+  ],
+  "lat": 45.3529,
+  "lon": -122.6124,
+  "light": "overcast",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "higgins-point-eagles",
+  "name": "Wolf Lodge Bay eagles (Higgins Point, Lake Coeur d'Alene)",
+  "region": "Road trip · Idaho",
+  "cats": [
+   "birds",
+   "wildlife",
+   "reflection"
+  ],
+  "lat": 47.6269,
+  "lon": -116.6807,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   11,
+   12,
+   1
+  ]
+ },
+ {
+  "id": "skagit-eagles",
+  "name": "Skagit River eagles (Howard Miller Steelhead Park, Rockport)",
+  "region": "Road trip · North Cascades",
+  "cats": [
+   "birds",
+   "wildlife"
+  ],
+  "lat": 48.4849,
+  "lon": -121.609,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   12,
+   1,
+   2
+  ]
+ },
+ {
+  "id": "othello-cranes",
+  "name": "Othello sandhill cranes (Columbia Basin)",
+  "region": "Road trip · Eastern WA",
+  "cats": [
+   "birds",
+   "wildlife"
+  ],
+  "lat": 46.8201,
+  "lon": -119.1653,
+  "light": "both",
+  "effort": "road",
+  "months": [
+   3,
+   4
+  ]
+ },
+ {
+  "id": "jewell-meadows",
+  "name": "Jewell Meadows Wildlife Area (Roosevelt elk)",
+  "region": "North Coast Range",
+  "cats": [
+   "wildlife"
+  ],
+  "lat": 45.9489,
+  "lon": -123.5262,
+  "light": "both",
+  "effort": "road",
+  "months": [
+   11,
+   12,
+   1,
+   2,
+   3,
+   4
+  ]
+ },
+ {
+  "id": "oak-creek-elk",
+  "name": "Oak Creek elk feeding station (Naches)",
+  "region": "Road trip · Yakima",
+  "cats": [
+   "wildlife"
+  ],
+  "lat": 46.7274,
+  "lon": -120.8119,
+  "light": "both",
+  "effort": "road",
+  "months": [
+   12,
+   1,
+   2
+  ]
+ },
+ {
+  "id": "cleman-bighorn",
+  "name": "Cleman Mountain bighorn sheep (Old Naches Hwy)",
+  "region": "Road trip · Yakima",
+  "cats": [
+   "wildlife",
+   "geology"
+  ],
+  "lat": 46.7488,
+  "lon": -120.7742,
+  "light": "both",
+  "effort": "road",
+  "months": [
+   12,
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "id": "oxbow-salmon",
+  "name": "Oxbow Regional Park (Sandy River salmon)",
+  "region": "Portland",
+  "cats": [
+   "wildlife",
+   "fallcolor",
+   "birds"
+  ],
+  "lat": 45.4953,
+  "lon": -122.2914,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "bonneville-dam-fish",
+  "name": "Bonneville Dam fish ladder windows (Bradford Island)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "wildlife",
+   "historic"
+  ],
+  "lat": 45.6416,
+  "lon": -121.9436,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "astoria-sea-lions",
+  "name": "Astoria East Mooring Basin sea lions",
+  "region": "North Coast",
+  "cats": [
+   "wildlife",
+   "city"
+  ],
+  "lat": 46.1946,
+  "lon": -123.8018,
+  "light": "both",
+  "effort": "short",
+  "months": [
+   9,
+   10,
+   11,
+   12,
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ {
+  "id": "bowerman-basin",
+  "name": "Bowerman Basin (Grays Harbor NWR shorebirds)",
+  "region": "Road trip · WA coast",
+  "cats": [
+   "birds",
+   "wildlife"
+  ],
+  "lat": 46.9778,
+  "lon": -123.9414,
+  "light": "both",
+  "effort": "short",
+  "months": [
+   4,
+   5
+  ]
+ },
+ {
+  "id": "government-cove",
+  "name": "Government Cove peninsula (Cascade Locks)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "vista",
+   "reflection"
+  ],
+  "lat": 45.6886,
+  "lon": -121.8425,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "bridge-of-gods",
+  "name": "Bridge of the Gods (Cascade Locks)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "vista",
+   "historic",
+   "fallcolor"
+  ],
+  "lat": 45.6617,
+  "lon": -121.8985,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "eagle-creek-bridge",
+  "name": "Eagle Creek Bridge (Historic Columbia River Highway)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "historic",
+   "fallcolor"
+  ],
+  "lat": 45.6413,
+  "lon": -121.9288,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "ruckel-creek",
+  "name": "Ruckel Creek falls & stone bridge",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall",
+   "historic"
+  ],
+  "lat": 45.6451,
+  "lon": -121.9186,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "moffett-creek-bridge",
+  "name": "Moffett Creek Bridge (Historic Hwy State Trail)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "historic"
+  ],
+  "lat": 45.624,
+  "lon": -121.9774,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "dry-creek-falls",
+  "name": "Dry Creek Falls (PCT from Bridge of the Gods)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.6572,
+  "lon": -121.867,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "gorton-creek-falls",
+  "name": "Gorton Creek Falls (Wyeth)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.6817,
+  "lon": -121.7722,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "spirit-falls",
+  "name": "Spirit Falls (Little White Salmon River)",
+  "region": "Gorge · Washington",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.726,
+  "lon": -121.6339,
+  "light": "overcast",
+  "effort": "hard",
+  "months": [
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "hood-river-bridge",
+  "name": "Hood River–White Salmon Interstate Bridge",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "vista",
+   "historic",
+   "city"
+  ],
+  "lat": 45.7229,
+  "lon": -121.4925,
+  "light": "both",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "rock-slide-viaduct",
+  "name": "Rock Slide Viaduct (Hatfield trail, Hood River–Mosier)",
+  "region": "East Gorge · Oregon",
+  "cats": [
+   "historic",
+   "vista"
+  ],
+  "lat": 45.6952,
+  "lon": -121.4624,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "fairy-falls",
+  "name": "Fairy Falls (Wahkeena Trail)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.5717,
+  "lon": -122.1222,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "multnomah-creek-falls",
+  "name": "Wiesendanger, Dutchman & Ecola Falls (Multnomah Creek)",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "waterfall"
+  ],
+  "lat": 45.5653,
+  "lon": -122.1053,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "wishram-overlook",
+  "name": "Wishram scenic overlook (Celilo Falls view)",
+  "region": "East Gorge · Washington",
+  "cats": [
+   "vista",
+   "historic",
+   "geology"
+  ],
+  "lat": 45.6615,
+  "lon": -120.9647,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "maryhill-museum",
+  "name": "Maryhill Museum of Art grounds",
+  "region": "East Gorge · Washington",
+  "cats": [
+   "historic",
+   "vista",
+   "garden"
+  ],
+  "lat": 45.6775,
+  "lon": -120.8648,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "shaker-church",
+  "name": "Indian Shaker Church & Gulick Homestead (The Dalles)",
+  "region": "East Gorge · Oregon",
+  "cats": [
+   "historic"
+  ],
+  "lat": 45.6058,
+  "lon": -121.1341,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "astoria-column",
+  "name": "Astoria Column & Megler Bridge view",
+  "region": "North Coast",
+  "cats": [
+   "vista",
+   "historic",
+   "city"
+  ],
+  "lat": 46.1813,
+  "lon": -123.8176,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "peter-iredale",
+  "name": "Peter Iredale shipwreck (Fort Stevens)",
+  "region": "North Coast",
+  "cats": [
+   "coast",
+   "historic"
+  ],
+  "lat": 46.1784,
+  "lon": -123.9811,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "short-sand",
+  "name": "Short Sand Beach (Oswald West State Park)",
+  "region": "Coast",
+  "cats": [
+   "coast",
+   "waterfall"
+  ],
+  "lat": 45.7622,
+  "lon": -123.9608,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "twin-rocks",
+  "name": "Twin Rocks (Rockaway Beach)",
+  "region": "Coast",
+  "cats": [
+   "coast",
+   "geology"
+  ],
+  "lat": 45.6012,
+  "lon": -123.9479,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "cape-lookout",
+  "name": "Cape Lookout State Park",
+  "region": "Coast",
+  "cats": [
+   "coast",
+   "vista",
+   "wildlife"
+  ],
+  "lat": 45.3644,
+  "lon": -123.9654,
+  "light": "sunset",
+  "effort": "hike",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "cascade-head",
+  "name": "Cascade Head Preserve meadows",
+  "region": "Coast",
+  "cats": [
+   "coast",
+   "vista",
+   "wildflowers"
+  ],
+  "lat": 45.044,
+  "lon": -123.985,
+  "light": "sunset",
+  "effort": "hike",
+  "months": [
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "lake-sacajawea",
+  "name": "Lake Sacajawea Park (Longview)",
+  "region": "Lower Columbia · St. Helens views",
+  "cats": [
+   "reflection",
+   "fallcolor",
+   "birds"
+  ],
+  "lat": 46.1365,
+  "lon": -122.9519,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   3,
+   4,
+   5,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "rainier-hwy30",
+  "name": "US 30 Mt. St. Helens viewpoints & Trojan Park (Rainier)",
+  "region": "Lower Columbia · St. Helens views",
+  "cats": [
+   "mountain",
+   "vista",
+   "reflection"
+  ],
+  "lat": 46.0325,
+  "lon": -122.8879,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "buxton-trestle",
+  "name": "Buxton Trestle (Banks–Vernonia State Trail)",
+  "region": "North Coast Range",
+  "cats": [
+   "historic",
+   "fallcolor"
+  ],
+  "lat": 45.692,
+  "lon": -123.187,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "gallon-house-bridge",
+  "name": "Gallon House Covered Bridge (Silverton)",
+  "region": "Willamette Valley",
+  "cats": [
+   "historic",
+   "fallcolor"
+  ],
+  "lat": 45.0322,
+  "lon": -122.7895,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "abiqua-falls",
+  "name": "Abiqua Falls",
+  "region": "Willamette Valley",
+  "cats": [
+   "waterfall",
+   "geology"
+  ],
+  "lat": 44.9263,
+  "lon": -122.5673,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   3,
+   4,
+   5,
+   6,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "hawthorne-bridge",
+  "name": "Hawthorne Bridge & Waterfront Park",
+  "region": "Portland",
+  "cats": [
+   "city",
+   "night"
+  ],
+  "lat": 45.5133,
+  "lon": -122.6714,
+  "light": "night",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "scout-sandyhenge",
+  "name": "Scout pick: \"Sandyhenge\", the sun down NE Sandy Blvd",
+  "region": "Portland",
+  "cats": [
+   "alignment",
+   "city"
+  ],
+  "lat": 45.5384,
+  "lon": -122.615,
+  "light": "both",
+  "effort": "road",
+  "months": [
+   11,
+   1,
+   5,
+   7
+  ]
+ },
+ {
+  "id": "scout-burnsidehenge",
+  "name": "Scout pick: Burnside equinox sunsets & sunrises",
+  "region": "Portland",
+  "cats": [
+   "alignment",
+   "city"
+  ],
+  "lat": 45.5235,
+  "lon": -122.623,
+  "light": "both",
+  "effort": "road",
+  "months": [
+   3,
+   9
+  ]
+ },
+ {
+  "id": "scout-evergreenhenge",
+  "name": "Scout pick: Officers Row henge on E Evergreen Blvd (Vancouver)",
+  "region": "Close to home",
+  "cats": [
+   "alignment",
+   "historic",
+   "city"
+  ],
+  "lat": 45.6261,
+  "lon": -122.6406,
+  "light": "both",
+  "effort": "road",
+  "months": [
+   3,
+   4,
+   9,
+   10
+  ]
+ },
+ {
+  "id": "scout-camas-4th-moonset",
+  "name": "Scout pick: Moonset down NE 4th Ave into the Camas mill (lunar standstill)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "alignment",
+   "city",
+   "night"
+  ],
+  "lat": 45.5876,
+  "lon": -122.4007,
+  "light": "night",
+  "effort": "road",
+  "months": [
+   5,
+   6,
+   8
+  ]
+ },
+ {
+  "id": "scout-frenchmans-three",
+  "name": "Scout pick: Three volcanoes from the sand at Frenchman's Bar",
+  "region": "Close to home",
+  "cats": [
+   "alignment",
+   "mountain",
+   "reflection"
+  ],
+  "lat": 45.6803,
+  "lon": -122.7677,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   5,
+   7,
+   10,
+   2
+  ]
+ },
+ {
+  "id": "scout-sauvie-adams",
+  "name": "Scout pick: Summer sunrise behind Mt. Adams from Sauvie Island",
+  "region": "Portland",
+  "cats": [
+   "alignment",
+   "mountain",
+   "birds"
+  ],
+  "lat": 45.7685,
+  "lon": -122.7707,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   5,
+   7,
+   11,
+   1
+  ]
+ },
+ {
+  "id": "scout-pittock-moon-adams",
+  "name": "Scout pick: Full moon rising behind Mt. Adams from Pittock Mansion",
+  "region": "Portland",
+  "cats": [
+   "alignment",
+   "mountain",
+   "city"
+  ],
+  "lat": 45.525,
+  "lon": -122.716,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   10,
+   11,
+   12,
+   1,
+   2
+  ]
+ },
+ {
+  "id": "scout-grant-pier-hood",
+  "name": "Scout pick: Sunrise behind Mt. Hood from Grant Street Pier",
+  "region": "Close to home",
+  "cats": [
+   "alignment",
+   "mountain",
+   "city",
+   "reflection"
+  ],
+  "lat": 45.6238,
+  "lon": -122.681,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   10,
+   2,
+   4,
+   7
+  ]
+ },
+ {
+  "id": "scout-silver-lake-helens",
+  "name": "Scout pick: Sunrise behind St. Helens over Silver Lake",
+  "region": "Mt. St. Helens",
+  "cats": [
+   "alignment",
+   "mountain",
+   "reflection"
+  ],
+  "lat": 46.2945,
+  "lon": -122.8222,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   3,
+   10
+  ]
+ },
+ {
+  "id": "scout-rainier-helens",
+  "name": "Scout pick: Sunrise behind St. Helens from Rainier, OR",
+  "region": "Lower Columbia · St. Helens views",
+  "cats": [
+   "alignment",
+   "mountain"
+  ],
+  "lat": 46.0325,
+  "lon": -122.8879,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   4,
+   8
+  ]
+ },
+ {
+  "id": "scout-mciver-hood",
+  "name": "Scout pick: Sunrise behind Mt. Hood from the McIver viewpoint",
+  "region": "Mt. Hood",
+  "cats": [
+   "alignment",
+   "mountain"
+  ],
+  "lat": 45.298,
+  "lon": -122.3728,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   4,
+   8
+  ]
+ },
+ {
+  "id": "scout-jonsrud-equinox",
+  "name": "Scout pick: Equinox sunrise behind Mt. Hood from Jonsrud Viewpoint",
+  "region": "Mt. Hood",
+  "cats": [
+   "alignment",
+   "mountain"
+  ],
+  "lat": 45.405,
+  "lon": -122.265,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   3,
+   9
+  ]
+ },
+ {
+  "id": "scout-council-crest-hood",
+  "name": "Scout pick: Sunrise behind Mt. Hood from Council Crest",
+  "region": "Portland",
+  "cats": [
+   "alignment",
+   "mountain",
+   "city"
+  ],
+  "lat": 45.499,
+  "lon": -122.7081,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   3,
+   10,
+   2
+  ]
+ },
+ {
+  "id": "scout-silverstar-moon-hood",
+  "name": "Scout pick: Summer full moons rising behind Hood from Silver Star",
+  "region": "Close to home",
+  "cats": [
+   "alignment",
+   "mountain",
+   "night"
+  ],
+  "lat": 45.748,
+  "lon": -122.24,
+  "light": "sunset",
+  "effort": "hike",
+  "months": [
+   4,
+   5,
+   6,
+   7,
+   8
+  ]
+ },
+ {
+  "id": "sunnyside-cherries",
+  "name": "Sunnyside cherry blocks (SE Salmon & SE Yamhill, 32nd–39th)",
+  "region": "Portland",
+  "cats": [
+   "wildflowers",
+   "city",
+   "garden"
+  ],
+  "lat": 45.5143,
+  "lon": -122.6282,
+  "light": "overcast",
+  "effort": "road",
+  "months": [
+   4
+  ]
+ },
+ {
+  "id": "ladds-elms",
+  "name": "Ladd's Addition elms & rose circle",
+  "region": "Portland",
+  "cats": [
+   "fallcolor",
+   "garden",
+   "city"
+  ],
+  "lat": 45.5087,
+  "lon": -122.6494,
+  "light": "overcast",
+  "effort": "road",
+  "months": [
+   5,
+   6,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "omaha-elms",
+  "name": "N Omaha Ave elm canopy (Overlook/Arbor Lodge)",
+  "region": "Portland",
+  "cats": [
+   "fallcolor",
+   "city"
+  ],
+  "lat": 45.5663,
+  "lon": -122.6901,
+  "light": "overcast",
+  "effort": "road",
+  "months": [
+   5,
+   6,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "eastmoreland-elms",
+  "name": "Eastmoreland elm streets (SE 29th Ave & Reed College Pl)",
+  "region": "Portland",
+  "cats": [
+   "fallcolor",
+   "city"
+  ],
+  "lat": 45.4684,
+  "lon": -122.6334,
+  "light": "overcast",
+  "effort": "road",
+  "months": [
+   5,
+   6,
+   10,
+   11
+  ]
+ },
+ {
+  "id": "downtown-ginkgos",
+  "name": "Downtown ginkgo gold (SW Salmon & SW Alder) + Reed's heritage ginkgos",
+  "region": "Portland",
+  "cats": [
+   "fallcolor",
+   "city"
+  ],
+  "lat": 45.5181,
+  "lon": -122.6828,
+  "light": "overcast",
+  "effort": "road",
+  "months": [
+   11
+  ]
+ },
+ {
+  "id": "waterfront-cherries",
+  "name": "Japanese American Historical Plaza cherries (Waterfront Park)",
+  "region": "Portland",
+  "cats": [
+   "wildflowers",
+   "city",
+   "garden",
+   "historic"
+  ],
+  "lat": 45.5239,
+  "lon": -122.6697,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   3,
+   4
+  ]
+ },
+ {
+  "id": "clark-college-cherries",
+  "name": "Clark College cherry grove (Vancouver)",
+  "region": "Close to home",
+  "cats": [
+   "wildflowers",
+   "garden"
+  ],
+  "lat": 45.6343,
+  "lon": -122.6525,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   4
+  ]
+ },
+ {
+  "id": "old-apple-tree",
+  "name": "Old Apple Tree Park (Vancouver, 1826)",
+  "region": "Close to home",
+  "cats": [
+   "historic",
+   "garden"
+  ],
+  "lat": 45.622,
+  "lon": -122.6701,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   4,
+   10
+  ]
+ },
+ {
+  "id": "columbia-springs",
+  "name": "Columbia Springs wildflower trails (Vancouver)",
+  "region": "Close to home",
+  "cats": [
+   "wildflowers",
+   "birds"
+  ],
+  "lat": 45.6003,
+  "lon": -122.5455,
+  "light": "overcast",
+  "effort": "short",
+  "months": [
+   4,
+   5
+  ]
+ },
+ {
+  "id": "parkers-landing-trees",
+  "name": "Parker's Landing heritage trees (Washougal)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "historic",
+   "garden",
+   "fallcolor"
+  ],
+  "lat": 45.5785,
+  "lon": -122.3805,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   4,
+   6,
+   10
+  ]
+ },
+ {
+  "id": "maddax-heronry",
+  "name": "Maddax Woods heron colony (West Linn)",
+  "region": "Portland",
+  "cats": [
+   "birds",
+   "wildlife"
+  ],
+  "lat": 45.3695,
+  "lon": -122.6138,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   3,
+   4,
+   5,
+   6
+  ]
+ },
+ {
+  "id": "gorge-pikas",
+  "name": "Experimental: Low-elevation pikas in Gorge talus",
+  "region": "Gorge · Oregon",
+  "cats": [
+   "wildlife"
+  ],
+  "lat": 45.64,
+  "lon": -121.93,
+  "light": "overcast",
+  "effort": "hike",
+  "months": [
+   6,
+   7,
+   8,
+   9
+  ]
+ },
+ {
+  "id": "wintler-park",
+  "name": "Wintler Community Park beach (Vancouver)",
+  "region": "Close to home",
+  "cats": [
+   "reflection",
+   "city",
+   "vista"
+  ],
+  "lat": 45.6115,
+  "lon": -122.6053,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "marine-park-vancouver",
+  "name": "Marine Park & Water Resources Center (Vancouver)",
+  "region": "Close to home",
+  "cats": [
+   "reflection",
+   "city",
+   "historic"
+  ],
+  "lat": 45.615,
+  "lon": -122.6255,
+  "light": "sunset",
+  "effort": "short",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "scout-hood-sunrise",
+  "name": "Scout pick: Mt. Hood sunrise calendar for Camas & Washougal",
+  "region": "Camas & Washougal",
+  "cats": [
+   "alignment",
+   "mountain"
+  ],
+  "lat": 45.571,
+  "lon": -122.34,
+  "light": "sunrise",
+  "effort": "short",
+  "months": [
+   10,
+   11,
+   2
+  ]
+ },
+ {
+  "id": "scout-prune-hill",
+  "name": "Scout pick: Prune Hill (Camas)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "vista",
+   "city"
+  ],
+  "lat": 45.598,
+  "lon": -122.445,
+  "light": "sunset",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "scout-cape-horn-uplands",
+  "name": "Scout pick: Cape Horn upland roads (Strunk & Salmon Falls Rd)",
+  "region": "Camas & Washougal",
+  "cats": [
+   "vista",
+   "fallcolor"
+  ],
+  "lat": 45.6,
+  "lon": -122.19,
+  "light": "sunrise",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "cottonwood-canyon",
+  "name": "Cottonwood Canyon State Park (International Dark Sky Park)",
+  "region": "Road trip · Eastern Oregon",
+  "cats": [
+   "night",
+   "geology",
+   "aurora"
+  ],
+  "lat": 45.46988,
+  "lon": -120.44264,
+  "light": "night",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ },
+ {
+  "id": "prineville-reservoir",
+  "name": "Prineville Reservoir State Park (International Dark Sky Park)",
+  "region": "Central Oregon",
+  "cats": [
+   "night",
+   "reflection",
+   "geology"
+  ],
+  "lat": 44.13193,
+  "lon": -120.7259,
+  "light": "night",
+  "effort": "road",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ]
+ }
 ]

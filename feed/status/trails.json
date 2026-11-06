@@ -1,1 +1,1 @@
-{"ok":true,"kind":"MEASURED","note":"29 spots routed, 0 failed, 220 left for next run; 29 total","at":"2026-11-06T00:36:28Z","secs":2416.8}
+{"ok":true,"kind":"MEASURED","note":"50 spots routed, 1 failed, 169 left for next run; 71 total; 8 pins moved to OSM features (data/pin_fixes.json)","at":"2026-11-06T02:06:17Z","secs":5251.5}
