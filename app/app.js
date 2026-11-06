@@ -79,7 +79,7 @@ async function loadWx(force) {
   const pts = wxPoints();
   const url = "https://api.open-meteo.com/v1/forecast?latitude=" + pts.map(p => p.lat.toFixed(3)).join(",") + "&longitude=" + pts.map(p => p.lon.toFixed(3)).join(",") +
     "&hourly=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,visibility,relative_humidity_2m,dew_point_2m,temperature_2m,wind_speed_10m,precipitation_probability,weather_code,precipitation" +
-    "&past_days=2&forecast_days=3&timeformat=unixtime&wind_speed_unit=mph&temperature_unit=fahrenheit&timezone=GMT";
+    "&past_days=2&forecast_days=5&timeformat=unixtime&wind_speed_unit=mph&temperature_unit=fahrenheit&timezone=GMT";
   try {
     const r = await fetch(url); if (!r.ok) throw new Error("HTTP " + r.status);
     let j = await r.json(); if (!Array.isArray(j)) j = [j];
@@ -149,7 +149,7 @@ function allWindows(p, hours) {
   const now = Date.now(), key = p.lat.toFixed(2) + "," + p.lon.toFixed(2) + "," + Math.floor(now / 300000) + "," + (hours || 40);
   if (__winCache[key]) return __winCache[key];
   const out = [], y = laYMD(new Date());
-  for (let k = -1; k < 3; k++) {
+  for (let k = -1; k < 5; k++) {
     const ymd = addDays(y, k), e = dayEvents(p, ymd); if (!e.sunrise || !e.sunset) continue;
     const civD = e.civilDawn || addMin(e.sunrise, -32), civK = e.civilDusk || addMin(e.sunset, 32);
     const astD = e.astroDawn || addMin(civD, -70), astK = e.astroDusk || addMin(civK, 70);
@@ -468,32 +468,54 @@ function diversify(list, n) { const out = [], used = new Set();
     if (!used.has(c) || !out.length || x.r < out[0].r - 15) { out.push(x); used.add(c); } }
   for (const x of list) { if (out.length >= n) break; if (!out.includes(x)) out.push(x); }
   return out.sort((a, b) => b.r - a.r); }
+const PLAN_HOURS = 112;   // ~4.5 days: covers the whole weekend from Thursday
+const KSHORT2 = { blueAM: "Blue hour", sunrise: "Sunrise", morning: "Morning", midday: "Midday", afternoon: "Afternoon", sunset: "Sunset", bluePM: "Blue hour", night: "Night" };
+function winDay(w) { return laYMD(w.kind === "night" ? w.start : w.peak); }
+function dayTab(ymd) { const y = laYMD(new Date()); if (ymd === y) return "Today"; if (ymd === addDays(y, 1)) return "Tomorrow";
+  return new Date(ymd + "T12:00:00").toLocaleDateString("en-US", { weekday: "short" }); }
+let __topsKey = "", __tops = [];
+function windowTops(all) {   // best spot per window, cached per forecast/feed state
+  const k = all.length + "|" + (all[0] && all[0].start.getTime()) + "|" + (WX ? WX.at : 0) + "|" + (window.FEED && FEED.m ? FEED.m.gen : "") + "|" + Object.keys(SAVED).length + "|" + LOC.lat;
+  if (k !== __topsKey) { __tops = all.map(x => rankFor(x)[0] || null); __topsKey = k; }
+  return __tops;
+}
+function chipTime(w) { return w.kind === "night" ? (w.dark ? fmtT(w.dark.s) : "all night") : w.live ? "now" : fmtT(GOLDK.has(w.kind) ? w.peak : w.start); }
+function plannerHtml(all, tops) {
+  const days = [...new Set(all.map(winDay))];
+  if (!UI.day || !days.includes(UI.day)) UI.day = winDay(all[UI.focus]);
+  const dayBest = d => Math.max(0, ...all.map((w, i) => winDay(w) === d && tops[i] ? tops[i].f.n : 0));
+  const alertAt = (window.upcoming ? upcoming() : []).map(a => new Date(a.at).getTime());
+  let h = `<div class="planner" id="planner"><div class="daytabs" role="tablist">${days.map(d => { const n = dayBest(d);
+    return `<button class="daytab" role="tab" data-day="${d}" aria-selected="${d === UI.day}"><span>${dayTab(d)}</span><small class="${scoreCls(n)}">${n || "–"}</small></button>`; }).join("")}</div>`;
+  const idx = all.map((w, i) => i).filter(i => winDay(all[i]) === UI.day);
+  const best = Math.max(0, ...idx.map(i => tops[i] ? tops[i].f.n : 0));
+  h += `<div class="winchips">${idx.map(i => { const w = all[i], t = tops[i], n = t ? t.f.n : 0;
+    const flag = alertAt.some(x => x >= w.start.getTime() && x < w.end.getTime());
+    return `<button class="winchip${i === UI.focus ? " on" : ""}" data-focus="${i}" aria-pressed="${i === UI.focus}"><span class="wk">${KSHORT2[w.kind]}${flag ? ` <i class="adot" title="alert"></i>` : ""}</span><span class="wt">${chipTime(w)}</span><span class="score sm ${scoreCls(n)}">${n || "–"}</span>${n && n === best ? `<span class="wbest">best</span>` : ""}</button>`; }).join("")}</div></div>`;
+  return h;
+}
 function renderNow() {
-  const el = $("#v-now"); const all = allWindows(LOC, 40); const wins = all;
+  const el = $("#v-now"); const all = allWindows(LOC, PLAN_HOURS);
   if (!all.length) { el.innerHTML = `<p class="empty">Working out the light…</p>`; return; }
   UI.focus = clamp(UI.focus, 0, all.length - 1);
-  const w = all[UI.focus];
+  const w = all[UI.focus], tops = windowTops(all);
   const sk = w.kind === "night" ? null : skyAt(LOC, w), v = w.kind === "night" ? null : verdict(sk);
   const ranked = rankFor(w); const top = diversify(ranked, 3), more = ranked.filter(x => !top.includes(x)).slice(0, 7);
   const timeTxt = !GOLDK.has(w.kind) && w.kind !== "night" ? `${fmtT(w.start)}–${fmtT(w.end)}` : w.kind === "night" ? (w.dark ? `${fmtT(w.dark.s)}–${fmtT(w.dark.e)} moon-free` : `Moon ${Math.round(w.illum * 100)}% all night`) : `${fmtT(w.peak)} · golden ${fmtT(w.start)}–${fmtT(w.end)}`;
-  let h = stripSvg(LOC, wins);
-  h += `<div class="window"><div class="wtitle"><h2>${wTitle(w)}</h2><span class="when">${w.live ? "until " + fmtT(w.end) : fmtIn(w.kind === "night" && w.dark ? w.dark.s : w.start)}</span></div>
+  let h = plannerHtml(all, tops);
+  h += `<div class="window" id="winDetail"><div class="wtitle"><h2>${wTitle(w)}</h2><span class="when">${w.live ? "until " + fmtT(w.end) : fmtIn(w.kind === "night" && w.dark ? w.dark.s : w.start)}</span></div>
     <p class="muted" style="margin:2px 0 0">${timeTxt}</p>`;
   if (v) h += `<p class="verdict ${v.cls}">${v.txt}</p><p class="why">${esc(sk ? sk.why.join(", ") : (WX ? "No forecast for this place." : "Loading the forecast…"))}</p>${skyBars(sk)}`;
-  else { const c = hourAt(nearestPt(LOC, 60), w.peak); h += `<p class="verdict ${c && c.cc <= 20 ? "good" : "mid"}">${c ? (c.cc <= 20 ? "Clear and dark enough for stars" : c.cc <= 50 ? "Partly cloudy: gaps for stars" : "Cloudy: skip the stars") : "Loading the forecast…"}</p>`; }
-  h += top.length ? `<ul class="picks">${top.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<p class="empty">No spots you can reach in time. Try the next window.</p>`;
+  else { const c = hourAt(nearestPt(LOC, 60), w.peak); h += `<p class="verdict ${c && c.cc <= 20 ? "good" : "mid"}">${c ? (c.cc <= 20 ? "Clear and dark enough for stars" : c.cc <= 50 ? "Partly cloudy: gaps for stars" : "Cloudy: skip the stars") : "Forecast doesn't reach this far yet"}</p>`; }
+  h += top.length ? `<ul class="picks">${top.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<p class="empty">No spots you can reach in time. Pick a later window above.</p>`;
   if (more.length) h += UI.more ? `<ul class="picks" style="border-top:0">${more.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<button class="more" id="moreBtn">${more.length} more options</button>`;
   h += `</div>`;
-  // other windows
-  const tops = all.map(x => rankFor(x)[0]), bestN = Math.max(0, ...tops.slice(0, 12).map(t => t ? t.f.n : 0));
-  h += `<div class="later"><h3>Every window, next 40 hours</h3><p class="muted" style="margin:0 0 6px;font-size:14px">Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset.</p>${all.map((x, i) => { if (i === UI.focus) return "";
-      const s2 = x.kind === "night" ? null : skyAt(LOC, x), v2 = x.kind === "night" ? { txt: x.dark ? `Moon-free ${fmtT(x.dark.s)}–${fmtT(x.dark.e)}` : `Moon ${Math.round(x.illum * 100)}% up` } : verdict(s2);
-      const tp = tops[i];
-      return `<button class="lrow${tp && tp.f.n === bestN && bestN > 0 ? " best" : ""}" data-focus="${i}"><span><b>${esc(wTitle(x))}${x.kind === "night" || x.live ? "" : " " + fmtT(GOLDK.has(x.kind) ? x.peak : x.start)}${tp && tp.f.n === bestN && bestN > 0 ? " ★" : ""}</b><small>${esc(v2.txt)}${tp ? " · best: " + esc(tp.s.name) : ""}</small></span><span class="score ${tp ? scoreCls(tp.f.n) : "s-lo"}" style="width:36px;height:36px;font-size:14px">${tp ? tp.f.n : "–"}</span></button>`; }).join("")}</div>`;
+  h += `<p class="muted scorenote">Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–5 use a single forecast model, so treat them as rough.</p>`;
   h += specialsHtml();
   el.innerHTML = h;
   const ids = ranked.slice(0, 40).map(x => x.s.id);
   if (!atHome() || LOC.src === "gps") loadDrives(SPOTS.filter(s => km(LOC, s) < 160).sort((a, b) => km(LOC, a) - km(LOC, b)).slice(0, 80).map(s => s.id).concat(ids)).then(ch => ch && render());
+  const on = el.querySelector(".winchip.on"); if (on && on.scrollIntoView) on.scrollIntoView({ block: "nearest", inline: "center" });
 }
 function specialsHtml() {
   const items = [], now = new Date();
@@ -566,7 +588,7 @@ function renderCal() {
 let MAP = null, MAPLAYER = null;
 function renderMap() {
   if (!window.L) { $("#map").innerHTML = `<p class="empty" style="padding:20px">The map needs a connection the first time it loads.</p>`; return; }
-  const w = allWindows(LOC, 40)[0];
+  const w = allWindows(LOC, PLAN_HOURS)[UI.focus] || allWindows(LOC, PLAN_HOURS)[0];   // the window picked in the planner
   if (!MAP) { MAP = L.map("map", { zoomControl: false }).setView([LOC.lat, LOC.lon], 9);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 17, attribution: "© OpenStreetMap" }).addTo(MAP);
     L.control.zoom({ position: "topright" }).addTo(MAP); }
@@ -733,7 +755,7 @@ document.addEventListener("click", e => {
   if (!t) return;
   if (t.dataset.v) return show(t.dataset.v);
   if (t.dataset.spot) return openSpot(t.dataset.spot);
-  if (t.dataset.focus != null) { UI.focus = +t.dataset.focus; UI.more = false; window.scrollTo({ top: 0, behavior: "smooth" }); return render(); }
+  if (t.dataset.focus != null) { UI.focus = +t.dataset.focus; UI.more = false; render(); showDetail(); return; }
   if (t.dataset.group) { UI.group = t.dataset.group; UI.limit = 40; return renderSpots(); }
   if (t.dataset.hit != null) { const x = $("#locHits")._list[+t.dataset.hit]; $("#locSheet").hidden = true; return setLoc({ lat: x.lat, lon: x.lon, label: x.label, src: "search" }); }
   if (t.id === "moreBtn") { UI.more = true; return renderNow(); }
@@ -768,3 +790,23 @@ setInterval(() => { if (!document.hidden) { if (Date.now() - (WX ? WX.at : 0) > 
   if (LOC.src !== "search" && LOC.src !== "preset" || Date.now() - (LOC.at || 0) > 2 * 36e5) gps(10000);
   if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => { });
 })();
+/* after picking a window, bring its details up just under the pinned planner (only if they're out of view) */
+function showDetail() {
+  const d = $("#winDetail"), p = $("#planner"); if (!d || !p) return;
+  const desk = matchMedia("(min-width:1100px)").matches, view = d.closest(".view");
+  const top0 = desk && view ? view.getBoundingClientRect().top : (parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--stick")) || 0);
+  const off = top0 + p.getBoundingClientRect().height + 14, r = d.getBoundingClientRect();
+  d.style.scrollMarginTop = (off - (desk && view ? top0 : 0)) + "px";
+  if (r.top < off - 4 || r.top > innerHeight * 0.55) d.scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion:reduce)").matches ? "auto" : "smooth" });
+}
+/* planner: day tabs pick that day's best window (or the first one still ahead) */
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-day]"); if (!t || !t.closest("#planner")) return;
+  const all = allWindows(LOC, PLAN_HOURS), tops = windowTops(all); UI.day = t.dataset.day; UI.more = false;
+  const idx = all.map((w, i) => i).filter(i => winDay(all[i]) === UI.day);
+  UI.focus = idx.reduce((b, i) => (tops[i] ? tops[i].f.n : -1) > (tops[b] ? tops[b].f.n : -1) ? i : b, idx[0] ?? UI.focus);
+  render(); showDetail();
+});
+/* keep the pinned planner just under the header (phone); on desktop the column scrolls on its own */
+function setStick() { const t = document.querySelector(".top"); document.documentElement.style.setProperty("--stick", matchMedia("(min-width:1100px)").matches || !t ? "0px" : t.offsetHeight + "px"); }
+addEventListener("resize", setStick); setTimeout(setStick, 0);

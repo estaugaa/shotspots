@@ -50,7 +50,8 @@ function alertRow(a) {
 const _renderNowAl = renderNow;
 renderNow = function () {
   _renderNowAl(); const u = upcoming(); const v = $("#v-now"); if (!u.length || !v) return;
-  v.insertAdjacentHTML("afterbegin", `<div class="sect headsup"><h3>Heads-up <button class="chip" data-openalerts="1" style="float:right">Alerts</button></h3>${u.slice(0, 3).map(alertRow).join("")}</div>`);
+  const a = u[0];
+  v.insertAdjacentHTML("afterbegin", `<button class="alertline r-${a.rule}" data-openalerts="1"><i class="adot"></i><span><b>${esc(a.title)}</b></span>${a.rule === "smoke" ? "" : `<b class="ap">${a.p}%</b>`}${u.length > 1 ? `<small>+${u.length - 1}</small>` : ""}<span class="chev" aria-hidden="true">›</span></button>`);
 };
 
 /* ---------- alerts sheet ---------- */
@@ -73,6 +74,7 @@ async function openAlerts() {
   el.querySelector(".sheetbody").innerHTML = `
     <div class="sect">${u.length ? u.map(alertRow).join("") : `<p class="muted">Nothing lined up in the next three days at ${st.min_prob || 60}% or better. ${nm.length ? "Closest calls are below." : ""}</p>`}</div>
     ${nm.length ? `<h3 style="margin-top:22px">Close calls (under your ${st.min_prob || 60}% bar)</h3><div class="sect nearmiss">${nm.slice(0, 4).map(alertRow).join("")}</div>` : ""}
+    ${weekendHtml(true)}
     <h3>Notifications</h3>${notif}
     <h3>Alert settings</h3>
     <form id="alForm" class="stack">
@@ -129,14 +131,20 @@ document.addEventListener("submit", async e => {
 })();
 
 /* ---------- weekend plan (Thu-Sun) ---------- */
-function weekendHtml() {
+function weekendHtml(inSheet) {
   const w = fd("weekend"); if (!w || !w.picks || !w.picks.length) return ""; const end = new Date(w.sun + "T23:59:00"); if (end < new Date()) return "";
   const d = x => new Date(x + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
   return `<div class="sect weekend"><h3>This weekend <span class="muted" style="font-size:15px;font-weight:400">${d(w.sat)}–${d(w.sun)}</span></h3>
     ${w.picks.map(p => { const sp = (p.spots || [])[0];
-      return `<button class="lrow alertrow r-${p.rule}" ${sp && byId[sp] ? `data-spot="${sp}"` : ""}><span><b>${esc(p.title)}</b><small>${esc(p.body)}${p.lens ? `<br><i>Lens:</i> ${esc(p.lens)}` : ""}</small></span><span class="pct">${p.p != null ? p.p + "%" : ""}</span></button>`; }).join("")}
+      return `<button class="lrow alertrow r-${p.rule}" ${sp && byId[sp] ? `data-spot="${sp}"` : ""}><span><b>${esc(p.title)}</b><small>${esc(p.body)}${p.lens ? `<br><i>Lens:</i> ${esc(p.lens)}` : ""}</small></span><span class="pct">${p.p != null ? p.p + "%" : `<span class="seasontag">${p.rule === "wildlife" ? "Peak season" : "Near peak"}</span>`}</span></button>`; }).join("")}
     <p class="muted" style="font-size:13px">${esc(w.note || "")}</p></div>`;
 }
 const _renderNowWk = renderNow;
-renderNow = function () { _renderNowWk(); const v = $("#v-now"); const h = weekendHtml(); if (!v || !h) return; const hu = v.querySelector(".headsup"); (hu || v).insertAdjacentHTML(hu ? "afterend" : "afterbegin", h); };
+renderNow = function () { _renderNowWk(); const v = $("#v-now"); if (!v) return; const ex = seasonalHtml(); if (ex) { const n = v.querySelector(".scorenote"); (n || v).insertAdjacentHTML(n ? "afterend" : "beforeend", ex); } };
+/* seasonal picks (birds at peak, fall colour) don't have odds: show them as "in season" notes, not scored rows */
+function seasonalHtml() {
+  const w = fd("weekend"); const ex = ((w && w.picks) || []).filter(p => p.rule === "wildlife" || p.rule === "fallcolor"); if (!ex.length) return "";
+  return `<div class="sect inseason"><h3>In season now</h3>${ex.map(p => { const sp = (p.spots || [])[0];
+    return `<button class="lrow" ${sp && byId[sp] ? `data-spot="${sp}"` : ""}><span><b>${esc(p.title)}</b><small>${esc(p.body)}</small></span><span class="seasontag">${p.rule === "wildlife" ? "Peak season" : "Near peak"}</span></button>`; }).join("")}</div>`;
+}
 (async () => { for (let i = 0; i < 60 && !FEED.m; i++) await new Promise(r => setTimeout(r, 250)); if (FEED.m && FEED.m.files.includes("weekend.json")) { await feedGet("weekend"); if (UI.view === "now") renderNow(); } })();
