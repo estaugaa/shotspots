@@ -34,7 +34,7 @@ function newestRank(s) {   // later research date first; within a night, later r
 }
 function researchedSpots() { return SPOTS.filter(s => s.id.startsWith("r-") && s.researched); }
 function isNew(s) { return s.researched && (Date.now() - new Date(s.researched + "T12:00")) / 864e5 <= NEW_DAYS; }
-GROUPS.splice(1, 0, ["new", "New finds"]); groupTest.new = s => s.id.startsWith("r-") && isNew(s);
+GROUPS.push(["new", "New finds"]); setTimeout(() => typeof fbar === "function" && fbar(), 0); groupTest.new = s => s.id.startsWith("r-") && isNew(s);
 let SEENR = new Set(store.get("seenResearched", []));
 function unseen() { return researchedSpots().filter(s => !SEENR.has(s.id)); }
 function markSeen() { researchedSpots().forEach(s => SEENR.add(s.id)); store.set("seenResearched", [...SEENR]); badge(); }
@@ -87,7 +87,7 @@ function researchHtml() {
   return h + `</div>`;
 }
 const _renderSpotsR = renderSpots;
-renderSpots = function () { _renderSpotsR(); const sl = $("#v-spots .shotlist"); (sl || $("#v-spots")).insertAdjacentHTML(sl ? "afterend" : "afterbegin", researchHtml());
+renderSpots = function () { _renderSpotsR();
   if (UI.view === "spots" && !document.hidden) setTimeout(markSeen, 1500); };
 
 /* ---------- sheets ---------- */

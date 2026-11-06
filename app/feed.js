@@ -181,7 +181,7 @@ renderMap = function () { _renderMapFeed(); const g = fd("goes"); if (!g || !win
 /* ---------- settings: feed status + forecast check ---------- */
 const _renderSettingsFeed = renderSettings;
 renderSettings = async function () {
-  _renderSettingsFeed(); if (!FEED.m) { $("#setBody").insertAdjacentHTML("afterbegin", `<p class="muted">Pipeline feed not published yet.</p>`); return; }
+  _renderSettingsFeed(); if (!FEED.m) { $("#setBody").insertAdjacentHTML("afterbegin", `<div class="pipebox"><p class="muted">Pipeline feed not published yet.</p></div>`); return; }
   const st = FEED.m.status || {}, age = t => { const m = Math.round((Date.now() - new Date(t)) / 60000); return m < 120 ? m + " min" : m < 2880 ? Math.round(m / 60) + " h" : Math.round(m / 1440) + " d"; };
   let h = `<p class="label">Pipeline (GitHub Actions)</p><ul class="plain status">${Object.entries(st).map(([k, v]) => `<li class="${v.ok ? "ok" : "bad"}">${v.ok ? "✓" : "✗"} ${esc(k)} <span class="prov p-${(v.kind || "").toLowerCase()}">${KIND_TAG[v.kind] || ""}</span> <span class="muted">${age(v.at)} ago</span><br><small class="muted">${esc(v.note || "")}</small></li>`).join("")}</ul>`;
   const rep = await feedGet("report"), vp = await feedGet("verify_positions"), sol = await feedGet("solves");
@@ -190,7 +190,7 @@ renderSettings = async function () {
   if (vp) h += `<p><b>Sun/moon/planet positions vs JPL Horizons:</b> ${Object.entries(vp.bodies).map(([b, v]) => v.app_max_arcmin != null ? `${b} app ≤${v.app_max_arcmin}′, pipeline ≤${v.pipeline_max_arcmin}′` : `${b}: ${v.error ? "error" : "–"}`).join("; ")}.${vp.usno_vs_app_minutes && !vp.usno_vs_app_minutes.error ? ` Rise/set vs USNO: ${Object.entries(vp.usno_vs_app_minutes).map(([k, v]) => `${k} ${v >= 0 ? "+" : ""}${v} min`).join(", ")}.` : ""}</p>`;
   if (sol && sol.rows.length) h += `<p><b>Plate-solved frames:</b></p><ul class="plain">${sol.rows.slice(0, 5).map(x => `<li>${esc(x.file)}: ${x.solved ? `centre az ${x.center_az ?? "?"}°, alt ${x.center_alt ?? "?"}°${x.mwcore_pred ? `; Milky Way core predicted az ${x.mwcore_pred.az}°, alt ${x.mwcore_pred.alt}° (${x.mwcore_pred.in_frame ? "in frame ✓" : "outside frame"})` : ""}` : "not solved"}</li>`).join("")}</ul>`;
   h += `<p class="muted" style="font-size:13px">Drop night photos into the repo's inbox/frames folder (GitHub app → Add file → Upload) to have them plate-solved. Start the file name with the spot id if the photo has no GPS.</p>`;
-  $("#setBody").insertAdjacentHTML("afterbegin", h);
+  $("#setBody").insertAdjacentHTML("afterbegin", `<div class="pipebox">${h}</div>`);
 };
 
 /* ---------- boot ---------- */

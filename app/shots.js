@@ -78,7 +78,7 @@ function shotsHtml() {
   return h + `<p class="muted" style="font-size:13px">Odds multiply the condition, wildlife and alignment chances as if independent; check them against your logged outings in ⚙ › Forecast check.</p></div>`;
 }
 const _renderSpotsShots = renderSpots;
-renderSpots = function () { _renderSpotsShots(); $("#v-spots").insertAdjacentHTML("beforeend", shotsHtml()); };   // below the list, so the filters stay on top
+renderSpots = function () { _renderSpotsShots(); };   // the shot list no longer sits on the Spots tab; existing shots show in Settings
 
 /* ---------- add-shot sheet ---------- */
 function ensureSheet(id, title) {

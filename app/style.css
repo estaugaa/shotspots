@@ -322,3 +322,7 @@ ul.newest{list-style:none;padding:0}
   .top .topr{order:1}
   .top .loc{flex:none;max-width:220px}
 }
+
+details.livedata{margin-top:22px;border-top:1px solid var(--line);padding-top:10px}
+details.livedata summary{font-weight:700;cursor:pointer;padding:6px 0}
+#setBody .explore{margin-top:18px}

@@ -148,9 +148,9 @@ async function fillLive(s) {
 const SRCNAMES = { inat: "iNaturalist sightings", ebird: "eBird rare birds", kp: "Live aurora (NOAA)", aq: "Smoke forecast", tides: "Tides (NOAA)", flow: "River flow (USGS)", seven: "Seeing & transparency (7Timer)" };
 function renderSettings() {
   const st = LIVE.status, wxOk = WX && !WX.err;
-  $("#setBody").innerHTML = `<p class="label">Status</p><ul class="plain status">
+  $("#setBody").innerHTML = `<div class="statusbox"><p class="label">Phone data sources</p><ul class="plain status">
     <li class="${wxOk ? "ok" : "bad"}">${wxOk ? "✓" : "✗"} Weather (Open-Meteo)${WX ? ", updated " + ago(WX.at) : ""}</li>
-    ${Object.entries(SRCNAMES).map(([k, n]) => { const x = st[k]; return `<li class="${x ? (x.ok ? "ok" : "bad") : ""}">${x ? (x.ok ? "✓" : "✗") : "·"} ${n}${x ? ": " + esc(x.note) : ": not checked yet"}</li>`; }).join("")}</ul>
+    ${Object.entries(SRCNAMES).map(([k, n]) => { const x = st[k]; return `<li class="${x ? (x.ok ? "ok" : "bad") : ""}">${x ? (x.ok ? "✓" : "✗") : "·"} ${n}${x ? ": " + esc(x.note) : ": not checked yet"}</li>`; }).join("")}</ul></div>
     <p class="label">eBird rare-bird alerts</p>
     <p class="muted" style="font-size:15px">Free. <a href="https://ebird.org/api/keygen" target="_blank" rel="noopener">Get a key from eBird</a> (sign in, accept the terms, copy the key), then paste it here.</p>
     <form class="field" id="ebForm"><input id="ebKey" placeholder="eBird API key" value="${esc(EBIRD_KEY)}" autocomplete="off"><button class="btn" type="submit">Save</button></form>

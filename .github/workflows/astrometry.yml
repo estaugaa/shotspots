@@ -20,7 +20,7 @@ jobs:
       EBIRD_KEY: ${{ secrets.EBIRD_KEY }}
       EBD_URL: ${{ secrets.EBD_URL }}
       FLICKR_KEY: ${{ secrets.FLICKR_KEY }}
-      EARTHDATA_TOKEN: ${{ secrets.EARTHDATA_TOKEN }}
+      EARTHDATA_TOKEN: ${{ secrets.EARTHDATA_TOKEN || secrets.EARTHKEY_TOKEN }}
       ASTROMETRY_KEY: ${{ secrets.ASTROMETRY_KEY }}
       VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
       SS_CACHE: ${{ github.workspace }}/.cache

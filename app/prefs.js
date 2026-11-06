@@ -32,8 +32,11 @@ function setHome(l) { HOME = { lat: l.lat, lon: l.lon, label: (l.label || "Home"
 const _renderSettingsP = renderSettings;
 renderSettings = function () { const r = _renderSettingsP.apply(this, arguments);
   const put = () => { const b = $("#setBody"); if (!b) return; if (!b.querySelector("#setupBox")) b.insertAdjacentHTML("afterbegin", setupHtml());
-    const k = b.querySelector(".kitbox"), u = b.querySelector("#setupBox"); if (k) b.prepend(k); b.prepend(u);   // your setup and camera first, live data after
-    if (!b.querySelector(".livehead")) { const nx = (k || u).nextElementSibling; if (nx) nx.insertAdjacentHTML("beforebegin", `<h3 class="livehead" style="margin-top:22px">Live data</h3>`); } };
+    const k = b.querySelector(".kitbox"), u = b.querySelector("#setupBox"); if (k) b.prepend(k); b.prepend(u);   // your setup and camera first
+    if (typeof isOwner === "function" && isOwner() && typeof researchHtml === "function" && !b.querySelector(".explore")) (k || u).insertAdjacentHTML("afterend", researchHtml());
+    if (typeof SHOTS !== "undefined" && SHOTS.length && !b.querySelector(".shotlist")) b.querySelector(".statusbox, .pipebox")?.insertAdjacentHTML("beforebegin", shotsHtml());
+    let lv = b.querySelector("details.livedata"); if (!lv) { b.insertAdjacentHTML("beforeend", `<details class="livedata"><summary>Live data and pipeline status</summary></details>`); lv = b.querySelector("details.livedata"); }
+    b.querySelectorAll(":scope > .statusbox, :scope > .pipebox").forEach(x => lv.appendChild(x)); };
   put(); if (r && r.then) r.then(put); setTimeout(put, 400); return r; };
 document.addEventListener("click", async e => {
   const t = e.target.closest("[data-travel],[data-units],[data-start],#homeGps,#homeSearch,#homeHere,#travelChip,#showFar"); if (!t) return;

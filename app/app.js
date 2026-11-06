@@ -762,7 +762,7 @@ function filtNote() { if (UI.group === "all") return ""; const l = (GROUPS.find(
   return `<p class="filtnote">Showing only ${esc(l.toLowerCase())} spots <button class="chip" data-group="all">Show all</button></p>`; }
 const addFiltNote = () => { const v = $("#v-now"), n = filtNote(); if (!v || !n || v.querySelector(".filtnote")) return; const pl = v.querySelector(".planner"); pl ? pl.insertAdjacentHTML("afterend", n) : v.insertAdjacentHTML("afterbegin", n); };
 function fbar() { const el = $("#fbar"); if (!el) return;
-  el.innerHTML = `<button class="chip travelchip" id="travelChip" aria-label="How far you'll go">${PREFS.travel === "walk" ? "🚶" : "🚗"} ≤ ${fmtDur(maxTravel())}</button>` + GROUPS.filter(([k]) => k !== "new").map(([k, l]) => `<button class="chip" data-group="${k}" aria-pressed="${UI.group === k}">${l}</button>`).join(""); setStick(); }
+  el.innerHTML = `<button class="chip travelchip" id="travelChip" aria-label="How far you'll go">${PREFS.travel === "walk" ? "🚶" : "🚗"} ≤ ${fmtDur(maxTravel())}</button>` + GROUPS.map(([k, l]) => `<button class="chip" data-group="${k}" aria-pressed="${UI.group === k}">${l}</button>`).join(""); setStick(); }
 function render() {
   updLoc(); fresh(); if ($("#fbar") && !$("#fbar").children.length) fbar();
   if (UI.view === "now") renderNow(); else if (UI.view === "spots") renderSpots(); else if (UI.view === "cal") renderCal(); else if (UI.view === "map") renderMap();

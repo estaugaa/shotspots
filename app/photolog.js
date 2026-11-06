@@ -146,4 +146,4 @@ document.addEventListener("click", async e => {
 /* entry point: next to the shot list */
 const _renderSpotsP = renderSpots;
 renderSpots = function () { _renderSpotsP();
-  const host = $("#v-spots .shotlist"); if (host && !host.querySelector("#impOpen")) host.insertAdjacentHTML("beforeend", `<button class="btn wide" id="impOpen" style="margin-top:8px">Log outings from photos</button>`); };
+  const host = $("#v-spots"); if (host && !host.querySelector("#impOpen")) host.insertAdjacentHTML("beforeend", `<button class="btn wide" id="impOpen" style="margin-top:14px">Log outings from photos</button>`); };
