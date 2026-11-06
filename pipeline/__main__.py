@@ -6,6 +6,8 @@ from .common import run_module, write_json, utcnow, iso, FEED, read_json, all_st
 def job_goes():
     from . import goes
     run_module("goes", goes.run, "MEASURED", "GOES-18 clear-sky mask + cloud-top height")
+    from . import metar
+    run_module("obs", metar.run, "MEASURED", "airport weather reports: visibility, fog, cloud base")
     job_alerts()  # every 30 min: catches a geomagnetic storm in progress
     from . import reports
     run_module("reports", reports.run, "MEASURED", "conditions photos from the in-app camera (last 48 h)")

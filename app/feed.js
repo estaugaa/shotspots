@@ -2,7 +2,7 @@
    Every number shown from the feed carries its provenance (MEASURED / MODELED / ESTIMATED). */
 "use strict";
 const FEED = { m: null, d: {}, loading: {} };
-const EAGER = ["spots_extra", "research_status", "alerts", "goes", "hrrr", "light", "climo", "flow", "sounding", "sentinel", "darksky", "access", "calibration", "phenology", "snow", "access_rules", "weekend", "trails", "reports", "photos"];
+const EAGER = ["spots_extra", "research_status", "alerts", "goes", "hrrr", "light", "climo", "flow", "sounding", "sentinel", "darksky", "access", "calibration", "phenology", "snow", "access_rules", "weekend", "trails", "reports", "photos", "obs"];
 const LAZY = ["planner", "wildlife", "originality", "report", "verify_positions", "solves", "outcomes_public"];
 async function feedGet(name) {
   if (FEED.d[name]) return FEED.d[name];
@@ -163,13 +163,30 @@ const _openFeed = openSpot;
 openSpot = function (id) { _openFeed(id); const s = byId[id]; if (!s) return; const b = $("#shotBtn"); if (b) { b.id = "outcomeBtn"; b.textContent = "📷 Log outing"; } sheetFeed(s); };
 
 /* ---------- Now: GOES card + map overlay ---------- */
+/* airport weather reports near you: what the ground sees (visibility, fog or mist, cloud base) */
+function obsHtml() {
+  const o = fd("obs"); if (!o || !o.stations) return "";
+  const st = o.stations.filter(x => x.lat && km(LOC, x) < 70 && Date.now() - new Date(x.t) < 3 * 36e5).sort((a, b) => km(LOC, a) - km(LOC, b)).slice(0, 4); if (!st.length) return "";
+  const ft = f => METRIC() ? Math.round(f * 0.3048 / 10) * 10 + " m" : f.toLocaleString() + " ft";
+  const WX = { RA: "rain", DZ: "drizzle", SN: "snow", FG: "fog", BR: "mist", HZ: "haze", FU: "smoke", TS: "thunderstorm" };
+  const line = x => { const w = [...new Set((x.wx.match(/FG|BR|RA|DZ|SN|HZ|FU|TS/g) || []).map(k => WX[k]))].join(", ");
+    const vis = x.vis_mi == null ? "" : METRIC() ? `${Math.round(x.vis_mi * 1.609)} km visibility` : `${x.vis_mi >= 10 ? "10+" : x.vis_mi} mi visibility`;
+    return `<li><b>${esc(x.name.replace(/ (Intl|International|Regional|Municipal|Airport|Arpt|Field|Fld).*$/i, ""))}</b>: ${[x.fog ? "<b>fog</b>" : "", vis, w && !x.fog ? w : "", x.base_ft != null ? `cloud base ${ft(x.base_ft)}` : "no low ceiling"].filter(Boolean).join(", ")}</li>`; };
+  const low = st.filter(x => x.base_ft != null && x.base_ft <= 1500).length;
+  return `<p class="label" style="margin-top:8px">Ground reports (airport weather stations)</p><ul class="plain" style="font-size:14.5px">${st.map(line).join("")}</ul>${st.some(x => x.fog) ? `<p style="font-size:14.5px">Fog reported on the ground.</p>` : low ? `<p style="font-size:14.5px">Cloud base is low, so hills and viewpoints above about ${ft(Math.min(...st.filter(x => x.base_ft != null).map(x => x.base_ft)))} are likely in the cloud.</p>` : ""}`;
+}
 const _specFeed = specialsHtml;
 specialsHtml = function () {
   let base = _specFeed(); const g = fd("goes"); if (!g || (typeof outsideCoverage === "function" && outsideCoverage())) return base;
   const near = SPOTS.filter(s => g.spots[s.id] && km(LOC, s) < 60);
   const fogged = near.filter(s => g.spots[s.id][1] >= 50), clearAbove = near.filter(s => FOG_ABOVE.includes(s.id) && g.spots[s.id][0] <= 30);
   const ageMin = Math.round((Date.now() - new Date(g.obs)) / 60000);
-  const item = `<div class="item"><b>🛰 Right now (GOES-18, ${ageMin} min ago) ${tag("goes")}</b><p>${fogged.length ? `Fog or low cloud over ${fogged.length} nearby spots${fogged.length <= 4 ? ": " + fogged.map(s => esc(s.name.split("(")[0])).join(", ") : ""}. ` : "No fog or low cloud near you. "}${fogged.length && clearAbove.length ? `Clear above it at ${clearAbove.slice(0, 3).map(s => esc(s.name.split("(")[0].replace("Scout pick: ", ""))).join(", ")}.` : ""} The Map tab shows the satellite fog layer.</p></div>`;
+  // a deck of higher cloud (tops above ~3 km) over most spots hides anything lower from the satellite
+  const blind = near.filter(s => g.spots[s.id][0] >= 90 && g.spots[s.id][1] < 50 && g.spots[s.id][2] > 3000), blindMost = near.length && blind.length / near.length >= 0.6;
+  const sat = fogged.length ? `Fog or low cloud over ${fogged.length} nearby spots${fogged.length <= 4 ? ": " + fogged.map(s => esc(s.name.split("(")[0])).join(", ") : ""}. ${clearAbove.length ? `Clear above it at ${clearAbove.slice(0, 3).map(s => esc(s.name.split("(")[0].replace("Scout pick: ", ""))).join(", ")}.` : ""}`
+    : blindMost ? `Thick higher cloud overhead (tops around ${Math.round(blind.reduce((a, s) => a + g.spots[s.id][2], 0) / blind.length / 1000)} km), so the satellite can't see whether there's fog or low cloud underneath. The ground reports below can.`
+    : "No fog or low cloud near you. ";
+  const item = `<div class="item"><b>🛰 Right now (GOES-18, ${ageMin} min ago) ${tag("goes")}</b><p>${sat} The Map tab shows the satellite fog layer.</p>${obsHtml()}</div>`;
   return base ? base.replace("<h3>Also worth knowing</h3>", "<h3>Also worth knowing</h3>" + item) : `<div class="sect"><h3>Also worth knowing</h3>${item}</div>`;
 };
 let GOES_LAYER = null;
