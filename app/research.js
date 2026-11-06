@@ -25,6 +25,33 @@ openSpot = function (id) {
     <div class="chips" style="margin-top:6px">${rev ? "" : `<button class="chip" data-review="${s.id}">Looks right</button>`}<button class="chip" data-hide="${s.id}">Hide this spot</button></div></div>`);
 };
 
+/* ---------- newest finds: list, "New finds" filter, unseen badge, map rings ---------- */
+const NEW_DAYS = 30;
+function newestRank(s) {   // later research date first; within a night, later runs first
+  if (!s.researched) return -1; const st = fd("research_status"); let order = 0;
+  if (st) st.runs.forEach((r, i) => { if ((r.added || []).includes(s.id)) order = i + 1; });
+  return new Date(s.researched + "T12:00").getTime() / 1e5 + order;
+}
+function researchedSpots() { return SPOTS.filter(s => s.id.startsWith("r-") && s.researched); }
+function isNew(s) { return s.researched && (Date.now() - new Date(s.researched + "T12:00")) / 864e5 <= NEW_DAYS; }
+GROUPS.splice(1, 0, ["new", "New finds"]); groupTest.new = s => s.id.startsWith("r-") && isNew(s);
+let SEENR = new Set(store.get("seenResearched", []));
+function unseen() { return researchedSpots().filter(s => !SEENR.has(s.id)); }
+function markSeen() { researchedSpots().forEach(s => SEENR.add(s.id)); store.set("seenResearched", [...SEENR]); badge(); }
+function badge() { const b = document.querySelector('.tabs button[data-v=spots]'); if (!b) return; let n = b.querySelector(".badge"); const c = unseen().length;
+  if (!c) { n && n.remove(); return; } if (!n) { n = document.createElement("span"); n.className = "badge"; b.appendChild(n); } n.textContent = c; n.setAttribute("aria-label", `${c} new researched spots`); }
+const fmtFound = d => new Date(d + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+function newestHtml() {
+  const list = researchedSpots().sort((a, b) => newestRank(b) - newestRank(a)).slice(0, 8); if (!list.length) return "";
+  const fresh = new Set(unseen().map(s => s.id));
+  return `<p class="label">Newest finds <button class="chip" data-group="new" style="margin-left:6px">See all</button></p>
+    <ul class="plain newest">${list.map(s => `<li><button class="lrow" data-spot="${s.id}"><span><b>${esc(s.name)}</b>${fresh.has(s.id) ? ` <span class="newtag">new</span>` : ""}<small>${esc(s.region || "")} · ${esc((s.cats || []).slice(0, 2).join(", "))} · found ${fmtFound(s.researched)}${s.confidence === "high" ? "" : " · " + esc(s.confidence || "medium") + " confidence"}</small></span><span class="muted">${Math.round(km(HOME, s))} km</span></button></li>`).join("")}</ul>`;
+}
+const _renderMapN = renderMap;
+renderMap = function () { _renderMapN(); if (!MAP || !MAPLAYER) return;
+  researchedSpots().filter(isNew).forEach(s => L.circleMarker([s.lat, s.lon], { radius: 10, color: "#C98A1E", weight: 2, dashArray: "3 3", fill: false, interactive: false }).addTo(MAPLAYER)); };
+(async () => { for (let i = 0; i < 80 && !fd("spots_extra"); i++) await new Promise(r => setTimeout(r, 250)); setTimeout(badge, 300); })();
+
 /* ---------- your take: thumbs on every spot (steers nightly research and alerts) ---------- */
 let VOTES = store.get("votes", {});
 function voteHtml(id) { const v = VOTES[id];
@@ -51,13 +78,15 @@ function researchHtml() {
   if (st) {
     const q = st.requests.filter(r => r.status !== "done");
     if (q.length) h += `<p class="label">Queued</p><ul class="plain">${q.map(r => `<li>${esc(r.label)} (${r.radius_km} km)${r.status === "in_progress" ? " · in progress" : ""}</li>`).join("")}</ul>`;
+    h += newestHtml();
     if (st.runs.length) h += `<p class="label">Recent nights</p><ul class="plain">${st.runs.slice(-5).reverse().map(r => `<li>${esc(r.at.slice(0, 10))}: ${esc(r.target)}: ${r.added.length} new${r.rejected && r.rejected.length ? `, ${r.rejected.length} skipped` : ""}${r.searches ? ` · ${r.searches} searches` : ""}</li>`).join("")}</ul>`;
     h += `<p class="muted" style="font-size:13px">${st.totals.researched_spots} researched spots so far; ${st.totals.cells_saturated} areas finished. ${cfg && !cfg.enabled ? "<b>Research is paused.</b>" : `Limits: ${cfg.regions_per_night} area and up to ${cfg.max_new_spots_per_night} new spots a night.`}</p>`;
   } else h += `<p class="muted" style="font-size:13px">No research has run yet.</p>`;
   return h + `</div>`;
 }
 const _renderSpotsR = renderSpots;
-renderSpots = function () { _renderSpotsR(); const sl = $("#v-spots .shotlist"); (sl || $("#v-spots")).insertAdjacentHTML(sl ? "afterend" : "afterbegin", researchHtml()); };
+renderSpots = function () { _renderSpotsR(); const sl = $("#v-spots .shotlist"); (sl || $("#v-spots")).insertAdjacentHTML(sl ? "afterend" : "afterbegin", researchHtml());
+  if (UI.view === "spots" && !document.hidden) setTimeout(markSeen, 1500); };
 
 /* ---------- sheets ---------- */
 function openResearchAdd() {

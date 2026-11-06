@@ -238,3 +238,8 @@ ul.plain li{margin:3px 0}
   @keyframes pulse{from{stroke-width:10;stroke-opacity:.8}to{stroke-width:2;stroke-opacity:1}}
 }
 @media (min-width:1100px) and (prefers-reduced-motion:reduce){#sheet{animation:none}.pulse{animation:none}}
+
+.tabs button{position:relative}
+.tabs .badge{position:absolute;top:6px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--gold);color:#fff;font-size:11px;font-weight:700;line-height:18px;text-align:center}
+.newtag{display:inline-block;margin-left:4px;padding:0 6px;border-radius:6px;background:color-mix(in srgb,var(--gold) 22%,transparent);color:var(--ink);font-size:12px;font-weight:700;vertical-align:1px}
+ul.newest{list-style:none;padding:0}

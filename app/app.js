@@ -528,10 +528,10 @@ function specialsHtml() {
 function renderSpots() {
   const el = $("#v-spots"); const w = allWindows(LOC, 40)[0]; const month = +laYMD(new Date()).slice(5, 7);
   let list = SPOTS.filter(s => !s.closed && groupTest[UI.group](s));
-  if (UI.inSeason && UI.group !== "saved") list = list.filter(s => !s.months || s.months.includes(month));
+  if (UI.inSeason && UI.group !== "saved" && UI.group !== "new") list = list.filter(s => !s.months || s.months.includes(month));
   if (UI.q) { const q = UI.q.toLowerCase(); list = list.filter(s => (s.name + " " + s.region + " " + s.cats.join(" ") + " " + (s.tip || "")).toLowerCase().includes(q)); }
   let rows = list.map(s => ({ s, f: w ? fitFor(s, w) || { n: 0, why: [] } : { n: 0, why: [] }, d: driveMin(s) }));
-  rows.sort(UI.sort === "near" ? (a, b) => a.d - b.d : UI.sort === "az" ? (a, b) => a.s.name.localeCompare(b.s.name) : (a, b) => (b.f.n - b.d * 0.28) - (a.f.n - a.d * 0.28));
+  if (UI.group === "new" && typeof newestRank === "function") rows.sort((a, b) => newestRank(b.s) - newestRank(a.s)); else rows.sort(UI.sort === "near" ? (a, b) => a.d - b.d : UI.sort === "az" ? (a, b) => a.s.name.localeCompare(b.s.name) : (a, b) => (b.f.n - b.d * 0.28) - (a.f.n - a.d * 0.28));
   const shown = rows.slice(0, UI.limit || 40);
   el.innerHTML = `<form class="search" id="spotSearch"><input id="spotQ" type="search" placeholder="Search spots, subjects, places" value="${esc(UI.q)}" aria-label="Search spots"></form>
    <div class="chips">${GROUPS.map(([k, l]) => `<button class="chip" data-group="${k}" aria-pressed="${UI.group === k}">${l}</button>`).join("")}</div>
