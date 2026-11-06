@@ -171,7 +171,7 @@ function obsHtml() {
   const WX = { RA: "rain", DZ: "drizzle", SN: "snow", FG: "fog", BR: "mist", HZ: "haze", FU: "smoke", TS: "thunderstorm" };
   const line = x => { const w = [...new Set((x.wx.match(/FG|BR|RA|DZ|SN|HZ|FU|TS/g) || []).map(k => WX[k]))].join(", ");
     const vis = x.vis_mi == null ? "" : METRIC() ? `${Math.round(x.vis_mi * 1.609)} km visibility` : `${x.vis_mi >= 10 ? "10+" : x.vis_mi} mi visibility`;
-    return `<li><b>${esc(x.name.replace(/ (Intl|International|Regional|Municipal|Airport|Arpt|Field|Fld).*$/i, ""))}</b>: ${[x.fog ? "<b>fog</b>" : "", vis, w && !x.fog ? w : "", x.base_ft != null ? `cloud base ${ft(x.base_ft)}` : "no low ceiling"].filter(Boolean).join(", ")}</li>`; };
+    return `<li><b>${esc(x.name.replace(/ (Intl|International|Regional|Municipal|Airport|Arpt|Arfld|Arpk|Field|Fld|Muni).*$/i, ""))}</b>: ${[x.fog ? "<b>fog</b>" : "", vis, w && !x.fog ? w : "", x.base_ft != null ? `cloud base ${ft(x.base_ft)}` : "no low ceiling"].filter(Boolean).join(", ")}</li>`; };
   const low = st.filter(x => x.base_ft != null && x.base_ft <= 1500).length;
   return `<p class="label" style="margin-top:8px">Ground reports (airport weather stations)</p><ul class="plain" style="font-size:14.5px">${st.map(line).join("")}</ul>${st.some(x => x.fog) ? `<p style="font-size:14.5px">Fog reported on the ground.</p>` : low ? `<p style="font-size:14.5px">Cloud base is low, so hills and viewpoints above about ${ft(Math.min(...st.filter(x => x.base_ft != null).map(x => x.base_ft)))} are likely in the cloud.</p>` : ""}`;
 }
