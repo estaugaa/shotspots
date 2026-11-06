@@ -49,7 +49,7 @@ function alertRow(a) {
 }
 const _renderNowAl = renderNow;
 renderNow = function () {
-  _renderNowAl(); const u = upcoming(); const v = $("#v-now"); if (!u.length || !v) return;
+  _renderNowAl(); const u = upcoming(); const v = $("#v-now"); if (!u.length || !v || (typeof outsideCoverage === "function" && outsideCoverage())) return;
   const a = u[0];
   v.insertAdjacentHTML("afterbegin", `<button class="alertline r-${a.rule}" data-openalerts="1"><i class="adot"></i><span><b>${esc(a.title)}</b></span>${a.rule === "smoke" ? "" : `<b class="ap">${a.p}%</b>`}${u.length > 1 ? `<small>+${u.length - 1}</small>` : ""}<span class="chev" aria-hidden="true">›</span></button>`);
 };
@@ -143,6 +143,7 @@ const _renderNowWk = renderNow;
 renderNow = function () { _renderNowWk(); const v = $("#v-now"); if (!v) return; const ex = seasonalHtml(); if (ex) { const n = v.querySelector(".scorenote"); (n || v).insertAdjacentHTML(n ? "afterend" : "beforeend", ex); } };
 /* seasonal picks (birds at peak, fall colour) don't have odds: show them as "in season" notes, not scored rows */
 function seasonalHtml() {
+  if (typeof outsideCoverage === "function" && outsideCoverage()) return "";
   const w = fd("weekend"); const ex = ((w && w.picks) || []).filter(p => p.rule === "wildlife" || p.rule === "fallcolor"); if (!ex.length) return "";
   return `<div class="sect inseason"><h3>In season now</h3>${ex.map(p => { const sp = (p.spots || [])[0];
     return `<button class="lrow" ${sp && byId[sp] ? `data-spot="${sp}"` : ""}><span><b>${esc(p.title)}</b><small>${esc(p.body)}</small></span><span class="seasontag">${p.rule === "wildlife" ? "Peak season" : "Near peak"}</span></button>`; }).join("")}</div>`;

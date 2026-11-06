@@ -368,7 +368,7 @@ def rule_aurora(F, S, now, st=None):
         if b and b[1] >= 40:
             out.append({"rule": "aurora", "key": f"aurora:now:{ymd(now)}", "t": now + 5, "p": round(b[1]), "spots": [b[2]["id"]], "urgent": True,
                         "title": f"Aurora possible now (Kp {sw['now']:.0f})",
-                        "body": f"Geomagnetic storm in progress and it's dark. Look north from {b[2]['name']}; {round(b[1])}% chance of clear sky. Shoot 15–20 s at f/2.8, ISO 1600–3200 with the 16-50 at 16 mm.",
+                        "body": f"Geomagnetic storm in progress and it's dark. Look north from {b[2]['name']}; {round(b[1])}% chance of clear sky. Go wide on a tripod: 10–20 s exposures (phones: Night mode at max).",
                         "why": [f"estimated Kp {sw['now']:.1f} (NOAA SWPC, 1-minute)", f"northern horizon ~{b[3]:.0f}° here" if b[3] is not None else "northern horizon unknown"]})
     blocks = [(t, kp) for t, kp, obs in sw["forecast"] if obs in ("predicted", "estimated") and kp >= kp_min and t + 180 > now and dark(t + 90)]
     seen = set()

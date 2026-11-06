@@ -165,7 +165,7 @@ openSpot = function (id) { _openFeed(id); const s = byId[id]; if (!s) return; co
 /* ---------- Now: GOES card + map overlay ---------- */
 const _specFeed = specialsHtml;
 specialsHtml = function () {
-  let base = _specFeed(); const g = fd("goes"); if (!g) return base;
+  let base = _specFeed(); const g = fd("goes"); if (!g || (typeof outsideCoverage === "function" && outsideCoverage())) return base;
   const near = SPOTS.filter(s => g.spots[s.id] && km(LOC, s) < 60);
   const fogged = near.filter(s => g.spots[s.id][1] >= 50), clearAbove = near.filter(s => FOG_ABOVE.includes(s.id) && g.spots[s.id][0] <= 30);
   const ageMin = Math.round((Date.now() - new Date(g.obs)) / 60000);

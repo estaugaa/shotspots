@@ -94,7 +94,7 @@ async function openImport() {
   el.querySelector(".sheetbody").innerHTML = `
     <p>Pick the photos from a shoot (or several shoots). ShotSpots reads the time, the location if there is one, and the lens from each file, groups them into outings and matches each to a spot and a light window.</p>
     <label class="btn primary wide" style="justify-content:center">Choose photos<input type="file" id="impFiles" accept="image/jpeg,image/heic,image/heif,.jpg,.jpeg,.heic,.heif" multiple hidden></label>
-    <p class="muted" style="font-size:14px"><b>Your X-T5:</b> pick the JPEGs (RAW files can't be read here). For locations, turn on Location in the FUJIFILM XApp and pair the camera before a shoot, or pick the spot by hand. On a computer you can select straight from the SD card.</p>
+    <p class="muted" style="font-size:14px"><b>From a camera:</b> pick the JPEGs (RAW files can't be read here). If your camera has no GPS, its maker's phone app can usually add location while paired (for Fujifilm, Location in the FUJIFILM XApp), or pick the spot by hand. Phone photos already carry their location. On a computer you can select straight from the SD card.</p>
     <p class="muted" style="font-size:14px"><b>On iPhone:</b> in the photo picker, tap <i>Options</i> and turn on <i>Location</i> if you see it; otherwise iOS may strip it.</p>`;
   el.hidden = false;
 }

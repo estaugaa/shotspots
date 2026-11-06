@@ -135,7 +135,8 @@ async function fillLive(s) {
   }
   // access links
   const wa = /Washington|Camas|Close to home|Helens|Adams|Rainier|Lewis|WA\b|Yakima|Cascades/.test(s.region);
-  h += `<h3>Check before you go</h3><ul class="plain">${wa ? `<li><a href="https://wsdot.com/travel/real-time/map/" target="_blank" rel="noopener">WSDOT roads & closures</a></li>` : `<li><a href="https://www.tripcheck.com/" target="_blank" rel="noopener">ODOT TripCheck roads & closures</a></li>`}
+  if (s.osm) h += `<h3>Check before you go</h3><ul class="plain"><li><a href="https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lon}" target="_blank" rel="noopener">Map, traffic and opening hours</a></li><li><a href="${s.osmUrl}" target="_blank" rel="noopener">OpenStreetMap details</a></li></ul>`;
+  else h += `<h3>Check before you go</h3><ul class="plain">${wa ? `<li><a href="https://wsdot.com/travel/real-time/map/" target="_blank" rel="noopener">WSDOT roads & closures</a></li>` : `<li><a href="https://www.tripcheck.com/" target="_blank" rel="noopener">ODOT TripCheck roads & closures</a></li>`}
     ${/Hood|Gorge · Oregon/.test(s.region) ? `<li><a href="https://www.fs.usda.gov/alerts/mthood/alerts-notices" target="_blank" rel="noopener">Mt. Hood National Forest alerts</a></li>` : ""}
     ${/Gorge/.test(s.region) ? `<li><a href="https://www.fs.usda.gov/alerts/crgnsa/alerts-notices" target="_blank" rel="noopener">Columbia Gorge Scenic Area alerts</a></li>` : ""}
     ${/Helens|Adams|Trout/.test(s.region + s.name) ? `<li><a href="https://www.fs.usda.gov/alerts/giffordpinchot/alerts-notices" target="_blank" rel="noopener">Gifford Pinchot NF alerts</a></li>` : ""}

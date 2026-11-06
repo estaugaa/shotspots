@@ -475,7 +475,7 @@ function dayTab(ymd) { const y = laYMD(new Date()); if (ymd === y) return "Today
   return new Date(ymd + "T12:00:00").toLocaleDateString("en-US", { weekday: "short" }); }
 let __topsKey = "", __tops = [];
 function windowTops(all) {   // best spot per window, cached per forecast/feed state
-  const k = all.length + "|" + (all[0] && all[0].start.getTime()) + "|" + (WX ? WX.at : 0) + "|" + (window.FEED && FEED.m ? FEED.m.gen : "") + "|" + Object.keys(SAVED).length + "|" + LOC.lat;
+  const k = all.length + "|" + SPOTS.length + "|" + (all[0] && all[0].start.getTime()) + "|" + (WX ? WX.at : 0) + "|" + (window.FEED && FEED.m ? FEED.m.gen : "") + "|" + Object.keys(SAVED).length + "|" + LOC.lat;
   if (k !== __topsKey) { __tops = all.map(x => rankFor(x)[0] || null); __topsKey = k; }
   return __tops;
 }
@@ -506,7 +506,8 @@ function renderNow() {
   h += `<div class="window" id="winDetail"><div class="wtitle"><h2>${wTitle(w)}</h2><span class="when">${w.live ? "until " + fmtT(w.end) : fmtIn(w.kind === "night" && w.dark ? w.dark.s : w.start)}</span></div>
     <p class="muted" style="margin:2px 0 0">${timeTxt}</p>`;
   if (v) h += `<p class="verdict ${v.cls}">${v.txt}</p><p class="why">${esc(sk ? sk.why.join(", ") : (WX ? "No forecast for this place." : "Loading the forecast…"))}</p>${skyBars(sk)}`;
-  else { const c = hourAt(nearestPt(LOC, 60), w.peak); h += `<p class="verdict ${c && c.cc <= 20 ? "good" : "mid"}">${c ? (c.cc <= 20 ? "Clear and dark enough for stars" : c.cc <= 50 ? "Partly cloudy: gaps for stars" : "Cloudy: skip the stars") : "Forecast doesn't reach this far yet"}</p>`; }
+  else { const c = hourAt(nearestPt(LOC, 60), w.peak); h += `<p class="verdict ${c && c.cc <= 20 ? "good" : "mid"}">${c ? (c.cc <= 20 ? "Clear and dark enough for stars" : c.cc <= 50 ? "Partly cloudy: gaps for stars" : "Cloudy: skip the stars") : "Forecast doesn't reach this far yet"}</p>
+    <button class="chip" data-v="sky" style="margin:4px 0 8px">Night sky details: Milky Way, moon, planets ›</button>`; }
   h += top.length ? `<ul class="picks">${top.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<p class="empty">No spots you can reach in time. Pick a later window above.</p>`;
   if (more.length) h += UI.more ? `<ul class="picks" style="border-top:0">${more.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<button class="more" id="moreBtn">${more.length} more options</button>`;
   h += `</div>`;
@@ -530,7 +531,7 @@ function specialsHtml() {
         fc && `Wet leaves are at their most saturated: ${fc.name}. A polarizer cuts the glare off wet leaves.`,
         ct && `At blue hour, puddles and wet pavement mirror the lights. Shoot low at ${ct.name}.`,
         mo >= 10 && mo <= 11 ? "Mushroom season: look on mossy logs along Gorge falls trails. The 70–300 focuses close enough for raindrop details." : "Use the 70–300 at minimum focus for raindrops on leaves, spider webs and lichen.",
-        "When the rain lifts, mist hangs on the Gorge cliffs. Crown Point and Cape Horn are the classic views of it.",
+        typeof outsideCoverage === "function" && outsideCoverage() ? "When the rain lifts, mist often hangs on hills and over water: the half hour after a shower is worth being out." : "When the rain lifts, mist hangs on the Gorge cliffs. Crown Point and Cape Horn are the classic views of it.",
         s0.mode === "snow" ? "Snow plus overcast gives the evergreens clean, graphic shapes. Overexpose +1 so the snow stays white." : ""].filter(Boolean);
       items.push(["☔", s0.mode === "snow" ? "Snow-day ideas" : "Rainy-day ideas", ideas.join(" ")]); } }
   // NWS alerts
@@ -745,8 +746,10 @@ function render() {
   updLoc(); fresh();
   if (UI.view === "now") renderNow(); else if (UI.view === "spots") renderSpots(); else if (UI.view === "cal") renderCal(); else if (UI.view === "map") renderMap();
 }
+const PLAN_VIEWS = ["now", "sky", "cal"];   // Sky and Calendar live inside the Plan tab
 function show(v) { UI.view = v; document.querySelectorAll(".view").forEach(x => x.hidden = x.id !== "v-" + v);
-  document.querySelectorAll(".tabs button").forEach(b => b.toggleAttribute("aria-current", b.dataset.v === v) || b.dataset.v === v && b.setAttribute("aria-current", "page"));
+  const tab = PLAN_VIEWS.includes(v) ? "now" : v;
+  document.querySelectorAll(".tabs button").forEach(b => { if (b.dataset.v === tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
   window.scrollTo(0, 0); render(); }
 async function refresh(force) { await Promise.all([loadWx(force), loadKp(), loadNws()]); render(); }
 

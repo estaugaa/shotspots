@@ -8,8 +8,10 @@
 const LP = { C: 0.7943, k: 2.0, ext: 150, cities: [[45.52,-122.68,300],[45.52,-122.58,200],[45.58,-122.7,90],[45.47,-122.7,60],[45.63,-122.67,110],[45.64,-122.55,110],[45.7,-122.66,60],[45.5,-122.43,115],[45.54,-122.4,35],[45.59,-122.42,27],[45.58,-122.35,17],[45.49,-122.8,100],[45.52,-122.93,110],[45.42,-122.77,110],[45.38,-122.65,110],[45.43,-122.55,100],[45.78,-122.53,22],[45.81,-122.74,12],[45.4,-122.26,13],[45.26,-122.69,18],[44.94,-123.03,215],[45.14,-122.86,26],[46.14,-122.94,50],[45.86,-122.83,20],[45.71,-121.52,9],[45.73,-121.49,4],[45.6,-121.18,16],[45.69,-121.88,3],[45.82,-120.82,3.5],[46.6,-120.51,130],[47.25,-122.44,600],[47.04,-122.9,150],[44.06,-121.31,100],[45.21,-123.2,34],[45.3,-122.97,25],[45.52,-123.11,26],[46.19,-123.83,10],[46.0,-123.92,7],[45.46,-123.84,5],[44.96,-124.0,9],[46.23,-119.15,300],[45.84,-119.29,19],[47.42,-120.31,70],[47.0,-120.55,20],[44.27,-121.17,35],[44.05,-123.09,270],[44.6,-123.15,110],[46.7,-122.95,25],[45.3,-121.75,0.4],[45.67,-121.89,1.2],[45.29,-122.33,4],[45.15,-122.58,10],[45.9,-122.74,6],[45.86,-122.41,2],[44.3,-120.84,10],[45.89,-123.96,1.7],[45.36,-120.21,0.7],[45.6,-120.2,0.4]] };
 const SQM_MEASURED = { "scout-cape-horn-uplands": 21.21, "scout-dark-washougal": 21.56, "larch-mtn": 21.53 };
 const __sqmCache = {};
+function sqmKnown(lat, lon) { let m = 1e9; for (const [la, lo] of LP.cities) { const d = Math.hypot((lat - la) * 111.2, (lon - lo) * 111.2 * Math.cos(lat * D2R)); if (d < m) m = d; } return m < 250; }
 function sqmAt(lat, lon) {
   const k = lat.toFixed(3) + "," + lon.toFixed(3); if (__sqmCache[k]) return __sqmCache[k];
+  if (!sqmKnown(lat, lon)) return (__sqmCache[k] = 20.0);   // light-pollution model only covers the Northwest: assume suburban
   let a = 0; for (const [la, lo, p] of LP.cities) { const d = Math.hypot((lat - la) * 111.2, (lon - lo) * 111.2 * Math.cos(lat * D2R)); a += p * Math.pow(Math.max(d, 2), -LP.k) * Math.exp(-d / LP.ext); }
   return (__sqmCache[k] = Math.min(21.95, 22.0 - 2.5 * Math.log10(1 + LP.C * a)));
 }
@@ -171,7 +173,7 @@ function renderSky() {
   const c = nightCloud(LOC, w), kp = LIVE.kpNow ? LIVE.kpNow.kp : null;
   let h = `<h2 style="font-size:26px;margin:8px 0 0">${esc(wTitle(w))} from ${esc(LOC.label)}</h2>
    <p class="muted" style="margin:2px 0 6px">Dark ${fmtT(w.start)}–${fmtT(w.end)} · ${phaseName(mStart.age)} ${Math.round(mStart.illum * 100)}%${e.moonrise ? ", moonrise " + fmtT(e.moonrise) : ""}${e.moonset ? ", moonset " + fmtT(e.moonset) : ""}</p>
-   <div class="skycards"><div><small>Sky here</small><b>${bortleLabel(q)}</b><small>SQM ≈ ${q.toFixed(2)}</small></div>
+   <div class="skycards"><div><small>Sky here</small>${sqmKnown(LOC.lat, LOC.lon) ? `<b>${bortleLabel(q)}</b><small>SQM ≈ ${q.toFixed(2)}</small>` : `<b>Not mapped</b><small><a href="https://www.lightpollutionmap.info/#zoom=9&lat=${LOC.lat}&lon=${LOC.lon}" target="_blank" rel="noopener">light map</a></small>`}</div>
      <div><small>Moon-free</small><b>${w.dark ? fmtT(w.dark.s).replace(" ", "") + "–" + fmtT(w.dark.e).replace(" ", "") : "none"}</b><small>${w.dark ? fmtDur((w.dark.e - w.dark.s) / 60000) : "moon up all night"}</small></div>
      <div><small>Clouds</small><b>${c ? Math.round(c.cc) + "%" : "–"}</b><small>average tonight</small></div>
      <div><small>Aurora</small><b>${kp != null ? "Kp " + kp.toFixed(1) : "–"}</b><small>${KP && KP.max ? "forecast max " + KP.max.toFixed(1) : "now"}</small></div></div>
@@ -239,6 +241,7 @@ openSpot = function (id) {
   let h = "";
   if (nightEligible(s) || s.cats.includes("city")) {
     const f = w ? fitFor(s, w) : null, pls = w ? tonightPlanets(s, w).filter(p => p.mag < 2).map(p => p.name) : [];
+    if (!sqmKnown(s.lat, s.lon)) h += `<details open><summary>Night sky here</summary><div class="prose"><p>Sky darkness isn't mapped here yet. Check <a href="https://www.lightpollutionmap.info/#zoom=10&lat=${s.lat}&lon=${s.lon}" target="_blank" rel="noopener">the light pollution map</a> before a night trip.</p></div></details>`; else
     h += `<details open><summary>Night sky here</summary><div class="prose"><p><b>${bortleLabel(q)}</b> (SQM ≈ ${q.toFixed(2)}${SQM_MEASURED[s.id] ? ", from the satellite map" : ", estimated"}). ${esc(BORTLE_TXT[b])}.</p>
       ${w ? `<p>${esc(wTitle(w))}: ${f ? `score <b>${f.n}</b>, ${esc(f.why.slice(0, 3).join(", "))}.` : "not a night-sky spot."}${pls.length ? " Planets up: " + pls.join(", ") + "." : ""}</p>` : ""}
       <p class="muted" style="font-size:14px">Full sky details, planets and targets are on the Sky tab. <a href="https://www.lightpollutionmap.info/#zoom=11&lat=${s.lat.toFixed(4)}&lon=${s.lon.toFixed(4)}" target="_blank" rel="noopener">See this spot on the light pollution map</a>.</p></div></details>`;

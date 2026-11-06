@@ -65,8 +65,16 @@ document.addEventListener("click", async e => {
 
 /* guests: a one-time welcome, and the default start point isn't called anyone's "home" */
 if (!isOwner() && LOC.src === "home") LOC.label = "Washougal";
+const PACIFIC = /^America\/(Los_Angeles|Vancouver|Tijuana)$|^US\/Pacific$|^PST8PDT$/.test(Intl.DateTimeFormat().resolvedOptions().timeZone || "");
 function welcomeHtml() {
   if (isOwner() || store.get("welcomed", false)) return "";
+  if (typeof outsideCoverage === "function" && outsideCoverage() && LOC.src !== "home") return `<div class="welcome"><h3>Welcome to ShotSpots</h3>
+    <p>It plans photo outings: pick a day and a light window above, and it ranks places near you for that light, the forecast and the drive. Tap a place for the details and the best time to go.</p>
+    <div class="chips"><button class="chip" id="welcomeOk">Got it</button></div></div>`;
+  if (!PACIFIC && LOC.src === "home") return `<div class="welcome"><h3>Welcome to ShotSpots</h3>
+    <p>It plans photo outings: pick a day and a light window above and it ranks places for that light, the forecast and the drive.</p>
+    <p>It's starting from Washougal, Washington, but your device's time zone says you're elsewhere. Use your location and it'll find photo spots around you.</p>
+    <div class="chips"><button class="chip" id="welcomeGps">Use my location</button><button class="chip" id="welcomeLoc">Pick a place</button><button class="chip" id="welcomeOk">Stay in the Northwest</button></div></div>`;
   return `<div class="welcome"><h3>Welcome to ShotSpots</h3>
     <p>It plans photo outings around Portland, Washougal and the Columbia Gorge: pick a day and a light window above, and it ranks the spots for that light, the forecast and the drive.</p>
     <p>Drive times start from Washougal. Set your own starting point so they fit you.</p>
@@ -75,7 +83,9 @@ function welcomeHtml() {
 const _renderNowF = renderNow;
 renderNow = function () { _renderNowF(); const h = welcomeHtml(); const v = $("#v-now"); if (h && v && !v.querySelector(".welcome")) { const d = v.querySelector("#winDetail"); (d || v).insertAdjacentHTML(d ? "beforebegin" : "afterbegin", h); } };
 document.addEventListener("click", e => {
-  const t = e.target.closest("#welcomeOk,#welcomeLoc"); if (!t) return;
-  store.set("welcomed", true); if (t.id === "welcomeLoc") { const b = $("#locBtn") || document.querySelector(".loc"); b && b.click(); } render();
+  const t = e.target.closest("#welcomeOk,#welcomeLoc,#welcomeGps"); if (!t) return;
+  store.set("welcomed", true);
+  if (t.id !== "welcomeOk") { const b = $("#locBtn"); b && b.click(); if (t.id === "welcomeGps") setTimeout(() => { const g = $("#useGps"); g && g.click(); }, 150); }
+  render();
 });
 setTimeout(() => { if (!isOwner()) render(); }, 0);
