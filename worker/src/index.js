@@ -1,6 +1,6 @@
 // ShotSpots forms Worker: the app POSTs form data here; it's stored in D1. Nothing is readable from this public
 // endpoint: the pipeline reads D1 through the Cloudflare API with its own token.
-const FORMS = new Set(["outcome", "research", "research_settings", "alert_settings", "push_sub", "spot_feedback", "lead"]);
+const FORMS = new Set(["outcome", "research", "research_settings", "alert_settings", "push_sub", "spot_feedback", "lead", "conditions"]);
 const ORIGINS = ["https://estaugaa.github.io", "https://shotspots-eric.netlify.app", "http://localhost:8765"];
 const MAX = 20000;
 // Owner-only forms: they change shared settings or spend the owner's Claude usage. The owner's devices send the
@@ -55,7 +55,7 @@ export default {
     const form = m[1];
     if (!FORMS.has(form)) return json(req, { ok: false, error: "unknown form" }, 400);
     const body = await req.text();
-    if (body.length > MAX) return json(req, { ok: false, error: "too large" }, 413);
+    if (body.length > (form === "conditions" ? 400000 : MAX)) return json(req, { ok: false, error: "too large" }, 413);   // conditions carry a ~80 KB thumbnail
     let data;
     const ct = req.headers.get("Content-Type") || "";
     try { data = ct.includes("application/json") ? JSON.parse(body) : Object.fromEntries(new URLSearchParams(body)); }

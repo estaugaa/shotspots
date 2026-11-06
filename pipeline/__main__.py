@@ -7,6 +7,8 @@ def job_goes():
     from . import goes
     run_module("goes", goes.run, "MEASURED", "GOES-18 clear-sky mask + cloud-top height")
     job_alerts()  # every 30 min: catches a geomagnetic storm in progress
+    from . import reports
+    run_module("reports", reports.run, "MEASURED", "conditions photos from the in-app camera (last 48 h)")
 
 
 def job_conditions():
@@ -40,7 +42,13 @@ def job_daily():
     job_alerts()
 
 
+def job_flickr_top():
+    from . import flickr
+    run_module("photos", flickr.top_photos, "MEASURED", "Flickr most-interesting photos per spot")
+
+
 def job_weekly():
+    job_flickr_top()
     from . import light, obs, wildlife, viirs, flickr
     run_module("planner", light.plan_year, "MODELED", "365-day landmark alignments")
     run_module("climatology", obs.climatology, "MEASURED", "10-year ASOS climatology")

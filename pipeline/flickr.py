@@ -98,3 +98,25 @@ def same_day(key, lat, lon, date):
     s = {"lat": lat, "lon": lon}
     ph = search(key, s, rad_km=1.5, pages=1, extra={"min_taken_date": f"{date} 00:00:00", "max_taken_date": f"{date} 23:59:59", "sort": "date-taken-asc"})
     return [{"t": p.get("datetaken"), "url": f'https://www.flickr.com/photos/{p["owner"]}/{p["id"]}', "thumb": p.get("url_q")} for p in ph[:12]]
+
+
+def top_photos(per_spot=8):
+    """Most interesting Flickr photos within 500 m of each spot (link + thumbnail + owner), for the spot page.
+    Shown with credit and a link back to Flickr, as the Flickr API terms require."""
+    from .common import secret, spots, write_json, http, utcnow, iso
+    key = secret("FLICKR_KEY")
+    if not key:
+        return "no FLICKR_KEY"
+    out = {}
+    for s in spots():
+        try:
+            j = http("https://api.flickr.com/services/rest/", params={"method": "flickr.photos.search", "api_key": key, "lat": s["lat"], "lon": s["lon"],
+                     "radius": 0.5, "radius_units": "km", "sort": "interestingness-desc", "content_type": 1, "media": "photos", "safe_search": 1,
+                     "extras": "owner_name,url_m", "per_page": per_spot, "format": "json", "nojsoncallback": 1}, timeout=30).json()
+        except Exception:
+            continue
+        ph = [p for p in j.get("photos", {}).get("photo", []) if p.get("url_m")]
+        if ph:
+            out[s["id"]] = [{"thumb": p["url_m"], "page": f"https://www.flickr.com/photos/{p['owner']}/{p['id']}", "title": p.get("title", ""), "by": p.get("ownername", "")} for p in ph]
+    write_json("photos.json", {"gen": iso(utcnow()), "spots": out})
+    return f"Flickr top photos for {len(out)} spots"

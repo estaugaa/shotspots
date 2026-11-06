@@ -136,7 +136,11 @@ def app_day_events(d):
 # ---------------- outcomes ----------------
 def submissions():
     from .forms import submissions as subs, is_owner
-    return [x for x in subs("outcome") if is_owner(x)]   # guests' logs aren't used for calibration (yet)
+    own = [x for x in subs("outcome") if is_owner(x)]   # guests' outing logs aren't used for calibration (yet)
+    cam = [x for x in subs("conditions") if is_owner(x) or (x.get("data") or {}).get("verified") == "1"]   # camera reports: verified by GPS + time
+    for x in cam:
+        x.setdefault("data", {}).setdefault("kind", "")
+    return own + cam
 
 
 def goes_at(spot_id, t):
