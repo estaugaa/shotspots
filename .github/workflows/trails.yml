@@ -1,7 +1,5 @@
 name: Trails from parking
 on:
-  schedule:
-    - cron: "37 16 * * *"
   workflow_dispatch:
 concurrency:
   group: pipeline

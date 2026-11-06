@@ -1,7 +1,5 @@
 name: Weekly planner, wildlife, dark sky, originality
 on:
-  schedule:
-    - cron: "29 13 * * 1"
   workflow_dispatch:
 concurrency:
   group: pipeline
