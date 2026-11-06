@@ -6,10 +6,22 @@
 const CAM_MAX_KM = 1.5;
 let CAM = null;   // current report under review
 
+/* compass: the phone's heading while the sheet is open (iOS asks permission on the first tap) */
+const HEAD = { deg: null, on: false };
+function compassStart() {
+  if (HEAD.on || !window.DeviceOrientationEvent) return; HEAD.on = true;
+  const on = ev => { let h = ev.webkitCompassHeading != null ? ev.webkitCompassHeading : ev.absolute && ev.alpha != null ? (360 - ev.alpha) % 360 : null;
+    if (h == null) return; if (screen.orientation && screen.orientation.angle) h = (h + screen.orientation.angle) % 360; HEAD.deg = Math.round(h); HEAD.at = Date.now();
+    const el = $("#camHead"); if (el && CAM && CAM.headSrc !== "photo") el.textContent = facing(HEAD.deg); };
+  const go = () => { addEventListener("deviceorientationabsolute", on); addEventListener("deviceorientation", on); };
+  if (typeof DeviceOrientationEvent.requestPermission === "function") DeviceOrientationEvent.requestPermission().then(r => r === "granted" && go()).catch(() => { }); else go();
+}
+const COMPASS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+const facing = d => d == null ? "unknown" : `${COMPASS[Math.round(d / 45) % 8]} (${d}°)`;
 function camButton(spotId) { return `<button class="btn camb" data-cam="${spotId || ""}"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg> Report conditions</button>`; }
 function hiddenInput() {
   let i = $("#camInput"); if (i) return i;
-  document.body.insertAdjacentHTML("beforeend", `<input type="file" id="camInput" accept="image/*" capture="environment" hidden>`); return $("#camInput");
+  document.body.insertAdjacentHTML("beforeend", `<input type="file" id="camInput" accept="image/*" multiple hidden>`); return $("#camInput");
 }
 function where(timeout = 9000) {
   return new Promise(ok => { if (!navigator.geolocation) return ok(null);
@@ -41,31 +53,40 @@ function analyse(im) {
   };
 }
 async function camStart(spotId) {
-  const inp = hiddenInput(); inp.value = ""; inp.dataset.spot = spotId || "";
+  const inp = hiddenInput(); inp.value = ""; inp.dataset.spot = spotId || ""; compassStart(); if (typeof loadExifr === "function") loadExifr().catch(() => { });
   CAM = { pos: where() };   // ask for location while the camera is open
   inp.click();
 }
 document.addEventListener("change", async e => {
   if (e.target.id !== "camInput" || !e.target.files[0]) return;
+  if (e.target.files.length > 1 && typeof importFiles === "function") return importFiles([...e.target.files]);   // several photos: score them all as outings
   const file = e.target.files[0], el = ensureSheet("camSheet", "Report conditions");
   el.querySelector(".sheetbody").innerHTML = `<p>Reading the photo and your location…</p>`; el.hidden = false;
   try {
-    const im = await loadImg(file), a = analyse(im), img = thumb(im), pos = await CAM.pos, now = new Date();
-    let shot = now; try { if (window.exifr) { const x = await exifr.parse(file, ["DateTimeOriginal"]); if (x && x.DateTimeOriginal) shot = x.DateTimeOriginal; } } catch (er) { }
+    const im = await loadImg(file), a = analyse(im), img = thumb(im), now = new Date();
+    let shot = now, xpos = null, xhead = null;
+    try { if (typeof loadExifr === "function") await loadExifr();
+      if (window.exifr) { const x = await exifr.parse(file, { pick: ["DateTimeOriginal", "OffsetTimeOriginal", "GPSLatitude", "GPSLongitude", "GPSLatitudeRef", "GPSLongitudeRef", "GPSImgDirection", "GPSHPositioningError"], gps: true });
+        if (x && x.DateTimeOriginal) shot = exifTime(x);
+        if (x && isFinite(x.latitude)) xpos = { lat: x.latitude, lon: x.longitude, acc: Math.round(x.GPSHPositioningError || 15), src: "photo" };
+        if (x && x.GPSImgDirection != null) xhead = Math.round(x.GPSImgDirection) % 360; } } catch (er) { }
     const ageMin = Math.abs(now - shot) / 6e4;
+    const live = await CAM.pos, pos = xpos || (ageMin <= 20 ? live : null);   // an older photo without GPS can't be placed from where you are now
     const near = pos ? SPOTS.map(s => [km(pos, s), s]).sort((x, y) => x[0] - y[0]).slice(0, 5) : [];
     const pick = e.target.dataset.spot && byId[e.target.dataset.spot] ? byId[e.target.dataset.spot] : near.length && near[0][0] <= CAM_MAX_KM ? near[0][1] : null;
     const dist = pick && pos ? km(pos, pick) : null;
-    const verified = !!(pos && dist != null && dist <= CAM_MAX_KM && ageMin <= 20);
-    CAM = { ...CAM, img, a, pos, t: shot, spot: pick ? pick.id : "", near, dist, verified, ans: { sky: a.sky, fog: a.fog, color: a.colour } };
+    const verified = !!(pos && dist != null && dist <= CAM_MAX_KM && (pos.src === "photo" || ageMin <= 20));
+    CAM = { ...CAM, img, a, pos, t: shot, ageMin, spot: pick ? pick.id : "", near, dist, verified, ans: { sky: a.sky, fog: a.fog, color: a.colour },
+      head: xhead != null ? xhead : HEAD.deg, headSrc: xhead != null ? "photo" : HEAD.deg != null ? "phone" : "" };
     camRender();
   } catch (er) { el.querySelector(".sheetbody").innerHTML = `<p>Couldn't read that photo. Try again, or pick a JPEG/HEIF.</p>`; }
 });
 function camRender() {
   const el = $("#camSheet"), c = CAM, sp = byId[c.spot];
-  const opts = c.near.map(([d, s]) => `<option value="${s.id}" ${s.id === c.spot ? "selected" : ""}>${esc(s.name)} (${d < 1 ? Math.round(d * 1000) + " m" : d.toFixed(1) + " km"})</option>`).join("");
-  const ver = c.verified ? `<span class="seasontag">Verified: ${Math.round(c.dist * 1000)} m from the spot, taken just now</span>`
-    : `<span class="seasontag warn">${!c.pos ? "No location: allow location to verify" : c.dist == null ? "Pick the spot" : c.dist > CAM_MAX_KM ? `You're ${c.dist.toFixed(1)} km from the nearest spot` : "Photo isn't from the last 20 minutes"}</span>`;
+  const opts = c.near.map(([d, s]) => `<option value="${s.id}" ${s.id === c.spot ? "selected" : ""}>${esc(s.name)} (${fmtKm(d)})</option>`).join("");
+  const when = c.ageMin <= 20 ? "taken just now" : `taken ${fmtDate(c.t)} ${fmtT(c.t)}`;
+  const ver = c.verified ? `<span class="seasontag">Verified: ${fmtKm(c.dist)} from the spot${c.pos.src === "photo" ? " (photo's GPS)" : ""}, ${when}</span>`
+    : `<span class="seasontag warn">${!c.pos ? (c.ageMin > 20 ? "This photo has no location, and it isn't recent enough to use yours" : "No location: allow location to verify") : c.dist == null ? "Pick the spot" : c.dist > CAM_MAX_KM ? `${c.pos.src === "photo" ? "The photo was taken" : "You're"} ${fmtKm(c.dist)} from the nearest spot` : "Not verified"}</span>`;
   el.querySelector(".sheetbody").innerHTML = `
     <img src="${c.img}" alt="Your photo" class="camimg">
     <p style="margin:6px 0">${ver}</p>
@@ -74,7 +95,8 @@ function camRender() {
     <div class="impq"><span>Sky</span>${chipGroup("camsky", [["clear", "Clear"], ["partly", "Partly"], ["overcast", "Overcast"], ["rain", "Rain"]], [c.ans.sky], false)}</div>
     <div class="impq"><span>Fog</span>${chipGroup("camfog", [["yes", "Yes"], ["no", "No"]], [c.ans.fog], false)}</div>
     <div class="impq"><span>Colour</span>${chipGroup("camcolor", [["none", "None"], ["some", "Some"], ["strong", "Strong"]], [c.ans.color], false)}</div>
-    <label class="impkeep" style="margin:10px 0"><input type="checkbox" id="camShare" checked> Show this photo in ShotSpots for 48 hours (no name attached)</label>
+    <p style="font-size:14.5px;margin:8px 0 2px">Facing <b id="camHead">${facing(c.head)}</b>${c.headSrc === "photo" ? ` <span class="muted">from the photo</span>` : ` <span class="muted">${c.headSrc ? "· hold the phone toward the view as you send" : "· no compass on this device"}</span>`}</p>
+    <label class="impkeep" style="margin:10px 0"><input type="checkbox" id="camShare" ${c.ageMin <= 180 ? "checked" : ""}> Show this photo in ShotSpots for 48 hours (no name attached)</label>
     <button class="btn primary wide" id="camSend" ${c.spot ? "" : "disabled"}>Send report</button>
     ${sp ? `<p class="muted" style="font-size:13px">ShotSpots' forecast for ${esc(sp.name)} right now goes with it, so the report also checks the prediction.</p>` : ""}`;
 }
@@ -86,11 +108,12 @@ document.addEventListener("click", async e => {
   if (e.target.closest("#camSend") && CAM && CAM.spot) {
     const s = byId[CAM.spot], h = hrrrRow(s.id, CAM.t), H = fd("hrrr");
     const pred = { p_clear: h ? h.p_clear : null, p_fog: h ? h.p_fog : null, p_color: h ? h.p_color : null, hrrr_run: h && H ? H.run : null, lead_h: h && H ? Math.round((CAM.t - new Date(H.run)) / 36e5) : null };
-    const share = $("#camShare").checked;
+    const share = $("#camShare").checked, head = CAM.headSrc === "photo" ? CAM.head : HEAD.deg != null && Date.now() - HEAD.at < 5000 ? HEAD.deg : null;
+    const sunAz = Math.round(sunPos(CAM.t, s.lat, s.lon).az), rel = head == null ? null : Math.round(((head - sunAz + 540) % 360) - 180);
     const ok = await postForm("conditions", { spot: s.id, t: String(CAM.t.getTime()), lat: CAM.pos ? CAM.pos.lat.toFixed(5) : "", lon: CAM.pos ? CAM.pos.lon.toFixed(5) : "", acc: CAM.pos ? CAM.pos.acc : "",
       dist_m: CAM.dist != null ? Math.round(CAM.dist * 1000) : "", verified: CAM.verified ? "1" : "0", sky: CAM.ans.sky, fog: CAM.ans.fog, color: CAM.ans.color,
-      auto: JSON.stringify(CAM.a), pred: JSON.stringify(pred), share: share ? "1" : "0", img: share ? CAM.img : "" });
-    $("#camSheet").hidden = true; toast(ok ? "Thanks: report sent" + (share ? ". It'll show on the spot within the hour." : "") : "Couldn't send. Check your connection and try again."); CAM = null;
+      auto: JSON.stringify(CAM.a), pred: JSON.stringify(pred), heading: head == null ? "" : String(head), heading_src: head == null ? "" : CAM.headSrc, sun_az: String(sunAz), sun_rel: rel == null ? "" : String(rel), loc_src: CAM.pos ? CAM.pos.src || "phone" : "", share: share ? "1" : "0", img: share ? CAM.img : "" });
+    $("#camSheet").hidden = true; toast(ok ? "Thanks: report sent" + (share && CAM.ageMin <= 180 ? ". It'll show on the spot within the hour." : "") : "Couldn't send. Check your connection and try again."); CAM = null;
   }
 });
 /* entry points: the Plan screen and every spot page */
@@ -98,3 +121,9 @@ const _renderNowC = renderNow;
 renderNow = function () { _renderNowC(); const d = $("#winDetail"); if (d && !d.querySelector(".camb") && (d.querySelector(".verdict") || 0)) d.querySelector(".verdict").insertAdjacentHTML("beforebegin", `<div style="float:right;margin-top:2px">${camButton("")}</div>`); };
 const _openC = openSpot;
 openSpot = function (id) { _openC(id); const b = $("#sheetBody"); const row = b && b.querySelector("#outcomeBtn"); if (row && !b.querySelector(".camb")) row.insertAdjacentHTML("afterend", camButton(id)); };
+
+/* EXIF capture time, using the camera's UTC offset when it recorded one */
+function exifTime(x) { let t = x.DateTimeOriginal;
+  if (x.OffsetTimeOriginal && /^[+-]\d\d:\d\d$/.test(x.OffsetTimeOriginal)) { const [h, m] = x.OffsetTimeOriginal.slice(1).split(":").map(Number), sign = x.OffsetTimeOriginal[0] === "-" ? -1 : 1;
+    t = new Date(Date.UTC(t.getFullYear(), t.getMonth(), t.getDate(), t.getHours(), t.getMinutes(), t.getSeconds()) - sign * (h * 60 + m) * 6e4); }
+  return t; }

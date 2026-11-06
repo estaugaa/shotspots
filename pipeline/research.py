@@ -153,6 +153,12 @@ def plan():
             la, lo = cell_center(c)
             targets.append({"kind": "frontier", "cell": c, "label": f"Area around {la:.2f}, {lo:.2f}", "lat": la, "lon": lo, "radius_km": 18,
                             "runs_so_far": len(cells.get(c, {}).get("runs", [])), "known_spots": _nearby(la, lo, 20)})
+    try:   # reach mode: the best free starter spots in each target, to verify and promote first
+        from .seed import candidates
+        for t in targets:
+            t["seed_candidates"] = candidates(t["lat"], t["lon"], t["radius_km"])
+    except Exception as e:
+        log.warning("seed candidates: %s", e)
     print(json.dumps({"settings": cfg, "targets": targets, "taste": taste(), "schema": SCHEMA_DOC}, indent=1))
 
 

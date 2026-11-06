@@ -112,11 +112,11 @@ def top_photos(per_spot=8):
         try:
             j = http("https://api.flickr.com/services/rest/", params={"method": "flickr.photos.search", "api_key": key, "lat": s["lat"], "lon": s["lon"],
                      "radius": 0.5, "radius_units": "km", "sort": "interestingness-desc", "content_type": 1, "media": "photos", "safe_search": 1,
-                     "extras": "owner_name,url_m", "per_page": per_spot, "format": "json", "nojsoncallback": 1}, timeout=30).json()
+                     "extras": "owner_name,url_m,url_b,license", "per_page": per_spot, "format": "json", "nojsoncallback": 1}, timeout=30).json()
         except Exception:
             continue
         ph = [p for p in j.get("photos", {}).get("photo", []) if p.get("url_m")]
         if ph:
-            out[s["id"]] = [{"thumb": p["url_m"], "page": f"https://www.flickr.com/photos/{p['owner']}/{p['id']}", "title": p.get("title", ""), "by": p.get("ownername", "")} for p in ph]
+            out[s["id"]] = [{"thumb": p["url_m"], "big": p.get("url_b") or p["url_m"], "page": f"https://www.flickr.com/photos/{p['owner']}/{p['id']}", "title": p.get("title", ""), "by": p.get("ownername", "")} for p in ph]
     write_json("photos.json", {"gen": iso(utcnow()), "spots": out})
     return f"Flickr top photos for {len(out)} spots"

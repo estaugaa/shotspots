@@ -78,13 +78,14 @@ function welcomeHtml() {
   return `<div class="welcome"><h3>Welcome to ShotSpots</h3>
     <p>It plans photo outings around Portland, Washougal and the Columbia Gorge: pick a day and a light window above, and it ranks the spots for that light, the forecast and the drive.</p>
     <p>Drive times start from Washougal. Set your own starting point so they fit you.</p>
-    <div class="chips"><button class="chip" id="welcomeLoc">Set my starting point</button><button class="chip" data-openalerts="1">Get alerts</button><button class="chip" id="welcomeOk">Got it</button></div></div>`;
+    <div class="chips"><button class="chip" id="welcomeSetup">Set home, travel and units</button><button class="chip" data-openalerts="1">Get alerts</button><button class="chip" id="welcomeOk">Got it</button></div></div>`;
 }
 const _renderNowF = renderNow;
 renderNow = function () { _renderNowF(); const h = welcomeHtml(); const v = $("#v-now"); if (h && v && !v.querySelector(".welcome")) { const d = v.querySelector("#winDetail"); (d || v).insertAdjacentHTML(d ? "beforebegin" : "afterbegin", h); } };
 document.addEventListener("click", e => {
-  const t = e.target.closest("#welcomeOk,#welcomeLoc,#welcomeGps"); if (!t) return;
+  const t = e.target.closest("#welcomeOk,#welcomeLoc,#welcomeGps,#welcomeSetup"); if (!t) return;
   store.set("welcomed", true);
+  if (t.id === "welcomeSetup") { $("#setBtn").click(); render(); return; }
   if (t.id !== "welcomeOk") { const b = $("#locBtn"); b && b.click(); if (t.id === "welcomeGps") setTimeout(() => { const g = $("#useGps"); g && g.click(); }, 150); }
   render();
 });

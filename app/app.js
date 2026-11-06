@@ -3,7 +3,20 @@
    aurora from NOAA SWPC, alerts from NWS, place search from OpenStreetMap. */
 "use strict";
 const D = window.SS, SPOTS = D.spots, byId = Object.fromEntries(SPOTS.map(s => [s.id, s]));
-const HOME = { lat: 45.582, lon: -122.353, label: "Washougal (home)", src: "home" };
+/* ---------- your setup (Settings): home, units, how you travel ---------- */
+const PREFS = (() => { let p = {}; try { p = JSON.parse(localStorage.getItem("ss2:prefs") || "{}"); } catch (e) { }
+  const us = /^en-US|^en$/.test(navigator.language || "en-US") || /^America\/(?!Toronto|Vancouver|Montreal|Edmonton|Winnipeg|Halifax|Regina)/.test(Intl.DateTimeFormat().resolvedOptions().timeZone || "");
+  return { units: us ? "us" : "metric", travel: "drive", maxDrive: 120, maxWalk: 30, start: "gps", ...p }; })();
+function savePrefs() { try { localStorage.setItem("ss2:prefs", JSON.stringify(PREFS)); } catch (e) { } }
+let HOME = (() => { try { const h = JSON.parse(localStorage.getItem("ss2:home") || "null"); if (h && isFinite(h.lat)) return { ...h, src: "home" }; } catch (e) { } return { lat: 45.582, lon: -122.353, label: "Washougal (home)", src: "home" }; })();
+const METRIC = () => PREFS.units === "metric";
+function fmtKm(k) { if (k == null || !isFinite(k)) return ""; if (METRIC()) return k < 1 ? Math.round(k * 1000) + " m" : (k < 10 ? k.toFixed(1) : Math.round(k)) + " km";
+  const mi = k / 1.60934; return mi < 0.2 ? Math.round(mi * 5280 / 10) * 10 + " ft" : (mi < 10 ? mi.toFixed(1) : Math.round(mi)) + " mi"; }
+const fmtTemp = f => f == null ? "" : METRIC() ? Math.round((f - 32) * 5 / 9) + "°C" : Math.round(f) + "°F";
+const fmtDeg = f => f == null ? "" : (METRIC() ? Math.round((f - 32) * 5 / 9) : Math.round(f)) + "°";
+const fmtWind = mph => METRIC() ? Math.round(mph * 1.609) + " km/h" : Math.round(mph) + " mph";
+const maxTravel = () => PREFS.travel === "walk" ? PREFS.maxWalk : PREFS.maxDrive;
+const tooFar = s => driveMin(s) > maxTravel();
 const GRID = [
   ["coast", "North Coast", 45.88, -123.96], ["coastrange", "Coast Range", 45.72, -123.35], ["willamette", "Willamette Valley", 45.05, -122.95],
   ["pdx", "Portland", 45.53, -122.68], ["home", "Camas–Washougal", 45.585, -122.37], ["wgorge", "West Gorge", 45.59, -122.10],
@@ -32,7 +45,9 @@ let LOC = store.get("loc", null) || { ...HOME };
 let WX = store.get("wx", null), KP = store.get("kp", null), NWS = store.get("nws", null);
 let DRIVES = store.get("drives", {});
 let SAVED = store.get("saved", {}), LOG = store.get("log", []);
-const UI = { view: "now", focus: 0, more: false, group: "all", q: "", sort: "best", inSeason: true };
+const UI = { view: "now", focus: 0, more: false, group: store.get("group", "all"), q: "", sort: "best", inSeason: true };
+if (!groupTest[UI.group]) UI.group = "all";
+const inGroup = s => (groupTest[UI.group] || groupTest.all)(s);   // the app-wide filter in the header
 
 /* ---------- small helpers ---------- */
 const $ = s => document.querySelector(s);
@@ -55,7 +70,8 @@ function toast(msg, ms) { const t = $("#toast"); t.textContent = msg; t.hidden =
 function haptic() { try { navigator.vibrate && navigator.vibrate(8); } catch (e) { } }
 
 /* ---------- drive time ---------- */
-function driveMin(s) {
+function driveMin(s) {   // travel minutes: driving, or walking when Settings say you're on foot
+  if (PREFS.travel === "walk") return Math.round(km(LOC, s) * 1.3 / 4.8 * 60);
   const k = locKey(); if (DRIVES[k] && DRIVES[k].m[s.id] != null) return DRIVES[k].m[s.id];
   if (atHome() && s.drive != null) return s.drive;
   return Math.round(6 + km(LOC, s) * 1.32 / 62 * 60);
@@ -213,7 +229,7 @@ function skyCalc(p, w, pt, sp, probePt) {
   if (mode === "clearing") { q = Math.min(100, q + 20); why.unshift("rain clearing just before: light breaking through"); }
   const rainbow = (mode === "showers" || mode === "clearing") && sp.alt > -1 && sp.alt < 40 && c.cc < 90, rbDir = cmp((sp.az + 180) % 360);
   if (rainbow) why.push(`showers with a low sun: rainbow odds, look ${rbDir}`);
-  if (mode === "snow") why.unshift(`snow likely (${Math.round(c.tf)}°F)`);
+  if (mode === "snow") why.unshift(`snow likely (${fmtTemp(c.tf)})`);
   return { ...c, q, fog, canvas, block, why, probe: probePt && probePt.n, mode, rainbow, rbDir, kind: w.kind };
 }
 function verdict(sk) {
@@ -240,7 +256,7 @@ function verdict(sk) {
   if (sk.mode === "rain") return sk.kind === "day" ? { cls: "mid", txt: "Rain: waterfalls, wet forest, moody mist" } : { cls: "poor", txt: `Rain at ${sk.kind}: little color. Wet city lights at blue hour are the best bet` };
   if (sk.mode === "clearing") return { cls: "good", txt: "Storm clearing: dramatic light odds" };
   if (sk.rainbow) return { cls: "good", txt: `Showers and low sun: rainbow odds, look ${sk.rbDir}` };
-  if (sk.mode === "wind") return { cls: "mid", txt: `Windy (${Math.round(sk.wind)} mph): skip reflections, try streaking clouds` };
+  if (sk.mode === "wind") return { cls: "mid", txt: `Windy (${fmtWind(sk.wind)}): skip reflections, try streaking clouds` };
   if (sk.q >= 70) return { cls: "good", txt: "Strong color odds" };
   if (sk.q >= 45) return { cls: "good", txt: "Good color odds" };
   if (sk.cc <= 15) return { cls: "mid", txt: "Clear: clean light, peaks and alignments" };
@@ -344,8 +360,8 @@ function dayParts(s, w, sk, parts, why) {
     if (has("mountain") && clear && sk.vis > 30000 && k === "morning") { v += 6; why.push("clear, dry air: peaks sharp"); }
     if (sk.rainbow) { v += 20; why.unshift(`showers and sun: rainbow odds, look ${sk.rbDir}`); }
     parts.push(v); }
-  if (has("reflection")) { const v = !wet && sk.wind <= 3 ? (k === "morning" ? 62 : 44) : 26; parts.push(v); if (v >= 44) why.push(`calm (${Math.round(sk.wind)} mph): clouds mirrored`); }
-  if (has("coast")) { let v = wet ? (sk.wind >= 18 ? 64 : 36) : over ? 54 : 40; if (wet && sk.wind >= 18) why.push(`${Math.round(sk.wind)} mph: storm surf`); parts.push(v); }
+  if (has("reflection")) { const v = !wet && sk.wind <= 3 ? (k === "morning" ? 62 : 44) : 26; parts.push(v); if (v >= 44) why.push(`calm (${fmtWind(sk.wind)}): clouds mirrored`); }
+  if (has("coast")) { let v = wet ? (sk.wind >= 18 ? 64 : 36) : over ? 54 : 40; if (wet && sk.wind >= 18) why.push(`${fmtWind(sk.wind)}: storm surf`); parts.push(v); }
   if (has("geology")) { const v = clear ? (k === "midday" ? 34 : 58) : over ? 42 : 46; if (clear && k !== "midday") why.push("raking side light on the rock"); parts.push(v); }
   if (has("historic")) parts.push(over ? 48 : 38);
   if (has("city")) parts.push(over ? 30 : 24);
@@ -378,11 +394,11 @@ function fitFor(s, w) {
     if (has(SKY)) { let v = sk.q;
       if (wet) { v = 12;
         if (WETCITY.has(s.id)) { v = dayW ? 34 : 66; why.push("wet streets mirror city lights at blue hour"); }
-        if (s.cats.includes("coast") && sk.wind >= 15) { v = Math.max(v, 68); why.push(`${Math.round(sk.wind)} mph wind: storm surf`); }
+        if (s.cats.includes("coast") && sk.wind >= 15) { v = Math.max(v, 68); why.push(`${fmtWind(sk.wind)} wind: storm surf`); }
         if (m === "snow" && (s.cats.includes("mountain") || s.cats.includes("vista"))) { v = Math.max(v, 58); why.push("fresh snow on the trees"); }
       } else {
         if (s.cats.includes("mountain")) { if (sk.cc <= 40) { v += 12; why.push("peaks likely out"); } else if (sk.low + sk.mid >= 120) { v -= 18; why.push("peaks may be in cloud"); } }
-        if (s.cats.includes("reflection")) { if (sk.wind <= 3) { v += 8; why.push(`calm (${Math.round(sk.wind)} mph): reflections`); } else if (sk.wind >= 15) { v -= 15; why.push("too windy for reflections"); } }
+        if (s.cats.includes("reflection")) { if (sk.wind <= 3) { v += 8; why.push(`calm (${fmtWind(sk.wind)}): reflections`); } else if (sk.wind >= 15) { v -= 15; why.push("too windy for reflections"); } }
         if (sk.rainbow && s.cats.some(c => ["vista", "mountain", "coast", "reflection"].includes(c))) { v += 12; why.push(`rainbow odds: look ${sk.rbDir}`); }
       }
       if (dayW && m !== "clearing") v = Math.min(v, 30);
@@ -404,7 +420,7 @@ function fitFor(s, w) {
       if (wl.length) { const pk = wl.find(x => x.peak), ses = wl[0].ev.session;
         const fits = ses === "both" || ses === "owl" && w.kind === "sunset" || (ses === "dawn" || ses === "morning") && w.kind === "sunrise" || ses === "dusk" && w.kind === "sunset";
         v += (pk ? 24 : 12) * (fits ? 1 : 0.3); why.unshift(`${wl[0].ev.icon || ""} ${wl[0].ev.name}${pk ? " at peak" : " in season"}${fits ? "" : " (better at another time of day)"}`.trim()); }
-      if (w.kind === "sunrise" && s.cats.includes("birds") && sk.tf <= 38 && sk.wind <= 4) { v += 6; why.push(`${Math.round(sk.tf)}°F and calm: breath plumes on singing birds`); }
+      if (w.kind === "sunrise" && s.cats.includes("birds") && sk.tf <= 38 && sk.wind <= 4) { v += 6; why.push(`${fmtTemp(sk.tf)} and calm: breath plumes on singing birds`); }
       parts.push(v); }
     if (FOG_ABOVE.includes(s.id) && sk.pop < 50 && lowlandFog(w)) { parts.push(93); why.unshift("should be above the fog"); }
     const al = alignOn(s, w);
@@ -423,7 +439,7 @@ function fitFor(s, w) {
 }
 function rankFor(w, filter) {
   const now = Date.now(), list = [];
-  for (const s of SPOTS) { if (filter && !filter(s)) continue;
+  for (const s of SPOTS) { if ((filter && !filter(s)) || !inGroup(s) || tooFar(s)) continue;
     const f = fitFor(s, w); if (!f) continue;
     const d = driveMin(s), walk = WALK[s.effort] || 15, leave = new Date((w.kind === "night" ? (w.dark ? w.dark.s : w.start) : w.peak).getTime() - (d + walk) * 60000);
     const reachable = now + (d + walk * 0.5) * 60000 < w.end.getTime();
@@ -475,7 +491,7 @@ function dayTab(ymd) { const y = laYMD(new Date()); if (ymd === y) return "Today
   return new Date(ymd + "T12:00:00").toLocaleDateString("en-US", { weekday: "short" }); }
 let __topsKey = "", __tops = [];
 function windowTops(all) {   // best spot per window, cached per forecast/feed state
-  const k = all.length + "|" + SPOTS.length + "|" + (all[0] && all[0].start.getTime()) + "|" + (WX ? WX.at : 0) + "|" + (window.FEED && FEED.m ? FEED.m.gen : "") + "|" + Object.keys(SAVED).length + "|" + LOC.lat;
+  const k = all.length + "|" + SPOTS.length + "|" + (all[0] && all[0].start.getTime()) + "|" + (WX ? WX.at : 0) + "|" + (window.FEED && FEED.m ? FEED.m.gen : "") + "|" + Object.keys(SAVED).length + "|" + LOC.lat + "|" + UI.group + "|" + PREFS.travel + maxTravel();
   if (k !== __topsKey) { __tops = all.map(x => rankFor(x)[0] || null); __topsKey = k; }
   return __tops;
 }
@@ -550,16 +566,16 @@ function specialsHtml() {
 /* ---------- Spots ---------- */
 function renderSpots() {
   const el = $("#v-spots"); const w = allWindows(LOC, 40)[0]; const month = +laYMD(new Date()).slice(5, 7);
-  let list = SPOTS.filter(s => !s.closed && groupTest[UI.group](s));
+  let list = SPOTS.filter(s => !s.closed && inGroup(s)); const farN = UI.showFar ? 0 : list.filter(tooFar).length; if (!UI.showFar) list = list.filter(s => !tooFar(s));
   if (UI.inSeason && UI.group !== "saved" && UI.group !== "new") list = list.filter(s => !s.months || s.months.includes(month));
   if (UI.q) { const q = UI.q.toLowerCase(); list = list.filter(s => (s.name + " " + s.region + " " + s.cats.join(" ") + " " + (s.tip || "")).toLowerCase().includes(q)); }
   let rows = list.map(s => ({ s, f: w ? fitFor(s, w) || { n: 0, why: [] } : { n: 0, why: [] }, d: driveMin(s) }));
-  if (UI.group === "new" && typeof newestRank === "function") rows.sort((a, b) => newestRank(b.s) - newestRank(a.s)); else rows.sort(UI.sort === "near" ? (a, b) => a.d - b.d : UI.sort === "az" ? (a, b) => a.s.name.localeCompare(b.s.name) : (a, b) => (b.f.n - b.d * 0.28) - (a.f.n - a.d * 0.28));
+  if ((UI.group === "new" || UI.sort === "new") && typeof newestRank === "function") rows.sort((a, b) => newestRank(b.s) - newestRank(a.s)); else rows.sort(UI.sort === "near" ? (a, b) => a.d - b.d : UI.sort === "az" ? (a, b) => a.s.name.localeCompare(b.s.name) : (a, b) => (b.f.n - b.d * 0.28) - (a.f.n - a.d * 0.28));
   const shown = rows.slice(0, UI.limit || 40);
-  el.innerHTML = `<form class="search" id="spotSearch"><input id="spotQ" type="search" placeholder="Search spots, subjects, places" value="${esc(UI.q)}" aria-label="Search spots"></form>
-   <div class="chips">${GROUPS.map(([k, l]) => `<button class="chip" data-group="${k}" aria-pressed="${UI.group === k}">${l}</button>`).join("")}</div>
+  el.innerHTML = `${filtNote()}<form class="search" id="spotSearch"><input id="spotQ" type="search" placeholder="Search spots, subjects, places" value="${esc(UI.q)}" aria-label="Search spots"></form>
    <div class="sortrow"><label><input type="checkbox" id="inSeason" ${UI.inSeason ? "checked" : ""}> In season</label>
-     <label>Sort <select id="sortSel"><option value="best"${UI.sort === "best" ? " selected" : ""}>Best for ${w ? KNAME[w.kind].toLowerCase() : "next light"}</option><option value="near"${UI.sort === "near" ? " selected" : ""}>Closest</option><option value="az"${UI.sort === "az" ? " selected" : ""}>A–Z</option></select></label></div>
+     <label>Sort <select id="sortSel"><option value="best"${UI.sort === "best" ? " selected" : ""}>Best for ${w ? KNAME[w.kind].toLowerCase() : "next light"}</option><option value="near"${UI.sort === "near" ? " selected" : ""}>Closest</option><option value="az"${UI.sort === "az" ? " selected" : ""}>A–Z</option>${typeof newestRank === "function" ? `<option value="new"${UI.sort === "new" ? " selected" : ""}>Newest added</option>` : ""}</select></label></div>
+   ${farN ? `<p class="filtnote">${farN} spot${farN === 1 ? "" : "s"} more than ${fmtDur(maxTravel())} ${PREFS.travel === "walk" ? "on foot" : "by car"} hidden <button class="chip" id="showFar">Show them</button></p>` : ""}
    ${shown.length ? `<ul class="picks">${shown.map(x => `<li>${pickRow({ ...x, leave: new Date(8.64e15) }, w)}</li>`).join("")}</ul>` : `<p class="empty">${UI.group === "saved" ? "Nothing saved yet. Open a spot and tap Save." : "No spots match. Clear the search or turn off In season."}</p>`}
    ${rows.length > shown.length ? `<button class="more" id="moreSpots">Show ${Math.min(40, rows.length - shown.length)} more</button>` : ""}
    ${LOG.length ? `<div class="sect"><h3>Your shot log</h3>${LOG.slice(0, 12).map(l => `<div class="item" data-spot="${l.id}" role="button" tabindex="0"><b>${esc((byId[l.id] || {}).name || l.id)}</b><p>${fmtDate(new Date(l.t))} ${fmtT(new Date(l.t))}${l.c ? " · " + esc(l.c) : ""}</p></div>`).join("")}</div>` : ""}`;
@@ -597,11 +613,11 @@ function renderMap() {
   if (MAPLAYER) MAPLAYER.remove(); MAPLAYER = L.layerGroup().addTo(MAP);
   L.circleMarker([LOC.lat, LOC.lon], { radius: 7, color: "#fff", weight: 2, fillColor: "#C98A1E", fillOpacity: 1 }).addTo(MAPLAYER).bindTooltip("You");
   const month = +laYMD(new Date()).slice(5, 7);
-  SPOTS.forEach(s => { if (s.closed || (s.months && !s.months.includes(month))) return; const f = w ? fitFor(s, w) : null; const n = f ? f.n : 0;
-    const col = n >= 70 ? "#3D6A49" : n >= 45 ? "#C98A1E" : "#7B8A8C";
-    L.circleMarker([s.lat, s.lon], { radius: n >= 70 ? 8 : 6, color: "#fff", weight: 1.5, fillColor: col, fillOpacity: .95 }).addTo(MAPLAYER)
+  SPOTS.forEach(s => { if (s.closed || !inGroup(s) || (s.months && !s.months.includes(month))) return; const f = w ? fitFor(s, w) : null; const n = f ? f.n : 0;
+    const far = tooFar(s), col = far ? "#B4BEBF" : n >= 70 ? "#3D6A49" : n >= 45 ? "#C98A1E" : "#7B8A8C";
+    L.circleMarker([s.lat, s.lon], { radius: far ? 4 : n >= 70 ? 8 : 6, color: "#fff", weight: far ? 1 : 1.5, fillColor: col, fillOpacity: far ? .7 : .95 }).addTo(MAPLAYER)
       .on("click", () => openSpot(s.id)); });
-  $("#mapLegend").innerHTML = w ? `Colored for ${esc(wTitle(w).toLowerCase())}: <span style="color:#3D6A49">●</span> great <span style="color:#C98A1E">●</span> good <span style="color:#7B8A8C">●</span> fair` : "";
+  $("#mapLegend").innerHTML = (UI.group !== "all" ? `${esc((GROUPS.find(g => g[0] === UI.group) || [, ""])[1])} only · ` : "") + (w ? `Colored for ${esc(wTitle(w).toLowerCase())}: <span style="color:#3D6A49">●</span> great <span style="color:#C98A1E">●</span> good <span style="color:#7B8A8C">●</span> fair` : "");
 }
 
 /* ---------- Spot sheet ---------- */
@@ -646,7 +662,7 @@ function wxIcon(c, t, p) { const up = sunPos(t, p.lat, p.lon).alt > 0;
 function hours12(s) {
   const pt = nearestPt(s, 60); if (!pt) return ""; const t0 = Math.ceil(Date.now() / 36e5) * 36e5; let cells = "";
   for (let k = 0; k < 12; k++) { const t = new Date(t0 + k * 36e5), c = hourAt(pt, t); if (!c) continue;
-    cells += `<div><small>${t.toLocaleTimeString("en-US", { timeZone: TZ, hour: "numeric" }).replace(" ", "").toLowerCase()}</small><span>${wxIcon(c, t, s)}</span><small>${Math.round(c.tf)}°</small>${c.pop >= 30 ? `<small class="pop">${c.pop}%</small>` : ""}</div>`; }
+    cells += `<div><small>${t.toLocaleTimeString("en-US", { timeZone: TZ, hour: "numeric" }).replace(" ", "").toLowerCase()}</small><span>${wxIcon(c, t, s)}</span><small>${fmtDeg(c.tf)}</small>${c.pop >= 30 ? `<small class="pop">${c.pop}%</small>` : ""}</div>`; }
   return cells ? `<div class="hours" aria-label="Next 12 hours here">${cells}</div>` : "";
 }
 function nightHelp(s) {
@@ -716,7 +732,7 @@ async function searchPlace(q) {
   try { const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&countrycodes=us&viewbox=-124.3,46.9,-120.0,44.5&bounded=0&q=${encodeURIComponent(q)}`);
     const j = await r.json(); list = list.concat(j.map(x => ({ label: x.name || x.display_name.split(",")[0], sub: x.display_name.split(",").slice(1, 3).join(","), lat: +x.lat, lon: +x.lon }))); } catch (e) { }
   if (!list.length) { msg.textContent = "No match. Try a town, park or address."; return; }
-  msg.textContent = ""; hits.innerHTML = list.slice(0, 7).map((x, i) => `<button class="lrow" data-hit="${i}"><span><b>${esc(x.label)}</b><small>${esc(x.sub || "")}</small></span><span class="muted">${Math.round(km(HOME, x))} km</span></button>`).join("");
+  msg.textContent = ""; hits.innerHTML = list.slice(0, 7).map((x, i) => `<button class="lrow" data-hit="${i}"><span><b>${esc(x.label)}</b><small>${esc(x.sub || "")}</small></span><span class="muted">${fmtKm(km(LOC, x))}</span></button>`).join("");
   hits._list = list;
 }
 
@@ -742,8 +758,13 @@ function fresh() {
   const f = $("#fresh"); if (!WX) { f.textContent = navigator.onLine ? "Loading weather…" : "Offline"; return; }
   const m = Math.round((Date.now() - WX.at) / 60000); f.textContent = (navigator.onLine ? "" : "Offline · ") + (m < 2 ? "Updated now" : `Updated ${fmtDur(m)} ago`);
 }
+function filtNote() { if (UI.group === "all") return ""; const l = (GROUPS.find(g => g[0] === UI.group) || [, ""])[1];
+  return `<p class="filtnote">Showing only ${esc(l.toLowerCase())} spots <button class="chip" data-group="all">Show all</button></p>`; }
+const addFiltNote = () => { const v = $("#v-now"), n = filtNote(); if (!v || !n || v.querySelector(".filtnote")) return; const pl = v.querySelector(".planner"); pl ? pl.insertAdjacentHTML("afterend", n) : v.insertAdjacentHTML("afterbegin", n); };
+function fbar() { const el = $("#fbar"); if (!el) return;
+  el.innerHTML = `<button class="chip travelchip" id="travelChip" aria-label="How far you'll go">${PREFS.travel === "walk" ? "🚶" : "🚗"} ≤ ${fmtDur(maxTravel())}</button>` + GROUPS.filter(([k]) => k !== "new").map(([k, l]) => `<button class="chip" data-group="${k}" aria-pressed="${UI.group === k}">${l}</button>`).join(""); setStick(); }
 function render() {
-  updLoc(); fresh();
+  updLoc(); fresh(); if ($("#fbar") && !$("#fbar").children.length) fbar();
   if (UI.view === "now") renderNow(); else if (UI.view === "spots") renderSpots(); else if (UI.view === "cal") renderCal(); else if (UI.view === "map") renderMap();
 }
 const PLAN_VIEWS = ["now", "sky", "cal"];   // Sky and Calendar live inside the Plan tab
@@ -759,13 +780,13 @@ document.addEventListener("click", e => {
   if (t.dataset.v) return show(t.dataset.v);
   if (t.dataset.spot) return openSpot(t.dataset.spot);
   if (t.dataset.focus != null) { UI.focus = +t.dataset.focus; UI.more = false; render(); showDetail(); return; }
-  if (t.dataset.group) { UI.group = t.dataset.group; UI.limit = 40; return renderSpots(); }
+  if (t.dataset.group) { UI.group = t.dataset.group === UI.group && UI.group !== "all" ? "all" : t.dataset.group; store.set("group", UI.group); UI.limit = 40; __topsKey = ""; fbar(); return render(); }
   if (t.dataset.hit != null) { const x = $("#locHits")._list[+t.dataset.hit]; $("#locSheet").hidden = true; return setLoc({ lat: x.lat, lon: x.lon, label: x.label, src: "search" }); }
   if (t.id === "moreBtn") { UI.more = true; return renderNow(); }
   if (t.id === "moreSpots") { UI.limit = (UI.limit || 40) + 40; return renderSpots(); }
   if (t.id === "saveBtn") { const id = t.dataset.id; if (SAVED[id]) delete SAVED[id]; else SAVED[id] = Date.now(); store.set("saved", SAVED); t.textContent = SAVED[id] ? "★ Saved" : "☆ Save"; haptic(); return; }
   if (t.id === "shotBtn") { const id = t.dataset.id, s = byId[id], w = windows(s, 1)[0], c = hourAt(nearestPt(s, 60), new Date());
-    LOG.unshift({ id, t: Date.now(), c: c ? `${Math.round(c.tf)}°F, ${c.cc}% cloud, wind ${Math.round(c.wind)} mph` : "" }); store.set("log", LOG.slice(0, 300)); toast(`Logged ${s.name}`); haptic(); return; }
+    LOG.unshift({ id, t: Date.now(), c: c ? `${fmtTemp(c.tf)}, ${c.cc}% cloud, wind ${fmtWind(c.wind)}` : "" }); store.set("log", LOG.slice(0, 300)); toast(`Logged ${s.name}`); haptic(); return; }
   if (t.id === "shareBtn") { const s = byId[t.dataset.id]; navigator.share({ title: s.name, text: `${s.name}: ${s.tip || ""}`.slice(0, 280), url: `https://maps.apple.com/?ll=${s.lat},${s.lon}&q=${encodeURIComponent(s.name)}` }).catch(() => { }); return; }
   if (t.id === "nightBtn") { const on = document.documentElement.dataset.night !== "on"; document.documentElement.dataset.night = on ? "on" : "off"; t.setAttribute("aria-pressed", on); store.set("night", on); return; }
   if (t.id === "locBtn") { $("#locSheet").hidden = false; $("#locPresets").innerHTML = PRESETS.map((p, i) => `<button class="chip" data-preset="${i}">${esc(p[0])}</button>`).join(""); setTimeout(() => $("#locQ").focus(), 200); return; }
@@ -790,7 +811,8 @@ setInterval(() => { if (!document.hidden) { if (Date.now() - (WX ? WX.at : 0) > 
   if (store.get("night", false)) { document.documentElement.dataset.night = "on"; $("#nightBtn").setAttribute("aria-pressed", "true"); }
   render(); refresh();
   // Use GPS when we haven't been told a place in the last 2 hours
-  if (LOC.src !== "search" && LOC.src !== "preset" || Date.now() - (LOC.at || 0) > 2 * 36e5) gps(10000);
+  if (PREFS.start === "home") { if (LOC.src !== "home" && (LOC.src !== "search" && LOC.src !== "preset" || Date.now() - (LOC.at || 0) > 2 * 36e5)) setLoc({ ...HOME }, true); }
+  else if (LOC.src !== "search" && LOC.src !== "preset" || Date.now() - (LOC.at || 0) > 2 * 36e5) gps(10000);
   if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => { });
 })();
 /* after picking a window, bring its details up just under the pinned planner (only if they're out of view) */
@@ -813,3 +835,4 @@ document.addEventListener("click", e => {
 /* keep the pinned planner just under the header (phone); on desktop the column scrolls on its own */
 function setStick() { const t = document.querySelector(".top"); document.documentElement.style.setProperty("--stick", matchMedia("(min-width:1100px)").matches || !t ? "0px" : t.offsetHeight + "px"); }
 addEventListener("resize", setStick); setTimeout(setStick, 0);
+{ const _rnF = renderNow; renderNow = function () { _rnF.apply(this, arguments); addFiltNote(); }; }

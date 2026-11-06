@@ -38,14 +38,14 @@ GROUPS.splice(1, 0, ["new", "New finds"]); groupTest.new = s => s.id.startsWith(
 let SEENR = new Set(store.get("seenResearched", []));
 function unseen() { return researchedSpots().filter(s => !SEENR.has(s.id)); }
 function markSeen() { researchedSpots().forEach(s => SEENR.add(s.id)); store.set("seenResearched", [...SEENR]); badge(); }
-function badge() { const b = document.querySelector('.tabs button[data-v=spots]'); if (!b) return; let n = b.querySelector(".badge"); const c = unseen().length;
+function badge() { const b = document.querySelector('.tabs button[data-v=spots]'); if (!b) return; let n = b.querySelector(".badge"); const c = isOwner() ? unseen().length : 0;
   if (!c) { n && n.remove(); return; } if (!n) { n = document.createElement("span"); n.className = "badge"; b.appendChild(n); } n.textContent = c; n.setAttribute("aria-label", `${c} new researched spots`); }
 const fmtFound = d => new Date(d + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
 function newestHtml() {
   const list = researchedSpots().sort((a, b) => newestRank(b) - newestRank(a)).slice(0, 8); if (!list.length) return "";
   const fresh = new Set(unseen().map(s => s.id));
   return `<p class="label">Newest finds <button class="chip" data-group="new" style="margin-left:6px">See all</button></p>
-    <ul class="plain newest">${list.map(s => `<li><button class="lrow" data-spot="${s.id}"><span><b>${esc(s.name)}</b>${fresh.has(s.id) ? ` <span class="newtag">new</span>` : ""}<small>${esc(s.region || "")} · ${esc((s.cats || []).slice(0, 2).join(", "))} · found ${fmtFound(s.researched)}${s.confidence === "high" ? "" : " · " + esc(s.confidence || "medium") + " confidence"}</small></span><span class="muted">${Math.round(km(HOME, s))} km</span></button></li>`).join("")}</ul>`;
+    <ul class="plain newest">${list.map(s => `<li><button class="lrow" data-spot="${s.id}"><span><b>${esc(s.name)}</b>${fresh.has(s.id) ? ` <span class="newtag">new</span>` : ""}<small>${esc(s.region || "")} · ${esc((s.cats || []).slice(0, 2).join(", "))} · found ${fmtFound(s.researched)}${s.confidence === "high" ? "" : " · " + esc(s.confidence || "medium") + " confidence"}</small></span><span class="muted">${fmtKm(km(LOC, s))}</span></button></li>`).join("")}</ul>`;
 }
 const _renderMapN = renderMap;
 renderMap = function () { _renderMapN(); if (!MAP || !MAPLAYER) return;
@@ -72,8 +72,7 @@ document.addEventListener("click", async e => {
 /* ---------- Spots tab: explore section ---------- */
 function isOwner() { return !!store.get("ownerKey", null); }
 function researchHtml() {
-  if (!isOwner()) { const st = fd("research_status");
-    return `<div class="sect explore"><h3>Explore new areas</h3><p class="muted">New spots are researched each night and added here.${st ? ` ${st.totals.researched_spots} so far.` : ""}</p>${typeof newestHtml === "function" ? newestHtml() : ""}</div>`; }
+  if (!isOwner()) return "";   // guests find new spots through Sort → Newest added
   const st = fd("research_status"); const cfg = st ? st.settings : null;
   let h = `<div class="sect explore"><h3>Explore new areas <button class="chip" id="resLimits" style="float:right">Limits</button></h3>
     <p class="muted">Each night, Claude researches spots the way the Gorge list was built: guides, photo sites, agency pages, map checks. It starts with places you ask for, then works outward from home to the nearest area with more to find.</p>
@@ -81,7 +80,7 @@ function researchHtml() {
   if (st) {
     const q = st.requests.filter(r => r.status !== "done");
     if (q.length) h += `<p class="label">Queued</p><ul class="plain">${q.map(r => `<li>${esc(r.label)} (${r.radius_km} km)${r.status === "in_progress" ? " · in progress" : ""}</li>`).join("")}</ul>`;
-    h += newestHtml();
+    h += `<p><button class="chip" id="sortNew">See the newest finds</button></p>`;
     if (st.runs.length) h += `<p class="label">Recent nights</p><ul class="plain">${st.runs.slice(-5).reverse().map(r => `<li>${esc(r.at.slice(0, 10))}: ${esc(r.target)}: ${r.added.length} new${r.rejected && r.rejected.length ? `, ${r.rejected.length} skipped` : ""}${r.searches ? ` · ${r.searches} searches` : ""}</li>`).join("")}</ul>`;
     h += `<p class="muted" style="font-size:13px">${st.totals.researched_spots} researched spots so far; ${st.totals.cells_saturated} areas finished. ${cfg && !cfg.enabled ? "<b>Research is paused.</b>" : `Limits: ${cfg.regions_per_night} area and up to ${cfg.max_new_spots_per_night} new spots a night.`}</p>`;
   } else h += `<p class="muted" style="font-size:13px">No research has run yet.</p>`;
@@ -107,7 +106,7 @@ async function resSearch(q) {
   const box = $("#resHits"); box.innerHTML = `<p class="muted">Searching…</p>`;
   try { const j = await (await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&q=${encodeURIComponent(q)}`)).json();
     box._list = j.map(x => ({ label: x.name || x.display_name.split(",")[0], sub: x.display_name.split(",").slice(1, 4).join(","), lat: +x.lat, lon: +x.lon }));
-    box.innerHTML = box._list.length ? box._list.map((x, i) => `<button class="lrow" data-reshit="${i}"><span><b>${esc(x.label)}</b><small>${esc(x.sub)}</small></span><span class="muted">${Math.round(km(HOME, x))} km</span></button>`).join("") : `<p class="muted">No match. Try a larger town or park name.</p>`;
+    box.innerHTML = box._list.length ? box._list.map((x, i) => `<button class="lrow" data-reshit="${i}"><span><b>${esc(x.label)}</b><small>${esc(x.sub)}</small></span><span class="muted">${fmtKm(km(LOC, x))}</span></button>`).join("") : `<p class="muted">No match. Try a larger town or park name.</p>`;
   } catch (e) { box.innerHTML = `<p class="muted">Search needs a connection.</p>`; }
 }
 function openLimits() {
@@ -149,3 +148,5 @@ document.addEventListener("submit", async e => {
 });
 // first load: feed.js may have finished loading before this file wrapped loadFeed
 (async () => { for (let i = 0; i < 60 && !FEED.m; i++) await new Promise(r => setTimeout(r, 250)); if (FEED.m && FEED.m.files.includes("spots_extra.json")) { await feedGet("spots_extra"); await feedGet("research_status"); if (mergeResearched()) render(); } })();
+
+document.addEventListener("click", e => { if (e.target.id === "sortNew") { UI.sort = "new"; UI.group = "all"; store.set("group", "all"); fbar(); renderSpots(); scrollTo({ top: 0, behavior: "smooth" }); } });

@@ -25,6 +25,7 @@
     <button class="iconbtn" id="setBtn" aria-label="Settings and live data" title="Settings">⚙</button>
     <button class="iconbtn" id="nightBtn" aria-pressed="false" aria-label="Night vision (red screen)" title="Night vision">◐</button>
   </div>
+  <div class="fbar chips" id="fbar" role="toolbar" aria-label="Show only"></div>
 </header>
 
 <main id="main">
@@ -59,7 +60,7 @@
 </div>
 
 <div class="sheet small" id="setSheet" hidden role="dialog" aria-modal="true" aria-labelledby="setTitle">
-  <div class="sheetbar"><b id="setTitle">Live data</b><button class="iconbtn" id="setClose" aria-label="Close">✕</button></div>
+  <div class="sheetbar"><b id="setTitle">Settings</b><button class="iconbtn" id="setClose" aria-label="Close">✕</button></div>
   <div class="sheetbody" id="setBody"></div>
 </div>
 
@@ -92,7 +93,9 @@
 <script src="nearby.js" defer></script>
 <script src="camera.js" defer></script>
 <script src="photos.js" defer></script>
+<script src="seed.js" defer></script>
 <script src="kit.js" defer></script>
+<script src="prefs.js" defer></script>
 <script src="desktop.js" defer></script>
 </body>
 </html>

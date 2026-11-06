@@ -23,6 +23,23 @@ liked or disliked, with his notes. Weight the search toward what he liked (e.g. 
 viewpoints if those score high) and skip candidates like the disliked ones unless they're genuinely
 exceptional. If `taste` is empty, use the default mix.
 
+## 1c. Reach first, depth later (saves searches)
+
+Each target now carries `seed_candidates`: the most notable starter spots there, already pinned for free from
+OpenStreetMap and Wikidata (`python -m pipeline seed`, state by state). Work them **before** open discovery:
+
+1. Take candidates in score order. For each, spend **one** search or page fetch (an official page, a photo-location
+   page, or the Wikipedia article linked from Wikidata) to confirm the pin, access and season, and to learn what the
+   shot actually is. A second lookup only if the first leaves the pin or access in doubt.
+2. If it's a real photo spot, write it up in the normal schema (with `"seed_id": "<candidate id>"`) so it replaces
+   the starter spot. If it isn't (private, gone, nothing to photograph), add it to `rejected` with the reason.
+3. Only when the candidates are used up, or most were rejected, switch to open discovery (section 2) for what the
+   seed can't know: compositions, local secrets, wildlife timing.
+
+Budget guide: promotion costs about 1–2 searches per spot; open discovery about 5–8. So with the same nightly
+limit, reach mode covers 3–4 times as many places. Leave the depth (terrain checks, alignments, seasonal notes)
+to the free pipeline jobs, which run on every spot automatically.
+
 ## 2. Find candidates for each target (radius around lat/lon; `focus` if given)
 Use several independent routes, like the Gorge build did:
 - Photo-location sites: PhotoHound, Locationscout, PIXEO; local photography guides and blogs.

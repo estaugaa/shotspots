@@ -97,6 +97,11 @@ if __name__ == "__main__":
             from . import research
             research.plan()
             sys.exit(0)
+        elif j == "seed":
+            from . import seed
+            run_module("seed", lambda: seed.run([x for x in sys.argv[2:] if x] or ["WA", "OR"]), "MODELED", "OpenStreetMap + Wikidata starter spots")
+            manifest()
+            sys.exit(0)
         elif j == "research_add":
             from . import research
             research.add(sys.argv[2])

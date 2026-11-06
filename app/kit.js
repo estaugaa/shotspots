@@ -43,7 +43,7 @@ function kitText(str) {
 /* rewrite rendered text in place (spot sheets, sky targets, alerts) */
 function kitify(el) {
   if (!el || kitId() === "fuji_xt5") return;
-  const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); const nodes = []; while (w.nextNode()) nodes.push(w.currentNode);
+  const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); const nodes = []; while (w.nextNode()) { const p = w.currentNode.parentElement; if (!p || !p.closest(".kitbox,#setSheet")) nodes.push(w.currentNode); }
   for (const n of nodes) { const t = kitText(n.nodeValue); if (t !== n.nodeValue) n.nodeValue = t; }
 }
 /* phone-specific night help replaces the X-T5 NPF box */
@@ -65,16 +65,16 @@ document.addEventListener("click", () => setTimeout(() => document.querySelector
 /* settings: pick a kit */
 function kitSettingsHtml() {
   const id = kitId(), c = store.get("kitCustom", { name: "My camera", crop: 1, lenses: "24-70, 70-200" });
-  return `<p class="label">Your camera</p><p class="muted" style="font-size:15px">Lens advice across the app is written for this.</p>
+  return `<div class="kitbox"><p class="label">Your camera</p><p class="muted" style="font-size:15px">Lens advice across the app is written for this.</p>
     <div class="chips" id="kitChips">${Object.entries(KITS).map(([k, v]) => `<button class="chip" data-kit="${k}" aria-pressed="${k === id}">${v.name}</button>`).join("")}</div>
     ${id === "custom" ? `<form id="kitForm" class="stack" style="margin-top:8px">
       <label>Camera name<input name="name" value="${esc(c.name)}"></label>
       <label>Lenses (focal lengths as printed, comma-separated)<input name="lenses" value="${esc(c.lenses)}" placeholder="14, 24-70, 70-200"></label>
       <label>Sensor<select name="crop">${[[1, "Full frame"], [1.5, "APS-C (Fuji, Sony, Nikon)"], [1.6, "APS-C (Canon)"], [2, "Micro Four Thirds"], [2.7, "1-inch"]].map(([v, l]) => `<option value="${v}" ${+c.crop === v ? "selected" : ""}>${l}</option>`).join("")}</select></label>
-      <button class="btn" type="submit">Save kit</button></form>` : `<p class="muted" style="font-size:14px">${esc(KITS[id].note)}</p>`}`;
+      <button class="btn" type="submit">Save kit</button></form>` : `<p class="muted" style="font-size:14px">${esc(KITS[id].note)}</p>`}</div>`;
 }
 const _renderSettingsK = renderSettings;
-renderSettings = function () { _renderSettingsK(); const b = $("#setBody"); if (b && !b.querySelector("#kitChips")) b.insertAdjacentHTML("afterbegin", kitSettingsHtml()); };
+renderSettings = function () { const r = _renderSettingsK(); const b = $("#setBody"); if (b && !b.querySelector("#kitChips")) b.insertAdjacentHTML("afterbegin", kitSettingsHtml()); return r; };
 document.addEventListener("click", e => { const t = e.target.closest("[data-kit]"); if (!t) return; store.set("kit", t.dataset.kit); renderSettings(); render(); toast(`Lens advice now for: ${KITS[t.dataset.kit].name}`); });
 document.addEventListener("submit", e => { if (e.target.id !== "kitForm") return; e.preventDefault(); const f = new FormData(e.target);
   store.set("kitCustom", { name: f.get("name") || "My camera", lenses: f.get("lenses") || "", crop: +f.get("crop") || 1 }); renderSettings(); render(); toast("Kit saved"); });

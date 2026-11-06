@@ -40,7 +40,7 @@ async function loadNearby(force) {
       try { store.set("osmNearby", { key, at: Date.now(), els }); } catch (e) { } }
   }
   // drop earlier OSM spots, add the new ones
-  for (let i = SPOTS.length - 1; i >= 0; i--) if (SPOTS[i].osm) { delete byId[SPOTS[i].id]; SPOTS.splice(i, 1); }
+  for (let i = SPOTS.length - 1; i >= 0; i--) if (SPOTS[i].osm && !SPOTS[i].seed) { delete byId[SPOTS[i].id]; SPOTS.splice(i, 1); }
   let n = 0; const seen = new Set();
   for (const e of els || []) {
     const t = e.tags, ty = OSM_TYPES.find(([f]) => f(t)); if (!ty) continue;

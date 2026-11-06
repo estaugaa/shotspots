@@ -78,7 +78,7 @@ function shotsHtml() {
   return h + `<p class="muted" style="font-size:13px">Odds multiply the condition, wildlife and alignment chances as if independent; check them against your logged outings in ⚙ › Forecast check.</p></div>`;
 }
 const _renderSpotsShots = renderSpots;
-renderSpots = function () { _renderSpotsShots(); $("#v-spots").insertAdjacentHTML("afterbegin", shotsHtml()); };
+renderSpots = function () { _renderSpotsShots(); $("#v-spots").insertAdjacentHTML("beforeend", shotsHtml()); };   // below the list, so the filters stay on top
 
 /* ---------- add-shot sheet ---------- */
 function ensureSheet(id, title) {

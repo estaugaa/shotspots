@@ -131,12 +131,26 @@ document.addEventListener("submit", async e => {
 })();
 
 /* ---------- weekend plan (Thu-Sun) ---------- */
+const wkPass = p => !(p.spots || []).length || p.spots.some(id => !byId[id] || (inGroup(byId[id]) && !tooFar(byId[id])));
+/* picks without odds (seasonal wildlife, fall colour, alignments) get an icon saying why they're here */
+const WHY_IC = {
+  wildlife: ["Peak season", '<path d="M3 13c3-1 5-4 9-4 3 0 5 2 9 1-2 3-5 4-8 4l-2 4-1-4c-3 0-5-1-7-1z"/><circle cx="15.5" cy="10.5" r=".6" fill="currentColor"/>'],
+  birds: ["Peak season", '<path d="M3 13c3-1 5-4 9-4 3 0 5 2 9 1-2 3-5 4-8 4l-2 4-1-4c-3 0-5-1-7-1z"/><circle cx="15.5" cy="10.5" r=".6" fill="currentColor"/>'],
+  fallcolor: ["Near peak", '<path d="M12 21v-6M12 15c-5 0-8-4-8-9 3 0 6 1 8 4 2-3 5-4 8-4 0 5-3 9-8 9z"/>'],
+  night: ["Dark sky", '<path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M18.5 15l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/>'],
+  alignment: ["Alignment", '<circle cx="12" cy="9" r="3.5"/><path d="M3 20l6-7 3 3 3-4 6 8z"/>'],
+  land: ["Landscape", '<path d="M2 20l7-11 4 6 3-4 6 9z"/><circle cx="17" cy="6" r="2"/>'],
+  water: ["Waterfall", '<path d="M5 4h14M8 4v9M12 4v12M16 4v9M5 20c2-2 4-2 7-2s5 0 7 2"/>'] };
+function whyIcon(p, sp) { const s = byId[sp], cats = s ? s.cats : [];
+  const k = WHY_IC[p.rule] ? p.rule : p.rule === "dark" || p.rule === "aurora" ? "night" : cats.includes("waterfall") ? "water" : cats.some(c => LIFE.includes(c)) ? "wildlife" : "land";
+  const [label, path] = WHY_IC[k];
+  return `<span class="whyic" title="${label}"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true">${path}</svg><small>${label}</small></span>`; }
 function weekendHtml(inSheet) {
   const w = fd("weekend"); if (!w || !w.picks || !w.picks.length) return ""; const end = new Date(w.sun + "T23:59:00"); if (end < new Date()) return "";
   const d = x => new Date(x + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
   return `<div class="sect weekend"><h3>This weekend <span class="muted" style="font-size:15px;font-weight:400">${d(w.sat)}–${d(w.sun)}</span></h3>
-    ${w.picks.map(p => { const sp = (p.spots || [])[0];
-      return `<button class="lrow alertrow r-${p.rule}" ${sp && byId[sp] ? `data-spot="${sp}"` : ""}><span><b>${esc(p.title)}</b><small>${esc(p.body)}${p.lens ? `<br><i>Lens:</i> ${esc(p.lens)}` : ""}</small></span><span class="pct">${p.p != null ? p.p + "%" : `<span class="seasontag">${p.rule === "wildlife" ? "Peak season" : "Near peak"}</span>`}</span></button>`; }).join("")}
+    ${w.picks.filter(wkPass).map(p => { const sp = (p.spots || []).find(id => byId[id] && inGroup(byId[id]) && !tooFar(byId[id])) || (p.spots || [])[0];
+      return `<button class="lrow alertrow r-${p.rule}" ${sp && byId[sp] ? `data-spot="${sp}"` : ""}><span><b>${esc(p.title)}</b><small>${esc(p.body)}${p.lens ? `<br><i>Lens:</i> ${esc(typeof kitText === "function" ? kitText(p.lens) : p.lens)}` : ""}</small></span>${p.p != null ? `<span class="pct">${p.p}%</span>` : whyIcon(p, sp)}</button>`; }).join("") || `<p class="muted">Nothing this weekend for the filter you've set.</p>`}
     <p class="muted" style="font-size:13px">${esc(w.note || "")}</p></div>`;
 }
 const _renderNowWk = renderNow;
@@ -144,8 +158,8 @@ renderNow = function () { _renderNowWk(); const v = $("#v-now"); if (!v) return;
 /* seasonal picks (birds at peak, fall colour) don't have odds: show them as "in season" notes, not scored rows */
 function seasonalHtml() {
   if (typeof outsideCoverage === "function" && outsideCoverage()) return "";
-  const w = fd("weekend"); const ex = ((w && w.picks) || []).filter(p => p.rule === "wildlife" || p.rule === "fallcolor"); if (!ex.length) return "";
+  const w = fd("weekend"); const ex = ((w && w.picks) || []).filter(p => (p.rule === "wildlife" || p.rule === "fallcolor") && wkPass(p)); if (!ex.length) return "";
   return `<div class="sect inseason"><h3>In season now</h3>${ex.map(p => { const sp = (p.spots || [])[0];
-    return `<button class="lrow" ${sp && byId[sp] ? `data-spot="${sp}"` : ""}><span><b>${esc(p.title)}</b><small>${esc(p.body)}</small></span><span class="seasontag">${p.rule === "wildlife" ? "Peak season" : "Near peak"}</span></button>`; }).join("")}</div>`;
+    return `<button class="lrow" ${sp && byId[sp] ? `data-spot="${sp}"` : ""}><span><b>${esc(p.title)}</b><small>${esc(p.body)}</small></span>${whyIcon(p, sp)}</button>`; }).join("")}</div>`;
 }
 (async () => { for (let i = 0; i < 60 && !FEED.m; i++) await new Promise(r => setTimeout(r, 250)); if (FEED.m && FEED.m.files.includes("weekend.json")) { await feedGet("weekend"); if (UI.view === "now") renderNow(); } })();

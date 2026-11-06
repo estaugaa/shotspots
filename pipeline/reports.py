@@ -40,7 +40,8 @@ def run():
         except Exception:
             pred = {}
         out.append({"id": rid, "spot": d.get("spot"), "at": iso(t), "sky": d.get("sky"), "fog": d.get("fog"), "color": d.get("color"),
-                    "verified": d.get("verified") == "1", "dist_m": d.get("dist_m"), "pred": pred, "img": f"cond/{f.name}"})
+                    "verified": d.get("verified") == "1", "dist_m": d.get("dist_m"), "pred": pred, "img": f"cond/{f.name}",
+                    "heading": int(d["heading"]) if str(d.get("heading", "")).isdigit() else None, "sun_rel": int(d["sun_rel"]) if str(d.get("sun_rel", "")).lstrip("-").isdigit() else None})
     for f in cdir.glob("*.jpg"):
         if f.name not in keep:
             f.unlink()
