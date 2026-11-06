@@ -9,7 +9,7 @@ import heapq, json, math, time
 from .common import spots, write_json, read_json, http, log, utcnow, iso, DATA
 
 OVERPASS = "https://overpass-api.de/api/interpreter"
-WALK = "path|footway|track|steps|bridleway|pedestrian|living_street|service|unclassified|residential|tertiary|secondary|primary|cycleway"
+WALK = "path|footway|track|steps|bridleway|pedestrian|service|unclassified|cycleway"   # minor roads + paths only: keeps Overpass fast
 TRAILISH = {"path", "footway", "track", "steps", "bridleway", "cycleway", "pedestrian"}
 
 
@@ -57,7 +57,7 @@ def pin_check(spot, els):
         ow = words(t["name"])
         if not ow:
             continue
-        overlap = len(sw & ow) / max(1, min(len(sw), len(ow)))
+        overlap = len(sw & ow) / max(1, len(sw))   # share of the spot's own name the OSM feature covers
         if overlap < 0.67:
             continue
         c = (e["lat"], e["lon"]) if "lat" in e else (e["center"]["lat"], e["center"]["lon"])
@@ -159,7 +159,42 @@ def profile(pts):
     return round(up), round(down), round(z[0]), round(z[-1])
 
 
-def run(budget_min=40):
+FIXABLE = {"waterfall": {"waterfall"}, "peak": {"vista", "mountain"}, "viewpoint": {"vista", "mountain", "city", "reflection"}, "cliff": {"vista"}, "rock": {"vista", "geology"}, "arch": {"geology", "coast"}}
+
+
+def apply_pins(store):
+    """Move pins to the matching OSM feature when the evidence is strong; the old pin becomes the parking point.
+    Every change is logged in data/pin_fixes.json (with the old position) so it can be reviewed or undone."""
+    from .common import CONFIG
+    log_ = read_json(DATA / "pin_fixes.json", [])
+    done = {x["id"] for x in log_}
+    files = [CONFIG / "spots.json"] + sorted((DATA / "research" / "spots").glob("*.json"))
+    n = 0
+    for f in files:
+        arr = json.load(open(f))
+        changed = False
+        for sp in arr:
+            r = store.get(sp["id"]) or {}
+            ps = r.get("pin_suggest")
+            if not ps or sp["id"] in done or ps["match"] < 1.0 or not (300 < ps["off_m"] <= 3000):
+                continue
+            if not (FIXABLE.get(ps["kind"], set()) & set(sp["cats"])):
+                continue
+            old = [sp["lat"], sp["lon"]]
+            sp["lat"], sp["lon"] = ps["lat"], ps["lon"]
+            if not sp.get("park"):
+                sp["park"] = old
+            log_.append({"id": sp["id"], "name": sp["name"], "old": old, "new": [ps["lat"], ps["lon"]], "osm": ps["name"], "kind": ps["kind"], "off_m": ps["off_m"], "at": iso(utcnow())})
+            store.pop(sp["id"], None)          # re-route from the new pin next run
+            changed = True
+            n += 1
+        if changed:
+            json.dump(arr, open(f, "w"), indent=1 if f.name == "spots.json" else None, ensure_ascii=False)
+    json.dump(log_, open(DATA / "pin_fixes.json", "w"), indent=1)
+    return n
+
+
+def run(budget_min=75):
     t0 = time.time()
     store = read_json(DATA / "trails.json", {})
     todo = []
@@ -190,9 +225,10 @@ def run(budget_min=40):
         time.sleep(1.5)   # be polite to Overpass
         if done % 20 == 0:
             json.dump(store, open(DATA / "trails.json", "w"), separators=(",", ":"))
+    moved = apply_pins(store)
     json.dump(store, open(DATA / "trails.json", "w"), separators=(",", ":"))
     pub = {k: {x: v[x] for x in v if x not in ("key", "ts")} for k, v in store.items()}
     write_json("trails.json", {"gen": iso(utcnow()), "spots": pub,
                                "note": "Route from the nearest parking or trailhead on OpenStreetMap paths; climb from the Copernicus 90 m DEM (smooths short steep bits)."})
     left = len(todo) - done - fail
-    return f"{done} spots routed, {fail} failed, {left} left for next run; {len(store)} total"
+    return f"{done} spots routed, {fail} failed, {left} left for next run; {len(store)} total; {moved} pins moved to OSM features (data/pin_fixes.json)"
