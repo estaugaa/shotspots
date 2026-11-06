@@ -492,8 +492,31 @@ def run():
     write_json("alerts.json", {"gen": iso(utcnow()), "settings": st, "alerts": shown,
                                "near_misses": sorted([a for a in alerts if a not in shown], key=lambda a: -a["p"])[:5],
                                "note": "Odds are raw HRRR/climatology probabilities (MODELED); log outings to calibrate them."})
+    try:
+        widget(F, S, shown, now)
+    except Exception as e:
+        log.warning("widget feed failed: %s", e)
     pushed = push(shown, st, now) if st["enabled"] else "alerts off"
     return f"{len(shown)} alerts ({len(alerts)} candidates); {pushed}"
+
+
+def widget(F, S, shown, now):
+    """feed/widget.json: a ~2 KB summary for the Home Screen widget (Scriptable) - next light at home, top alerts,
+    weekend picks, and the HRRR odds at home for the next sunrise and sunset."""
+    home = next((v for v in VALLEY if v in S), None)
+    light = []
+    for k in range(2):
+        d = F.day(home, (dt.datetime.now(LA) + dt.timedelta(days=k)).strftime("%Y-%m-%d")) if home else None
+        for kind, fld in (("sunrise", "or"), ("sunset", "os")):
+            if d and d.get(fld) and d[fld] > now:
+                row = F.hrrr(home, d[fld]) or {}
+                light.append({"kind": kind, "at": iso(dt.datetime.fromtimestamp(d[fld] * 60, dt.timezone.utc)), "golden_start": iso(dt.datetime.fromtimestamp((d[fld] - (0 if kind == "sunrise" else 50)) * 60, dt.timezone.utc)),
+                              "p_color": row.get("p_color"), "p_clear": row.get("p_clear"), "p_fog": row.get("p_fog")})
+    wk = read_json(FEED / "weekend.json", {}) or {}
+    tidy = lambda a: {"title": a["title"], "body": a["body"][:140], "p": a.get("p"), "rule": a["rule"], "at": a.get("at"), "spot": (a.get("spots") or [None])[0]}
+    write_json("widget.json", {"gen": iso(utcnow()), "light": sorted(light, key=lambda x: x["at"])[:2], "alerts": [tidy(a) for a in shown if a["rule"] != "smoke"][:3],
+                               "smoke": next((a["title"] for a in shown if a["rule"] == "smoke"), None),
+                               "weekend": [tidy(p) for p in (wk.get("picks") or [])][:3] if wk.get("sun", "") >= dt.datetime.now(LA).strftime("%Y-%m-%d") else []})
 
 
 def push(shown, st, now):
