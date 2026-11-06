@@ -326,3 +326,18 @@ ul.newest{list-style:none;padding:0}
 details.livedata{margin-top:22px;border-top:1px solid var(--line);padding-top:10px}
 details.livedata summary{font-weight:700;cursor:pointer;padding:6px 0}
 #setBody .explore{margin-top:18px}
+
+.figgrid{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:10px}
+@media (min-width:600px){.figgrid{grid-template-columns:1fr 1fr}}
+.figcard{display:flex;gap:12px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.figcard b{display:block}.figcard small{display:block;color:var(--muted);font-size:13.5px;line-height:1.35;margin-top:2px}
+.figsvg{flex:none;border-radius:9px;background:#152027}
+.figsvg .figl line{stroke:#7FA3B6;stroke-width:1;stroke-opacity:.75}
+.figsvg .figs circle{fill:#F4F1E2}.figsvg .figs circle.dso{fill:none;stroke:#E9C46A;stroke-width:1.2}
+.figsvg .figt text{fill:#C9D6DC;font-size:9.5px;font-family:inherit}
+:root[data-night=on] .figsvg{background:#200}
+
+.term{text-decoration:underline dotted;text-decoration-thickness:1.5px;text-underline-offset:3px;text-decoration-color:color-mix(in srgb,currentColor 55%,transparent);cursor:help}
+.term:focus-visible{outline:2px solid var(--moss);outline-offset:2px;border-radius:3px}
+#glossPop{position:fixed;z-index:1200;padding:10px 12px;border-radius:12px;background:var(--ink);color:var(--mist);font-size:14.5px;line-height:1.45;box-shadow:0 6px 22px rgba(0,0,0,.25)}
+#glossPop b{display:block;margin-bottom:2px}

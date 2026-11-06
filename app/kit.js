@@ -3,13 +3,15 @@
    kitify() rewrites those references for the chosen kit, by 35 mm-equivalent focal length. */
 "use strict";
 const KITS = {
-  iphone_pro: { name: "iPhone Pro", note: "0.5×, 1×, 2×, 5×", phone: true, lenses: [{ l: "0.5×", a: 13, b: 13 }, { l: "1×", a: 24, b: 24 }, { l: "2×", a: 48, b: 48 }, { l: "5×", a: 120, b: 120 }] },
-  iphone: { name: "iPhone", note: "0.5×, 1×, 2×", phone: true, lenses: [{ l: "0.5×", a: 13, b: 13 }, { l: "1×", a: 26, b: 26 }, { l: "2×", a: 52, b: 52 }] },
+  iphone_17pro: { name: "iPhone 17 Pro / Pro Max", note: "0.5× (13 mm), 1× (24 mm), 2× (48 mm), 4× (100 mm), 8× (200 mm)", phone: true, lenses: [{ l: "0.5×", a: 13, b: 13 }, { l: "1×", a: 24, b: 24 }, { l: "2×", a: 48, b: 48 }, { l: "4×", a: 100, b: 100 }, { l: "8×", a: 200, b: 200 }] },
+  iphone_pro: { name: "iPhone 16 Pro / Pro Max, 15 Pro Max", note: "0.5× (13 mm), 1× (24 mm), 2× (48 mm), 5× (120 mm)", phone: true, lenses: [{ l: "0.5×", a: 13, b: 13 }, { l: "1×", a: 24, b: 24 }, { l: "2×", a: 48, b: 48 }, { l: "5×", a: 120, b: 120 }] },
+  iphone_pro3: { name: "iPhone 13–15 Pro (3× zoom)", note: "0.5× (13 mm), 1× (24–26 mm), 2× (48 mm on 14 and 15 Pro), 3× (77 mm). Also fits 14 Pro Max and 13 Pro Max.", phone: true, lenses: [{ l: "0.5×", a: 13, b: 13 }, { l: "1×", a: 24, b: 24 }, { l: "2×", a: 48, b: 48 }, { l: "3×", a: 77, b: 77 }] },
+  iphone: { name: "iPhone 15, 16, 17 (no telephoto)", note: "0.5× (13 mm), 1× (26 mm), 2× (52 mm crop). Older non-Pro iPhones have just 0.5× and 1×.", phone: true, lenses: [{ l: "0.5×", a: 13, b: 13 }, { l: "1×", a: 26, b: 26 }, { l: "2×", a: 52, b: 52 }] },
   android: { name: "Android phone", note: "ultra-wide, main, 3× tele", phone: true, lenses: [{ l: "ultra-wide", a: 14, b: 14 }, { l: "main camera", a: 24, b: 24 }, { l: "3× tele", a: 70, b: 70 }] },
   fuji_xt5: { name: "Fujifilm X-T5", note: "XF 16-50, 27, 70-300", crop: 1.5, lenses: [{ l: "16-50", a: 24, b: 75 }, { l: "27", a: 40, b: 40 }, { l: "70-300", a: 105, b: 450 }] },
   custom: { name: "My own kit", note: "", custom: true, lenses: [] },
 };
-function kitId() { return store.get("kit", isOwner() ? "fuji_xt5" : "iphone_pro"); }
+function kitId() { const k = store.get("kit", isOwner() ? "fuji_xt5" : "iphone_pro"); return KITS[k] ? k : "iphone_pro"; }
 function kit() {
   const id = kitId(); if (id !== "custom") return { id, ...KITS[id] };
   const c = store.get("kitCustom", { name: "My camera", crop: 1, lenses: "24-70, 70-200" });
@@ -65,7 +67,7 @@ document.addEventListener("click", () => setTimeout(() => document.querySelector
 /* settings: pick a kit */
 function kitSettingsHtml() {
   const id = kitId(), c = store.get("kitCustom", { name: "My camera", crop: 1, lenses: "24-70, 70-200" });
-  return `<div class="kitbox"><p class="label">Your camera</p><p class="muted" style="font-size:15px">Lens advice across the app is written for this.</p>
+  return `<div class="kitbox"><p class="label">Your camera</p><p class="muted" style="font-size:15px">Lens advice across the app is written for this. Not sure which iPhone you have? It's under Settings › General › About › Model Name.</p>
     <div class="chips" id="kitChips">${Object.entries(KITS).map(([k, v]) => `<button class="chip" data-kit="${k}" aria-pressed="${k === id}">${v.name}</button>`).join("")}</div>
     ${id === "custom" ? `<form id="kitForm" class="stack" style="margin-top:8px">
       <label>Camera name<input name="name" value="${esc(c.name)}"></label>

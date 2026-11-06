@@ -191,7 +191,7 @@ function renderSky() {
   const up = CONST.map(([n, ra, dec, note]) => ({ n, note, ...whereNow(ra, dec, T, LOC) })).filter(x => x.alt >= 25).sort((a, b) => b.alt - a.alt);
   const groups = {}; up.forEach(x => { const k = x.alt >= 72 ? "Overhead" : ["North", "Northeast", "East", "Southeast", "South", "Southwest", "West", "Northwest"][Math.round(rev(x.az) / 45) % 8]; (groups[k] = groups[k] || []).push(x); });
   const order = ["Overhead", "North", "Northeast", "East", "Southeast", "South", "Southwest", "West", "Northwest"];
-  h += `<div class="sect"><h3>Constellations ${tl} (${fmtT(T)})</h3>${order.filter(k => groups[k]).map(k => `<div class="item"><b>${k}</b><p>${groups[k].map(x => `${x.n}${x.note ? ` (${x.note})` : ""}`).join("; ")}</p></div>`).join("")}</div>`;
+  h += `<div class="sect"><h3>Constellations ${tl} (${fmtT(T)})</h3><p class="muted" style="font-size:13px;margin-top:-4px">Drawn as you'd see them facing that way: north up, east to the left. Bigger dots are brighter stars.</p>${order.filter(k => groups[k]).map(k => `<p class="label">${k}</p><div class="figgrid">${groups[k].map(x => `<div class="figcard">${typeof figSvg === "function" ? figSvg(x.n, 96) : ""}<div><b>${esc(x.n)}</b>${x.note ? `<small>${esc(x.note)}</small>` : ""}</div></div>`).join("")}</div>`).join("")}</div>`;
   // targets
   const tg = DSO.map(o => ({ o, r: bestDuringDark(o.ra, o.dec, w, LOC, o.minAlt) })).filter(x => x.r);
   const mUp = moonPos(T, LOC.lat, LOC.lon); const zl = zodiacalLight(month);
