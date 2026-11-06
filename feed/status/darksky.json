@@ -1,1 +1,1 @@
-{"ok":false,"kind":"MODELED","note":"RuntimeError: EARTHDATA_TOKEN not set","at":"2026-11-05T01:41:06Z","secs":0.0}
+{"ok":false,"kind":"MODELED","note":"RuntimeError: no VNP46A4 tiles","at":"2026-11-06T21:18:52Z","secs":126.5}
