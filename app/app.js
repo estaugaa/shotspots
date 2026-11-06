@@ -565,7 +565,7 @@ function specialsHtml() {
 
 /* ---------- Spots ---------- */
 function renderSpots() {
-  const el = $("#v-spots"); const w = allWindows(LOC, 40)[0]; const month = +laYMD(new Date()).slice(5, 7);
+  const el = $("#v-spots"), allW = allWindows(LOC, PLAN_HOURS), w = allW[UI.focus] || allW[0]; const month = +laYMD(new Date()).slice(5, 7);
   let list = SPOTS.filter(s => !s.closed && inGroup(s)); const farN = UI.showFar ? 0 : list.filter(tooFar).length; if (!UI.showFar) list = list.filter(s => !tooFar(s));
   if (UI.inSeason && UI.group !== "saved" && UI.group !== "new") list = list.filter(s => !s.months || s.months.includes(month));
   if (UI.q) { const q = UI.q.toLowerCase(); list = list.filter(s => (s.name + " " + s.region + " " + s.cats.join(" ") + " " + (s.tip || "")).toLowerCase().includes(q)); }
@@ -573,8 +573,9 @@ function renderSpots() {
   if ((UI.group === "new" || UI.sort === "new") && typeof newestRank === "function") rows.sort((a, b) => newestRank(b.s) - newestRank(a.s)); else rows.sort(UI.sort === "near" ? (a, b) => a.d - b.d : UI.sort === "az" ? (a, b) => a.s.name.localeCompare(b.s.name) : (a, b) => (b.f.n - b.d * 0.28) - (a.f.n - a.d * 0.28));
   const shown = rows.slice(0, UI.limit || 40);
   el.innerHTML = `${filtNote()}<form class="search" id="spotSearch"><input id="spotQ" type="search" placeholder="Search spots, subjects, places" value="${esc(UI.q)}" aria-label="Search spots"></form>
+   <div class="sortrow"><label>For <select id="whenSel" aria-label="Which light window">${whenOpts(allW)}</select></label></div>
    <div class="sortrow"><label><input type="checkbox" id="inSeason" ${UI.inSeason ? "checked" : ""}> In season</label>
-     <label>Sort <select id="sortSel"><option value="best"${UI.sort === "best" ? " selected" : ""}>Best for ${w ? KNAME[w.kind].toLowerCase() : "next light"}</option><option value="near"${UI.sort === "near" ? " selected" : ""}>Closest</option><option value="az"${UI.sort === "az" ? " selected" : ""}>A–Z</option>${typeof newestRank === "function" ? `<option value="new"${UI.sort === "new" ? " selected" : ""}>Newest added</option>` : ""}</select></label></div>
+     <label>Sort <select id="sortSel"><option value="best"${UI.sort === "best" ? " selected" : ""}>Best match</option><option value="near"${UI.sort === "near" ? " selected" : ""}>Closest</option><option value="az"${UI.sort === "az" ? " selected" : ""}>A–Z</option>${typeof newestRank === "function" ? `<option value="new"${UI.sort === "new" ? " selected" : ""}>Newest added</option>` : ""}</select></label></div>
    ${farN ? `<p class="filtnote">${farN} spot${farN === 1 ? "" : "s"} more than ${fmtDur(maxTravel())} ${PREFS.travel === "walk" ? "on foot" : "by car"} hidden <button class="chip" id="showFar">Show them</button></p>` : ""}
    ${shown.length ? `<ul class="picks">${shown.map(x => `<li>${pickRow({ ...x, leave: new Date(8.64e15) }, w)}</li>`).join("")}</ul>` : `<p class="empty">${UI.group === "saved" ? "Nothing saved yet. Open a spot and tap Save." : "No spots match. Clear the search or turn off In season."}</p>`}
    ${rows.length > shown.length ? `<button class="more" id="moreSpots">Show ${Math.min(40, rows.length - shown.length)} more</button>` : ""}
@@ -761,6 +762,13 @@ function fresh() {
 function filtNote() { if (UI.group === "all") return ""; const l = (GROUPS.find(g => g[0] === UI.group) || [, ""])[1];
   return `<p class="filtnote">Showing only ${esc(l.toLowerCase())} spots <button class="chip" data-group="all">Show all</button></p>`; }
 const addFiltNote = () => { const v = $("#v-now"), n = filtNote(); if (!v || !n || v.querySelector(".filtnote")) return; const pl = v.querySelector(".planner"); pl ? pl.insertAdjacentHTML("afterend", n) : v.insertAdjacentHTML("afterbegin", n); };
+/* the one "when" for the whole app: the window picked on Plan also ranks Spots and colours the map */
+function whenLabel(w) { if (w.live) return `Right now (${KNAME[w.kind].toLowerCase()})`;
+  const d = dayWord(w.kind === "night" ? w.start : w.peak), day = d === "Today" ? "today" : d === "Tomorrow" ? "tomorrow" : d;
+  return w.kind === "night" ? `${d === "Today" ? "Tonight" : d + " night"} · from ${chipTime(w)}` : `${KNAME[w.kind]} ${day} · ${chipTime(w)}`; }
+function whenOpts(all) { return all.map((w, i) => [w, i]).filter(([w, i]) => i === UI.focus || i === 0 || ["sunrise", "sunset", "night"].includes(w.kind)).slice(0, 11)
+  .map(([w, i]) => `<option value="${i}" ${i === UI.focus ? "selected" : ""}>${esc(whenLabel(w))}</option>`).join(""); }
+function focusKind(kind) { const all = allWindows(LOC, PLAN_HOURS), i = all.findIndex(w => w.kind === kind && w.end > new Date()); if (i < 0) return false; UI.focus = i; UI.day = winDay(all[i]); UI.more = false; return true; }
 function fbar() { const el = $("#fbar"); if (!el) return;
   el.innerHTML = `<button class="chip travelchip" id="travelChip" aria-label="How far you'll go">${PREFS.travel === "walk" ? "🚶" : "🚗"} ≤ ${fmtDur(maxTravel())}</button>` + GROUPS.map(([k, l]) => `<button class="chip" data-group="${k}" aria-pressed="${UI.group === k}">${l}</button>`).join(""); setStick(); }
 function render() {
@@ -780,7 +788,9 @@ document.addEventListener("click", e => {
   if (t.dataset.v) return show(t.dataset.v);
   if (t.dataset.spot) return openSpot(t.dataset.spot);
   if (t.dataset.focus != null) { UI.focus = +t.dataset.focus; UI.more = false; render(); showDetail(); return; }
-  if (t.dataset.group) { UI.group = t.dataset.group === UI.group && UI.group !== "all" ? "all" : t.dataset.group; store.set("group", UI.group); UI.limit = 40; __topsKey = ""; fbar(); return render(); }
+  if (t.dataset.group) { UI.group = t.dataset.group === UI.group && UI.group !== "all" ? "all" : t.dataset.group; store.set("group", UI.group); UI.limit = 40; __topsKey = "";
+    const cur = allWindows(LOC, PLAN_HOURS)[UI.focus]; if (UI.group === "night" && (!cur || cur.kind !== "night") && focusKind("night")) toast("Showing tonight's night-sky window");
+    fbar(); return render(); }
   if (t.dataset.hit != null) { const x = $("#locHits")._list[+t.dataset.hit]; $("#locSheet").hidden = true; return setLoc({ lat: x.lat, lon: x.lon, label: x.label, src: "search" }); }
   if (t.id === "moreBtn") { UI.more = true; return renderNow(); }
   if (t.id === "moreSpots") { UI.limit = (UI.limit || 40) + 40; return renderSpots(); }
@@ -799,7 +809,8 @@ document.addEventListener("click", e => { const p = e.target.closest("[data-pres
   setLoc(x[0].startsWith("Washougal") ? { ...HOME } : { lat: x[1], lon: x[2], label: x[0], src: "preset" }); });
 document.addEventListener("submit", e => { e.preventDefault(); if (e.target.id === "locForm") searchPlace($("#locQ").value.trim()); });
 document.addEventListener("input", e => { if (e.target.id === "spotQ") { UI.q = e.target.value; clearTimeout(UI._qt); UI._qt = setTimeout(() => { renderSpots(); const q = $("#spotQ"); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }, 250); } });
-document.addEventListener("change", e => { if (e.target.id === "sortSel") { UI.sort = e.target.value; renderSpots(); } if (e.target.id === "inSeason") { UI.inSeason = e.target.checked; renderSpots(); } });
+document.addEventListener("change", e => { if (e.target.id === "whenSel") { const all = allWindows(LOC, PLAN_HOURS); UI.focus = +e.target.value; UI.day = winDay(all[UI.focus]); UI.more = false; renderSpots(); }
+  if (e.target.id === "sortSel") { UI.sort = e.target.value; renderSpots(); } if (e.target.id === "inSeason") { UI.inSeason = e.target.checked; renderSpots(); } });
 document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.matches(".item[data-spot]")) openSpot(e.target.dataset.spot); if (e.key === "Escape") { if (!$("#sheet").hidden) history.back(); $("#locSheet").hidden = true; } });
 window.addEventListener("popstate", () => closeSheet());
 document.addEventListener("visibilitychange", () => { if (!document.hidden) { if (!WX || Date.now() - WX.at > 15 * 60000) refresh(); else render(); if (LOC.src === "gps" && Date.now() - (LOC.at || 0) > 20 * 60000) gps(8000); } });
