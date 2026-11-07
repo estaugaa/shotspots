@@ -1,1 +1,1 @@
-{"ok":false,"kind":"MODELED","note":"RuntimeError: no VNP46A4 tiles","at":"2026-11-07T00:09:42Z","secs":4.6}
+{"ok":true,"kind":"MODELED","note":"249 spots, calibration rmse 0.16 mag on 4 refs","at":"2026-11-07T00:43:47Z","secs":13.0}
