@@ -1834,8 +1834,8 @@
    "fallcolor",
    "wildflowers"
   ],
-  "lat": 45.575,
-  "lon": -122.152,
+  "lat": 45.56411,
+  "lon": -122.15297,
   "light": "both",
   "effort": "hike",
   "months": [
@@ -1862,8 +1862,8 @@
    "vista",
    "aurora"
   ],
-  "lat": 45.405,
-  "lon": -122.265,
+  "lat": 45.41029,
+  "lon": -122.27353,
   "light": "sunrise",
   "effort": "road",
   "months": [
@@ -1875,6 +1875,10 @@
    10,
    11,
    12
+  ],
+  "park": [
+   45.405,
+   -122.265
   ]
  },
  {
@@ -1930,8 +1934,8 @@
   "cats": [
    "vista"
   ],
-  "lat": 45.716,
-  "lon": -121.789,
+  "lat": 45.70992,
+  "lon": -121.75577,
   "light": "sunset",
   "effort": "hike",
   "months": [
@@ -1981,8 +1985,8 @@
   "cats": [
    "waterfall"
   ],
-  "lat": 45.818,
-  "lon": -122.254,
+  "lat": 45.8193,
+  "lon": -122.24805,
   "light": "overcast",
   "effort": "short",
   "months": [
@@ -1995,6 +1999,10 @@
    4,
    5,
    6
+  ],
+  "park": [
+   45.818,
+   -122.254
   ]
  },
  {
@@ -2457,8 +2465,8 @@
    "fallcolor",
    "wildflowers"
   ],
-  "lat": 45.617,
-  "lon": -122.397,
+  "lat": 45.59903,
+  "lon": -122.39444,
   "light": "overcast",
   "effort": "hike",
   "months": [
@@ -2470,6 +2478,10 @@
    3,
    4,
    5
+  ],
+  "park": [
+   45.617,
+   -122.397
   ]
  },
  {
@@ -2636,8 +2648,8 @@
    "waterfall",
    "geology"
   ],
-  "lat": 45.24133,
-  "lon": -121.0897,
+  "lat": 45.24091,
+  "lon": -121.09351,
   "light": "sunset",
   "effort": "short",
   "months": [
@@ -2649,6 +2661,10 @@
    8,
    9,
    10
+  ],
+  "park": [
+   45.24133,
+   -121.0897
   ]
  },
  {

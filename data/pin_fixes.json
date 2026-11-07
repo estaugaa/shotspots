@@ -126,5 +126,101 @@
   "kind": "peak",
   "off_m": 846,
   "at": "2026-11-06T02:06:17Z"
+ },
+ {
+  "id": "angels-rest",
+  "name": "Angel's Rest (and Devil's Rest viewpoints)",
+  "old": [
+   45.575,
+   -122.152
+  ],
+  "new": [
+   45.56411,
+   -122.15297
+  ],
+  "osm": "Angel's Rest",
+  "kind": "peak",
+  "off_m": 1213,
+  "at": "2026-11-07T06:12:59Z"
+ },
+ {
+  "id": "jonsrud",
+  "name": "Jonsrud Viewpoint (Sandy)",
+  "old": [
+   45.405,
+   -122.265
+  ],
+  "new": [
+   45.41029,
+   -122.27353
+  ],
+  "osm": "Jonsrud Viewpoint",
+  "kind": "viewpoint",
+  "off_m": 888,
+  "at": "2026-11-07T06:12:59Z"
+ },
+ {
+  "id": "wind-mtn",
+  "name": "Wind Mountain",
+  "old": [
+   45.716,
+   -121.789
+  ],
+  "new": [
+   45.70992,
+   -121.75577
+  ],
+  "osm": "Wind Mountain",
+  "kind": "peak",
+  "off_m": 2667,
+  "at": "2026-11-07T06:12:59Z"
+ },
+ {
+  "id": "sunset-falls",
+  "name": "Sunset Falls (East Fork Lewis)",
+  "old": [
+   45.818,
+   -122.254
+  ],
+  "new": [
+   45.8193,
+   -122.24805
+  ],
+  "osm": "Sunset Falls",
+  "kind": "waterfall",
+  "off_m": 483,
+  "at": "2026-11-07T06:12:59Z"
+ },
+ {
+  "id": "woodburn-falls",
+  "name": "Woodburn Falls (Lake to Lake Trail)",
+  "old": [
+   45.617,
+   -122.397
+  ],
+  "new": [
+   45.59903,
+   -122.39444
+  ],
+  "osm": "Woodburn Falls",
+  "kind": "waterfall",
+  "off_m": 2009,
+  "at": "2026-11-07T06:12:59Z"
+ },
+ {
+  "id": "white-river-falls",
+  "name": "White River Falls State Park",
+  "old": [
+   45.24133,
+   -121.0897
+  ],
+  "new": [
+   45.24091,
+   -121.09351
+  ],
+  "osm": "Lower White River Falls",
+  "kind": "waterfall",
+  "off_m": 302,
+  "at": "2026-11-07T06:12:59Z"
  }
 ]
