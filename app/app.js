@@ -851,4 +851,6 @@ document.addEventListener("click", e => {
 /* keep the pinned planner just under the header (phone); on desktop the column scrolls on its own */
 function setStick() { const t = document.querySelector(".top"); document.documentElement.style.setProperty("--stick", matchMedia("(min-width:1100px)").matches || !t ? "0px" : t.offsetHeight + "px"); }
 addEventListener("resize", setStick); setTimeout(setStick, 0);
+// re-measure whenever the header changes height (filter row loading, long place names, iPhone safe area)
+if (window.ResizeObserver) { const t = document.querySelector(".top"); if (t) new ResizeObserver(setStick).observe(t); }
 { const _rnF = renderNow; renderNow = function () { _rnF.apply(this, arguments); addFiltNote(); }; }

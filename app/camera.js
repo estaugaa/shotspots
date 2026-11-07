@@ -8,6 +8,7 @@ let CAM = null;   // current report under review
 
 /* compass: the phone's heading while the sheet is open (iOS asks permission on the first tap) */
 const HEAD = { deg: null, on: false };
+const NEEDS_PERM = !!(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === "function");
 function compassStart() {
   if (HEAD.on || !window.DeviceOrientationEvent) return; HEAD.on = true;
   const on = ev => { let h = ev.webkitCompassHeading != null ? ev.webkitCompassHeading : ev.absolute && ev.alpha != null ? (360 - ev.alpha) % 360 : null;
@@ -53,9 +54,11 @@ function analyse(im) {
   };
 }
 async function camStart(spotId) {
-  const inp = hiddenInput(); inp.value = ""; inp.dataset.spot = spotId || ""; compassStart(); if (typeof loadExifr === "function") loadExifr().catch(() => { });
-  CAM = { pos: where() };   // ask for location while the camera is open
-  inp.click();
+  const inp = hiddenInput(); inp.value = ""; inp.dataset.spot = spotId || "";
+  inp.click();   // first, while the tap still counts: Safari drops the picker if a permission prompt comes first
+  CAM = { pos: where() };   // then ask for location while the camera is open
+  if (!NEEDS_PERM) compassStart();   // Android/desktop: no prompt needed; iPhone: a button in the sheet asks
+  if (typeof loadExifr === "function") loadExifr().catch(() => { });
 }
 document.addEventListener("change", async e => {
   if (e.target.id !== "camInput" || !e.target.files[0]) return;
@@ -95,7 +98,7 @@ function camRender() {
     <div class="impq"><span>Sky</span>${chipGroup("camsky", [["clear", "Clear"], ["partly", "Partly"], ["overcast", "Overcast"], ["rain", "Rain"]], [c.ans.sky], false)}</div>
     <div class="impq"><span>Fog</span>${chipGroup("camfog", [["yes", "Yes"], ["no", "No"]], [c.ans.fog], false)}</div>
     <div class="impq"><span>Colour</span>${chipGroup("camcolor", [["none", "None"], ["some", "Some"], ["strong", "Strong"]], [c.ans.color], false)}</div>
-    <p style="font-size:14.5px;margin:8px 0 2px">Facing <b id="camHead">${facing(c.head)}</b>${c.headSrc === "photo" ? ` <span class="muted">from the photo</span>` : ` <span class="muted">${c.headSrc ? "· hold the phone toward the view as you send" : "· no compass on this device"}</span>`}</p>
+    <p style="font-size:14.5px;margin:8px 0 2px">Facing <b id="camHead">${facing(c.head)}</b>${c.headSrc === "photo" ? ` <span class="muted">from the photo</span>` : ` <span class="muted">${c.headSrc ? "· hold the phone toward the view as you send" : NEEDS_PERM && !HEAD.on ? "" : "· no compass on this device"}</span>${NEEDS_PERM && !HEAD.on ? ` <button class="chip" id="camCompass" type="button">Use compass</button>` : ""}`}</p>
     <label class="impkeep" style="margin:10px 0"><input type="checkbox" id="camShare" ${c.ageMin <= 180 ? "checked" : ""}> Show this photo in ShotSpots for 48 hours (no name attached)</label>
     <button class="btn primary wide" id="camSend" ${c.spot ? "" : "disabled"}>Send report</button>
     ${sp ? `<p class="muted" style="font-size:13px">ShotSpots' forecast for ${esc(sp.name)} right now goes with it, so the report also checks the prediction.</p>` : ""}`;
@@ -127,3 +130,5 @@ function exifTime(x) { let t = x.DateTimeOriginal;
   if (x.OffsetTimeOriginal && /^[+-]\d\d:\d\d$/.test(x.OffsetTimeOriginal)) { const [h, m] = x.OffsetTimeOriginal.slice(1).split(":").map(Number), sign = x.OffsetTimeOriginal[0] === "-" ? -1 : 1;
     t = new Date(Date.UTC(t.getFullYear(), t.getMonth(), t.getDate(), t.getHours(), t.getMinutes(), t.getSeconds()) - sign * (h * 60 + m) * 6e4); }
   return t; }
+
+document.addEventListener("click", e => { if (e.target.id === "camCompass") { compassStart(); e.target.textContent = "Point at the view…"; e.target.disabled = true; } });
