@@ -19,7 +19,8 @@ async function loadSeed() {
   let added = 0;
   got.forEach((t, i) => { if (!t) return; SEED.tiles.add(want[i]);
     for (const x of t.spots) { if (byId[x.id] || real.some(s => Math.abs(s.lat - x.lat) < 0.004 && Math.abs(s.lon - x.lon) < 0.006)) continue;
-      const s = { ...x, region: `${SEED_KIND[x.kind] || "Place"} · starter spot`, months: null, osm: true, seed: true, src: [], osmUrl: `https://www.openstreetmap.org/${x.osm}` };
+      const ps = ((fd("photostats") || {}).spots || {})[x.id];   // learned from when people photograph it
+      const s = { ...x, region: `${SEED_KIND[x.kind] || "Place"} · starter spot`, months: ps && ps.months || null, light: ps && ps.light || x.light, osm: true, seed: true, src: [], osmUrl: `https://www.openstreetmap.org/${x.osm}`, ps };
       SPOTS.push(s); byId[s.id] = s; added++; } });
   SEED.n += added;
   if (added) { if (typeof __topsKey !== "undefined") __topsKey = ""; render(); }
@@ -43,5 +44,6 @@ document.addEventListener("change", e => { if (e.target.id === "maxTravel") setT
 const _openSeed = openSpot;
 openSpot = function (id) { _openSeed(id); const s = byId[id]; if (!s || !s.seed) return; const b = $("#sheetBody"); if (!b || b.querySelector(".seednote")) return;
   const a = b.querySelector(".prose") || b.querySelector("h2");
-  const h = `<p class="seednote muted" style="font-size:14px"><span class="seasontag">Starter spot</span> From <a href="${s.osmUrl}" target="_blank" rel="noopener">OpenStreetMap</a>${s.wd ? ` and <a href="https://www.wikidata.org/wiki/${s.wd}" target="_blank" rel="noopener">Wikidata</a>` : ""}. The tip is general and the pin isn't checked yet; ShotSpots researches the most notable starter spots first. Scores, light and drive times work the same as for any spot.</p>`;
+  const ps = s.ps ? ` From ${s.ps.n} photos taken here, people shoot it mostly ${({ sunrise: "at sunrise", sunset: "at sunset", both: "at sunrise and sunset", night: "at night", day: "in daylight" })[s.ps.light]}${s.ps.months ? `, busiest in ${s.ps.months.map(m => ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m - 1]).join(", ")}` : ""}.` : "";
+  const h = `<p class="seednote muted" style="font-size:14px"><span class="seasontag">Starter spot</span>${ps} From <a href="${s.osmUrl}" target="_blank" rel="noopener">OpenStreetMap</a>${s.wd ? ` and <a href="https://www.wikidata.org/wiki/${s.wd}" target="_blank" rel="noopener">Wikidata</a>` : ""}. The tip is general and the pin isn't checked yet; ShotSpots researches the most notable starter spots first. Scores, light and drive times work the same as for any spot.</p>`;
   a ? a.insertAdjacentHTML("afterend", h) : b.insertAdjacentHTML("afterbegin", h); };

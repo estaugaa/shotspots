@@ -423,6 +423,8 @@ function fitFor(s, w) {
       if (w.kind === "sunrise" && s.cats.includes("birds") && sk.tf <= 38 && sk.wind <= 4) { v += 6; why.push(`${fmtTemp(sk.tf)} and calm: breath plumes on singing birds`); }
       parts.push(v); }
     if (FOG_ABOVE.includes(s.id) && sk.pop < 50 && lowlandFog(w)) { parts.push(93); why.unshift("should be above the fog"); }
+    else { const fa = ((fd("fogabove") || {}).spots || {})[s.id], hit = fa && fa.find(x => Math.abs(new Date(x.t) - w.peak) < 100 * 6e4);
+      if (hit && sk.pop < 50) { const m = v => METRIC() ? `${v} m` : `${Math.round(v * 3.281 / 10) * 10} ft`; parts.push(hit.p + 10); why.unshift(`should be above the fog: tops near ${m(hit.top)}, you're at ${m(hit.elev)}`); } }
     const al = alignOn(s, w);
     if (al) { if (wet || m === "overcast" || (sk.block != null && sk.block > 60)) why.push(`${al.what} ${fmtT(al.t)}, likely hidden by cloud`);
       else { parts.push(Math.max(...parts, 60) + 18); why.unshift(`${al.what} ${fmtT(al.t)}`); } }

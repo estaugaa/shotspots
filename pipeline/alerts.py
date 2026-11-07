@@ -17,7 +17,7 @@ from .common import spots, write_json, read_json, FEED, DATA, http, secret, log,
 
 LA = ZoneInfo("America/Los_Angeles")
 ADIR = DATA / "alerts"
-DEFAULTS = {"enabled": True, "min_prob": 60, "rules": ["fog_above", "color", "alignment", "dark", "aurora", "smoke", "birds"],
+DEFAULTS = {"enabled": True, "min_prob": 60, "rules": ["fog_above", "fog_sea", "color", "alignment", "dark", "aurora", "smoke", "birds"],
             "push_rules": ["fog_above", "color", "alignment", "dark", "aurora", "weekend"], "quiet_start": 22, "quiet_end": 6, "max_per_day": 3, "max_km": 150, "max_km_dark": 300,
             "aurora_kp": 6, "aurora_overrides_quiet": True}
 SKY = {"vista", "mountain", "reflection", "coast", "city", "alignment", "geology", "historic"}
@@ -292,6 +292,26 @@ def rule_smoke(F, S, now):
     return out
 
 
+def rule_fog_sea(F, S, now):
+    """Viewpoints above a forecast fog layer at the next sunrises (feed/fogabove.json), nearest first."""
+    fa = read_json(FEED / "fogabove.json", {}).get("spots", {})
+    best = {}
+    for sid, lst in fa.items():
+        if sid not in S:
+            continue
+        for x in lst:
+            t = int(dt.datetime.fromisoformat(x["t"].replace("Z", "+00:00")).timestamp() // 60)
+            if t > now and (ymd(t) not in best or km_home(S[sid]) < km_home(S[best[ymd(t)][0]])):
+                best[ymd(t)] = (sid, x, t)
+    out = []
+    for d, (sid, x, t) in best.items():
+        n = sum(1 for lst in fa.values() for y in lst if y["t"] == x["t"])
+        out.append({"rule": "fog_sea", "key": f"fogsea:{d}", "t": t, "p": x["p"], "spots": [sid], "title": f"Sea of fog likely at sunrise {fmt(t)}",
+                    "body": f"Fog tops near {x['top']} m; {S[sid]['name']} ({x['elev']} m) should be above it" + (f", plus {n - 1} more viewpoints." if n > 1 else "."),
+                    "why": ["pressure-level cloud forecast + terrain"]})
+    return out
+
+
 def rule_birds(F, S, now):
     """New rare or target birds reported within ~60 km of home in the last 2 days (feed/birds.json)."""
     from math import radians, sin, cos, asin, sqrt
@@ -410,7 +430,7 @@ def rule_aurora(F, S, now, st=None):
     return out
 
 
-RULES = {"birds": rule_birds, "aurora": rule_aurora, "fog_above": rule_fog_above, "color": rule_color, "alignment": rule_alignment, "dark": rule_dark, "smoke": rule_smoke}
+RULES = {"fog_sea": rule_fog_sea, "birds": rule_birds, "aurora": rule_aurora, "fog_above": rule_fog_above, "color": rule_color, "alignment": rule_alignment, "dark": rule_dark, "smoke": rule_smoke}
 
 
 # ---------------- settings + subscriptions (Netlify forms) ----------------

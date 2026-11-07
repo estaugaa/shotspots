@@ -14,6 +14,8 @@ def job_goes():
 
 
 def job_conditions():
+    from . import fogabove
+    run_module("fogabove", fogabove.run, "MODELED", "viewpoints above forecast fog at sunrise (pressure-level cloud + terrain)")
     from . import birds
     run_module("birds", birds.run, "MEASURED", "iNaturalist notable bird sightings (rare here, first of season, targets)")
     from . import hrrr
@@ -33,6 +35,7 @@ def job_weekend():
 
 
 def job_daily():
+    job_verifyobs()
     from . import terrain, light, obs, sentinel, access, wildlife
     run_module("terrain", lambda: terrain.run(budget_min=25), "MODELED", "USGS 3DEP horizons")
     run_module("light", light.daily, "MODELED", "terrain-aware sun/moon/Milky Way, 14 days")
@@ -51,8 +54,19 @@ def job_flickr_top():
     run_module("photos", flickr.top_photos, "MEASURED", "Flickr most-interesting photos per spot")
 
 
+def job_photostats():
+    from . import photostats
+    run_module("photostats", photostats.run, "MEASURED", "best light and months learned from Commons photo times")
+
+
+def job_verifyobs():
+    from . import verify_obs
+    run_module("verify_obs", verify_obs.run, "MEASURED", "forecast scored against airport reports at sunrise/sunset")
+
+
 def job_weekly():
     job_flickr_top()
+    job_photostats()
     from . import light, obs, wildlife, viirs, flickr
     run_module("planner", light.plan_year, "MODELED", "365-day landmark alignments")
     run_module("climatology", obs.climatology, "MEASURED", "10-year ASOS climatology")
@@ -90,7 +104,7 @@ def manifest():
 
 
 JOBS = {"goes": job_goes, "conditions": job_conditions, "daily": job_daily, "weekly": job_weekly, "monthly": job_monthly,
-        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry}
+        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs}
 
 if __name__ == "__main__":
     for j in sys.argv[1:]:
