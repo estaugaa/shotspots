@@ -62,7 +62,7 @@ def job_weekly():
 
 def job_trails():
     from . import trails
-    run_module("trails", lambda: trails.run(budget_min=75), "MEASURED", "OpenStreetMap walking route from parking + DEM climb")
+    run_module("trails", lambda: trails.run(budget_min=300), "MEASURED", "OpenStreetMap walking route from parking + DEM climb")
 
 
 def job_monthly():
