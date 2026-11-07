@@ -222,5 +222,69 @@
   "kind": "waterfall",
   "off_m": 302,
   "at": "2026-11-07T06:12:59Z"
+ },
+ {
+  "id": "stacker-butte",
+  "name": "Stacker Butte (Columbia Hills)",
+  "old": [
+   45.6949,
+   -121.0925
+  ],
+  "new": [
+   45.71346,
+   -121.10146
+  ],
+  "osm": "Stacker Butte",
+  "kind": "peak",
+  "off_m": 2177,
+  "at": "2026-11-07T21:45:33Z"
+ },
+ {
+  "id": "elk-rock",
+  "name": "Elk Rock Viewpoint (SR 504, milepost 37)",
+  "old": [
+   46.3,
+   -122.35
+  ],
+  "new": [
+   46.2965,
+   -122.34649
+  ],
+  "osm": "Elk Rock",
+  "kind": "peak",
+  "off_m": 474,
+  "at": "2026-11-07T21:45:33Z"
+ },
+ {
+  "id": "lava-canyon",
+  "name": "Lava Canyon",
+  "old": [
+   46.166,
+   -122.0883
+  ],
+  "new": [
+   46.16998,
+   -122.08288
+  ],
+  "osm": "Lava Canyon Falls",
+  "kind": "waterfall",
+  "off_m": 608,
+  "at": "2026-11-07T21:45:33Z"
+ },
+ {
+  "id": "neahkahnie",
+  "name": "Neahkahnie Viewpoint (US 101)",
+  "old": [
+   45.742,
+   -123.955
+  ],
+  "new": [
+   45.74692,
+   -123.95185
+  ],
+  "osm": "Neahkahnie Mountain",
+  "kind": "peak",
+  "off_m": 599,
+  "at": "2026-11-07T21:45:33Z"
  }
 ]
