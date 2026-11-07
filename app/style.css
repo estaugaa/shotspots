@@ -345,3 +345,7 @@ details.livedata summary{font-weight:700;cursor:pointer;padding:6px 0}
 .nowline{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;margin:0 0 10px;border-radius:12px;background:var(--paper);border:1px solid var(--line);font-size:15px;line-height:1.4}
 .nowline.wet{background:color-mix(in srgb,#4A7FA8 12%,var(--paper));border-color:color-mix(in srgb,#4A7FA8 35%,var(--line))}
 .nowline .ni{font-size:20px;line-height:1.1}
+
+.birdlist li{display:flex;gap:10px;align-items:flex-start;margin:6px 0;font-size:14.5px;line-height:1.35}
+.birdlist img{flex:none;border-radius:8px;object-fit:cover}
+.birdlist small{color:var(--muted)}

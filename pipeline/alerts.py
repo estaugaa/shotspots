@@ -17,7 +17,7 @@ from .common import spots, write_json, read_json, FEED, DATA, http, secret, log,
 
 LA = ZoneInfo("America/Los_Angeles")
 ADIR = DATA / "alerts"
-DEFAULTS = {"enabled": True, "min_prob": 60, "rules": ["fog_above", "color", "alignment", "dark", "aurora", "smoke"],
+DEFAULTS = {"enabled": True, "min_prob": 60, "rules": ["fog_above", "color", "alignment", "dark", "aurora", "smoke", "birds"],
             "push_rules": ["fog_above", "color", "alignment", "dark", "aurora", "weekend"], "quiet_start": 22, "quiet_end": 6, "max_per_day": 3, "max_km": 150, "max_km_dark": 300,
             "aurora_kp": 6, "aurora_overrides_quiet": True}
 SKY = {"vista", "mountain", "reflection", "coast", "city", "alignment", "geology", "historic"}
@@ -292,6 +292,27 @@ def rule_smoke(F, S, now):
     return out
 
 
+def rule_birds(F, S, now):
+    """New rare or target birds reported within ~60 km of home in the last 2 days (feed/birds.json)."""
+    from math import radians, sin, cos, asin, sqrt
+    b = read_json(FEED / "birds.json", {}).get("notables", [])
+    home = (45.582, -122.353)
+    def d(lat, lon):
+        p1, p2 = radians(home[0]), radians(lat); a = sin((p2 - p1) / 2) ** 2 + cos(p1) * cos(p2) * sin(radians(lon - home[1]) / 2) ** 2
+        return 12742 * asin(sqrt(a))
+    out, cut = [], (utcnow() - dt.timedelta(days=2)).strftime("%Y-%m-%d")
+    for n in b:
+        if not n.get("lat") or (n.get("date") or "") < cut or (not n.get("target") and not n["why"].startswith("rare")):
+            continue
+        km = d(n["lat"], n["lon"])
+        if km > (90 if n.get("target") else 60):
+            continue
+        out.append({"rule": "birds", "key": f"birds:{n['species']}:{n['date']}", "t": now + 1, "p": 100, "spots": [],
+                    "title": ("🎯 " if n.get("target") else "🐦 ") + f"{n['species']} near {n['place'] or 'you'}",
+                    "body": f"Reported {n['date']} on {n['src']}, about {round(km)} km away ({n['why']}).", "url": n.get("url"), "why": [n["why"]]})
+    return out[:3]
+
+
 def _rows(j):
     """SWPC JSON comes either as a header row + lists, or as a list of dicts."""
     if not j:
@@ -389,7 +410,7 @@ def rule_aurora(F, S, now, st=None):
     return out
 
 
-RULES = {"aurora": rule_aurora, "fog_above": rule_fog_above, "color": rule_color, "alignment": rule_alignment, "dark": rule_dark, "smoke": rule_smoke}
+RULES = {"birds": rule_birds, "aurora": rule_aurora, "fog_above": rule_fog_above, "color": rule_color, "alignment": rule_alignment, "dark": rule_dark, "smoke": rule_smoke}
 
 
 # ---------------- settings + subscriptions (Netlify forms) ----------------

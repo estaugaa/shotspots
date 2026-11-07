@@ -14,6 +14,8 @@ def job_goes():
 
 
 def job_conditions():
+    from . import birds
+    run_module("birds", birds.run, "MEASURED", "iNaturalist notable bird sightings (rare here, first of season, targets)")
     from . import hrrr
     run_module("hrrr", hrrr.run, "MODELED", "HRRR neighbourhood + time-lagged probabilities")
     job_alerts()

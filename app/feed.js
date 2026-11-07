@@ -2,7 +2,7 @@
    Every number shown from the feed carries its provenance (MEASURED / MODELED / ESTIMATED). */
 "use strict";
 const FEED = { m: null, d: {}, loading: {} };
-const EAGER = ["spots_extra", "research_status", "alerts", "goes", "hrrr", "light", "climo", "flow", "sounding", "sentinel", "darksky", "access", "calibration", "phenology", "snow", "access_rules", "weekend", "trails", "reports", "photos", "obs"];
+const EAGER = ["spots_extra", "research_status", "alerts", "goes", "hrrr", "light", "climo", "flow", "sounding", "sentinel", "darksky", "access", "calibration", "phenology", "snow", "access_rules", "weekend", "trails", "reports", "photos", "obs", "birds"];
 const LAZY = ["planner", "wildlife", "originality", "report", "verify_positions", "solves", "outcomes_public"];
 async function feedGet(name) {
   if (FEED.d[name]) return FEED.d[name];
@@ -187,7 +187,9 @@ specialsHtml = function () {
     : blindMost ? `Thick higher cloud overhead (tops around ${Math.round(blind.reduce((a, s) => a + g.spots[s.id][2], 0) / blind.length / 1000)} km), so the satellite can't see whether there's fog or low cloud underneath. The ground reports below can.`
     : "No fog or low cloud near you. ";
   const item = `<div class="item"><b>🛰 Right now (GOES-18, ${ageMin} min ago) ${tag("goes")}</b><p>${sat} The Map tab shows the satellite fog layer.</p>${obsHtml()}</div>`;
-  return base ? base.replace("<h3>Also worth knowing</h3>", "<h3>Also worth knowing</h3>" + item) : `<div class="sect"><h3>Also worth knowing</h3>${item}</div>`;
+  const bd = fd("birds"), bn = bd && km(LOC, { lat: 45.6, lon: -122.3 }) < 120 ? (bd.notables || []).slice(0, 5) : [];
+  const birdItem = bn.length ? `<div class="item"><b>🐦 Notable birds nearby (last 4 days)</b><ul class="plain birdlist">${bn.map(n => `<li>${n.photo ? `<img src="${n.photo}" alt="" loading="lazy" width="44" height="44">` : ""}<span><a href="${n.url}" target="_blank" rel="noopener"><b>${n.target ? "🎯 " : ""}${esc(n.species)}</b></a> · ${esc(n.place || "")} · ${esc(n.date || "")}<br><small>${esc(n.why)} (${esc(n.src)})</small></span></li>`).join("")}</ul></div>` : "";
+  return base ? base.replace("<h3>Also worth knowing</h3>", "<h3>Also worth knowing</h3>" + item + birdItem) : `<div class="sect"><h3>Also worth knowing</h3>${item}</div>`;
 };
 let GOES_LAYER = null;
 const _renderMapFeed = renderMap;
