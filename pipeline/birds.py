@@ -30,7 +30,7 @@ def _ebird(key, targets):
     j = http("https://api.ebird.org/v2/data/obs/geo/recent/notable", params={"lat": LAT, "lng": LON, "dist": 50, "back": 4, "detail": "simple"},
              headers={**H, "X-eBirdApiToken": key}, timeout=40).json()
     return [{"species": o.get("comName"), "sci": o.get("sciName"), "date": (o.get("obsDt") or "")[:10], "place": o.get("locName"), "lat": o.get("lat"), "lon": o.get("lng"),
-             "count": o.get("howMany"), "url": f"https://ebird.org/checklist/{o['subId']}" if o.get("subId") else "", "why": "eBird rare-bird alert", "src": "eBird",
+             "count": o.get("howMany"), "url": f"https://ebird.org/checklist/{o['subId']}" if o.get("subId") else "", "why": "flagged as rare here by eBird", "src": "eBird",
              "target": (o.get("comName") or "").lower() in targets} for o in j]
 
 
@@ -64,7 +64,12 @@ def run():
             notables += _ebird(key, targets)
         except Exception as e:
             log.warning("eBird notable: %s", e)
-    notables.sort(key=lambda n: (not n["target"], n["date"] or ""), reverse=False)
+    seen2, uniq = set(), []
+    for n in notables:   # one line per species and place (eBird repeats a bird for every checklist)
+        k = (n["species"], (n["place"] or "").split(",")[0].strip().lower())
+        if k not in seen2:
+            seen2.add(k); uniq.append(n)
+    notables = uniq
     notables = sorted(notables, key=lambda n: (0 if n["target"] else 1, -(int((n["date"] or "0000-00-00").replace("-", "")))))[:25]
     write_json("birds.json", {"gen": iso(utcnow()), "radius_km": R_KM, "notables": notables, "sources": ["iNaturalist"] + (["eBird"] if key else []),
                               "note": "Notable = rare here (≤3 iNaturalist records within 90 km in the past year), first of season, or on your target list."})

@@ -9,7 +9,8 @@ async def main():
         b = await p.chromium.launch()
         c = await b.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=1, is_mobile=True, has_touch=True, timezone_id="America/Los_Angeles",
                                 geolocation={"latitude": 45.582, "longitude": -122.353}, permissions=["geolocation"])
-        pg = await c.new_page()
+        pg = await c.new_page(); errs = []
+        pg.on("pageerror", lambda e: errs.append(str(e)[:300]))
         await pg.goto(URL); await pg.wait_for_timeout(10000)
         async def snap(name):
             await pg.screenshot(path=f"ux/{name}.png", full_page=True)
@@ -26,5 +27,6 @@ async def main():
         open("ux/4_spot.txt", "w").write(await pg.evaluate("document.querySelector('#sheetBody')?.innerText || ''"))
         await pg.evaluate("openSpot('vista-house')"); await pg.wait_for_timeout(3000)
         open("ux/5_spot_vista.txt", "w").write(await pg.evaluate("document.querySelector('#sheetBody')?.innerText || ''"))
+        open("ux/errors.txt", "w").write("\n".join(errs) or "none")
         await b.close()
 asyncio.run(main())

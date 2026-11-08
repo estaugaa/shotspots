@@ -34,6 +34,9 @@ const FUJI = { "16-50": [24, 36], "27": [40, 40], "70-300": [105, 450] };   // b
 const LENS_RE = /(?:\b(?:the|your)\s+)?\b(16[-–]50|70[-–]300|27(?=\s?mm\b|\s+(?:for|at|f\/)|\s*\(|\s*,|\s+or\b))(?:\s?mm)?(?:\s+at\s+(?:about\s+|~)?(\d+)(?:\s?[-–]\s?(\d+))?\s?mm)?/g;
 function kitText(str) {
   if (!str || kitId() === "fuji_xt5") return str;
+  return kitText0(str).replace(/\b([Tt])he the\b/g, "$1he").replace(/\b([Aa]) the\b/g, "$1");
+}
+function kitText0(str) {
   return String(str).replace(LENS_RE, (m, lens, f1, f2) => {
     const key = lens.replace("–", "-"); const [a, b] = FUJI[key] || [24, 75];
     const lo = f1 ? +f1 * 1.5 : a, hi = f2 ? +f2 * 1.5 : f1 ? +f1 * 1.5 : b;

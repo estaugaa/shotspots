@@ -24,6 +24,10 @@ function tag(src) { const s = ST(src); return s ? `<span class="prov p-${(s.kind
 const minToDate = m => new Date(m * 60000);
 const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] || "th");
 
+/* common names as birders use them in the US (the global taxonomy names some species differently) */
+const SPN = { "Hen Harrier": "Northern Harrier", "Great Blue/Cocoi Heron": "Great Blue Heron", "Common Gull": "Short-billed Gull", "Barn Swallow": "Barn Swallow", "Mew Gull": "Short-billed Gull", "Common Merganser": "Common Merganser", "Eurasian Wigeon": "Eurasian Wigeon", "Rock Dove": "Rock Pigeon", "Northern Goshawk": "American Goshawk" };
+function dayWordYMD(d) { if (!d) return ""; const t = laYMD(new Date()), y = laYMD(new Date(Date.now() - 864e5)); if (d === t) return "today"; if (d === y) return "yesterday"; const x = new Date(d + "T12:00:00"); return x.toLocaleDateString("en-US", { month: "short", day: "numeric" }); }
+function spName(n) { return SPN[n] || n; }
 /* ---------- lookups ---------- */
 function hrrrRow(id, t) {
   const h = fd("hrrr"); if (!h || !h.spots[id]) return null; const tm = t.getTime() / 60000; let bi = -1, bd = 1e9;
@@ -81,7 +85,7 @@ fitFor = function (s, w) {
   // wildlife encounter rates
   if (LIFE.some(c => s.cats.includes(c))) { const W = wildlifeFor(s.id), ts = topSpecies(s.id, w.peak, 3);
     if (ts.length && W.kind.startsWith("eBird")) { const p = ts[0].p; n += Math.min(10, (p - 30) / 6); why.push(`${ts[0].sp} on ${p}% of checklists this week`); }
-    else if (ts.length) why.push(`${ts[0].sp}: ${ts[0].p}% of records here this week`); }
+    else if (ts.length && ts[0].p >= 15) why.push(`lots of ${ts[0].sp} reported here this week`); }
   // access
   const ac = fd("access"), av = ac && ac.spots[s.id]; if (av && av.alerts && av.alerts.length) why.push("forest alert: check access");
   return { ...f, n: Math.round(clamp(n, 0, 100)), why };
@@ -135,9 +139,10 @@ async function sheetFeed(s) {
   const wl = wildlifeFor(s.id);
   if (wl) { const ts = topSpecies(s.id, new Date(), 8); const wkind = wl.kind.startsWith("eBird") ? "eBird checklists within 2 km (effort-corrected)" : "share of GBIF/iNaturalist records (presence-only, not effort-corrected)";
     const sp = sunPos(new Date(), s.lat, s.lon); const w0 = allWindows(s, 40).find(x => GOLDK.has(x.kind) || x.kind === "morning"), spw = w0 ? sunPos(w0.peak, s.lat, s.lon) : sp;
-    h += `<h3>Wildlife this week ${tag("wildlife")}</h3>${ts.length ? `<ul class="plain">${ts.map(x => `<li><b>${esc(x.sp)}</b>: ${x.p}%${x.best != null ? `, most reports ${x.best}:00–${x.best + 3}:00` : ""}</li>`).join("")}</ul>` : `<p class="muted">Few records for this week.</p>`}
+    const hr = h0 => { const d = new Date(); d.setHours(h0, 0, 0, 0); return fmtT(d).replace(":00", ""); };
+    h += `<h3>Wildlife here this week ${tag("wildlife")}</h3>${ts.length ? `<p class="muted" style="font-size:14px;margin-bottom:4px">Most-reported species, as a share of all sightings here:</p><ul class="plain">${ts.map(x => `<li><b>${esc(spName(x.sp))}</b> ${x.p}%${x.best != null ? ` · mostly seen ${hr(x.best)}–${hr(x.best + 3)}` : ""}</li>`).join("")}</ul>` : `<p class="muted">Few sightings logged here for this time of year.</p>`}
       <p class="muted" style="font-size:13px">${wkind}.</p>
-      <p><b>Light on the animal:</b> ${w0 ? `${esc(wTitle(w0))} the sun is in the ${cmp(spw.az)}: face ${cmp((spw.az + 180) % 360)} for front light, ${cmp(spw.az)} for rim-lit silhouettes, ${cmp((spw.az + 90) % 360)} or ${cmp((spw.az + 270) % 360)} for side light.` : ""}</p>
+      ${w0 ? `<p><b>Where to stand:</b> ${esc(wTitle(w0))} the sun comes from the ${cmp(spw.az)}. Keep it at your back (shoot toward the ${cmp((spw.az + 180) % 360)}) for evenly lit animals, shoot toward it for glowing rim-lit silhouettes, or across it (toward the ${cmp((spw.az + 90) % 360)} or ${cmp((spw.az + 270) % 360)}) for side light that shows texture.</p>` : ""}
       <p class="muted" style="font-size:14px">${s.id === "maddax-heronry" ? FIELDCRAFT.heron : s.cats.includes("birds") ? FIELDCRAFT.birds : FIELDCRAFT.wildlife}</p>`; }
   const wlf = fd("wildlife"); if (wlf && wlf.fish && /bonneville|oxbow/.test(s.id) && wlf.fish.last14 && wlf.fish.last14.length) { const last = wlf.fish.last14[wlf.fish.last14.length - 1];
     h += `<p><b>Bonneville ladder, latest day</b> (DART): ${Object.entries(last).map(([k, v]) => `${esc(k)} ${esc(v)}`).join(", ")}.</p>`; }
@@ -188,8 +193,11 @@ specialsHtml = function () {
     : "No fog or low cloud near you. ";
   const item = `<div class="item"><b>🛰 Right now (GOES-18, ${ageMin} min ago) ${tag("goes")}</b><p>${sat} The Map tab shows the satellite fog layer.</p>${obsHtml()}</div>`;
   const bd = fd("birds"), bn = bd && km(LOC, { lat: 45.6, lon: -122.3 }) < 120 ? (bd.notables || []).slice(0, 5) : [];
-  const birdItem = bn.length ? `<div class="item"><b>🐦 Notable birds nearby (last 4 days)</b><ul class="plain birdlist">${bn.map(n => `<li>${n.photo ? `<img src="${n.photo}" alt="" loading="lazy" width="44" height="44">` : ""}<span><a href="${n.url}" target="_blank" rel="noopener"><b>${n.target ? "🎯 " : ""}${esc(n.species)}</b></a> · ${esc(n.place || "")} · ${esc(n.date || "")}<br><small>${esc(n.why)} (${esc(n.src)})</small></span></li>`).join("")}</ul></div>` : "";
-  return base ? base.replace("<h3>Also worth knowing</h3>", "<h3>Also worth knowing</h3>" + item + birdItem) : `<div class="sect"><h3>Also worth knowing</h3>${item}</div>`;
+  const birdItem = bn.length ? `<div class="item"><b>🐦 Notable birds nearby (last 4 days)</b><ul class="plain birdlist">${bn.map(n => `<li>${n.photo ? `<img src="${n.photo}" alt="" loading="lazy" width="44" height="44">` : ""}<span><a href="${n.url}" target="_blank" rel="noopener"><b>${n.target ? "🎯 " : ""}${esc(n.species)}</b></a> · ${esc((n.place || "").replace(/, (OR|WA), US$/, ""))} · ${esc(dayWordYMD(n.date))}<br><small>${esc(n.why.replace(/^./, c => c.toUpperCase()))}${n.src === "eBird" ? "" : ` (${esc(n.src)})`}</small></span></li>`).join("")}</ul></div>` : "";
+  // actionable things first (alignments, events, ideas), then birds, then the satellite and airport details
+  if (!base) return `<div class="sect"><h3>Also worth knowing</h3>${birdItem}${item}</div>`;
+  const cut = base.lastIndexOf("</div>");
+  return base.slice(0, cut) + birdItem + `<details class="item satdetails"><summary><b>🛰 Fog and cloud right now</b> <span class="muted">${esc(item.includes("Fog or low cloud over") ? "fog reported near you" : item.includes("can't see") ? "high cloud hides the view" : "no fog near you")}</span></summary>${item}</details>` + base.slice(cut);
 };
 let GOES_LAYER = null;
 const _renderMapFeed = renderMap;

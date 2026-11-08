@@ -11,7 +11,7 @@ PADUS = "https://services1.arcgis.com/CD5mKowwN6nIaqd8/ArcGIS/rest/services/PADU
 ALERTS = {"crgnsa": "https://www.fs.usda.gov/alerts/crgnsa/alerts-notices",
           "mthood": "https://www.fs.usda.gov/alerts/mthood/alerts-notices",
           "giffordpinchot": "https://www.fs.usda.gov/alerts/giffordpinchot/alerts-notices"}
-STOP = set("the and of at on in a to from road rd trail falls park area state point view viewpoint scout pick lake river mountain mt creek".split())
+STOP = set("the and of at on in a to from road rd trail trailhead falls park area state point view viewpoint scout pick lake lakes river mountain mt creek national wildlife refuge forest recreation regional county city loop overlook beach island sunrise sunset north south east west upper lower fire closure closures current".split())
 
 
 def padus(lat, lon):

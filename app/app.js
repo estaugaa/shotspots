@@ -283,7 +283,8 @@ function alignEvents() {
   Object.entries(D.STREET_OF || {}).forEach(([sid, list]) => list.forEach(([k, lbl]) => (D.STREETCAL[k] || []).forEach(r =>
     out.push({ t: new Date(r[0]), spot: sid, body: r[1] === "s" ? "sun" : "moon", rising: !!r[2], illum: r[3], what: `${r[1] === "s" ? "Sun" : "Moon"} ${r[2] ? "rises" : "sets"} straight down the street`, from: lbl }))));
   const seen = new Set();
-  ALIGN_CACHE = out.filter(e => byId[e.spot] && (e.body === "sun" || (e.illum || 0) >= 40)).sort((a, b) => a.t - b.t).filter(e => { const k = e.spot + laYMD(e.t) + e.what; if (seen.has(k)) return false; seen.add(k); return true; });
+  ALIGN_CACHE = out.filter(e => byId[e.spot] && (e.body === "sun" || (e.illum || 0) >= 40)).sort((a, b) => a.t - b.t).filter(e => { const k = e.spot + laYMD(e.t) + e.what; if (seen.has(k)) return false; seen.add(k); return true; })
+    .filter((e, i, arr) => !arr.slice(0, i).some(o => o.body === e.body && Math.abs(o.t - e.t) < 5 * 6e4 && byId[o.spot] && byId[e.spot] && km(byId[o.spot], byId[e.spot]) < 2));
   return ALIGN_CACHE;
 }
 function alignOn(s, w) { if (DAYK.has(w.kind)) return null; const d0 = w.start.getTime() - 40 * 60000, d1 = w.end.getTime() + 40 * 60000; return alignEvents().find(e => e.spot === s.id && e.t >= d0 && e.t <= d1); }

@@ -20,6 +20,14 @@ LENS = {"fog_above": "70-300 to stack the ridges above the fog; 16-50 for the wi
         "fallcolor": "27 or 16-50; overcast light is your friend for saturated leaves"}
 
 
+def _md(d):
+    import datetime as _dt
+    try:
+        x = _dt.date.fromisoformat(d[:10]); return x.strftime("%b ") + str(x.day)
+    except Exception:
+        return d
+
+
 def weekend_days(today=None):
     t = today or dt.datetime.now(LA).date()
     sat = t + dt.timedelta(days=(5 - t.weekday()) % 7)
@@ -77,7 +85,7 @@ def wildlife_picks(S, sat):
             continue
         seen.add(sp)
         out.append({"rule": "wildlife", "spots": [sid], "p": None, "title": f"{sp} at {S[sid]['name']}",
-                    "body": f"Peak season: {sp} records here are at {round(r * 100)}% of their yearly high this week. Go early; dawn and the first two hours are best.",
+                    "body": f"{sp} sightings here are near their yearly high this week. Go early: dawn and the two hours after are best.",
                     "why": ["GBIF weekly share of records (presence-only, not encounter odds)"]})
         if len(out) >= 2:
             break
@@ -89,7 +97,7 @@ def colour_picks(S):
     c = [(sid, v) for sid, v in se.items() if v.get("stage") == "near peak" and sid in S and "fallcolor" in S[sid]["cats"]]
     c.sort(key=lambda x: A.km_home(S[x[0]]))
     return [{"rule": "fallcolor", "spots": [sid], "p": None, "title": f"Fall colour near peak at {S[sid]['name']}",
-             "body": f"Sentinel-2 shows the trees here near peak as of {v['date'][5:]}. Shoot under soft overcast or in the first sun.", "why": ["Sentinel-2 colour index vs. summer baseline"]}
+             "body": f"Satellite images show the trees here near peak colour (as of {_md(v['date'])}). Soft overcast or the first sun brings it out best.", "why": ["Sentinel-2 colour index vs. summer baseline"]}
             for sid, v in c[:1]]
 
 
