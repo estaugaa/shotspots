@@ -32,7 +32,13 @@ function orderSpotPage() {
   head.forEach(el => frag.appendChild(el)); blocks.forEach(x => x.els.forEach(el => frag.appendChild(el)));
   b.appendChild(frag); b._ordered = true;
 }
-{ const _o = openSpot; openSpot = function (id) { _o.apply(this, arguments); const b = $("#sheetBody"); if (b) b._ordered = false; orderSpotPage(); setTimeout(() => { const b2 = $("#sheetBody"); if (b2) { b2._ordered = false; orderSpotPage(); } }, 600); }; }
+{ const _o = openSpot; openSpot = function (id) { _o.apply(this, arguments); const b = $("#sheetBody"); if (!b) return;
+  const again = () => { b._ordered = false; orderSpotPage(); };
+  again();
+  // sections that load a moment later get put in their place too (for the first few seconds)
+  if (b._mo) b._mo.disconnect(); let tmr = null, busy = false;
+  b._mo = new MutationObserver(() => { if (busy) return; clearTimeout(tmr); tmr = setTimeout(() => { busy = true; again(); setTimeout(() => busy = false, 0); }, 150); });
+  b._mo.observe(b, { childList: true }); setTimeout(() => b._mo && b._mo.disconnect(), 8000); }; }
 
 /* research labels like "Scout pick: …" read oddly as place names */
 function tidyNames() { for (const s of SPOTS) if (/^Scout pick:\s*/i.test(s.name)) s.name = s.name.replace(/^Scout pick:\s*/i, ""); }
