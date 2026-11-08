@@ -826,7 +826,7 @@ setInterval(() => { if (!document.hidden) { if (Date.now() - (WX ? WX.at : 0) > 
   // Use GPS when we haven't been told a place in the last 2 hours
   if (PREFS.start === "home") { if (LOC.src !== "home" && (LOC.src !== "search" && LOC.src !== "preset" || Date.now() - (LOC.at || 0) > 2 * 36e5)) setLoc({ ...HOME }, true); }
   else if (LOC.src !== "search" && LOC.src !== "preset" || Date.now() - (LOC.at || 0) > 2 * 36e5) gps(10000);
-  if ("serviceWorker" in navigator && location.protocol === "https:") { navigator.serviceWorker.register("sw.js").catch(() => { });
+  if ("serviceWorker" in navigator && location.protocol === "https:") { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(r => { r.update().catch(() => { }); document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") r.update().catch(() => { }); }); }).catch(() => { });
     // when an update takes over, reload once so the page and its scripts are the same version
     const had = !!navigator.serviceWorker.controller; let done = false;
     navigator.serviceWorker.addEventListener("controllerchange", () => { if (had && !done) { done = true; location.reload(); } }); }

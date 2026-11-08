@@ -109,14 +109,18 @@ document.addEventListener("click", async e => {
   const b = e.target.closest("[data-cam]"); if (b) { e.preventDefault(); return camStart(b.dataset.cam); }
   const o = e.target.closest("#camSheet [data-opt]"); if (o && CAM) { setTimeout(() => { const g = o.closest("[data-group-name]").dataset.groupName.replace("cam", ""); CAM.ans[g === "color" ? "color" : g] = o.getAttribute("aria-pressed") === "true" ? o.dataset.opt : ""; }, 0); return; }
   if (e.target.closest("#camSend") && CAM && CAM.spot) {
-    const s = byId[CAM.spot], h = hrrrRow(s.id, CAM.t), H = fd("hrrr");
+    const btn = $("#camSend"); btn.disabled = true; btn.textContent = "Sending…";
+    try {
+    const s = byId[CAM.spot]; let h = null; try { h = typeof hrrrRow === "function" ? hrrrRow(s.id, CAM.t) : null; } catch (er) { } const H = fd("hrrr");
     const pred = { p_clear: h ? h.p_clear : null, p_fog: h ? h.p_fog : null, p_color: h ? h.p_color : null, hrrr_run: h && H ? H.run : null, lead_h: h && H ? Math.round((CAM.t - new Date(H.run)) / 36e5) : null };
     const share = $("#camShare").checked, head = CAM.headSrc === "photo" ? CAM.head : HEAD.deg != null && Date.now() - HEAD.at < 5000 ? HEAD.deg : null;
     const sunAz = Math.round(sunPos(CAM.t, s.lat, s.lon).az), rel = head == null ? null : Math.round(((head - sunAz + 540) % 360) - 180);
-    const ok = await postForm("conditions", { spot: s.id, t: String(CAM.t.getTime()), lat: CAM.pos ? CAM.pos.lat.toFixed(5) : "", lon: CAM.pos ? CAM.pos.lon.toFixed(5) : "", acc: CAM.pos ? CAM.pos.acc : "",
+    const ok = await postForm("conditions", lastCamData = { spot: s.id, t: String(CAM.t.getTime()), lat: CAM.pos ? CAM.pos.lat.toFixed(5) : "", lon: CAM.pos ? CAM.pos.lon.toFixed(5) : "", acc: CAM.pos ? CAM.pos.acc : "",
       dist_m: CAM.dist != null ? Math.round(CAM.dist * 1000) : "", verified: CAM.verified ? "1" : "0", sky: CAM.ans.sky, fog: CAM.ans.fog, color: CAM.ans.color,
       auto: JSON.stringify(CAM.a), pred: JSON.stringify(pred), heading: head == null ? "" : String(head), heading_src: head == null ? "" : CAM.headSrc, sun_az: String(sunAz), sun_rel: rel == null ? "" : String(rel), loc_src: CAM.pos ? CAM.pos.src || "phone" : "", share: share ? "1" : "0", img: share ? CAM.img : "" });
-    $("#camSheet").hidden = true; toast(ok ? "Thanks: report sent" + (share && CAM.ageMin <= 180 ? ". It'll show on the spot within the hour." : "") : "Couldn't send. Check your connection and try again."); CAM = null;
+    if (!ok) camQueue(lastCamData);
+    $("#camSheet").hidden = true; toast(ok ? "Thanks: report sent" + (share && CAM.ageMin <= 180 ? ". It'll show on the spot within the hour." : "") : "No connection right now: the report is saved and will send automatically."); CAM = null;
+    } catch (err) { btn.disabled = false; btn.textContent = "Send report"; toast("Something went wrong sending this report (" + (err && err.message || err) + "). Try again."); }
   }
 });
 /* entry points: the Plan screen and every spot page */
@@ -132,3 +136,11 @@ function exifTime(x) { let t = x.DateTimeOriginal;
   return t; }
 
 document.addEventListener("click", e => { if (e.target.id === "camCompass") { compassStart(); e.target.textContent = "Point at the view…"; e.target.disabled = true; } });
+
+/* reports that couldn't send (no signal at the spot) wait on the phone and retry */
+let lastCamData = null;
+function camQueue(d) { if (!d) return; const q = store.get("camQ", []); q.push(d); while (q.length > 5) q.shift(); store.set("camQ", q); }
+async function camFlush() { const q = store.get("camQ", []); if (!q.length || !navigator.onLine) return; const keep = [];
+  for (const d of q) { if (!(await postForm("conditions", d))) keep.push(d); }
+  store.set("camQ", keep); if (keep.length < q.length) toast(`Sent ${q.length - keep.length} saved conditions report${q.length - keep.length === 1 ? "" : "s"}`); }
+addEventListener("online", camFlush); setTimeout(camFlush, 4000);
