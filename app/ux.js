@@ -45,7 +45,9 @@ function orderSpotPage() {
 
 /* research labels like "Scout pick: …" read oddly as place names */
 function tidyNames() { for (const s of SPOTS) if (/^Scout pick:\s*/i.test(s.name)) s.name = s.name.replace(/^Scout pick:\s*/i, ""); }
-{ const _r = render; render = function () { tidyNames(); return _r.apply(this, arguments); }; }
+function stripScout(root) { if (!root) return; const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n;
+  while ((n = w.nextNode())) if (n.nodeValue.includes("Scout pick:")) n.nodeValue = n.nodeValue.replace(/Scout pick:\s*/g, ""); }
+{ const _r = render; render = function () { tidyNames(); const r = _r.apply(this, arguments); stripScout($("#main")); return r; }; }
 
 /* what makes a conditions photo useful, shown in the report sheet */
 const CAM_TIPS = `<details class="camtips"><summary>What makes a useful report photo</summary><ul class="plain">
