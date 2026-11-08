@@ -18,6 +18,9 @@ function blockTitle(el) {
 }
 function orderSpotPage() {
   const b = $("#sheetBody"); if (!b || b._ordered) return;
+  // sections from different parts of the app arrive inside wrapper divs: lift them out so each can be placed
+  for (let pass = 0; pass < 3; pass++) for (const el of [...b.children])
+    if (el.tagName === "DIV" && !el.classList.contains("photosbox") && [...el.children].some(c => c.tagName === "H3" || c.tagName === "DETAILS")) el.replaceWith(...el.childNodes);
   const kids = [...b.children], head = [], blocks = []; let cur = null;
   for (const el of kids) { const t = blockTitle(el);
     if (t) { const r = SPOT_ORDER.find(([re]) => re.test(t)); cur = { rank: r ? r[1] : 50, els: [el], t }; blocks.push(cur); }
