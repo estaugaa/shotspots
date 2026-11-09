@@ -93,6 +93,23 @@ def run():
     img[midm] = (120, 140, 170, 110)   # higher cloud: grey-blue
     from PIL import Image
     Image.fromarray(img, "RGBA").save(FEED / "goes_lowcloud.png", optimize=True)
+    # gap grid for the sunset/sunrise check: tenths of each 0.25° cell covered by cloud topping out below 4 km
+    # (the layer that blocks low-angle light). Western US, where GOES-18 sees well. One digit per cell.
+    try:
+        G = {"w": -130.0, "s": 30.0, "e": -100.0, "n": 50.0, "d": 0.25, "sub": 4}
+        nx, ny, sub = int((G["e"] - G["w"]) / G["d"]), int((G["n"] - G["s"]) / G["d"]), G["sub"]
+        off = (np.arange(sub) + 0.5) / sub * G["d"]
+        glon = (G["w"] + np.arange(nx)[:, None] * G["d"] + off[None, :]).ravel()
+        glat = (G["n"] - np.arange(ny)[:, None] * G["d"] - off[None, :]).ravel()
+        LO2, LA2 = np.meshgrid(glon, glat)
+        my, mx = to_index(m, LA2.ravel(), LO2.ravel())
+        ty, tx = to_index(h, LA2.ravel(), LO2.ravel())
+        blk = ((bcm[my, mx] == 1) & (ht[ty, tx] < 4000)).reshape(ny, sub, nx, sub).mean(axis=(1, 3))
+        digits = "".join(str(min(9, int(v * 9.99))) for v in blk.ravel())
+        write_json("goes_grid.json", {"gen": iso(utcnow()), "obs": tstamp, **G, "nx": nx, "ny": ny, "rows": "north to south", "d9": digits,
+                                      "note": "tenths of each cell with cloud topping below 4 km (blocks low sun)"})
+    except Exception as e:
+        log.warning("gap grid: %s", e)
     write_json("goes.json", {"gen": iso(utcnow()), "obs": tstamp, "cols": ["cloud_pct", "lowcloud_pct", "top_m"], "spots": out,
                              "overlay": {"png": "goes_lowcloud.png", "bbox": BBOX}, "products": [km_, kh]})
     # rolling 120-day history: one line per scan, two digits per spot (cloud tenth, low-cloud tenth)

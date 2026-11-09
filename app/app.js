@@ -105,7 +105,7 @@ async function loadWx(force) {
     const r = await fetch(url); if (!r.ok) throw new Error("HTTP " + r.status);
     let j = await r.json(); if (!Array.isArray(j)) j = [j];
     WX = { at: Date.now(), key: locKey(), n: pts.length, pts: j.map((x, i) => ({ id: pts[i].id, n: pts[i].n, lat: pts[i].lat, lon: pts[i].lon, h: x.hourly })) };
-    store.set("wx", WX); return true;
+    store.set("wx", WX); loadHorizon(true).then(ok => { if (ok) { __topsKey = ""; render(); } }); return true;
   } catch (e) { WX && (WX.err = String(e.message || e)); if (!loadWx.retry) { loadWx.retry = setTimeout(async () => { loadWx.retry = 0; if (await loadWx(true)) { __topsKey = ""; render(); } }, 20000); } return false; }
 }
 function wxMiss() { return !WX ? (navigator.onLine === false ? "offline: no forecast" : "forecast loading") : "no forecast point near here yet"; }
@@ -205,11 +205,50 @@ function dayWindow(p) {
   const c = hourAt(nearestPt(p, 60), new Date(now.getTime() + 30 * 60000)); if (!c || (c.cc < 70 && c.pop < 40)) return null;
   return { kind: "day", start: now, peak: new Date(now.getTime() + 30 * 60000), end: e.goldStartPM };
 }
+/* ---------- sunset/sunrise gap: is there a clear slot under the clouds toward the sun? ----------
+   The light that paints clouds overhead at sunset travels in almost flat from the horizon, passing over
+   ~40–260 km of ground. Low cloud anywhere along that path (or thick mid cloud far out) blocks it and the
+   colour never comes. So for each place we sample the forecast along the sun's bearing at 40/80/130/190/260 km. */
+const HZ_KM = [40, 80, 130, 190, 260];
+let HZN = store.get("hzn", null);
+function hzAnchors() { if (!WX) return []; const near = WX.pts.filter(q => km(LOC, q) < 140).sort((a, b) => km(LOC, a) - km(LOC, b)).slice(0, 7);
+  return [{ id: "me", lat: LOC.lat, lon: LOC.lon }, ...near.filter(q => q.id !== "me" && km(LOC, q) > 15)]; }
+async function loadHorizon(force) {
+  const an = hzAnchors(); if (!an.length) return false; const key = locKey() + "|" + an.length;
+  if (!force && HZN && HZN.key === key && Date.now() - HZN.at < 60 * 60000) return false;
+  const day = laYMD(new Date()), paths = [];
+  for (const a of an) { const e = dayEvents(a, day); for (const [kind, t] of [["sunrise", e.sunrise], ["sunset", e.sunset]]) { if (!t) continue;
+    const az = sunPos(t, a.lat, a.lon).az; paths.push({ id: a.id, lat: a.lat, lon: a.lon, kind, az, pts: HZ_KM.map(k => dest(a, az, k)) }); } }
+  const flat = paths.flatMap(p => p.pts);
+  try { const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=" + flat.map(p => p.lat.toFixed(2)).join(",") + "&longitude=" + flat.map(p => p.lon.toFixed(2)).join(",") +
+      "&hourly=cloud_cover_low,cloud_cover_mid&forecast_days=3&timeformat=unixtime&timezone=GMT"); if (!r.ok) throw new Error("HTTP " + r.status);
+    let j = await r.json(); if (!Array.isArray(j)) j = [j]; let k = 0;
+    for (const p of paths) p.h = p.pts.map(() => { const x = j[k++].hourly; return { t: x.time, low: x.cloud_cover_low, mid: x.cloud_cover_mid }; });
+    HZN = { at: Date.now(), key, paths: paths.map(({ pts, ...p }) => p) }; store.set("hzn", HZN); return true;
+  } catch (e) { return false; }
+}
+function hzBlock(p, w) {
+  if (!HZN || !GOLDK.has(w.kind)) return null; let best = null, bd = 60;
+  for (const q of HZN.paths) if (q.kind === w.kind) { const d = km(p, q); if (d < bd) { bd = d; best = q; } } if (!best) return null;
+  const ts = w.peak.getTime() / 1000, at = h => { let bi = -1, d0 = 1e12; h.t.forEach((x, i) => { const d = Math.abs(x - ts); if (d < d0) { d0 = d; bi = i; } }); return d0 <= 5400 ? bi : -1; };
+  let block = 0, worst = null;
+  best.h.forEach((h, i) => { const bi = at(h); if (bi < 0) return; const kmI = HZ_KM[i];
+    const b = Math.max(h.low[bi] || 0, kmI >= 130 ? (h.mid[bi] || 0) * 0.6 : 0); if (b > block) { block = b; worst = kmI; } });
+  // Within 3 h of the event, blend in the latest GOES scan along the same path (western US only)
+  const g = typeof fd === "function" && fd("goes_grid"), lead = (w.peak - Date.now()) / 36e5; let sat = null;
+  if (g && g.d9 && lead > -0.5 && lead < 3 && Date.now() - new Date(g.obs) < 50 * 60000) {
+    const cell = q => { const x = Math.floor((q.lon - g.w) / g.d), y = Math.floor((g.n - q.lat) / g.d); return x < 0 || y < 0 || x >= g.nx || y >= g.ny ? null : +g.d9[y * g.nx + x] * 10 + 5; };
+    const v = HZ_KM.map(k => cell(dest(best, best.az, k))); if (v.every(x => x != null)) sat = Math.round(Math.max(...v.map((x, i) => HZ_KM[i] >= 190 ? x * 0.6 : x)));
+  }
+  if (sat != null) { const wS = lead < 1 ? 0.7 : 0.5; return { block: Math.round(wS * sat + (1 - wS) * block), worst, sat, fc: Math.round(block) }; }
+  return { block: Math.round(block), worst };
+}
 let __skyMemo = {}, __skyMemoAt = 0;
 function skyAt(p, w) {
   const pt = nearestPt(p, 60); if (!pt) return null;
   const sp = sunPos(w.peak, p.lat, p.lon), probeP = dest(p, sp.az, 90), probePt = nearestPt(probeP, 75, pt && pt.id);
-  if (!WX || __skyMemoAt !== WX.at) { __skyMemo = {}; __skyMemoAt = WX ? WX.at : 0; }
+  const memoAt = (WX ? WX.at : 0) + (HZN ? HZN.at : 0);
+  if (__skyMemoAt !== memoAt) { __skyMemo = {}; __skyMemoAt = memoAt; }
   const mk = pt.id + "|" + (probePt ? probePt.id : "") + "|" + w.kind + "|" + w.peak.getTime();
   if (__skyMemo[mk] !== undefined) return __skyMemo[mk];
   return (__skyMemo[mk] = skyCalc(p, w, pt, sp, probePt));
@@ -219,7 +258,8 @@ function skyCalc(p, w, pt, sp, probePt) {
   const canvas = Math.max(c.mid, c.high * 0.9);
   let f = canvas < 10 ? 0.32 : canvas <= 70 ? 0.32 + 0.68 * Math.min(1, (canvas - 10) / 40) : Math.max(0.2, 1 - (canvas - 70) / 30 * 0.8);
   const lowF = c.low >= 75 ? 0.3 : c.low >= 45 ? 0.7 : 1;
-  const block = pc ? Math.max(pc.low, pc.mid * 0.6) : null, g = block == null ? 1 : block <= 30 ? 1 : block <= 60 ? 0.72 : 0.38;
+  const hz = hzBlock(p, w);
+  const block = hz ? hz.block : pc ? Math.max(pc.low, pc.mid * 0.6) : null, g = block == null ? 1 : block <= 30 ? 1 : block <= 60 ? 0.72 : 0.38;
   let q = Math.round(100 * f * lowF * g); if (c.pop >= 60) q = 8;
   const fog = AMK.has(w.kind) && ((c.low >= 80 && c.vis < 3000) || (c.rh >= 96 && c.wind <= 3));
   const why = [];
@@ -227,7 +267,10 @@ function skyCalc(p, w, pt, sp, probePt) {
   else {
     if (!GOLDK.has(w.kind)) why.push(c.cc >= 80 ? `overcast (${c.cc}%)` : c.cc >= 30 ? `${c.cc}% cloud` : `mostly clear (${c.cc}%)`); else if (canvas >= 15 && canvas <= 75) why.push(`${canvas}% mid/high cloud to catch color`); else if (canvas < 15) why.push(`mostly clear overhead (${c.cc}%)`); else why.push(`thick cloud overhead (${c.cc}%)`);
     if (c.low >= 45) why.push(`${c.low}% low cloud`);
-    if (block != null && GOLDK.has(w.kind)) why.push(block <= 30 ? `clear horizon toward the ${w.kind === "sunset" ? "west" : "east"}` : `cloud on the ${w.kind === "sunset" ? "western" : "eastern"} horizon (${block}%)`);
+    const side = w.kind === "sunset" ? "west" : "east";
+    if (hz && hz.sat != null) why.push(hz.sat <= 30 ? `satellite now: the path toward the ${side} is open` : `satellite now: cloud along the path toward the ${side} (${hz.sat}%)`);
+    if (hz && GOLDK.has(w.kind)) why.push(block <= 30 ? `clear gap toward the ${side}: light can get under the clouds` : block <= 60 ? `patchy cloud toward the ${side} (${block}%): the light may break through` : `cloud ${fmtKm(hz.worst)} ${side} (${block}%) will likely block the light`);
+    else if (block != null && GOLDK.has(w.kind)) why.push(block <= 30 ? `clear horizon toward the ${side}` : `cloud on the ${side}ern horizon (${block}%)`);
   }
   const prev = [1, 2, 3].map(k => hourAt(pt, new Date(w.peak.getTime() - k * 36e5))).filter(Boolean);
   const prevPop = Math.max(0, ...prev.map(x => x.pop)), prevRain = prev.reduce((a, x) => a + (x.precip || 0), 0);
@@ -236,7 +279,7 @@ function skyCalc(p, w, pt, sp, probePt) {
   const rainbow = (mode === "showers" || mode === "clearing") && sp.alt > -1 && sp.alt < 40 && c.cc < 90, rbDir = cmp((sp.az + 180) % 360);
   if (rainbow) why.push(`showers with a low sun: rainbow odds, look ${rbDir}`);
   if (mode === "snow") why.unshift(`snow likely (${fmtTemp(c.tf)})`);
-  return { ...c, q, fog, canvas, block, why, probe: probePt && probePt.n, mode, rainbow, rbDir, kind: w.kind };
+  return { ...c, q, fog, canvas, block, hzWorst: hz && hz.worst, why, probe: probePt && probePt.n, mode, rainbow, rbDir, kind: w.kind };
 }
 function verdict(sk) {
   if (!sk) return { cls: "poor", txt: "No forecast yet" };
