@@ -26,4 +26,10 @@ jobs:
       - if: steps.chg.outputs.go == '1'
         run: pip install playwright && python -m playwright install --with-deps chromium webkit
       - if: steps.chg.outputs.go == '1'
+        name: Data proxies answer (7Timer via Worker, satellite gap grid)
+        run: |
+          W=$(python3 -c "import json;print(json.load(open('app/endpoints.json'))['forms'])" 2>/dev/null || echo https://shotspots-forms.shotspots-eric.workers.dev)
+          curl -sf -H "Origin: https://estaugaa.github.io" "$W/seeing?lat=45.58&lon=-122.35" | python3 -c "import json,sys;j=json.load(sys.stdin);print('seeing rows',len(j['dataseries']))"
+          curl -sf https://estaugaa.github.io/shotspots/feed/goes_grid.json | python3 -c "import json,sys;j=json.load(sys.stdin);print('gap grid',j['nx'],'x',j['ny'],'obs',j['obs'],'cloudy cells',sum(c>'4' for c in j['d9']))" || echo "gap grid not published yet"
+      - if: steps.chg.outputs.go == '1'
         run: python tools/smoke.py
