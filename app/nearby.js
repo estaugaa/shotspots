@@ -22,6 +22,10 @@ function realSpots() { return SPOTS.filter(s => !s.osm); }
 function outsideCoverage(p) { p = p || LOC; let best = 1e9; for (const s of realSpots()) { const d = km(p, s); if (d < best) best = d; } return best > COVER_KM; }
 
 async function loadNearby(force) {
+  if (typeof SEED !== "undefined") { SEED.busy = true; clearTimeout(SEED.bt); SEED.bt = setTimeout(() => { SEED.busy = false; render(); }, 30000); }
+  try { return await _loadNearby(force); } finally { if (typeof SEED !== "undefined") { SEED.busy = false; clearTimeout(SEED.bt); } }
+}
+async function _loadNearby(force) {
   const key = LOC.lat.toFixed(2) + "," + LOC.lon.toFixed(2);
   if (!outsideCoverage() || NEARBY.loading || (!force && NEARBY.key === key)) return;
   NEARBY.loading = true; NEARBY.err = null; render();

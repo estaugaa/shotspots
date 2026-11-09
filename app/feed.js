@@ -192,7 +192,7 @@ specialsHtml = function () {
     : blindMost ? `Thick higher cloud overhead (tops around ${Math.round(blind.reduce((a, s) => a + g.spots[s.id][2], 0) / blind.length / 1000)} km), so the satellite can't see whether there's fog or low cloud underneath. The ground reports below can.`
     : "No fog or low cloud near you. ";
   const item = `<div class="item"><b>🛰 Right now (GOES-18, ${ageMin} min ago) ${tag("goes")}</b><p>${sat} The Map tab shows the satellite fog layer.</p>${obsHtml()}</div>`;
-  const bd = fd("birds"), bn = bd && km(LOC, { lat: 45.6, lon: -122.3 }) < 120 ? (bd.notables || []).slice(0, 5) : [];
+  const bd = fd("birds"), bn = bd && km(LOC, { lat: 45.6, lon: -122.3 }) < 120 ? (bd.notables || []).filter(n => n.lat == null || !tooFar({ id: "_b", lat: n.lat, lon: n.lon })).slice(0, 5) : [];
   const birdItem = bn.length ? `<div class="item"><b>🐦 Notable birds nearby (last 4 days)</b><ul class="plain birdlist">${bn.map(n => `<li>${n.photo ? `<img src="${n.photo}" alt="" loading="lazy" width="44" height="44">` : ""}<span><a href="${n.url}" target="_blank" rel="noopener"><b>${n.target ? "🎯 " : ""}${esc(n.species)}</b></a> · ${esc((n.place || "").replace(/\s*\([-\d.,\s]+\)\s*$/, "").replace(/,? US-[A-Z]{2}\b/, "").replace(/, (OR|WA), US$/, ""))} · ${esc(dayWordYMD(n.date))}<br><small>${esc(n.why.replace(/^./, c => c.toUpperCase()))}${n.src === "eBird" ? "" : ` (${esc(n.src)})`}</small></span></li>`).join("")}</ul></div>` : "";
   // actionable things first (alignments, events, ideas), then birds, then the satellite and airport details
   if (!base) return `<div class="sect"><h3>Also worth knowing</h3>${birdItem}${item}</div>`;

@@ -48,7 +48,8 @@ def run():
         if not tid or t.get("rank") not in ("species", "subspecies") or (tid, o.get("observed_on")) in seen:
             continue
         seen.add((tid, o.get("observed_on")))
-        ny, ns = year.get(tid, 0), season.get(tid, 0)
+        sid = t.get("min_species_taxon_id") or (t.get("ancestor_ids") or [tid])[-2 if t.get("rank") == "subspecies" and len(t.get("ancestor_ids") or []) > 1 else -1] or tid
+        ny, ns = max(year.get(tid, 0), year.get(sid, 0)), max(season.get(tid, 0), season.get(sid, 0))   # subspecies count under their species
         why = "on your target list" if name.lower() in targets else "rare here: %s record%s in the past year" % (ny, "" if ny == 1 else "s") if ny <= 3 \
             else "first of the season: none reported in the last two months" if ns == 0 and ny >= 6 else None
         if not why:

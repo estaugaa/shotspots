@@ -91,9 +91,9 @@ async function loadDrives(ids) {
 /* ---------- weather (Open-Meteo) ---------- */
 function wxPoints() {
   const pts = [...GRID, { id: "me", n: "Here", lat: LOC.lat, lon: LOC.lon }];
-  const far = SPOTS.filter(s => !s.closed && km(LOC, s) < 250 && !pts.some(p => km(p, s) < 45));
+  const far = SPOTS.filter(s => !s.closed && !tooFar(s) && !pts.some(p => km(p, s) < 45));
   const cells = {}; for (const s of far) { const k = `${Math.round(s.lat * 2) / 2},${Math.round(s.lon * 2) / 2}`; (cells[k] = cells[k] || []).push(s); }
-  Object.values(cells).sort((a, b) => b.length - a.length).slice(0, 16).forEach((g, i) => pts.push({ id: "x" + i, n: g[0].name, lat: g.reduce((a, s) => a + s.lat, 0) / g.length, lon: g.reduce((a, s) => a + s.lon, 0) / g.length }));
+  Object.values(cells).sort((a, b) => b.length - a.length).slice(0, 8).forEach((g, i) => pts.push({ id: "x" + i, n: g[0].name, lat: g.reduce((a, s) => a + s.lat, 0) / g.length, lon: g.reduce((a, s) => a + s.lon, 0) / g.length }));
   return pts; }
 async function loadWx(force) {
   if (!force && WX && Date.now() - WX.at < 30 * 60000 && WX.key === locKey() && WX.n === wxPoints().length) return false;
@@ -255,8 +255,9 @@ function skyAt(p, w) {
 }
 function skyCalc(p, w, pt, sp, probePt) {
   const c = hourAt(pt, w.peak); if (!c) return null; const pc = hourAt(probePt, w.peak);
-  const canvas = Math.max(c.mid, c.high * 0.9);
-  let f = canvas < 10 ? 0.32 : canvas <= 70 ? 0.32 + 0.68 * Math.min(1, (canvas - 10) / 40) : Math.max(0.2, 1 - (canvas - 70) / 30 * 0.8);
+  const canvas = Math.round(Math.max(c.mid, c.high * 0.9)), cirrus = c.mid < 30 && c.high >= 70;
+  // a sheet of thin high cloud with little mid cloud still lights up if the light can get under it
+  let f = canvas < 10 ? 0.32 : canvas <= 70 ? 0.32 + 0.68 * Math.min(1, (canvas - 10) / 40) : cirrus ? 0.85 : Math.max(0.2, 1 - (canvas - 70) / 30 * 0.8);
   const lowF = c.low >= 75 ? 0.3 : c.low >= 45 ? 0.7 : 1;
   const hz = hzBlock(p, w);
   const block = hz ? hz.block : pc ? Math.max(pc.low, pc.mid * 0.6) : null, g = block == null ? 1 : block <= 30 ? 1 : block <= 60 ? 0.72 : 0.38;
@@ -265,7 +266,7 @@ function skyCalc(p, w, pt, sp, probePt) {
   const why = [];
   if (c.pop >= 60) why.push(`${c.pop}% chance of rain`);
   else {
-    if (!GOLDK.has(w.kind)) why.push(c.cc >= 80 ? `overcast (${c.cc}%)` : c.cc >= 30 ? `${c.cc}% cloud` : `mostly clear (${c.cc}%)`); else if (canvas >= 15 && canvas <= 75) why.push(`${canvas}% mid/high cloud to catch color`); else if (canvas < 15) why.push(`mostly clear overhead (${c.cc}%)`); else why.push(`thick cloud overhead (${c.cc}%)`);
+    if (!GOLDK.has(w.kind)) why.push(c.cc >= 80 ? `overcast (${c.cc}%)` : c.cc >= 30 ? `${c.cc}% cloud` : `mostly clear (${c.cc}%)`); else if (canvas >= 15 && canvas <= 75) why.push(`${canvas}% mid/high cloud to catch color`); else if (canvas < 15) why.push(`mostly clear overhead (${c.cc}%)`); else why.push(cirrus ? `thin high cloud overhead (${c.high}%): it can glow if the light gets under it` : `thick cloud overhead (${c.cc}%)`);
     if (c.low >= 45) why.push(`${c.low}% low cloud`);
     const side = w.kind === "sunset" ? "west" : "east";
     if (hz && hz.sat != null) why.push(hz.sat <= 30 ? `satellite now: the path toward the ${side} is open` : `satellite now: cloud along the path toward the ${side} (${hz.sat}%)`);
@@ -309,7 +310,7 @@ function verdict(sk) {
   if (sk.q >= 70) return { cls: "good", txt: "Strong color odds" };
   if (sk.q >= 45) return { cls: "good", txt: "Good color odds" };
   if (sk.cc <= 15) return { cls: "mid", txt: "Clear: clean light, peaks and alignments" };
-  if (sk.cc >= 85) return { cls: "mid", txt: "Overcast: soft light for waterfalls and birds" };
+  if (sk.cc >= 85) return { cls: "mid", txt: GOLDK.has(sk.kind) ? `Little ${sk.kind} color likely. The score is for soft overcast light: waterfalls, forest and birds` : "Overcast: soft light for waterfalls and birds" };
   return { cls: "mid", txt: "Fair: some color possible" };
 }
 function lowlandFog(w) { const sk = skyAt(HOME, w) || skyAt(LOC, w); return !!(sk && sk.fog && sk.pop < 40); }
@@ -483,7 +484,7 @@ function fitFor(s, w) {
   let n = Math.max(...parts);
   if (s.months && !s.months.includes(month)) { n *= 0.45; why.push("out of season"); }
   const side = AMK.has(w.kind) ? "sunrise" : PMK.has(w.kind) ? "sunset" : null;
-  if (side && (GOLDK.has(w.kind) || (BLUEK.has(w.kind) && !s.cats.some(c => LIFE.includes(c)))) && (s.light === "sunrise" || s.light === "sunset") && s.light !== side) { n -= GOLDK.has(w.kind) ? 12 : 6; why.push(`faces ${s.light === "sunrise" ? "east: a sunrise spot" : "west: a sunset spot"}`); }
+  if (side && (GOLDK.has(w.kind) || (BLUEK.has(w.kind) && !s.cats.some(c => LIFE.includes(c)))) && (s.light === "sunrise" || s.light === "sunset") && s.light !== side) { n = GOLDK.has(w.kind) ? n * 0.55 : n - 6; why.push(`faces ${s.light === "sunrise" ? "east: a sunrise spot" : "west: a sunset spot"}`); }
   if (w.kind !== "night" && !BLUEK.has(w.kind) && s.light === "night") n -= 25;
   n *= KCAP[w.kind] || 1;
   if (road) { n -= 10; why.push(road.short || road.title); }
@@ -543,7 +544,7 @@ function dayTab(ymd) { const y = laYMD(new Date()); if (ymd === y) return "Today
   return new Date(ymd + "T12:00:00").toLocaleDateString("en-US", { weekday: "short" }); }
 let __topsKey = "", __tops = [];
 function windowTops(all) {   // best spot per window, cached per forecast/feed state
-  const k = all.length + "|" + SPOTS.length + "|" + (all[0] && all[0].start.getTime()) + "|" + (WX ? WX.at : 0) + "|" + (window.FEED && FEED.m ? FEED.m.gen : "") + "|" + Object.keys(SAVED).length + "|" + LOC.lat + "|" + UI.group + "|" + PREFS.travel + maxTravel();
+  const k = all.length + "|" + SPOTS.length + "|" + (all[0] && all[0].start.getTime()) + "|" + (WX ? WX.at : 0) + "|" + (window.FEED && FEED.m ? FEED.m.gen : "") + "|" + Object.keys(SAVED).length + "|" + LOC.lat + "|" + UI.group + "|" + PREFS.travel + maxTravel() + "|" + (HZN ? HZN.at : 0);
   if (k !== __topsKey) { __tops = all.map(x => rankFor(x)[0] || null); __topsKey = k; }
   return __tops;
 }
@@ -571,13 +572,14 @@ function renderNow() {
   const sk = w.kind === "night" ? null : skyAt(LOC, w), v = w.kind === "night" ? null : verdict(sk);
   const ranked = rankFor(w); const top = diversify(ranked, 3), more = ranked.filter(x => !top.includes(x)).slice(0, 7);
   const timeTxt = !GOLDK.has(w.kind) && w.kind !== "night" ? `${fmtT(w.start)}–${fmtT(w.end)}` : w.kind === "night" ? (w.dark ? `${fmtT(w.dark.s)}–${fmtT(w.dark.e)} moon-free` : `Moon ${Math.round(w.illum * 100)}% all night`) : `${fmtT(w.peak)} · golden ${fmtT(w.start)}–${fmtT(w.end)}`;
+  if ((tops[UI.focus] || null) !== (ranked[0] || null) && (!tops[UI.focus] || !ranked[0] || tops[UI.focus].f.n !== ranked[0].f.n)) tops[UI.focus] = ranked[0] || null;
   let h = plannerHtml(all, tops);
   h += `<div class="window" id="winDetail"><div class="wtitle"><h2>${wTitle(w)}</h2><span class="when">${w.live ? "until " + fmtT(w.end) : fmtIn(w.kind === "night" && w.dark ? w.dark.s : w.start)}</span></div>
     <p class="muted" style="margin:2px 0 0">${timeTxt}</p>`;
-  if (v) h += `<p class="verdict ${v.cls}">${v.txt}</p><p class="why">${esc(sk ? sk.why.join(", ") : (WX ? "No forecast for this place." : "Loading the forecast…"))}</p>${skyBars(sk)}`;
+  if (v) h += `<p class="verdict ${v.cls}">${v.txt}</p><p class="why">${esc(sk ? sk.why.join(", ") : (WX ? "No forecast for this place." : loadWx.retry ? "The forecast service is busy; trying again in a few seconds…" : "Loading the forecast…"))}</p>${skyBars(sk)}`;
   else { const c = hourAt(nearestPt(LOC, 60), w.peak); h += `<p class="verdict ${c && c.cc <= 20 ? "good" : "mid"}">${c ? (c.cc <= 20 ? "Clear and dark enough for stars" : c.cc <= 50 ? "Partly cloudy: gaps for stars" : "Cloudy: skip the stars") : "Forecast doesn't reach this far yet"}</p>
     <button class="chip" data-v="sky" style="margin:4px 0 8px">Night sky details: Milky Way, moon, planets ›</button>`; }
-  h += top.length ? `<ul class="picks">${top.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<p class="empty">No spots you can reach in time. Pick a later window above.</p>`;
+  h += top.length ? `<ul class="picks">${top.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<p class="empty">${typeof SEED !== "undefined" && SEED.busy ? "Still finding spots near you…" : !WX ? "Waiting for the forecast…" : "No spots you can reach in time. Pick a later window above, or allow more travel time in Settings."}</p>`;
   if (more.length) h += UI.more ? `<ul class="picks" style="border-top:0">${more.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<button class="more" id="moreBtn">${more.length} more options</button>`;
   h += `</div>`;
   h += `<p class="muted scorenote">Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–5 use a single forecast model, so treat them as rough.</p>`;
@@ -590,7 +592,8 @@ function renderNow() {
 function specialsHtml() {
   const items = [], now = new Date();
   // aurora
-  if (KP && KP.max != null && KP.max >= 5) items.push(["🌌", `Aurora possible: Kp ${KP.max.toFixed(1)} forecast`, `${KP.when || ""}. Washougal needs about Kp 6 on camera; Trout Lake or Satus Pass about 5.5.`]);
+  const atHome = km(LOC, HOME) < 60;
+  if (KP && KP.max != null && KP.max >= 5) items.push(["🌌", `Aurora possible: Kp ${KP.max.toFixed(1)} forecast`, `${KP.when || ""}. ` + (atHome ? "Washougal needs about Kp 6 on camera; Trout Lake or Satus Pass about 5.5." : LOC.lat >= 44 ? "Look low on the northern horizon from somewhere dark; a phone's night mode picks up colour the eye can't see." : "This far south it will only show low on the northern horizon, if at all.")]);
   // rainy-day playbook
   { const w0 = allWindows(LOC, 40)[0], s0 = w0 && skyAt(LOC, w0), mo = +laYMD(now).slice(5, 7);
     if (s0 && ["rain", "showers", "snow"].includes(s0.mode)) {
@@ -599,8 +602,8 @@ function specialsHtml() {
       const ideas = [wf && `Waterfalls run biggest now; ${wf.name} is your best bet. Use 1/4–1 s and wipe the lens between frames.`,
         fc && `Wet leaves are at their most saturated: ${fc.name}. A polarizer cuts the glare off wet leaves.`,
         ct && `At blue hour, puddles and wet pavement mirror the lights. Shoot low at ${ct.name}.`,
-        mo >= 10 && mo <= 11 ? "Mushroom season: look on mossy logs along Gorge falls trails. The 70–300 focuses close enough for raindrop details." : "Use the 70–300 at minimum focus for raindrops on leaves, spider webs and lichen.",
-        typeof outsideCoverage === "function" && outsideCoverage() ? "When the rain lifts, mist often hangs on hills and over water: the half hour after a shower is worth being out." : "When the rain lifts, mist hangs on the Gorge cliffs. Crown Point and Cape Horn are the classic views of it.",
+        mo >= 10 && mo <= 11 ? (atHome ? "Mushroom season: look on mossy logs along Gorge falls trails." : "Mushroom season: look on mossy logs along shaded trails.") + " The 70–300 focuses close enough for raindrop details." : "Use the 70–300 at minimum focus for raindrops on leaves, spider webs and lichen.",
+        !atHome ? "When the rain lifts, mist often hangs on hills and over water: the half hour after a shower is worth being out." : "When the rain lifts, mist hangs on the Gorge cliffs. Crown Point and Cape Horn are the classic views of it.",
         s0.mode === "snow" ? "Snow plus overcast gives the evergreens clean, graphic shapes. Overexpose +1 so the snow stays white." : ""].filter(Boolean);
       items.push(["☔", s0.mode === "snow" ? "Snow-day ideas" : "Rainy-day ideas", ideas.join(" ")]); } }
   // NWS alerts
@@ -609,8 +612,8 @@ function specialsHtml() {
   // meteors
   showersSoon(10).forEach(({ sh, t }) => { const m = moonPos(new Date(t.getTime()), LOC.lat, LOC.lon); items.push(["☄️", `${sh.n} peak ${fmtDate(t)}`, `Up to ${sh.zhr}/hr in a dark sky. ${sh.note || ""} Moon ${Math.round(m.illum * 100)}% lit.`]); });
   // alignments within 14 days, nearest first
-  const soon = alignEvents().filter(e => e.t > now && e.t - now < 14 * 864e5 && (e.body === "sun" || sunPos(e.t, byId[e.spot].lat, byId[e.spot].lon).alt < 2)).map(e => ({ e, d: driveMin(byId[e.spot]) })).filter(x => x.d <= 90).sort((a, b) => a.e.t - b.e.t).slice(0, 4);
-  soon.forEach(({ e, d }) => items.push(["🎯", `${fmtDate(e.t)} ${fmtT(e.t)}: ${e.what}`, `${e.from || byId[e.spot].name} · ${fmtDur(d)}`, e.spot]));
+  const soon = alignEvents().filter(e => e.t > now && e.t - now < 14 * 864e5 && (e.body === "sun" || sunPos(e.t, byId[e.spot].lat, byId[e.spot].lon).alt < 2)).map(e => ({ e, d: driveMin(byId[e.spot]) })).filter(x => !tooFar(byId[x.e.spot])).sort((a, b) => a.e.t - b.e.t).slice(0, 4);
+  soon.forEach(({ e, d }) => items.push(["🎯", `${fmtDate(e.t)} ${fmtT(e.t)}: ${e.what}`, `from ${e.from || byId[e.spot].name} · ${fmtDur(d)} ${PREFS.travel === "walk" ? "walk" : "drive"}`, e.spot]));
   // wildlife at peak
   const md = mmdd(now); (D.WEVENTS || []).forEach(ev => (ev.windows || []).forEach(win => { const sp = (ev.spots || []).map(id => byId[id]).filter(Boolean);
     if (win.peak && inRange(md, win.peak[0], win.peak[1]) && sp.some(s => km(LOC, s) < 150 && !tooFar(s))) items.push([ev.icon || "🦅", `${ev.name}: peak now`, ev.what || "", sp[0].id]); }));
@@ -809,6 +812,7 @@ function nwsItem(f) { const p = f.properties, ev = p.event || "", until = p.ends
     [/Red Flag|Fire/, "🔥", "High fire danger: no campfires, and some forest roads may close."],
     [/Winter Storm|Blizzard|Ice|Snow|Winter Weather/, "❄️", "Fresh snow makes great scenes, but check road and pass conditions first."],
     [/Wind/, "💨", "Strong wind: tripods shake and lakes won't reflect. Weigh down the tripod or use a faster shutter."],
+    [/Coastal Flood|High Surf|Beach Hazard|Sneaker/, "🌊", "Big surf and king-tide water: dramatic waves, but stay well back from the water's edge and off jetties and logs."],
     [/Flood/, "🌊", "Flooding: waterfalls will be huge, but trails and roads near rivers may be closed."],
     [/Heat/, "🌡️", "Heat: shoot early, carry extra water."]];
   const m = T.find(([re]) => re.test(ev)) || [null, "⚠️", ""];

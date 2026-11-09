@@ -42,7 +42,9 @@ openSpot = function (id) {
 };
 
 /* ---------- heads-up card on Now ---------- */
-function upcoming() { const a = fd("alerts"); if (!a) return []; const now = Date.now(); return a.alerts.filter(x => new Date(x.at).getTime() > now - 20 * 60000); }
+function upcoming() { const a = fd("alerts"); if (!a) return []; const now = Date.now(); // alerts are worked out for the home area: only show ones whose spots you can actually reach from here
+  const near = x => { const sp = (x.spots || []).map(id => byId[id]).filter(Boolean); return sp.length ? sp.some(s => km(LOC, s) < 150 && !tooFar(s)) : km(LOC, HOME) < 60; };
+  return a.alerts.filter(x => new Date(x.at).getTime() > now - 20 * 60000 && near(x)); }
 function alertRow(a) {
   const sp = (a.spots || [])[0];
   return `<button class="lrow alertrow r-${a.rule}" ${sp && byId[sp] ? `data-spot="${sp}"` : `data-openalerts="1"`}><span><b>${esc(a.title)}</b><small>${esc(a.body)}</small></span><span class="pct">${a.rule === "smoke" ? "!" : a.p + "%"}</span></button>`;

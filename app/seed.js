@@ -15,6 +15,7 @@ async function loadSeed() {
     for (let lo = Math.floor(LOC.lon - R / 75); lo <= Math.floor(LOC.lon + R / 75); lo++) { const k = `${la}_${lo}`; if (SEED.idx.tiles[k] && !SEED.tiles.has(k)) want.push(k); }
   if (!want.length) return;
   const real = SPOTS.filter(s => !s.seed && !s.osm);
+  SEED.busy = true; setTimeout(() => { SEED.busy = false; }, 20000);
   const got = await Promise.all(want.map(k => fetch(`feed/seed/${k}.json`).then(r => r.ok ? r.json() : null).catch(() => null)));
   let added = 0;
   got.forEach((t, i) => { if (!t) return; SEED.tiles.add(want[i]);
@@ -23,6 +24,7 @@ async function loadSeed() {
       const s = { ...x, region: `${SEED_KIND[x.kind] || "Place"} · starter spot`, months: ps && ps.months || null, light: ps && ps.light || x.light, osm: true, seed: true, src: [], osmUrl: `https://www.openstreetmap.org/${x.osm}`, ps };
       SPOTS.push(s); byId[s.id] = s; added++; } });
   SEED.n += added;
+  SEED.busy = false;
   if (added) { if (typeof __topsKey !== "undefined") __topsKey = ""; render(); if (await loadWx(true)) { __topsKey = ""; render(); } }
 }
 /* seed spots count as coverage, so the live OSM fallback only runs where no tiles exist */
@@ -37,7 +39,7 @@ const _renderNowSeed = renderNow;
 renderNow = function () { _renderNowSeed(); if (!SEED.n) return; const v = $("#v-now"); if (!v || v.querySelector(".seedban")) return;
   const curated = SPOTS.filter(s => !s.osm); let best = 1e9; for (const s of curated) best = Math.min(best, km(LOC, s)); if (best < 80) return;
   const near = SPOTS.filter(s => s.seed && km(LOC, s) < 100).length; if (!near) return;
-  const d = v.querySelector("#winDetail"); const h = `<div class="welcome seedban"><p><b>${near} starter spots near you.</b> They come from OpenStreetMap and Wikidata, ranked by how notable they are. Tips are general and pins aren't checked yet; the best ones get researched first.</p></div>`;
+  const d = v.querySelector("#winDetail"); const h = `<div class="welcome seedban"><details><summary><b>${near} starter spots near you</b> <span class="muted">(what's that?)</span></summary><p>They come from OpenStreetMap and Wikidata, ranked by how notable they are. Tips are general and pins aren't checked yet; the best ones get researched first.</p></details></div>`;
   (d || v).insertAdjacentHTML(d ? "beforebegin" : "afterbegin", h); };
 document.addEventListener("change", e => { if (e.target.id === "maxTravel") setTimeout(loadSeed, 50); });
 /* spot page: say what a starter spot is */

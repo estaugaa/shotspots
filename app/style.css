@@ -354,3 +354,11 @@ details.oddsfold,details.camtips{margin:10px 0;border:1px solid var(--line);bord
 details.oddsfold summary,details.camtips summary{cursor:pointer;font-weight:600;font-size:15px}
 details.camtips li{font-size:14px;margin:4px 0}
 details.satdetails summary{cursor:pointer}
+
+/* keep the first recommendation above the fold on phones */
+.alertline{margin:2px 0 6px;padding:7px 12px}
+.nowline{margin:0 0 6px;padding:7px 12px;font-size:14px}
+.nowline > span:last-child{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.seedban details summary{cursor:pointer;list-style:none}
+.seedban details summary::-webkit-details-marker{display:none}
+.seedban p{margin:6px 0 0}
