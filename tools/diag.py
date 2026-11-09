@@ -7,8 +7,19 @@ async def main():
     out = []
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        for w, h, mob in [(390, 844, True), (1440, 900, False)]:
+        STATES = {
+          "owner": {"ss2:ownerKey": "x", "ss2:welcomed": True},
+          "owner+home+night": {"ss2:ownerKey": "x", "ss2:welcomed": True, "ss2:group": "night", "ss2:prefs": {"start": "home", "travel": "drive", "maxDrive": 120, "units": "us"}},
+          "life+walk": {"ss2:group": "life", "ss2:prefs": {"travel": "walk", "maxWalk": 30}},
+          "sky+60": {"ss2:group": "sky", "ss2:prefs": {"maxDrive": 60}},
+          "saved-loc": {"ss2:loc": {"lat": 45.582, "lon": -122.353, "label": "Washougal (home)", "src": "home", "at": 0}, "ss2:ownerKey": "x"},
+        }
+        import json as _j
+        for name, st in STATES.items():
+            w, h, mob = 390, 844, True
             c = await b.new_context(viewport={"width": w, "height": h}, is_mobile=mob, has_touch=mob, timezone_id="America/Los_Angeles")
+            await c.add_init_script("".join(f"localStorage.setItem({_j.dumps(k)}, {_j.dumps(_j.dumps(v))});" for k, v in st.items()))
+            out.append("== " + name)
             pg = await c.new_page(); errs = []
             pg.on("pageerror", lambda e: errs.append("PAGEERROR " + str(e)[:400]))
             await pg.goto(URL); await pg.wait_for_timeout(9000)
@@ -21,7 +32,7 @@ async def main():
                 else: await pg.mouse.click(bb['x'] + bb['width'] / 2, bb['y'] + bb['height'] / 2)
                 await pg.wait_for_timeout(1500)
                 out.append(f"{w} click {d} at={at} -> UI.day={await pg.evaluate('UI.day')} sel={await pg.evaluate('document.querySelector(\"[data-day][aria-selected=true]\")?.dataset.day')} focus={await pg.evaluate('UI.focus')}")
-            await pg.screenshot(path=f"ux/day_{w}.png")
+            await pg.screenshot(path=f"ux/day_{name}.png")
             out.append(f"{w} errors: " + " | ".join(errs[:6]))
             await c.close()
         await b.close()
