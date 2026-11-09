@@ -91,9 +91,15 @@ async function nearGauge(s) {
   if (!(s.cats.includes("waterfall") || s.kind === "waterfall" || /falls|river|creek|rapids/i.test(s.name))) return (s.gauge = null);
   const b = [s.lon - .2, s.lat - .15, s.lon + .2, s.lat + .15].map(x => x.toFixed(3)).join(",");
   try { const j = await getJson(`https://waterservices.usgs.gov/nwis/iv/?format=json&bBox=${b}&parameterCd=00060&siteType=ST&siteStatus=active&period=P7D`);
-    let best = null, bd = 20;
+    // A gauge only says something about this spot if it's on the same stream: the stream's name has to appear in the
+    // spot's name or description (then up to 20 km), or the gauge is right next to it (3 km). Big rivers like the
+    // Columbia say nothing about side-creek waterfalls.
+    const txt = (s.name + " " + (s.tip || "")).toLowerCase(); let best = null, bd = 1e9;
     for (const ts of j.value.timeSeries || []) { const g = ts.sourceInfo.geoLocation.geogLocation, d = km(s, { lat: g.latitude, lon: g.longitude });
-      const v = (ts.values[0].value || []).map(x => +x.value).filter(x => x >= 0); if (v.length && d < bd) { bd = d;
+      const stream = ts.sourceInfo.siteName.toLowerCase().split(/\s+(?:nr|near|at|abv|above|blw|below|bl|ab)\s+/)[0].replace(/\b(river|creek|cr|r|fork|ck)\b\.?/g, "").replace(/\s+/g, " ").trim();
+      if (/columbia|willamette|snake/.test(stream)) continue;
+      const same = stream.length >= 3 && new RegExp(`\\b${stream.replace(/[^a-z ]/g, "")}\\s+(river|creek|fork)\\b`).test(txt);
+      const v = (ts.values[0].value || []).map(x => +x.value).filter(x => x >= 0); if (v.length && (same ? d < 20 : d < 3) && d < bd) { bd = d;
         best = { name: ts.sourceInfo.siteName.replace(/\b(NR|NEAR)\b/g, "near").toLowerCase().replace(/\b\w/g, c => c.toUpperCase()), km: d, now: v[v.length - 1], med: v.slice().sort((a, b) => a - b)[Math.floor(v.length / 2)] }; } }
     mark("flow", true, "nearest USGS gauge"); return (s.gauge = best);
   } catch (e) { mark("flow", false, String(e.message || e)); return null; }

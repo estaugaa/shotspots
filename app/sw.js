@@ -1,4 +1,4 @@
-const V="ss2-v41";
+const V="ss2-v42";
 const SHELL=["./","index.html","style.css","app.js","live.js","sky.js","stars.js","now.js","glossary.js","ux.js","debug.js","feed.js","shots.js","research.js","alerts.js","access.js","desktop.js","photolog.js","forms.js","nearby.js","camera.js","photos.js","seed.js","kit.js","prefs.js","astro.js","data.js","manifest.webmanifest","icon-180.png","icon-192.png",
 "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js","https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>Promise.all(SHELL.map(u=>c.add(new Request(u,{cache:"reload"})).catch(()=>{})))).then(()=>self.skipWaiting()));});
