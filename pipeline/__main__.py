@@ -8,6 +8,8 @@ def job_goes():
     run_module("goes", goes.run, "MEASURED", "GOES-18 clear-sky mask + cloud-top height")
     from . import metar
     run_module("obs", metar.run, "MEASURED", "airport weather reports: visibility, fog, cloud base")
+    from . import natdata
+    run_module("nwsfog", natdata.nws_fog, "MEASURED", "NWS dense/freezing fog advisories with zone outlines")
     job_alerts()  # every 30 min: catches a geomagnetic storm in progress
     from . import reports
     run_module("reports", reports.run, "MEASURED", "conditions photos from the in-app camera (last 48 h)")
@@ -81,7 +83,14 @@ def job_trails():
     run_module("trails", lambda: trails.run(budget_min=300), "MEASURED", "OpenStreetMap walking route from parking + DEM climb")
 
 
+def job_natdata():
+    from . import natdata
+    run_module("tidestations", natdata.tide_stations, "MEASURED", "NOAA CO-OPS tide-prediction stations")
+    run_module("nwsfog", natdata.nws_fog, "MEASURED", "NWS dense/freezing fog advisories with zone outlines")
+
+
 def job_monthly():
+    job_natdata()
     from . import verify
     run_module("verify_positions", verify.positions, "MEASURED", "JPL Horizons + USNO")
     run_module("verify_outcomes", verify.outcomes, "MEASURED", "outing logs vs independent observations")
@@ -104,7 +113,7 @@ def manifest():
 
 
 JOBS = {"goes": job_goes, "conditions": job_conditions, "daily": job_daily, "weekly": job_weekly, "monthly": job_monthly,
-        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs}
+        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata}
 
 if __name__ == "__main__":
     for j in sys.argv[1:]:

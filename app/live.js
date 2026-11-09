@@ -63,7 +63,16 @@ async function loadTides(st) {
     LIVE.tides[st] = { at: Date.now(), p }; store.set("tides", LIVE.tides); mark("tides", true, "tides for " + (TIDE_NAMES[st] || st)); return LIVE.tides[st];
   } catch (e) { mark("tides", false, String(e.message || e)); return null; }
 }
-function lowTideNear(s, w) { const st = (D.TIDES || {})[s.id], c = st && LIVE.tides[st]; if (!c) return null;
+let TSTN = null;
+async function tideStation(s) {
+  const cur = (D.TIDES || {})[s.id]; if (cur) return cur; if (s.tide !== undefined) return s.tide;
+  if (!(s.cats.includes("coast") || s.kind === "beach" || s.kind === "lighthouse" || /beach|bay|harbor|cove|pier|lighthouse|tide/i.test(s.name))) return (s.tide = null);
+  if (!TSTN) TSTN = fetch("feed/tidestations.json").then(r => r.ok ? r.json() : { rows: [] }).catch(() => ({ rows: [] }));
+  const rows = (await TSTN).rows || []; let best = null, bd = 30;
+  for (const [id, n, lat, lon] of rows) { const d = km(s, { lat, lon }); if (d < bd) { bd = d; best = id; TIDE_NAMES[id] = TIDE_NAMES[id] || n; } }
+  return (s.tide = best);
+}
+function lowTideNear(s, w) { const st = (D.TIDES || {})[s.id] || s.tide, c = st && LIVE.tides[st]; if (!c) return null;
   return c.p.filter(x => x.type === "L" && x.t >= w.start.getTime() - 60 * 60000 && x.t <= w.end.getTime() + 60 * 60000).sort((a, b) => a.v - b.v)[0] || null; }
 
 /* ---- river flow (USGS) ---- */
@@ -76,6 +85,24 @@ async function loadFlow() {
       if (!v.length) return; const o = out.s[id] = out.s[id] || {}; o[p === "00060" ? "q" : "h"] = { now: v[v.length - 1], med: v.slice().sort((a, b) => a - b)[Math.floor(v.length / 2)], max: Math.max(...v) }; });
     LIVE.flow = out; store.set("flow", out); mark("flow", true, Object.keys(out.s).length + " river gauges");
   } catch (e) { mark("flow", false, String(e.message || e)); }
+}
+async function nearGauge(s) {
+  if (s.gauge !== undefined) return s.gauge;
+  if (!(s.cats.includes("waterfall") || s.kind === "waterfall" || /falls|river|creek|rapids/i.test(s.name))) return (s.gauge = null);
+  const b = [s.lon - .2, s.lat - .15, s.lon + .2, s.lat + .15].map(x => x.toFixed(3)).join(",");
+  try { const j = await getJson(`https://waterservices.usgs.gov/nwis/iv/?format=json&bBox=${b}&parameterCd=00060&siteType=ST&siteStatus=active&period=P7D`);
+    let best = null, bd = 20;
+    for (const ts of j.value.timeSeries || []) { const g = ts.sourceInfo.geoLocation.geogLocation, d = km(s, { lat: g.latitude, lon: g.longitude });
+      const v = (ts.values[0].value || []).map(x => +x.value).filter(x => x >= 0); if (v.length && d < bd) { bd = d;
+        best = { name: ts.sourceInfo.siteName.replace(/\b(NR|NEAR)\b/g, "near").toLowerCase().replace(/\b\w/g, c => c.toUpperCase()), km: d, now: v[v.length - 1], med: v.slice().sort((a, b) => a - b)[Math.floor(v.length / 2)] }; } }
+    mark("flow", true, "nearest USGS gauge"); return (s.gauge = best);
+  } catch (e) { mark("flow", false, String(e.message || e)); return null; }
+}
+async function spotNws(s) {
+  if (km(LOC, s) < 25) return (NWS && NWS.items) || [];
+  if (s._nws && Date.now() - s._nws.at < 30 * 60000) return s._nws.items;
+  try { const r = await fetch(`https://api.weather.gov/alerts/active?point=${s.lat.toFixed(3)},${s.lon.toFixed(3)}`, { headers: { Accept: "application/geo+json" } });
+    const j = await r.json(); s._nws = { at: Date.now(), items: (j.features || []).map(nwsItem) }; return s._nws.items; } catch (e) { return []; }
 }
 function rain48(s) { const pt = nearestPt(s, 60); if (!pt || !pt.h.precipitation) return null; const now = Date.now() / 1000;
   let mm = 0; pt.h.time.forEach((t, i) => { if (t <= now && t > now - 48 * 3600) mm += pt.h.precipitation[i] || 0; }); return mm / 25.4; }
@@ -120,8 +147,11 @@ async function fillLive(s) {
   const r = rain48(s);
   if (g && g.q) h += `<h3>River now</h3><div class="kv"><span>${GAUGE_NAMES[gid] || "Gauge " + gid}</span><span>${Math.round(g.q.now).toLocaleString()} cfs (${g.q.now > g.q.med * 1.3 ? "rising, above this week's normal" : g.q.now < g.q.med * 0.8 ? "below this week's normal" : "near this week's normal"})</span></div>`;
   else if (g && g.h) h += `<h3>River now</h3><div class="kv"><span>${GAUGE_NAMES[gid] || "Gauge " + gid}</span><span>${g.h.now.toFixed(1)} ft stage</span></div>`;
+  else { const ng = await nearGauge(s); if (ng) h += `<h3>River now</h3><div class="kv"><span>${esc(ng.name)} (${fmtKm(ng.km)} away)</span><span>${Math.round(ng.now).toLocaleString()} cfs (${ng.now > ng.med * 1.3 ? "running high: falls will be full" : ng.now < ng.med * 0.8 ? "below this week's normal" : "near this week's normal"})</span></div><p class="muted" style="font-size:13px">USGS stream gauge. Higher flow usually means fuller waterfalls nearby.</p>`; }
+  const al = await spotNws(s); if (al.length) h += `<h3>Weather alerts here</h3><ul class="plain">${al.slice(0, 4).map(a => `<li>${a.ic || "⚠️"} <b>${esc(a.headline)}</b>${a.tip ? ". " + esc(a.tip) : ""}</li>`).join("")}</ul>`;
+  const fa = typeof fogAdvisoryAt === "function" && fogAdvisoryAt(s); if (fa && !al.some(a => /Fog/.test(a.headline))) h += `<p>🌫️ <b>${esc(fa.event)}</b> covers this spot until ${fmtT(new Date(fa.ends))}. Expect fog at ground level; look for a viewpoint above it.</p>`;
   if (s.cats.includes("waterfall") && r != null) h += `<div class="kv"><span>Rain, past 48 h</span><span>${r.toFixed(2)} in</span></div>`;
-  const st = (D.TIDES || {})[s.id];
+  const st = await tideStation(s);
   if (st) { const c = await loadTides(st); if (c) { const up = c.p.filter(x => x.t > Date.now() - 2 * 36e5).slice(0, 5);
       h += `<h3>Tides (${TIDE_NAMES[st] || st})</h3><div class="kv">${up.map(x => `<span>${x.type === "L" ? "Low" : "High"}</span><span>${fmtDate(new Date(x.t))} ${fmtT(new Date(x.t))}, ${x.v.toFixed(1)} ft</span>`).join("")}</div>`; } }
   // sightings
@@ -173,7 +203,9 @@ document.addEventListener("submit", e => { if (e.target.id !== "ebForm") return;
 async function loadLive() {
   await Promise.all([loadInat(), loadEbird(), loadKpNow(), loadAq(), loadFlow()]);
   // pre-load tides for coast spots so they can rank
-  await Promise.all([...new Set(Object.values(D.TIDES || {}))].map(loadTides));
+  const coast = SPOTS.filter(s => !tooFar(s) && km(LOC, s) < 250).slice(0, 400);
+  const st = await Promise.all(coast.map(s => (D.TIDES || {})[s.id] ? (D.TIDES || {})[s.id] : (s.cats.includes("coast") || s.kind === "beach" ? tideStation(s) : null)));
+  await Promise.all([...new Set(st.filter(Boolean))].slice(0, 8).map(loadTides));
   render();
 }
 const _refresh = refresh;

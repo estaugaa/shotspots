@@ -36,11 +36,18 @@ def _elev(sp):
     return cache
 
 
-def judge(z_spot, z, cc):
-    """z, cc: heights (m) and cloud cover (%) per level, bottom up. Returns (top_m, p) or None."""
+def judge(z_spot, z, cc, vis=None, ground=None):
+    """z, cc: heights (m) and cloud cover (%) per level, bottom up; vis: surface visibility (m) at the cell; ground: cell
+    elevation (m). Returns (top_m, p) or None. Valley fog is often thinner than the gap between pressure levels, so a
+    foggy surface (visibility < 1.5 km) under clear upper levels counts as a shallow (~250 m) layer."""
     lv = [(zz, c) for zz, c in zip(z, cc) if zz is not None and c is not None]
     if len(lv) < 4:
         return None
+    if vis is not None and vis < 1500 and ground is not None:
+        top = ground + 250
+        above = [c for zz, c in lv if zz > z_spot]
+        if z_spot - top >= 100 and not (above and max(above[:3]) > 40):
+            return round(top), 60
     # the layer must start at the lowest levels below the spot
     low = [i for i, (zz, c) in enumerate(lv) if zz < z_spot - 100]
     if not low or lv[low[0]][1] < 70:
@@ -65,7 +72,7 @@ def run():
             continue
         cells.setdefault((round(s["lat"], 1), round(s["lon"], 1)), []).append(s)
     keys = list(cells)
-    hourly = ",".join([f"cloud_cover_{l}hPa" for l in LEV] + [f"geopotential_height_{l}hPa" for l in LEV])
+    hourly = ",".join([f"cloud_cover_{l}hPa" for l in LEV] + [f"geopotential_height_{l}hPa" for l in LEV] + ["visibility"])
     today = utcnow().date()
     found, n_cells = {}, 0
     for i in range(0, len(keys), 40):
@@ -90,8 +97,9 @@ def run():
                 ti = times.index(key)
                 z = [h.get(f"geopotential_height_{l}hPa", [None] * len(times))[ti] for l in LEV]
                 cc = [h.get(f"cloud_cover_{l}hPa", [None] * len(times))[ti] for l in LEV]
+                vis = (h.get("visibility") or [None] * len(times))[ti]
                 for s in cells[k]:
-                    res = judge(el[s["id"]], z, cc)
+                    res = judge(el[s["id"]], z, cc, vis, r.get("elevation"))
                     if res:
                         found.setdefault(s["id"], []).append({"t": iso(rise), "top": res[0], "elev": round(el[s["id"]]), "p": res[1]})
     write_json("fogabove.json", {"gen": iso(utcnow()), "spots": found, "note": "Viewpoints above a forecast low fog/stratus layer at sunrise (GFS/HRRR via Open-Meteo)."})

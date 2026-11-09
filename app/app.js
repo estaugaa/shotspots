@@ -36,7 +36,7 @@ const NIGHT = ["night", "aurora"];
 const WALK = { road: 5, short: 15, hike: 45, hard: 90 };
 const GROUPS = [["all", "All"], ["saved", "Saved"], ["land", "Landscape"], ["water", "Waterfalls"], ["life", "Birds & wildlife"], ["night", "Night sky"], ["city", "City"], ["align", "Alignments"]];
 const groupTest = { all: () => true, saved: s => !!SAVED[s.id], land: s => s.cats.some(c => SKY.includes(c) && c !== "city"), water: s => s.cats.includes("waterfall"),
-  life: s => s.cats.some(c => LIFE.includes(c)), night: s => s.cats.some(c => NIGHT.includes(c)), city: s => s.cats.includes("city"), align: s => s.cats.includes("alignment") };
+  life: s => s.cats.some(c => LIFE.includes(c)), night: s => s.cats.some(c => NIGHT.includes(c)) && !(s.cats.includes("city") && !s.cats.includes("aurora")) && !(/\b20(2[7-9]|3\d)\b/.test(s.name) && !new RegExp("\\b" + new Date().getFullYear() + "\\b").test(s.name)), city: s => s.cats.includes("city"), align: s => s.cats.includes("alignment") };
 
 /* ---------- storage ---------- */
 const store = { get(k, d) { try { const v = localStorage.getItem("ss2:" + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
@@ -561,7 +561,8 @@ function specialsHtml() {
         s0.mode === "snow" ? "Snow plus overcast gives the evergreens clean, graphic shapes. Overexpose +1 so the snow stays white." : ""].filter(Boolean);
       items.push(["☔", s0.mode === "snow" ? "Snow-day ideas" : "Rainy-day ideas", ideas.join(" ")]); } }
   // NWS alerts
-  (NWS && NWS.items || []).slice(0, 2).forEach(a => items.push(["⚠️", a.headline, a.area || ""]));
+  (NWS && NWS.items || []).slice(0, 2).forEach(a => items.push([a.ic || "⚠️", a.headline, a.tip || a.area || ""]));
+  const fa = fogAdvisoryAt(LOC); if (fa && !(NWS && NWS.items || []).some(a => /Fog/.test(a.headline))) items.push(["🌫️", `${fa.event} here until ${fmtT(new Date(fa.ends))}`, "Fog shots: valleys and water are socked in. Viewpoints above the fog may see a sea of cloud."]);
   // meteors
   showersSoon(10).forEach(({ sh, t }) => { const m = moonPos(new Date(t.getTime()), LOC.lat, LOC.lon); items.push(["☄️", `${sh.n} peak ${fmtDate(t)}`, `Up to ${sh.zhr}/hr in a dark sky. ${sh.note || ""} Moon ${Math.round(m.illum * 100)}% lit.`]); });
   // alignments within 14 days, nearest first
@@ -758,10 +759,24 @@ async function loadKp() {
     KP = { at: Date.now(), max: best ? best.kp : null, when: best ? `${dayWord(best.t)} around ${fmtT(best.t)}` : "" }; store.set("kp", KP);
   } catch (e) { }
 }
+// What an NWS alert means for a photographer: fog is an opportunity, the rest are cautions
+function nwsItem(f) { const p = f.properties, ev = p.event || "", until = p.ends || p.expires;
+  const T = [[/Fog/, "🌫️", "Fog shots: valleys and water are socked in. Viewpoints above the fog may see a sea of cloud."],
+    [/Air Quality|Smoke/, "🔥", "Smoke: distant peaks will fade, but sunrise and sunset turn deep red and orange."],
+    [/Red Flag|Fire/, "🔥", "High fire danger: no campfires, and some forest roads may close."],
+    [/Winter Storm|Blizzard|Ice|Snow|Winter Weather/, "❄️", "Fresh snow makes great scenes, but check road and pass conditions first."],
+    [/Wind/, "💨", "Strong wind: tripods shake and lakes won't reflect. Weigh down the tripod or use a faster shutter."],
+    [/Flood/, "🌊", "Flooding: waterfalls will be huge, but trails and roads near rivers may be closed."],
+    [/Heat/, "🌡️", "Heat: shoot early, carry extra water."]];
+  const m = T.find(([re]) => re.test(ev)) || [null, "⚠️", ""];
+  return { headline: ev + (until ? " until " + fmtT(new Date(until)) : ""), area: p.areaDesc, ic: m[1], tip: m[2] }; }
+function inRing(x, y, r) { let c = false; for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const [xi, yi] = r[i], [xj, yj] = r[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c; } return c; }
+function fogAdvisoryAt(p) { const f = typeof fd === "function" && fd("nwsfog"); if (!f) return null; const now = Date.now();
+  return (f.items || []).find(it => (!it.ends || new Date(it.ends) > now) && it.shapes.some(sh => p.lon >= sh.b[0] && p.lon <= sh.b[2] && p.lat >= sh.b[1] && p.lat <= sh.b[3] && sh.r.some(r => inRing(p.lon, p.lat, r)))) || null; }
 async function loadNws() {
   if (NWS && Date.now() - NWS.at < 30 * 60000 && NWS.key === locKey()) return;
   try { const r = await fetch(`https://api.weather.gov/alerts/active?point=${LOC.lat.toFixed(3)},${LOC.lon.toFixed(3)}`, { headers: { Accept: "application/geo+json" } });
-    const j = await r.json(); NWS = { at: Date.now(), key: locKey(), items: (j.features || []).map(f => ({ headline: f.properties.event + (f.properties.ends ? " until " + fmtT(new Date(f.properties.ends)) : ""), area: f.properties.areaDesc })) }; store.set("nws", NWS);
+    const j = await r.json(); NWS = { at: Date.now(), key: locKey(), items: (j.features || []).map(nwsItem) }; store.set("nws", NWS);
   } catch (e) { }
 }
 
