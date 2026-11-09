@@ -15,7 +15,7 @@ from collections import defaultdict
 from .common import http, spots, write_json, FEED, log, utcnow, iso, km, read_json
 
 OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass.private.coffee/api/interpreter"]
-STATES = {"WA": "US-WA", "OR": "US-OR", "ID": "US-ID", "CA": "US-CA", "MT": "US-MT", "NV": "US-NV", "UT": "US-UT", "AZ": "US-AZ", "CO": "US-CO", "WY": "US-WY", "NM": "US-NM"}
+STATES = {k: "US-" + k for k in "AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY".split()}
 PER_TILE = 120
 
 # [key, test, cats, light, effort, base score, tip]

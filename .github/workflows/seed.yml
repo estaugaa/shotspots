@@ -7,7 +7,7 @@ on:
         default: "WA OR"
         required: true
 concurrency:
-  group: long-${{ github.workflow }}   # long jobs queue separately so the 30-minute updates aren't blocked or cancel them
+  group: long-${{ github.workflow }}-${{ inputs.states }}   # long jobs queue separately so the 30-minute updates aren't blocked or cancel them
   cancel-in-progress: false
 permissions:
   contents: write
@@ -56,7 +56,12 @@ jobs:
           git config user.email "shotspots-bot@users.noreply.github.com"
           git add -A -- feed data config inbox
           git diff --cached --quiet || git commit -m "seed: starter spots [skip ci]"
-          for i in 1 2 3; do git pull --rebase -X theirs && git push && break; sleep 5; done
+          # several state batches run in parallel: after each rebase rebuild the index from every tile file
+          for i in 1 2 3 4 5 6; do
+            git pull --rebase -X theirs || { git rebase --abort; sleep 7; continue; }
+            python tools/seed_index.py && git add feed/seed/index.json && { git diff --cached --quiet || git commit -qm "seed: index [skip ci]"; }
+            git push && break; sleep $((RANDOM % 20 + 5))
+          done
   publish:
     needs: run
     if: always()
