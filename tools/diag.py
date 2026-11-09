@@ -1,32 +1,29 @@
-"""Scratch diagnostics run on Actions (workflow 'Diagnostic'). Safe to overwrite.
-UX review: phone-size screenshots of the live site plus all visible text."""
+"""Scratch diagnostics run on Actions (workflow 'Diagnostic'). Safe to overwrite. Live day-tab check."""
 import asyncio, os
 from playwright.async_api import async_playwright
 URL = "https://estaugaa.github.io/shotspots/"
 os.makedirs("ux", exist_ok=True)
 async def main():
+    out = []
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        c = await b.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=1, is_mobile=True, has_touch=True, timezone_id="America/Los_Angeles",
-                                geolocation={"latitude": 45.582, "longitude": -122.353}, permissions=["geolocation"])
-        pg = await c.new_page(); errs = []
-        pg.on("pageerror", lambda e: errs.append(str(e)[:300]))
-        await pg.goto(URL); await pg.wait_for_timeout(10000)
-        async def snap(name):
-            await pg.screenshot(path=f"ux/{name}.png", full_page=True)
-            t = await pg.evaluate("document.querySelector('#main')?.innerText || document.body.innerText")
-            open(f"ux/{name}.txt", "w").write(t)
-        await snap("1_plan")
-        await pg.evaluate("UI.planView='night'; typeof show==='function' && show('now')")
-        for seg in ("night", "calendar"):
-            el = await pg.query_selector(f"[data-pv='{seg}'], [data-planview='{seg}'], [data-seg='{seg}']")
-            if el: await el.tap(); await pg.wait_for_timeout(1500); await snap(f"2_plan_{seg}")
-        await pg.evaluate("show('spots')"); await pg.wait_for_timeout(1500); await snap("3_spots")
-        await pg.evaluate("openSpot('ridgefield')"); await pg.wait_for_timeout(4000)
-        await pg.screenshot(path="ux/4_spot.png")
-        open("ux/4_spot.txt", "w").write(await pg.evaluate("document.querySelector('#sheetBody')?.innerText || ''"))
-        await pg.evaluate("openSpot('vista-house')"); await pg.wait_for_timeout(3000)
-        open("ux/5_spot_vista.txt", "w").write(await pg.evaluate("document.querySelector('#sheetBody')?.innerText || ''"))
-        open("ux/errors.txt", "w").write("\n".join(errs) or "none")
+        for w, h, mob in [(390, 844, True), (1440, 900, False)]:
+            c = await b.new_context(viewport={"width": w, "height": h}, is_mobile=mob, has_touch=mob, timezone_id="America/Los_Angeles")
+            pg = await c.new_page(); errs = []
+            pg.on("pageerror", lambda e: errs.append("PAGEERROR " + str(e)[:400]))
+            await pg.goto(URL); await pg.wait_for_timeout(9000)
+            tabs = await pg.evaluate("[...document.querySelectorAll('[data-day]')].map(b=>b.dataset.day)")
+            out.append(f"{w} tabs {tabs} UI.day={await pg.evaluate('UI.day')} focus={await pg.evaluate('UI.focus')}")
+            for d in tabs[1:3]:
+                el = await pg.query_selector(f"[data-day='{d}']"); bb = await el.bounding_box()
+                at = await pg.evaluate(f"(()=>{{const e=document.elementFromPoint({bb['x']+bb['width']/2},{bb['y']+bb['height']/2});return e?e.tagName+'#'+e.id+'.'+e.className+(e.closest('[data-day]')?' IN-TAB':' NOT-TAB'):'none'}})()")
+                if mob: await pg.tap(f"[data-day='{d}']")
+                else: await pg.mouse.click(bb['x'] + bb['width'] / 2, bb['y'] + bb['height'] / 2)
+                await pg.wait_for_timeout(1500)
+                out.append(f"{w} click {d} at={at} -> UI.day={await pg.evaluate('UI.day')} sel={await pg.evaluate('document.querySelector(\"[data-day][aria-selected=true]\")?.dataset.day')} focus={await pg.evaluate('UI.focus')}")
+            await pg.screenshot(path=f"ux/day_{w}.png")
+            out.append(f"{w} errors: " + " | ".join(errs[:6]))
+            await c.close()
         await b.close()
+    open("ux/days.txt", "w").write("\n".join(out)); print("\n".join(out))
 asyncio.run(main())
