@@ -6,7 +6,7 @@ os.makedirs("ux", exist_ok=True)
 async def main():
     out = []
     async with async_playwright() as p:
-        b = await p.chromium.launch()
+        b = await p.webkit.launch(); dev = p.devices["iPhone 14"]
         STATES = {
           "owner": {"ss2:ownerKey": "x", "ss2:welcomed": True},
           "owner+home+night": {"ss2:ownerKey": "x", "ss2:welcomed": True, "ss2:group": "night", "ss2:prefs": {"start": "home", "travel": "drive", "maxDrive": 120, "units": "us"}},
@@ -17,7 +17,7 @@ async def main():
         import json as _j
         for name, st in STATES.items():
             w, h, mob = 390, 844, True
-            c = await b.new_context(viewport={"width": w, "height": h}, is_mobile=mob, has_touch=mob, timezone_id="America/Los_Angeles")
+            c = await b.new_context(**dev, timezone_id="America/Los_Angeles")
             await c.add_init_script("".join(f"localStorage.setItem({_j.dumps(k)}, {_j.dumps(_j.dumps(v))});" for k, v in st.items()))
             out.append("== " + name)
             pg = await c.new_page(); errs = []
