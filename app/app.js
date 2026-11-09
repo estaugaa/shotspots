@@ -89,9 +89,14 @@ async function loadDrives(ids) {
 }
 
 /* ---------- weather (Open-Meteo) ---------- */
-function wxPoints() { return [...GRID, { id: "me", n: "Here", lat: LOC.lat, lon: LOC.lon }]; }
+function wxPoints() {
+  const pts = [...GRID, { id: "me", n: "Here", lat: LOC.lat, lon: LOC.lon }];
+  const far = SPOTS.filter(s => !s.closed && km(LOC, s) < 250 && !pts.some(p => km(p, s) < 45));
+  const cells = {}; for (const s of far) { const k = `${Math.round(s.lat * 2) / 2},${Math.round(s.lon * 2) / 2}`; (cells[k] = cells[k] || []).push(s); }
+  Object.values(cells).sort((a, b) => b.length - a.length).slice(0, 16).forEach((g, i) => pts.push({ id: "x" + i, n: g[0].name, lat: g.reduce((a, s) => a + s.lat, 0) / g.length, lon: g.reduce((a, s) => a + s.lon, 0) / g.length }));
+  return pts; }
 async function loadWx(force) {
-  if (!force && WX && Date.now() - WX.at < 30 * 60000 && WX.key === locKey()) return false;
+  if (!force && WX && Date.now() - WX.at < 30 * 60000 && WX.key === locKey() && WX.n === wxPoints().length) return false;
   const pts = wxPoints();
   const url = "https://api.open-meteo.com/v1/forecast?latitude=" + pts.map(p => p.lat.toFixed(3)).join(",") + "&longitude=" + pts.map(p => p.lon.toFixed(3)).join(",") +
     "&hourly=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,visibility,relative_humidity_2m,dew_point_2m,temperature_2m,wind_speed_10m,precipitation_probability,weather_code,precipitation" +
@@ -99,10 +104,11 @@ async function loadWx(force) {
   try {
     const r = await fetch(url); if (!r.ok) throw new Error("HTTP " + r.status);
     let j = await r.json(); if (!Array.isArray(j)) j = [j];
-    WX = { at: Date.now(), key: locKey(), pts: j.map((x, i) => ({ id: pts[i].id, n: pts[i].n, lat: pts[i].lat, lon: pts[i].lon, h: x.hourly })) };
+    WX = { at: Date.now(), key: locKey(), n: pts.length, pts: j.map((x, i) => ({ id: pts[i].id, n: pts[i].n, lat: pts[i].lat, lon: pts[i].lon, h: x.hourly })) };
     store.set("wx", WX); return true;
-  } catch (e) { WX && (WX.err = String(e.message || e)); return false; }
+  } catch (e) { WX && (WX.err = String(e.message || e)); if (!loadWx.retry) { loadWx.retry = setTimeout(async () => { loadWx.retry = 0; if (await loadWx(true)) { __topsKey = ""; render(); } }, 20000); } return false; }
 }
+function wxMiss() { return !WX ? (navigator.onLine === false ? "offline: no forecast" : "forecast loading") : "no forecast point near here yet"; }
 function nearestPt(p, maxKm, exclude) {
   if (!WX) return null; let best = null, bd = 1e9;
   for (const q of WX.pts) { if (exclude && q.id === exclude) continue; const d = km(p, q); if (d < bd) { bd = d; best = q; } }
@@ -383,14 +389,14 @@ function fitFor(s, w) {
     parts.push(has(NIGHT) ? v : v * 0.7);
     if (!w.dark && w.illum >= 0.7 && c && c.cc <= 30 && c.pop < 40 && s.cats.some(k => ["mountain", "waterfall", "vista", "coast"].includes(k))) { parts.push(56); why.unshift("bright moon: moonlit landscape with stars"); }
   } else if (BLUEK.has(w.kind)) {
-    if (!sk) return { n: 40, why: ["forecast loading"], sk: null };
+    if (!sk) return { n: 40, why: [wxMiss()], sk: null };
     blueParts(s, w, sk, parts, why);
   } else if (DAYK.has(w.kind)) {
-    if (!sk) return { n: 40, why: ["forecast loading"], sk: null };
+    if (!sk) return { n: 40, why: [wxMiss()], sk: null };
     if (has(NIGHT) && !s.cats.some(k => !NIGHT.includes(k))) return null;
     dayParts(s, w, sk, parts, why);
   } else {
-    if (!sk) return { n: 40, why: ["forecast loading"], sk: null };
+    if (!sk) return { n: 40, why: [wxMiss()], sk: null };
     const m = sk.mode, wet = m === "rain" || m === "snow", dayW = false;
     if (has(SKY)) { let v = sk.q;
       if (wet) { v = 12;
@@ -508,9 +514,10 @@ function plannerHtml(all, tops) {
     return `<button class="daytab" role="tab" data-day="${d}" aria-selected="${d === UI.day}"><span>${dayTab(d)}</span><small class="${scoreCls(n)}">${n || "–"}</small></button>`; }).join("")}</div>`;
   const idx = all.map((w, i) => i).filter(i => winDay(all[i]) === UI.day);
   const best = Math.max(0, ...idx.map(i => tops[i] ? tops[i].f.n : 0));
+  const bestI = idx.find(i => tops[i] && tops[i].f.n === best), nBest = idx.filter(i => tops[i] && tops[i].f.n === best).length;   // one "best" chip, and none when all tie
   h += `<div class="winchips">${idx.map(i => { const w = all[i], t = tops[i], n = t ? t.f.n : 0;
     const flag = alertAt.some(x => x >= w.start.getTime() && x < w.end.getTime());
-    return `<button class="winchip${i === UI.focus ? " on" : ""}" data-focus="${i}" aria-pressed="${i === UI.focus}"><span class="wk">${KSHORT2[w.kind]}${flag ? ` <i class="adot" title="alert"></i>` : ""}</span><span class="wt">${chipTime(w)}</span><span class="score sm ${scoreCls(n)}">${n || "–"}</span>${n && n === best ? `<span class="wbest">best</span>` : ""}</button>`; }).join("")}</div></div>`;
+    return `<button class="winchip${i === UI.focus ? " on" : ""}" data-focus="${i}" aria-pressed="${i === UI.focus}"><span class="wk">${KSHORT2[w.kind]}${flag ? ` <i class="adot" title="alert"></i>` : ""}</span><span class="wt">${chipTime(w)}</span><span class="score sm ${scoreCls(n)}">${n || "–"}</span>${n && n === best && i === bestI && nBest < idx.length ? `<span class="wbest">best</span>` : ""}</button>`; }).join("")}</div></div>`;
   return h;
 }
 function renderNow() {
@@ -558,10 +565,11 @@ function specialsHtml() {
   // meteors
   showersSoon(10).forEach(({ sh, t }) => { const m = moonPos(new Date(t.getTime()), LOC.lat, LOC.lon); items.push(["☄️", `${sh.n} peak ${fmtDate(t)}`, `Up to ${sh.zhr}/hr in a dark sky. ${sh.note || ""} Moon ${Math.round(m.illum * 100)}% lit.`]); });
   // alignments within 14 days, nearest first
-  const soon = alignEvents().filter(e => e.t > now && e.t - now < 14 * 864e5).map(e => ({ e, d: driveMin(byId[e.spot]) })).filter(x => x.d <= 90).sort((a, b) => a.e.t - b.e.t).slice(0, 4);
+  const soon = alignEvents().filter(e => e.t > now && e.t - now < 14 * 864e5 && (e.body === "sun" || sunPos(e.t, byId[e.spot].lat, byId[e.spot].lon).alt < 2)).map(e => ({ e, d: driveMin(byId[e.spot]) })).filter(x => x.d <= 90).sort((a, b) => a.e.t - b.e.t).slice(0, 4);
   soon.forEach(({ e, d }) => items.push(["🎯", `${fmtDate(e.t)} ${fmtT(e.t)}: ${e.what}`, `${e.from || byId[e.spot].name} · ${fmtDur(d)}`, e.spot]));
   // wildlife at peak
-  const md = mmdd(now); (D.WEVENTS || []).forEach(ev => (ev.windows || []).forEach(win => { if (win.peak && inRange(md, win.peak[0], win.peak[1])) items.push([ev.icon || "🦅", `${ev.name}: peak now`, ev.what || "", ev.spots && ev.spots[0]]); }));
+  const md = mmdd(now); (D.WEVENTS || []).forEach(ev => (ev.windows || []).forEach(win => { const sp = (ev.spots || []).map(id => byId[id]).filter(Boolean);
+    if (win.peak && inRange(md, win.peak[0], win.peak[1]) && sp.some(s => km(LOC, s) < 150 && !tooFar(s))) items.push([ev.icon || "🦅", `${ev.name}: peak now`, ev.what || "", sp[0].id]); }));
   if (!items.length) return "";
   return `<div class="sect"><h3>Also worth knowing</h3>${items.map(([ic, t, p, sid]) => `<div class="item"${sid ? ` data-spot="${sid}" role="button" tabindex="0"` : ""}><b>${ic} ${esc(t)}</b>${p ? `<p>${esc(p)}</p>` : ""}</div>`).join("")}</div>`;
 }
@@ -688,7 +696,7 @@ function openSpot(id) {
   const la = s.lat.toFixed(5), lo = s.lon.toFixed(5);
   const n3 = wins.map(w => { const f = fitFor(s, w); const dw = w.kind === "night" ? dayWord(w.start) : dayWord(w.peak); return `<div><small>${w.kind === "night" && dw === "Today" ? "Tonight" : ({ Today: "Today", Tomorrow: "Tmrw" })[dw] || dw.slice(0, 3)}</small><small><b class="k">${KSHORT[w.kind]}</b></small><b style="color:var(${f && f.n >= 70 ? "--moss" : f && f.n >= 45 ? "--gold" : "--muted"})">${f ? f.n : "–"}</b><small>${fmtT(GOLDK.has(w.kind) ? w.peak : w.start)}</small></div>`; }).join("");
   const wl = wildlifeNow(s);
-  let h = `<h2 id="sheetTitle">${esc(s.name)}</h2><p class="sub">${esc(s.region)} · ${fmtDur(d)} drive${s.effort ? " · " + ({ road: "roadside", short: "short walk", hike: "hike", hard: "strenuous" }[s.effort]) : ""}${s.approx ? " · approximate pin" : ""}</p>
+  let h = `<h2 id="sheetTitle">${esc(s.name)}</h2><p class="sub">${esc(s.region)} · ${fmtDur(d)} ${PREFS.travel === "walk" ? "walk" : "drive"}${s.effort ? " · " + ({ road: "roadside", short: "short walk", hike: "hike", hard: "strenuous" }[s.effort]) : ""}${s.approx ? " · approximate pin" : ""}</p>
     <div class="actions"><a class="btn primary" href="https://maps.apple.com/?daddr=${s.park ? s.park[0] : la},${s.park ? s.park[1] : lo}&dirflg=d">Directions${s.park ? " to trailhead" : ""}</a>
       <button class="btn" id="saveBtn" data-id="${s.id}">${SAVED[s.id] ? "★ Saved" : "☆ Save"}</button>
       <button class="btn" id="shotBtn" data-id="${s.id}">📷 Shot it</button>${navigator.share ? `<button class="btn" id="shareBtn" data-id="${s.id}">Share</button>` : ""}</div>

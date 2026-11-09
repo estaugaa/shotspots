@@ -23,7 +23,7 @@ async function loadSeed() {
       const s = { ...x, region: `${SEED_KIND[x.kind] || "Place"} · starter spot`, months: ps && ps.months || null, light: ps && ps.light || x.light, osm: true, seed: true, src: [], osmUrl: `https://www.openstreetmap.org/${x.osm}`, ps };
       SPOTS.push(s); byId[s.id] = s; added++; } });
   SEED.n += added;
-  if (added) { if (typeof __topsKey !== "undefined") __topsKey = ""; render(); }
+  if (added) { if (typeof __topsKey !== "undefined") __topsKey = ""; render(); if (await loadWx(true)) { __topsKey = ""; render(); } }
 }
 /* seed spots count as coverage, so the live OSM fallback only runs where no tiles exist */
 realSpots = function () { return SPOTS.filter(s => !s.osm || s.seed); };

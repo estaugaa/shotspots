@@ -7,7 +7,7 @@ on:
         default: "WA OR"
         required: true
 concurrency:
-  group: pipeline
+  group: long-${{ github.workflow }}   # long jobs queue separately so the 30-minute updates aren't blocked or cancel them
   cancel-in-progress: false
 permissions:
   contents: write

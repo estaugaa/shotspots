@@ -20,12 +20,23 @@ def _prev(stations):
     out = {}
     for i in range(0, len(stations), 40):
         ch = stations[i:i + 40]
-        j = http("https://previous-runs-api.open-meteo.com/v1/forecast", params={
-            "latitude": ",".join(str(s["lat"]) for s in ch), "longitude": ",".join(str(s["lon"]) for s in ch),
-            "hourly": "visibility_previous_day1,cloud_cover_low_previous_day1,cloud_cover_previous_day1", "past_days": 30, "forecast_days": 1, "timezone": "GMT"}, timeout=120).json()
+        base = {"latitude": ",".join(str(s["lat"]) for s in ch), "longitude": ",".join(str(s["lon"]) for s in ch), "past_days": 30, "forecast_days": 1, "timezone": "GMT"}
+        j = None
+        for hv in ("visibility_previous_day1,cloud_cover_low_previous_day1,cloud_cover_previous_day1", "cloud_cover_low_previous_day1,cloud_cover_previous_day1"):
+            try:
+                j = http("https://previous-runs-api.open-meteo.com/v1/forecast", params={**base, "hourly": hv}, timeout=120).json()
+            except Exception as e:
+                log.warning("previous-runs %s: %s", hv.split(",")[0], e); j = None; continue
+            if isinstance(j, dict) and j.get("error"):
+                log.warning("previous-runs refused %s: %s", hv.split(",")[0], j.get("reason")); j = None; continue
+            break
+        if j is None:
+            continue
         for s, r in zip(ch, j if isinstance(j, list) else [j]):
             h = r.get("hourly") or {}
-            out[s["id"]] = {t: (v, l, c) for t, v, l, c in zip(h.get("time", []), h.get("visibility_previous_day1", []), h.get("cloud_cover_low_previous_day1", []), h.get("cloud_cover_previous_day1", []))}
+            tt = h.get("time", [])
+            vis = h.get("visibility_previous_day1") or [None] * len(tt)
+            out[s["id"]] = {t: (v, l, c) for t, v, l, c in zip(tt, vis, h.get("cloud_cover_low_previous_day1", []), h.get("cloud_cover_previous_day1", []))}
     return out
 
 
@@ -43,9 +54,11 @@ def run():
     for o in hist:
         hr = o["t"]
         f = (fc.get(o["id"]) or {}).get(hr)
-        if not f or None in f:
+        if not f or f[1] is None or f[2] is None:
             continue
         vis_f, low_f, cc_f = f
+        if vis_f is None:   # no visibility in the forecast archive: treat a full low-cloud deck as forecast fog
+            vis_f = 1000 if low_f >= 95 else 20000
         events = {"fog": (o["fog"], vis_f <= 1600), "low": (o["base_ft"] is not None and o["base_ft"] <= 1500, low_f >= 70),
                   "ovc": (o["base_ft"] is not None and o["base_ft"] <= 12000, cc_f >= 70)}
         for k, (obs, fct) in events.items():

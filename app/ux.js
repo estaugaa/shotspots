@@ -44,7 +44,9 @@ function orderSpotPage() {
   b._mo.observe(b, { childList: true }); setTimeout(() => b._mo && b._mo.disconnect(), 8000); }; }
 
 /* research labels like "Scout pick: …" read oddly as place names */
-function tidyNames() { for (const s of SPOTS) if (/^Scout pick:\s*/i.test(s.name)) s.name = s.name.replace(/^Scout pick:\s*/i, ""); }
+function tidyNames() { const away = km(LOC, { lat: 45.582, lon: -122.353 }) > 60;
+  for (const s of SPOTS) { if (/^Scout pick:\s*/i.test(s.name)) s.name = s.name.replace(/^Scout pick:\s*/i, "");
+    if (s.region && /Close to home/.test(s.region) !== !away) { s._r0 = s._r0 || s.region; s.region = away ? s._r0.replace("Close to home", "Clark County, WA") : s._r0; } } }
 function stripScout(root) { if (!root) return; const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n;
   while ((n = w.nextNode())) if (n.nodeValue.includes("Scout pick:")) n.nodeValue = n.nodeValue.replace(/Scout pick:\s*/g, ""); }
 { const _r = render; render = function () { tidyNames(); const r = _r.apply(this, arguments); stripScout($("#main")); return r; }; }

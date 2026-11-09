@@ -137,7 +137,7 @@ fitFor = function (s, w) {
   else {
     const hrs = w.dark ? (w.dark.e - w.dark.s) / 36e5 : 0, moonF = hrs >= 3 ? 1 : hrs >= 1 ? 0.8 : w.illum >= 0.7 ? 0.5 : 0.7;
     n = 100 * clearF * skyF(q) * moonF;
-    why.push(c ? (c.cc <= 15 ? "clear" : c.cc <= 40 ? `some cloud (${Math.round(c.cc)}%)` : `cloudy (${Math.round(c.cc)}%)`) : "forecast loading");
+    why.push(c ? (c.cc <= 15 ? "clear" : c.cc <= 40 ? `some cloud (${Math.round(c.cc)}%)` : `cloudy (${Math.round(c.cc)}%)`) : (typeof wxMiss === "function" ? wxMiss() : "forecast loading"));
     why.push(`${bortleLabel(q)} sky`);
     if (w.dark) why.push(`moon-free ${fmtT(w.dark.s)}–${fmtT(w.dark.e)}`); else why.push(`${Math.round(w.illum * 100)}% moon up`);
     if (!w.dark && w.illum >= 0.6 && clearF >= 0.8 && s.cats.some(k => ["mountain", "waterfall", "vista", "coast", "reflection"].includes(k))) { const v = 58 * clearF * (0.75 + 0.25 * skyF(q)); if (v > n) { n = v; why.unshift("bright moon: moonlit landscape with stars"); } }
