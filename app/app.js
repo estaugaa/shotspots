@@ -309,7 +309,7 @@ function verdict(sk) {
   }
   if (sk.fog) return { cls: "fog", txt: "Fog likely in the lowlands: go above it" };
   if (sk.mode === "snow") return { cls: "good", txt: "Snow: fresh snow on forests and falls" };
-  if (sk.mode === "rain") return sk.kind === "day" ? { cls: "mid", txt: "Rain: waterfalls, wet forest, moody mist" } : { cls: "poor", txt: `Rain at ${sk.kind}: little color. Wet city lights at blue hour are the best bet` };
+  if (sk.mode === "rain") return sk.kind === "day" ? { cls: "mid", txt: "Rain: waterfalls, wet forest, moody mist" } : { cls: "poor", txt: `Rain at ${sk.kind}: little color. ` + (SPOTS.some(s => s.cats.includes("city") && !tooFar(s)) ? "Wet city lights at blue hour are the best bet" : "Try storm surf, waterfalls or moody forest instead") };
   if (sk.mode === "clearing") return { cls: "good", txt: "Storm clearing: dramatic light odds" };
   if (sk.rainbow) return { cls: "good", txt: `Showers and low sun: rainbow odds, look ${sk.rbDir}` };
   if (sk.mode === "wind") return { cls: "mid", txt: `Windy (${fmtWind(sk.wind)}): skip reflections, try streaking clouds` };
