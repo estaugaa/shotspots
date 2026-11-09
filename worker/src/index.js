@@ -50,6 +50,17 @@ export default {
     if (req.method === "GET" && url.pathname === "/health") {
       let last = null; try { last = await env.DB.prepare("SELECT at, job, result FROM ticks ORDER BY rowid DESC LIMIT 3").all(); } catch (e) { }
       return json(req, { ok: true, scheduler: env.GH_TOKEN ? "on" : "waiting for GH_TOKEN", recent: last && last.results }); }
+    // 7Timer seeing/transparency: its server sends no CORS header, so phones can't read it directly. Proxy it,
+    // rounded to 0.25° and cached for 3 hours at Cloudflare's edge so 7Timer sees few requests.
+    if (req.method === "GET" && url.pathname === "/seeing") {
+      const r4 = v => (Math.round(parseFloat(v) * 4) / 4).toFixed(2), lat = r4(url.searchParams.get("lat")), lon = r4(url.searchParams.get("lon"));
+      if (!isFinite(lat) || !isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return json(req, { ok: false, error: "bad lat/lon" }, 400);
+      const src = `https://www.7timer.info/bin/astro.php?lon=${lon}&lat=${lat}&ac=0&unit=metric&output=json&tzshift=0`;
+      const cache = caches.default, key = new Request(src); let res = await cache.match(key);
+      if (!res) { const up = await fetch(src, { headers: { "User-Agent": "ShotSpots/1.0" } }); if (!up.ok) return json(req, { ok: false, error: "7timer " + up.status }, 502);
+        res = new Response(await up.text(), { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=10800" } }); await cache.put(key, res.clone()); }
+      return new Response(res.body, { headers: { "Content-Type": "application/json", ...cors(req), "Access-Control-Allow-Methods": "GET, POST, OPTIONS" } });
+    }
     const m = url.pathname.match(/^\/f\/([a-z_]+)$/);
     if (req.method !== "POST" || !m) return json(req, { ok: false, error: "not found" }, 404);
     const form = m[1];

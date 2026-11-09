@@ -105,11 +105,12 @@ let SEVEN = store.get("seven", null);
 async function loadSeven() {
   if (SEVEN && Date.now() - SEVEN.at < 3 * 36e5 && SEVEN.key === locKey()) return;
   try {
-    const r = await fetch(`https://www.7timer.info/bin/astro.php?lon=${LOC.lon.toFixed(2)}&lat=${LOC.lat.toFixed(2)}&ac=0&unit=metric&output=json&tzshift=0`);
+    const base = (typeof FORMS_URL !== "undefined" && FORMS_URL) || store.get("formsUrl", "") || "https://shotspots-forms.shotspots-eric.workers.dev";
+    const r = await fetch(`${base}/seeing?lat=${LOC.lat.toFixed(2)}&lon=${LOC.lon.toFixed(2)}`); if (!r.ok) throw new Error("HTTP " + r.status);
     const j = await r.json(); const i = j.init, t0 = Date.UTC(+i.slice(0, 4), +i.slice(4, 6) - 1, +i.slice(6, 8), +i.slice(8, 10));
     SEVEN = { at: Date.now(), key: locKey(), rows: j.dataseries.map(x => ({ t: t0 + x.timepoint * 36e5, cc: x.cloudcover, see: x.seeing, tr: x.transparency })) };
     store.set("seven", SEVEN); LIVE.status.seven = { ok: true, note: "seeing & transparency loaded" };
-  } catch (e) { LIVE.status.seven = { ok: false, note: "7Timer not reachable from the phone" }; }
+  } catch (e) { LIVE.status.seven = { ok: false, note: "7Timer didn't answer; trying again later" }; }
 }
 const SEE = ["", "excellent", "excellent", "good", "good", "average", "average", "poor", "poor"];
 function sevenAt(t) { if (!SEVEN) return null; let b = null, bd = 1e12; for (const r of SEVEN.rows) { const d = Math.abs(r.t - t); if (d < bd) { bd = d; b = r; } } return bd <= 2 * 36e5 ? b : null; }
