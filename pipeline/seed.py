@@ -10,7 +10,7 @@ tips; nightly research (RESEARCH.md, reach mode) then promotes the highest-ranke
 
     python -m pipeline seed WA OR
 """
-import json, math, time
+import json, math, re, time
 from collections import defaultdict
 from .common import http, spots, write_json, FEED, log, utcnow, iso, km, read_json
 
@@ -30,7 +30,7 @@ TYPES = [
      "A mapped viewpoint. Check which way it faces: east for sunrise, west for sunset. Arrive 30 minutes early to scout foreground."),
     ("hotspring", lambda t: t.get("natural") == "hot_spring", ["night"], "night", "hike", 3,
      "Steam reads best in cold air at first light. Check access rules; many springs are on private or tribal land."),
-    ("refuge", lambda t: t.get("leisure") == "nature_reserve" or t.get("protect_class") in ("4",) or "wildlife" in t.get("name", "").lower() and t.get("boundary") == "protected_area",
+    ("refuge", lambda t: t.get("leisure") in ("nature_reserve", "bird_hide") or re.search(r"wildlife|refuge|bird", t.get("protection_title", ""), re.I) or t.get("protect_class") in ("4",) or "wildlife" in t.get("name", "").lower() and t.get("boundary") == "protected_area",
      ["wildlife", "birds"], "sunrise", "short", 3, "Wildlife is most active in the first two hours after sunrise. Stay on trails, use your car as a blind on auto routes and give animals space."),
     ("peak", lambda t: t.get("natural") == "peak", ["mountain", "vista"], "sunset", "hike", 2,
      "A notable summit. Check the road and trail first; first and last light on high ground is the reason to go, and it's often the subject from below."),
@@ -64,6 +64,8 @@ def query(state):
       nwr{a}[man_made=lighthouse];
       nwr{a}[natural=arch]; node{a}[natural=hot_spring][name];
       nwr{a}[leisure=nature_reserve][name][wikidata];
+      nwr{a}[boundary=protected_area][protection_title~"Wildlife|Refuge|Bird",i][name];
+      nwr{a}[leisure=bird_hide][name];
       nwr{a}[natural=beach][name][wikidata];
       way{a}[man_made=bridge][name][wikidata]; way{a}[bridge][wikidata][name];
       nwr{a}[historic~"^(castle|fort|monument|ruins|ship|mine)$"][name][wikidata];

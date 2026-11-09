@@ -28,7 +28,7 @@ CHECKS = """(() => { const all = allWindows(LOC, PLAN_HOURS), w = all[UI.focus],
   const txt = document.querySelector('#v-now').innerText, home = km(LOC, HOME) < 60;
   const leak = home ? [] : ["Gorge", "Washougal", "Ridgefield", "Crown Point", "Sauvie", "Columbia"].filter(k => txt.includes(k));
   const scores = ranked.slice(0, 10).map(x => x.f.n), spread = scores.length ? Math.max(...scores) - Math.min(...scores) : 0;
-  return { wx: !!WX, wxErr: WX && WX.err || null, wxPts: WX ? WX.pts.length : 0, hz: HZN ? HZN.paths.length : 0, chip, top, chipMatches: chip === top,
+  return { wx: !!WX, wxErr: WX && WX.err || (typeof WXERR !== 'undefined' ? WXERR : null), wxPts: WX ? WX.pts.length : 0, hz: HZN ? HZN.paths.length : 0, chip, top, chipMatches: chip === top,
            tooFarListed: far, leak, alertline: !!document.querySelector('.alertline'), spots: SPOTS.length, ranked: ranked.length, top10spread: spread,
            seeing: typeof SEVEN !== 'undefined' && SEVEN ? (SEVEN.err || SEVEN.note || 'ok') : 'n/a' }; })()"""
 async def main():
@@ -51,9 +51,9 @@ async def main():
             txt = await pg.evaluate("document.querySelector('#v-now')?.innerText || ''")
             out.append(f"\n######## {name}\nfirst spot {first} ms | window={win} | errors={errs[:3]}\nCHECKS {json.dumps(chk)}\n" + txt[:2600])
             if "nighttab" in extra:
-                await pg.evaluate("(() => { const b = [...document.querySelectorAll('button')].find(x => /Night sky/.test(x.textContent) && !x.dataset.v); b && b.click(); })()")
+                await pg.evaluate("show('sky')")
                 await pg.wait_for_timeout(4000)
-                out.append("--- night sky tab:\n" + (await pg.evaluate("(document.querySelector('#v-sky') || document.querySelector('#v-now')).innerText"))[:1500])
+                out.append("--- night sky tab:\n" + (await pg.evaluate("document.querySelector('#v-sky').innerText"))[:1800]); await pg.evaluate("show('now')")
             tops = await pg.evaluate("[...document.querySelectorAll('#v-now .picks [data-spot]')].slice(0, 2).map(a => a.dataset.spot)")
             for k, sid in enumerate(tops):
                 await pg.evaluate(f"openSpot({json.dumps(sid)})"); await pg.wait_for_timeout(5000)

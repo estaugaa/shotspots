@@ -52,6 +52,16 @@ export default {
       return json(req, { ok: true, scheduler: env.GH_TOKEN ? "on" : "waiting for GH_TOKEN", recent: last && last.results }); }
     // 7Timer seeing/transparency: its server sends no CORS header, so phones can't read it directly. Proxy it,
     // rounded to 0.25° and cached for 3 hours at Cloudflare's edge so 7Timer sees few requests.
+    // Open-Meteo fallback: when a phone's own request is refused (busy, 429) the app retries through here.
+    // Only Open-Meteo hosts; identical requests share a 15-minute edge cache.
+    if (req.method === "GET" && url.pathname === "/om") {
+      let u; try { u = new URL(url.searchParams.get("u") || ""); } catch (e) { return json(req, { ok: false, error: "bad url" }, 400); }
+      if (u.protocol !== "https:" || !/^(api|air-quality-api)\.open-meteo\.com$/.test(u.hostname)) return json(req, { ok: false, error: "not allowed" }, 400);
+      const cache = caches.default, key = new Request(u.toString()); let res = await cache.match(key);
+      if (!res) { const up = await fetch(u.toString(), { headers: { "User-Agent": "ShotSpots/1.0" } }); if (!up.ok) return json(req, { ok: false, error: "open-meteo " + up.status }, up.status);
+        res = new Response(await up.text(), { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=900" } }); await cache.put(key, res.clone()); }
+      return new Response(res.body, { headers: { "Content-Type": "application/json", ...cors(req), "Access-Control-Allow-Methods": "GET, POST, OPTIONS" } });
+    }
     if (req.method === "GET" && url.pathname === "/seeing") {
       const r4 = v => (Math.round(parseFloat(v) * 4) / 4).toFixed(2), lat = r4(url.searchParams.get("lat")), lon = r4(url.searchParams.get("lon"));
       if (!isFinite(lat) || !isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return json(req, { ok: false, error: "bad lat/lon" }, 400);

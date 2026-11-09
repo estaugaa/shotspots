@@ -102,11 +102,17 @@ async function loadWx(force) {
     "&hourly=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,visibility,relative_humidity_2m,dew_point_2m,temperature_2m,wind_speed_10m,precipitation_probability,weather_code,precipitation" +
     "&past_days=2&forecast_days=5&timeformat=unixtime&wind_speed_unit=mph&temperature_unit=fahrenheit&timezone=GMT";
   try {
-    const r = await fetch(url); if (!r.ok) throw new Error("HTTP " + r.status);
+    const r = await omFetch(url);
     let j = await r.json(); if (!Array.isArray(j)) j = [j];
     WX = { at: Date.now(), key: locKey(), n: pts.length, pts: j.map((x, i) => ({ id: pts[i].id, n: pts[i].n, lat: pts[i].lat, lon: pts[i].lon, h: x.hourly })) };
     store.set("wx", WX); loadHorizon(true).then(ok => { if (ok) { __topsKey = ""; render(); } }); return true;
-  } catch (e) { WX && (WX.err = String(e.message || e)); if (!loadWx.retry) { loadWx.retry = setTimeout(async () => { loadWx.retry = 0; if (await loadWx(true)) { __topsKey = ""; render(); } }, 20000); } return false; }
+  } catch (e) { WXERR = String(e.message || e); WX && (WX.err = WXERR); if (!loadWx.retry) { loadWx.retry = setTimeout(async () => { loadWx.retry = 0; if (await loadWx(true)) { __topsKey = ""; render(); } }, 20000); } return false; }
+}
+// Open-Meteo, with a fallback through our Cloudflare Worker when the direct request is refused (rate limits, outages)
+const WORKER_URL = "https://shotspots-forms.shotspots-eric.workers.dev"; let WXERR = null;
+async function omFetch(url) {
+  try { const r = await fetch(url); if (r.ok) return r; WXERR = "HTTP " + r.status; } catch (e) { WXERR = String(e.message || e); }
+  const r2 = await fetch(WORKER_URL + "/om?u=" + encodeURIComponent(url)); if (!r2.ok) throw new Error(WXERR + "; via proxy HTTP " + r2.status); return r2;
 }
 function wxMiss() { return !WX ? (navigator.onLine === false ? "offline: no forecast" : "forecast loading") : "no forecast point near here yet"; }
 function nearestPt(p, maxKm, exclude) {
@@ -220,8 +226,8 @@ async function loadHorizon(force) {
   for (const a of an) { const e = dayEvents(a, day); for (const [kind, t] of [["sunrise", e.sunrise], ["sunset", e.sunset]]) { if (!t) continue;
     const az = sunPos(t, a.lat, a.lon).az; paths.push({ id: a.id, lat: a.lat, lon: a.lon, kind, az, pts: HZ_KM.map(k => dest(a, az, k)) }); } }
   const flat = paths.flatMap(p => p.pts);
-  try { const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=" + flat.map(p => p.lat.toFixed(2)).join(",") + "&longitude=" + flat.map(p => p.lon.toFixed(2)).join(",") +
-      "&hourly=cloud_cover_low,cloud_cover_mid&forecast_days=3&timeformat=unixtime&timezone=GMT"); if (!r.ok) throw new Error("HTTP " + r.status);
+  try { const r = await omFetch("https://api.open-meteo.com/v1/forecast?latitude=" + flat.map(p => p.lat.toFixed(2)).join(",") + "&longitude=" + flat.map(p => p.lon.toFixed(2)).join(",") +
+      "&hourly=cloud_cover_low,cloud_cover_mid&forecast_days=3&timeformat=unixtime&timezone=GMT");
     let j = await r.json(); if (!Array.isArray(j)) j = [j]; let k = 0;
     for (const p of paths) p.h = p.pts.map(() => { const x = j[k++].hourly; return { t: x.time, low: x.cloud_cover_low, mid: x.cloud_cover_mid }; });
     HZN = { at: Date.now(), key, paths: paths.map(({ pts, ...p }) => p) }; store.set("hzn", HZN); return true;
@@ -487,6 +493,8 @@ function fitFor(s, w) {
   if (side && (GOLDK.has(w.kind) || (BLUEK.has(w.kind) && !s.cats.some(c => LIFE.includes(c)))) && (s.light === "sunrise" || s.light === "sunset") && s.light !== side) { n = GOLDK.has(w.kind) ? n * 0.55 : n - 6; why.push(`faces ${s.light === "sunrise" ? "east: a sunrise spot" : "west: a sunset spot"}`); }
   if (w.kind !== "night" && !BLUEK.has(w.kind) && s.light === "night") n -= 25;
   n *= KCAP[w.kind] || 1;
+  // starter spots all share the same sky, so let how notable a place is (Wikipedia links, photos) break ties
+  if (s.seed && s.score != null) n += Math.max(-3, Math.min(8, (Math.log2(Math.max(1, s.score)) - 2.3) * 3));
   if (road) { n -= 10; why.push(road.short || road.title); }
   return { n: Math.round(clamp(n, 0, 100)), why, sk };
 }
@@ -579,7 +587,7 @@ function renderNow() {
   if (v) h += `<p class="verdict ${v.cls}">${v.txt}</p><p class="why">${esc(sk ? sk.why.join(", ") : (WX ? "No forecast for this place." : loadWx.retry ? "The forecast service is busy; trying again in a few seconds…" : "Loading the forecast…"))}</p>${skyBars(sk)}`;
   else { const c = hourAt(nearestPt(LOC, 60), w.peak); h += `<p class="verdict ${c && c.cc <= 20 ? "good" : "mid"}">${c ? (c.cc <= 20 ? "Clear and dark enough for stars" : c.cc <= 50 ? "Partly cloudy: gaps for stars" : "Cloudy: skip the stars") : "Forecast doesn't reach this far yet"}</p>
     <button class="chip" data-v="sky" style="margin:4px 0 8px">Night sky details: Milky Way, moon, planets ›</button>`; }
-  h += top.length ? `<ul class="picks">${top.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<p class="empty">${typeof SEED !== "undefined" && SEED.busy ? "Still finding spots near you…" : !WX ? "Waiting for the forecast…" : "No spots you can reach in time. Pick a later window above, or allow more travel time in Settings."}</p>`;
+  h += top.length ? `<ul class="picks">${top.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<p class="empty">${typeof SEED !== "undefined" && SEED.busy ? "Still finding spots near you…" : !WX ? "Waiting for the forecast…" : UI.group !== "all" && !SPOTS.some(s => groupTest[UI.group] && groupTest[UI.group](s) && !tooFar(s)) ? `No ${(GROUPS.find(g => g[0] === UI.group) || [, "matching"])[1].toLowerCase()} spots within your travel limit here yet. Tap Show all above, or allow more travel time in Settings.` : "No spots you can reach in time. Pick a later window above, or allow more travel time in Settings."}</p>`;
   if (more.length) h += UI.more ? `<ul class="picks" style="border-top:0">${more.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<button class="more" id="moreBtn">${more.length} more options</button>`;
   h += `</div>`;
   h += `<p class="muted scorenote">Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–5 use a single forecast model, so treat them as rough.</p>`;
