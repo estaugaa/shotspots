@@ -4,14 +4,16 @@ from playwright.async_api import async_playwright
 URL = "https://estaugaa.github.io/shotspots/"
 os.makedirs("ux", exist_ok=True)
 S = [
- ("A owner Washougal, tomorrow sunrise, drive<=60", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 60}, "all", ("tomorrow", "sunrise")),
- ("B Portland walker, today sunset, walk<=30", {"lat": 45.519, "lon": -122.679, "label": "Downtown Portland"}, {"travel": "walk", "maxWalk": 30}, "all", ("today", "sunset")),
- ("C rainy waterfalls, tomorrow morning", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 90}, "water", ("tomorrow", "morning")),
- ("D stars tonight, drive<=120", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 120}, "night", ("today", "night")),
- ("E Seattle, tomorrow sunset", {"lat": 47.61, "lon": -122.33, "label": "Seattle"}, {"maxDrive": 90}, "all", ("tomorrow", "sunset")),
- ("F Bend OR, tomorrow sunrise", {"lat": 44.058, "lon": -121.315, "label": "Bend"}, {"maxDrive": 90}, "all", ("tomorrow", "sunrise")),
- ("G Denver, tomorrow sunset", {"lat": 39.739, "lon": -104.99, "label": "Denver"}, {"maxDrive": 90}, "all", ("tomorrow", "sunset")),
- ("H New York, tomorrow sunset", {"lat": 40.713, "lon": -74.006, "label": "New York"}, {"maxDrive": 60}, "all", ("tomorrow", "sunset")),
+ ("1 Owner in Washougal, tomorrow sunrise, drive 60", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 60}, "all", ("tomorrow", "sunrise")),
+ ("2 Portland walker, today sunset, walk 30", {"lat": 45.519, "lon": -122.679, "label": "Downtown Portland"}, {"travel": "walk", "maxWalk": 30}, "all", ("today", "sunset")),
+ ("3 Waterfall chaser after rain, tomorrow morning, drive 90", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 90}, "water", ("tomorrow", "morning")),
+ ("4 Stargazer tonight, drive 120", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 120}, "night", ("today", "night")),
+ ("5 Coast visitor in Cannon Beach, tomorrow sunset, drive 30", {"lat": 45.892, "lon": -123.961, "label": "Cannon Beach"}, {"maxDrive": 30}, "all", ("tomorrow", "sunset")),
+ ("6 Seattle commuter, tomorrow sunrise, drive 60", {"lat": 47.61, "lon": -122.33, "label": "Seattle"}, {"maxDrive": 60}, "all", ("tomorrow", "sunrise")),
+ ("7 Denver visitor, tomorrow sunset, drive 90", {"lat": 39.739, "lon": -104.99, "label": "Denver"}, {"maxDrive": 90}, "all", ("tomorrow", "sunset")),
+ ("8 Moab road-tripper, tomorrow sunrise, drive 60", {"lat": 38.573, "lon": -109.55, "label": "Moab"}, {"maxDrive": 60}, "all", ("tomorrow", "sunrise")),
+ ("9 San Francisco walker, tomorrow sunset, walk 30", {"lat": 37.795, "lon": -122.405, "label": "San Francisco"}, {"travel": "walk", "maxWalk": 30}, "all", ("tomorrow", "sunset")),
+ ("10 New York birder, tomorrow morning, drive 60", {"lat": 40.713, "lon": -74.006, "label": "New York"}, {"maxDrive": 60}, "life", ("tomorrow", "morning")),
 ]
 PICK = """(([day, kind]) => { const all = allWindows(LOC, PLAN_HOURS); const t = laYMD(new Date()), tm = laYMD(new Date(Date.now() + 864e5));
   const want = day === "today" ? t : tm; const i = all.findIndex(w => winDay(w) === want && (w.kind === kind || (kind === "morning" && w.kind === "morning")));
@@ -27,15 +29,19 @@ async def main():
             await c.add_init_script("".join(f"localStorage.setItem({json.dumps(k)}, {json.dumps(json.dumps(v))});" for k, v in st.items()))
             pg = await c.new_page(); errs = []
             pg.on("pageerror", lambda e: errs.append(str(e)[:200]))
-            await pg.goto(URL); await pg.wait_for_timeout(9000)
-            if name.startswith(("E", "F", "G", "H")): await pg.wait_for_timeout(6000)
+            await pg.goto(URL)
+            first = await pg.evaluate("""new Promise(r => { const t0 = performance.now(); const iv = setInterval(() => { if (document.querySelector('#v-now [data-spot]')) { clearInterval(iv); r(Math.round(performance.now() - t0)); } }, 100); setTimeout(() => { clearInterval(iv); r(-1); }, 25000); })""")
+            await pg.wait_for_timeout(9000)
             win = await pg.evaluate(PICK, [day, kind]); await pg.wait_for_timeout(2500)
             txt = await pg.evaluate("document.querySelector('#v-now')?.innerText || ''")
-            out.append(f"\n######## {name}\nLOC={await pg.evaluate('LOC.label')} window={win} spots_loaded={await pg.evaluate('SPOTS.length')} errors={errs[:3]}\n" + txt[:2600])
+            await pg.screenshot(path=f"ux/s{name.split()[0]}_now.png", full_page=False)
+            out.append(f"\n######## {name}\nfirst spot after {first} ms; wx_err={await pg.evaluate('WX && WX.err || null')} hz_paths={await pg.evaluate('HZN ? HZN.paths.length : 0')}\nLOC={await pg.evaluate('LOC.label')} window={win} spots_loaded={await pg.evaluate('SPOTS.length')} errors={errs[:3]}\n" + txt[:3200])
             top = await pg.evaluate("(() => { const a = document.querySelector('#v-now [data-spot]'); return a ? a.dataset.spot : null })()")
             if top:
                 await pg.evaluate(f"openSpot({json.dumps(top)})"); await pg.wait_for_timeout(3500)
-                out.append(f"--- top spot page ({top}):\n" + (await pg.evaluate("document.querySelector('#sheetBody')?.innerText || ''"))[:1800])
+                await pg.screenshot(path=f"ux/s{name.split()[0]}_spot.png", full_page=False)
+                out.append(f"--- top spot page ({top}):\n" + (await pg.evaluate("document.querySelector('#sheetBody')?.innerText || ''"))[:2600])
+            await pg.wait_for_timeout(12000)   # space out runs so the weather service doesn't rate-limit one runner IP
             await c.close()
         await b.close()
     open("ux/scenarios.txt", "w").write("\n".join(out))
