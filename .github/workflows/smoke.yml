@@ -1,7 +1,7 @@
 name: Smoke test (live app)
 on:
   workflow_run:
-    workflows: ["Publish site (GitHub Pages)"]
+    workflows: ["GOES fog now", "HRRR conditions", "Run a pipeline job"]   # these call Publish
     types: [completed]
   workflow_dispatch:
 permissions:
@@ -12,9 +12,18 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+        with:
+          fetch-depth: 50
+      - id: chg   # only test when the app itself changed in the last hour (pipeline runs every 30 min)
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ -n "$(git log --since='65 minutes ago' --format=%h -- app index.html)" ]; then echo "go=1" >> $GITHUB_OUTPUT; fi
+      - if: steps.chg.outputs.go == '1'
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: sleep 60   # let GitHub Pages finish serving the new version
-      - run: pip install playwright && python -m playwright install --with-deps chromium webkit
-      - run: python tools/smoke.py
+      - if: steps.chg.outputs.go == '1'
+        run: sleep 60   # let GitHub Pages finish serving the new version
+      - if: steps.chg.outputs.go == '1'
+        run: pip install playwright && python -m playwright install --with-deps chromium webkit
+      - if: steps.chg.outputs.go == '1'
+        run: python tools/smoke.py
