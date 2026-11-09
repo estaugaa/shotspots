@@ -43,8 +43,8 @@ TYPES = [
 ]
 
 
-def _overpass(q):
-    for i, u in enumerate(OVERPASS * 2):
+def _overpass(q, rounds=2):
+    for i, u in enumerate(OVERPASS * rounds):
         try:
             r = http(u, method="POST", data={"data": q}, timeout=600, tries=1)
             return r.json()["elements"]
@@ -54,10 +54,10 @@ def _overpass(q):
     raise RuntimeError("Overpass unavailable")
 
 
-def query(state):
+def _query_box(state, box=None, q_only=False):
     iso2 = STATES[state]
-    a = "(area.s)"
-    q = f"""[out:json][timeout:540];area["ISO3166-2"="{iso2}"][admin_level=4]->.s;(
+    a = "(area.s)" + (f"({box[0]},{box[1]},{box[2]},{box[3]})" if box else "")
+    q = f"""[out:json][timeout:300];area["ISO3166-2"="{iso2}"][admin_level=4]->.s;(
       node{a}[tourism=viewpoint];
       node{a}[waterway=waterfall][name]; node{a}[natural=waterfall][name];
       node{a}[natural=peak][name][wikidata]; node{a}[natural=peak][name][prominence];
@@ -71,7 +71,31 @@ def query(state):
       nwr{a}[historic~"^(castle|fort|monument|ruins|ship|mine)$"][name][wikidata];
       nwr{a}[tourism=attraction][name][wikidata];
     );out center tags;"""
-    return _overpass(q)
+    return q if q_only else _overpass(q)
+
+
+def query(state):
+    """Whole state in one go; big states (TX, CA...) time out, so fall back to 2° x 2° pieces of the state's bounding box."""
+    try:
+        return _overpass(_query_box(state, q_only=True), rounds=1)
+    except RuntimeError:
+        log.warning("%s: whole-state query failed, splitting into pieces", state)
+    bb = _overpass(f'[out:json][timeout:120];rel["ISO3166-2"="{STATES[state]}"][admin_level=4];out bb;')[0]["bounds"]
+    out, seen = [], set()
+    la = math.floor(bb["minlat"])
+    while la < bb["maxlat"]:
+        lo = math.floor(bb["minlon"])
+        while lo < bb["maxlon"]:
+            try:
+                for e in _query_box(state, (la, lo, la + 2, lo + 2)):
+                    k = (e["type"], e["id"])
+                    if k not in seen:
+                        seen.add(k); out.append(e)
+            except RuntimeError:
+                log.warning("%s: piece %s,%s failed", state, la, lo)
+            lo += 2
+        la += 2
+    return out
 
 
 def wikidata(ids):
@@ -187,7 +211,10 @@ def run(states):
     idx = read_json(sdir / "index.json", {"tiles": {}, "states": {}})
     for st in states:
         st = st.upper()
-        tiles = build(st)
+        try:
+            tiles = build(st)
+        except Exception as e:   # one state failing shouldn't lose the rest of the batch
+            log.warning("%s failed: %s", st, e); continue
         # a tile can straddle a state line: merge with what other states already wrote there
         n = 0
         for k, lst in tiles.items():
