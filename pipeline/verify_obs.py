@@ -32,7 +32,11 @@ def _prev(stations):
             break
         if j is None:
             continue
-        for s, r in zip(ch, j if isinstance(j, list) else [j]):
+        rows = j if isinstance(j, list) else [j]
+        if i == 0 and rows:
+            h0 = rows[0].get("hourly") or {}
+            log.info("previous-runs keys %s; non-null %s; first t %s", list(h0), {k: sum(v is not None for v in vv) for k, vv in h0.items() if k != "time"}, (h0.get("time") or [None])[:2])
+        for s, r in zip(ch, rows):
             h = r.get("hourly") or {}
             tt = h.get("time", [])
             vis = h.get("visibility_previous_day1") or [None] * len(tt)
@@ -48,6 +52,7 @@ def run():
     for o in hist:
         st.setdefault(o["id"], {"id": o["id"], "lat": o["lat"], "lon": o["lon"], "name": o.get("name", o["id"])})
     fc = _prev(list(st.values()))
+    log.info("%d reports from %d stations; forecasts for %d; sample report time %s, sample forecast times %s", len(hist), len(st), len(fc), hist[0]["t"], list(next(iter(fc.values()), {}))[:2])
     T = {k: defaultdict(int) for k in ("fog", "low", "ovc")}
     per = defaultdict(lambda: {k: defaultdict(int) for k in ("fog", "low", "ovc")})
     bias = []
