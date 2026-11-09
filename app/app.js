@@ -36,7 +36,7 @@ const NIGHT = ["night", "aurora"];
 const WALK = { road: 5, short: 15, hike: 45, hard: 90 };
 const GROUPS = [["all", "All"], ["saved", "Saved"], ["land", "Landscape"], ["water", "Waterfalls"], ["life", "Birds & wildlife"], ["night", "Night sky"], ["city", "City"], ["align", "Alignments"]];
 const groupTest = { all: () => true, saved: s => !!SAVED[s.id], land: s => s.cats.some(c => SKY.includes(c) && c !== "city"), water: s => s.cats.includes("waterfall"),
-  life: s => s.cats.some(c => LIFE.includes(c)), night: s => s.cats.some(c => NIGHT.includes(c)) && !(s.cats.includes("city") && !s.cats.includes("aurora")) && !(/\b20(2[7-9]|3\d)\b/.test(s.name) && !new RegExp("\\b" + new Date().getFullYear() + "\\b").test(s.name)), city: s => s.cats.includes("city"), align: s => s.cats.includes("alignment") };
+  life: s => s.cats.some(c => LIFE.includes(c)), night: s => (s.cats.some(c => NIGHT.includes(c)) || (s.seed && /viewpoint|peak|arch|beach|hotspring|lighthouse/.test(s.kind) && typeof sqmKnown === "function" && sqmKnown(s.lat, s.lon) && spotSqm(s) >= 21.0)) && !(s.cats.includes("city") && !s.cats.includes("aurora")) && !(/\b20(2[7-9]|3\d)\b/.test(s.name) && !new RegExp("\\b" + new Date().getFullYear() + "\\b").test(s.name)), city: s => s.cats.includes("city"), align: s => s.cats.includes("alignment") };
 
 /* ---------- storage ---------- */
 const store = { get(k, d) { try { const v = localStorage.getItem("ss2:" + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
@@ -490,7 +490,7 @@ function fitFor(s, w) {
   let n = Math.max(...parts);
   if (s.months && !s.months.includes(month)) { n *= 0.45; why.push("out of season"); }
   const side = AMK.has(w.kind) ? "sunrise" : PMK.has(w.kind) ? "sunset" : null;
-  if (side && (GOLDK.has(w.kind) || (BLUEK.has(w.kind) && !s.cats.some(c => LIFE.includes(c)))) && (s.light === "sunrise" || s.light === "sunset") && s.light !== side) { n = GOLDK.has(w.kind) ? n * 0.55 : n - 6; why.push(`faces ${s.light === "sunrise" ? "east: a sunrise spot" : "west: a sunset spot"}`); }
+  if (side && !s.cats.some(c => LIFE.includes(c)) && (GOLDK.has(w.kind) || BLUEK.has(w.kind)) && (s.light === "sunrise" || s.light === "sunset") && s.light !== side) { n = GOLDK.has(w.kind) ? n * 0.55 : n - 6; why.push(`faces ${s.light === "sunrise" ? "east: a sunrise spot" : "west: a sunset spot"}`); }
   if (w.kind !== "night" && !BLUEK.has(w.kind) && s.light === "night") n -= 25;
   n *= KCAP[w.kind] || 1;
   // starter spots all share the same sky, so let how notable a place is (Wikipedia links, photos) break ties

@@ -4,6 +4,7 @@
    Where no tiles exist yet, nearby.js still falls back to a live OpenStreetMap lookup. */
 "use strict";
 const SEED = { idx: null, tiles: new Set(), n: 0 };
+if (typeof D !== "undefined" && D.CATS && !D.CATS.landmark) D.CATS.landmark = { label: "Landmarks", color: (D.CATS.historic || {}).color || "var(--rust)" };
 const SEED_KIND = { waterfall: "Waterfall", viewpoint: "Viewpoint", peak: "Summit", lighthouse: "Lighthouse", arch: "Arch", hotspring: "Hot spring", refuge: "Refuge", beach: "Beach", bridge: "Bridge", landmark: "Landmark" };
 SEED.ready = fetch("feed/seed/index.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { SEED.idx = j; }).catch(() => { });
 const seedCovers = () => !!(SEED.idx && SEED.idx.tiles[`${Math.floor(LOC.lat)}_${Math.floor(LOC.lon)}`]);
@@ -21,6 +22,7 @@ async function loadSeed() {
   got.forEach((t, i) => { if (!t) return; SEED.tiles.add(want[i]);
     for (const x of t.spots) { if (byId[x.id] || real.some(s => Math.abs(s.lat - x.lat) < 0.004 && Math.abs(s.lon - x.lon) < 0.006)) continue;
       const ps = ((fd("photostats") || {}).spots || {})[x.id];   // learned from when people photograph it
+      if (/bridge|landmark/.test(x.kind) && x.cats) x.cats = x.cats.map(c => c === "historic" ? "landmark" : c);
       const s = { ...x, region: `${SEED_KIND[x.kind] || "Place"} · starter spot`, months: ps && ps.months || null, light: ps && ps.light || x.light, osm: true, seed: true, src: [], osmUrl: `https://www.openstreetmap.org/${x.osm}`, ps };
       SPOTS.push(s); byId[s.id] = s; added++; } });
   SEED.n += added;

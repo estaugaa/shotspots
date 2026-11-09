@@ -99,8 +99,8 @@ async function nearGauge(s) {
       const stream = ts.sourceInfo.siteName.toLowerCase().split(/\s+(?:nr|near|at|abv|above|blw|below|bl|ab)\s+/)[0].replace(/\b(river|creek|cr|r|fork|ck)\b\.?/g, "").replace(/\s+/g, " ").trim();
       if (/columbia|willamette|snake/.test(stream)) continue;
       const same = stream.length >= 3 && new RegExp(`\\b${stream.replace(/[^a-z ]/g, "")}\\s+(river|creek|fork)\\b`).test(txt);
-      const v = (ts.values[0].value || []).map(x => +x.value).filter(x => x >= 0); if (v.length && (same ? d < 20 : d < 3) && d < bd) { bd = d;
-        best = { name: ts.sourceInfo.siteName.replace(/\b(NR|NEAR)\b/g, "near").toLowerCase().replace(/\b\w/g, c => c.toUpperCase()), km: d, now: v[v.length - 1], med: v.slice().sort((a, b) => a - b)[Math.floor(v.length / 2)] }; } }
+      const v = (ts.values[0].value || []).map(x => +x.value).filter(x => x >= 0); if (v.length && (same ? d < 20 : d < 1.5) && d < bd) { bd = d;
+        best = { name: ts.sourceInfo.siteName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()).replace(/\b(Nr|Near|At|Above|Abv|Below|Blw|Bl|Of|And)\b/g, w => ({ Nr: "near", Abv: "above", Blw: "below", Bl: "below" })[w] || w.toLowerCase()).replace(/, ([A-Za-z]{2})\.?$/, (m, st) => ", " + st.toUpperCase()), km: d, now: v[v.length - 1], med: v.slice().sort((a, b) => a - b)[Math.floor(v.length / 2)] }; } }
     mark("flow", true, "nearest USGS gauge"); return (s.gauge = best);
   } catch (e) { mark("flow", false, String(e.message || e)); return null; }
 }
