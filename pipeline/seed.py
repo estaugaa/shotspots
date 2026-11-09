@@ -197,6 +197,8 @@ def run(states):
             n += sum(1 for x in allx if x["state"] == st)
         idx["states"][st] = {"at": iso(utcnow()), "spots": n, "tiles": len(tiles)}
         log.info("%s: %d seed spots in %d tiles", st, n, len(tiles))
+        idx["gen"] = iso(utcnow())   # write after every state so a cancelled run still publishes what it finished
+        (sdir / "index.json").write_text(json.dumps(idx, separators=(",", ":")))
     idx["gen"] = iso(utcnow())
     (sdir / "index.json").write_text(json.dumps(idx, separators=(",", ":")))
     return ", ".join(f"{k}: {v['spots']} spots" for k, v in idx["states"].items())
