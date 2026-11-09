@@ -1,10 +1,29 @@
-"""Scratch diagnostics run on Actions (workflow 'Diagnostic'). Safe to overwrite. Read problem reports."""
-import sys; sys.path.insert(0, ".")
-from pipeline import forms
-rows = forms.submissions("debug")
-for r in rows[-3:]:
-    print("=====")
-    d = r.get("data") if isinstance(r.get("data"), dict) else r
-    for k in ("errs", "taps", "stick", "view"):
-        for line in str(d.get(k, "")).split("\n"):
-            print(f"DBG {k}: {line}")
+"""Scratch diagnostics run on Actions (workflow 'Diagnostic'). Safe to overwrite. Day tabs on a SW-controlled reload."""
+import asyncio, os
+from playwright.async_api import async_playwright
+URL = "https://estaugaa.github.io/shotspots/"
+os.makedirs("ux", exist_ok=True)
+async def main():
+    out = []
+    async with async_playwright() as p:
+        for eng in ("webkit", "chromium"):
+            b = await getattr(p, eng).launch(); dev = p.devices["iPhone 14"] if eng == "webkit" else {"viewport": {"width": 390, "height": 844}}
+            c = await b.new_context(**dev, timezone_id="America/Los_Angeles", service_workers="allow")
+            pg = await c.new_page(); errs = []
+            pg.on("pageerror", lambda e: errs.append("PAGEERROR " + str(e)[:300]))
+            pg.on("console", lambda m: errs.append("console." + m.type + " " + m.text[:200]) if m.type == "error" else None)
+            await pg.goto(URL); await pg.wait_for_timeout(8000)
+            for i in range(2):
+                await pg.reload(); await pg.wait_for_timeout(8000)
+                ctl = await pg.evaluate("!!(navigator.serviceWorker && navigator.serviceWorker.controller)")
+                fdok = await pg.evaluate("typeof fd")
+                tabs = await pg.evaluate("[...document.querySelectorAll('[data-day]')].map(b=>b.dataset.day)")
+                await pg.tap(f"[data-day='{tabs[1]}']") if eng == "webkit" else await pg.click(f"[data-day='{tabs[1]}']")
+                await pg.wait_for_timeout(1200)
+                out.append(f"{eng} reload{i+1} controlled={ctl} typeof fd={fdok} after tap UI.day={await pg.evaluate('UI.day')} (want {tabs[1]})")
+            scripts = await pg.evaluate("[...document.scripts].map(s=>s.src.split('/').pop()).join(' ')")
+            out.append(f"{eng} scripts: {scripts}")
+            out.append(f"{eng} errors: " + " | ".join(errs[:10]))
+            await b.close()
+    open("ux/days.txt", "w").write("\n".join(out)); print("\n".join(out))
+asyncio.run(main())
