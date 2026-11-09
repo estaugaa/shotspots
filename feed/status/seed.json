@@ -1,1 +1,1 @@
-{"ok":true,"kind":"MODELED","note":"WA: 1765 spots, OR: 1124 spots","at":"2026-11-06T20:52:26Z","secs":471.4}
+{"ok":false,"kind":"MODELED","note":"RuntimeError: Overpass unavailable","at":"2026-11-09T19:39:26Z","secs":7085.1}
