@@ -54,6 +54,33 @@ def _prev(stations):
     return out
 
 
+ARCH = DATA / "fc_archive.json"
+
+
+def _snapshot(stations):
+    """The archive API keeps only total cloud, so save tomorrow's low cloud and visibility forecast ourselves each day.
+    After a few days these let the fog and low-cloud scores fill in."""
+    arch = read_json(ARCH, {}) or {}
+    tomorrow = (utcnow() + dt.timedelta(days=1)).strftime("%Y-%m-%d")
+    for i in range(0, len(stations), 40):
+        ch = stations[i:i + 40]
+        try:
+            j = http("https://api.open-meteo.com/v1/forecast", params={"latitude": ",".join(str(s["lat"]) for s in ch), "longitude": ",".join(str(s["lon"]) for s in ch),
+                     "hourly": "visibility,cloud_cover_low", "forecast_days": 3, "timezone": "GMT"}, timeout=120).json()
+        except Exception as e:
+            log.warning("snapshot: %s", e); continue
+        for s, r in zip(ch, j if isinstance(j, list) else [j]):
+            h = r.get("hourly") or {}
+            a = arch.setdefault(s["id"], {})
+            for t, v, l in zip(h.get("time", []), h.get("visibility", []), h.get("cloud_cover_low", [])):
+                if t.startswith(tomorrow) and t not in a:
+                    a[t] = [v, l]
+    cut = (utcnow() - dt.timedelta(days=60)).strftime("%Y-%m-%dT%H:%M")
+    arch = {k: {t: x for t, x in v.items() if t >= cut} for k, v in arch.items()}
+    write_json(ARCH, arch)
+    return arch
+
+
 def run():
     hist = read_json(HIST, {"obs": []})["obs"]
     if not hist:
@@ -62,6 +89,15 @@ def run():
     for o in hist:
         st.setdefault(o["id"], {"id": o["id"], "lat": o["lat"], "lon": o["lon"], "name": o.get("name", o["id"])})
     fc = _prev(list(st.values()))
+    try:
+        arch = _snapshot(list(st.values()))
+    except Exception as e:
+        log.warning("snapshot failed: %s", e); arch = {}
+    for sid, rows in fc.items():
+        for t, (v, l, c) in list(rows.items()):
+            sv = (arch.get(sid) or {}).get(t)
+            if sv and (v is None or l is None):
+                rows[t] = (v if v is not None else sv[0], l if l is not None else sv[1], c)
     log.info("%d reports from %d stations; forecasts for %d; sample report time %s, sample forecast times %s", len(hist), len(st), len(fc), hist[0]["t"], list(next(iter(fc.values()), {}))[:2])
     T = {k: defaultdict(int) for k in ("fog", "low", "ovc")}
     per = defaultdict(lambda: {k: defaultdict(int) for k in ("fog", "low", "ovc")})
