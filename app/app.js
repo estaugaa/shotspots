@@ -465,7 +465,8 @@ function fitFor(s, w) {
     if (has(SOFT)) { const wf = s.cats.includes("waterfall"), fc = s.cats.includes("fallcolor"), gd = s.cats.includes("garden"); let v;
       if (m === "rain") { v = wf ? 88 : fc ? 76 : gd ? 60 : 42; why.push(wf ? "rain: no glare, saturated moss (bring a lens cloth)" : fc ? "wet leaves glow under overcast" : "rain"); }
       else if (m === "snow") { v = wf ? 76 : fc ? 62 : 40; why.push(wf ? "snow on the rocks around the falls" : "snow"); }
-      else if (["showers", "overcast", "fog"].includes(m) || sk.cc >= 70) { v = wf ? 84 : 74; why.push("soft overcast light"); }
+      else if (["showers", "overcast", "fog"].includes(m) || (sk.cc >= 70 && sk.low + sk.mid >= 60)) { v = wf ? 84 : 74; why.push("soft overcast light"); }
+      else if (sk.cc >= 70) { v = wf ? 70 : 62; why.push("thin high cloud: gentle, even light"); }
       else v = sk.cc >= 40 ? 60 : 38;
       if (w.kind === "sunrise" || w.kind === "sunset") {
         if (fc && !wet && sk.cc < 70) { v = Math.max(v, 66); why.push("low sun backlights the leaves"); }
@@ -598,6 +599,11 @@ function renderNow() {
   if (v) h += `<p class="verdict ${v.cls}">${v.txt}</p><p class="why">${esc(sk ? sk.why.join(", ") : (WX ? "No forecast for this place." : loadWx.retry ? "The forecast service is busy; trying again in a few seconds…" : "Loading the forecast…"))}</p>${skyBars(sk)}`;
   else { const c = hourAt(nearestPt(LOC, 60), w.peak); h += `<p class="verdict ${c && c.cc <= 20 ? "good" : "mid"}">${c ? (c.cc <= 20 ? "Clear and dark enough for stars" : c.cc <= 50 ? "Partly cloudy: gaps for stars" : "Cloudy: skip the stars") : "Forecast doesn't reach this far yet"}</p>
     <button class="chip" data-v="sky" style="margin:4px 0 8px">Night sky details: Milky Way, moon, planets ›</button>`; }
+  // the headline is for where you are; say so when the top pick is somewhere with different weather
+  { const t0 = ranked[0]; if (t0 && km(LOC, t0.s) > 25) {
+      if (w.kind === "night") { const here = hourAt(nearestPt(LOC, 60), w.peak), there = nightCloud(t0.s, w);
+        if (here && there && Math.abs(here.cc - there.cc) >= 30) h += `<p class="why">That's for here. At ${esc(t0.s.name)}: ${there.cc <= 20 ? "clear" : there.cc <= 50 ? "partly cloudy" : "cloudy"} (${Math.round(there.cc)}% cloud).</p>`; }
+      else if (v && t0.f.sk) { const vt = verdict(t0.f.sk); if (vt.cls !== v.cls) h += `<p class="why">That's for here. At ${esc(t0.s.name)}: ${esc(vt.txt.split(". ")[0])}.</p>`; } } }
   h += top.length ? `<ul class="picks">${top.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<p class="empty">${typeof SEED !== "undefined" && SEED.busy ? "Still finding spots near you…" : !WX ? "Waiting for the forecast…" : UI.group !== "all" && !SPOTS.some(s => groupTest[UI.group] && groupTest[UI.group](s) && !tooFar(s)) ? `No ${(GROUPS.find(g => g[0] === UI.group) || [, "matching"])[1].toLowerCase()} spots within your travel limit here yet. Tap Show all above, or allow more travel time in Settings.` : "No spots you can reach in time. Pick a later window above, or allow more travel time in Settings."}</p>`;
   if (more.length) h += UI.more ? `<ul class="picks" style="border-top:0">${more.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<button class="more" id="moreBtn">${more.length} more options</button>`;
   h += `</div>`;
@@ -740,8 +746,8 @@ function wxIcon(c, t, p) { const up = sunPos(t, p.lat, p.lon).alt > 0;
 function hours12(s) {
   const pt = nearestPt(s, 60); if (!pt) return ""; const t0 = Math.ceil(Date.now() / 36e5) * 36e5; let cells = "";
   for (let k = 0; k < 12; k++) { const t = new Date(t0 + k * 36e5), c = hourAt(pt, t); if (!c) continue;
-    cells += `<div><small>${t.toLocaleTimeString("en-US", { timeZone: TZ, hour: "numeric" }).replace(" ", "").toLowerCase()}</small><span>${wxIcon(c, t, s)}</span><small>${fmtDeg(c.tf)}</small>${c.pop >= 30 ? `<small class="pop">${c.pop}%</small>` : ""}</div>`; }
-  return cells ? `<div class="hours" aria-label="Next 12 hours here">${cells}</div>` : "";
+    cells += `<div><small>${t.toLocaleTimeString("en-US", { timeZone: TZ, hour: "numeric" }).replace(" ", "").toLowerCase()}</small><span>${wxIcon(c, t, s)}</span><small>${fmtDeg(c.tf)}</small>${c.pop >= 30 ? `<small class="pop" title="chance of rain">💧${c.pop}%</small>` : ""}</div>`; }
+  return cells ? `<div class="hours" aria-label="Next 12 hours here">${cells}</div>${cells.includes("💧") ? `<p class="muted" style="font-size:12px;margin:2px 0 0">💧 chance of rain that hour</p>` : ""}` : "";
 }
 function nightHelp(s) {
   const e = dayEvents(s, laYMD(new Date())), m = moonPos(new Date(), s.lat, s.lon), nw = nightWindow(s);

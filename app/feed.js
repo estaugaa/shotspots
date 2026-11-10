@@ -87,7 +87,7 @@ fitFor = function (s, w) {
     if (ts.length && W.kind.startsWith("eBird")) { const p = ts[0].p; n += Math.min(10, (p - 30) / 6); why.push(`${ts[0].sp} on ${p}% of checklists this week`); }
     else if (ts.length && ts[0].p >= 15) why.push(`lots of ${ts[0].sp} reported here this week`); }
   // access
-  const ac = fd("access"), av = ac && ac.spots[s.id]; if (av && av.alerts && av.alerts.length) why.push("forest alert: check access");
+  const ac = fd("access"), av = ac && ac.spots[s.id]; if (av && av.alerts && av.alerts.length) { const a = av.alerts.find(x => !/restroom|toilet|vault|water fountain|visitor center hours/i.test(x.title || "")); if (a) why.push("⚠️ " + (a.title || "forest alert").replace(/\s+/g, " ").slice(0, 70)); }
   return { ...f, n: Math.round(clamp(n, 0, 100)), why };
 };
 if (typeof spotSqm === "function") { const _sq = spotSqm; spotSqm = function (s) { const dk = fd("darksky"); return dk && dk.spots[s.id] && dk.spots[s.id].sqm ? dk.spots[s.id].sqm : _sq(s); }; }
