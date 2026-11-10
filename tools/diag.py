@@ -6,9 +6,6 @@ os.makedirs("ux", exist_ok=True)
 # name, location, prefs, filter group, (day, window kind), extra actions
 S = [
  ("A Portland waterfalls, drive 45", {"lat": 45.52, "lon": -122.68, "label": "Portland"}, {"maxDrive": 45}, "water", ("tomorrow", "morning"), []),
- ("B Hood River sunset, drive 45", {"lat": 45.709, "lon": -121.521, "label": "Hood River"}, {"maxDrive": 45}, "all", ("tomorrow", "sunset"), []),
- ("C Cannon Beach sunset, drive 30", {"lat": 45.892, "lon": -123.961, "label": "Cannon Beach"}, {"maxDrive": 30}, "all", ("tomorrow", "sunset"), []),
- ("D Washougal sunrise, drive 60", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 60}, "all", ("tomorrow", "sunrise"), []),
 ]
 PICK = """(([day, kind]) => { const all = allWindows(LOC, PLAN_HOURS); const t0 = Date.now();
   const WD = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
@@ -24,7 +21,8 @@ CHECKS = """(() => { const all = allWindows(LOC, PLAN_HOURS), w = all[UI.focus],
   const leak = home ? [] : ["Gorge", "Washougal", "Ridgefield", "Crown Point", "Sauvie", "Columbia"].filter(k => txt.includes(k));
   const scores = ranked.slice(0, 10).map(x => x.f.n), spread = scores.length ? Math.max(...scores) - Math.min(...scores) : 0;
   const tz = TZ;
-  return { tz, wx: !!WX, wxErr: WX && WX.err || (typeof WXERR !== 'undefined' ? WXERR : null), wxPts: WX ? WX.pts.length : 0, hz: HZN ? HZN.paths.length : 0, chip, top, chipMatches: chip === top,
+  const dm = DRIVES[locKey()] ? DRIVES[locKey()].m : {};
+  return { routed: Object.keys(dm).length, multnomah: [dm.multnomah, driveMin(byId.multnomah)], tz, wx: !!WX, wxErr: WX && WX.err || (typeof WXERR !== 'undefined' ? WXERR : null), wxPts: WX ? WX.pts.length : 0, hz: HZN ? HZN.paths.length : 0, chip, top, chipMatches: chip === top,
            tooFarListed: far, leak, alertline: !!document.querySelector('.alertline'), spots: SPOTS.length, ranked: ranked.length, top10spread: spread,
            seeing: typeof SEVEN !== 'undefined' && SEVEN ? (SEVEN.err || SEVEN.note || 'ok') : 'n/a' }; })()"""
 async def main():

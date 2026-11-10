@@ -74,7 +74,7 @@ function driveMin(s) {   // travel minutes: driving, or walking when Settings sa
   if (PREFS.travel === "walk") return Math.round(km(LOC, s) * 1.3 / 4.8 * 60);
   const k = locKey(); if (DRIVES[k] && DRIVES[k].m[s.id] != null) return DRIVES[k].m[s.id];
   if (atHome() && s.drive != null) return s.drive;
-  const d = km(LOC, s); return Math.round(6 + Math.min(d, 15) * 1.3 / 45 * 60 + Math.max(0, d - 15) * 1.2 / 85 * 60);   // town streets, then highway
+  const d = km(LOC, s); return Math.round(6 + Math.min(d, 10) * 1.25 / 55 * 60 + Math.max(0, d - 10) * 1.15 / 95 * 60);   // town streets, then highway (real routes replace this when they load)
 }
 async function loadDrives(ids) {
   const k = locKey(); const have = DRIVES[k] && Date.now() - DRIVES[k].at < 6 * 36e5 ? DRIVES[k] : { at: Date.now(), m: {} };
@@ -585,7 +585,7 @@ function plannerHtml(all, tops) {
     return `<button class="daytab" role="tab" data-day="${d}" aria-selected="${d === UI.day}"><span>${d === star ? "★ " : ""}${dayTab(d)}</span><small class="${scoreCls(n)}">${n || "–"}</small></button>`; }).join("")}</div>`;
   const idx = all.map((w, i) => i).filter(i => winDay(all[i]) === UI.day);
   // a sunrise/sunset under solid cloud can still score well (waterfalls, birds), but it isn't a colourful sunrise: say so
-  const soft = i => { const w = all[i]; if (!GOLDK.has(w.kind)) return false; const k = skyAt(LOC, w); return !!(k && k.cc >= 85); };
+  const soft = i => { const w = all[i]; if (!GOLDK.has(w.kind)) return false; const k = skyAt(LOC, w); return !!(k && k.cc >= 85 && k.low + k.mid >= 60); };   // thin high cloud alone can still light up
   const bestOf = i => tops[i] && !soft(i) ? tops[i].f.n : 0;
   const best = Math.max(0, ...idx.map(bestOf));
   const bestI = idx.find(i => bestOf(i) === best), nBest = idx.filter(i => bestOf(i) === best).length;   // one "best" chip, and none when all tie
