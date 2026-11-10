@@ -5,16 +5,10 @@ URL = "https://estaugaa.github.io/shotspots/"
 os.makedirs("ux", exist_ok=True)
 # name, location, prefs, filter group, (day, window kind), extra actions
 S = [
- ("1 Owner Washougal: switch to Wednesday, check sunrise", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 60}, "all", ("wed", "sunrise"), ["nighttab"]),
- ("2 Hood River fog morning, drive 45", {"lat": 45.709, "lon": -121.521, "label": "Hood River"}, {"maxDrive": 45}, "all", ("tomorrow", "sunrise"), []),
- ("3 Portland walker: blue hour city, walk 20", {"lat": 45.523, "lon": -122.676, "label": "Pearl District"}, {"travel": "walk", "maxWalk": 20}, "city", ("today", "bluePM"), []),
- ("4 Ashford (Rainier) sunrise, drive 60", {"lat": 46.759, "lon": -122.031, "label": "Ashford"}, {"maxDrive": 60}, "land", ("tomorrow", "sunrise"), []),
- ("5 Olympic coast (Forks) sunset, drive 45", {"lat": 47.95, "lon": -124.385, "label": "Forks"}, {"maxDrive": 45}, "all", ("tomorrow", "sunset"), []),
- ("6 Spokane sunset, drive 60", {"lat": 47.659, "lon": -117.426, "label": "Spokane"}, {"maxDrive": 60}, "all", ("tomorrow", "sunset"), []),
  ("7 Boise stargazer, drive 90", {"lat": 43.615, "lon": -116.202, "label": "Boise"}, {"maxDrive": 90}, "night", ("today", "night"), ["nighttab"]),
- ("8 Jackson WY wildlife morning, drive 60", {"lat": 43.48, "lon": -110.762, "label": "Jackson"}, {"maxDrive": 60}, "life", ("tomorrow", "morning"), []),
- ("9 Sedona sunset, drive 45", {"lat": 34.87, "lon": -111.761, "label": "Sedona"}, {"maxDrive": 45}, "all", ("tomorrow", "sunset"), []),
+ ("11 Moab stargazer, drive 60", {"lat": 38.573, "lon": -109.55, "label": "Moab"}, {"maxDrive": 60}, "night", ("today", "night"), []),
  ("10 Bend waterfalls, drive 60", {"lat": 44.058, "lon": -121.315, "label": "Bend"}, {"maxDrive": 60}, "water", ("tomorrow", "morning"), []),
+ ("2 Hood River sunrise, drive 45", {"lat": 45.709, "lon": -121.521, "label": "Hood River"}, {"maxDrive": 45}, "all", ("tomorrow", "sunrise"), []),
 ]
 PICK = """(([day, kind]) => { const all = allWindows(LOC, PLAN_HOURS); const t0 = Date.now();
   const want = day === "today" ? laYMD(new Date()) : day === "tomorrow" ? laYMD(new Date(t0 + 864e5)) : laYMD(new Date(t0 + 2 * 864e5));
