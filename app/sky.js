@@ -15,11 +15,18 @@ function gridSqm(lat, lon) { const g = typeof fd === "function" && fd("darkgrid"
 function nwKnown(lat, lon) { let m = 1e9; for (const [la, lo] of LP.cities) { const d = Math.hypot((lat - la) * 111.2, (lon - lo) * 111.2 * Math.cos(lat * D2R)); if (d < m) m = d; } return m < 250; }
 function sqmKnown(lat, lon) { return nwKnown(lat, lon) || gridSqm(lat, lon) != null; }
 function sqmAt(lat, lon) {
-  const k = lat.toFixed(3) + "," + lon.toFixed(3); if (__sqmCache[k]) return __sqmCache[k];
+  const k0 = lat.toFixed(3) + "," + lon.toFixed(3); if (__sqmCache[k0]) return __sqmCache[k0];
+  const nw = _sqmNW(lat, lon), g = gridSqm(lat, lon);
+  // the Northwest model only knows the cities it was built with (no Spokane): never report darker than the satellite grid says
+  if (g == null) return nw;   // grid not loaded yet: don't cache, so it's used once it arrives
+  return (__sqmCache[k0] = Math.min(nw, g + 0.3));
+}
+function _sqmNW(lat, lon) {
+  const k = lat.toFixed(3) + "," + lon.toFixed(3); if (__sqmCache["nw" + k]) return __sqmCache["nw" + k];
   if (!nwKnown(lat, lon)) { const g = gridSqm(lat, lon); if (g == null) return 20.0;   // not mapped (yet): assume suburban, don't cache
-    return (__sqmCache[k] = g); }
+    return (__sqmCache["nw" + k] = g); }
   let a = 0; for (const [la, lo, p] of LP.cities) { const d = Math.hypot((lat - la) * 111.2, (lon - lo) * 111.2 * Math.cos(lat * D2R)); a += p * Math.pow(Math.max(d, 2), -LP.k) * Math.exp(-d / LP.ext); }
-  return (__sqmCache[k] = Math.min(21.95, 22.0 - 2.5 * Math.log10(1 + LP.C * a)));
+  return (__sqmCache["nw" + k] = Math.min(21.95, 22.0 - 2.5 * Math.log10(1 + LP.C * a)));
 }
 function spotSqm(s) { return SQM_MEASURED[s.id] || sqmAt(s.lat, s.lon); }
 function bortle(q) { return q >= 21.95 ? 1 : q >= 21.85 ? 2 : q >= 21.65 ? 3 : q >= 21.0 ? 4 : q >= 20.4 ? 4.5 : q >= 19.5 ? 5 : q >= 18.94 ? 6 : q >= 18.38 ? 7 : 8; }
