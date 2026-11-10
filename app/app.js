@@ -513,6 +513,7 @@ function fitFor(s, w) {
   if (s.seed && s.score != null) n += Math.max(-2, Math.min(4, (Math.log2(Math.max(1, s.score)) - 2.3) * 1.6));
   // quality prior: researched spots are hand-picked; starter spots earn theirs from Wikipedia links, photos and eBird species
   if (!s.seed) n += 3;
+  if (s.kind === "hotspot" && UI.group !== "life" && !why.some(x => /sightings|peak|staging|migration|rut/.test(x))) n *= 0.7;
   if (road) { n -= 10; why.push(road.short || road.title); }
   return { n: Math.round(clamp(n, 0, 100)), why, sk };
 }
@@ -560,7 +561,7 @@ function pickRow(x, w) {
 function primaryCat(s) { return s.cats.find(c => c !== "alignment") || s.cats[0]; }
 function diversify(list, n) { const out = [], used = new Set();
   for (const x of list) { if (out.length >= n) break; const c = primaryCat(x.s);
-    if (!used.has(c) || !out.length || x.r < out[0].r - 15) { out.push(x); used.add(c); } }
+    if (!out.length || (!used.has(c) && x.r >= out[0].r - 15)) { out.push(x); used.add(c); } }
   for (const x of list) { if (out.length >= n) break; if (!out.includes(x)) out.push(x); }
   return out.sort((a, b) => b.r - a.r); }
 const PLAN_HOURS = 168;   // a week ahead, so Monday can plan the weekend (days 6-7 are rough)
@@ -614,7 +615,7 @@ function renderNow() {
       if (w.kind === "night") { const here = hourAt(nearestPt(LOC, 60), w.peak), there = typeof nightCloud === "function" ? nightCloud(t0.s, w) : null;   // sky.js loads after this file
         if (here && there && Math.abs(here.cc - there.cc) >= 30) h += `<p class="why">That's for here. At ${esc(t0.s.name)}: ${there.cc <= 20 ? "clear" : there.cc <= 50 ? "partly cloudy" : "cloudy"} (${Math.round(there.cc)}% cloud).</p>`; }
       else if (v && t0.f.sk) { const vt = verdict(t0.f.sk); if (vt.cls !== v.cls) h += `<p class="why">That's for here. At ${esc(t0.s.name)}: ${esc(vt.txt.split(". ")[0])}.</p>`; } } }
-  h += top.length ? `<ul class="picks">${top.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<p class="empty">${typeof SEED !== "undefined" && SEED.busy ? "Still finding spots near you…" : !WX ? "Waiting for the forecast…" : UI.group !== "all" && !SPOTS.some(s => groupTest[UI.group] && groupTest[UI.group](s) && !tooFar(s)) ? `No ${(GROUPS.find(g => g[0] === UI.group) || [, "matching"])[1].toLowerCase()} spots within your travel limit here yet. Tap Show all above, or allow more travel time in Settings.` : "No spots you can reach in time. Pick a later window above, or allow more travel time in Settings."}</p>`;
+  h += top.length ? `<ul class="picks">${top.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<p class="empty">${typeof SEED !== "undefined" && SEED.busy ? "Still finding spots near you…" : !WX ? "Waiting for the forecast…" : w.kind === "night" && (() => { const c = hourAt(nearestPt(LOC, 60), w.peak); return c && c.cc > 60; })() ? "Too cloudy tonight for the night-sky spots. Try another night above." : UI.group !== "all" && !SPOTS.some(s => groupTest[UI.group] && groupTest[UI.group](s) && !tooFar(s)) ? `No ${(GROUPS.find(g => g[0] === UI.group) || [, "matching"])[1].toLowerCase()} spots within your travel limit here yet. Tap Show all above, or allow more travel time in Settings.` : "No spots you can reach in time. Pick a later window above, or allow more travel time in Settings."}</p>`;
   if (more.length) h += UI.more ? `<ul class="picks" style="border-top:0">${more.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<button class="more" id="moreBtn">${more.length} more options</button>`;
   h += `</div>`;
   h += `<p class="muted scorenote">Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.</p>`;
