@@ -19,20 +19,25 @@ const LEVELS = [[850, 1500], [700, 3000], [600, 4200], [500, 5600]];
 // the big peaks you can see from here: the named list plus tall, well-known starter peaks (elevation from their tip)
 function peaksNear(p) {
   const named = PEAKS.filter(x => km(p, x) < 170);
-  const east = p.lon > -103, minE = east ? 1300 : 2300;
+  const east = p.lon > -103, base = LOCAL && LOCAL.elevation != null ? LOCAL.elevation : 0, minRise = east ? 700 : 1200;
   const seedPk = SPOTS.filter(s => s.seed && s.kind === "peak" && km(p, s) < 140).map(s => { const m = /Summit ([\d,]+) m/.exec(s.tip || ""); return m ? { s, elev: +m[1].replace(/,/g, "") } : null; })
-    .filter(x => x && x.elev >= minE && (x.s.score || 0) >= 8 && !named.some(n => km(n, x.s) < 15))
+    .filter(x => x && x.elev - base >= minRise && (x.s.score || 0) >= 10 && !named.some(n => km(n, x.s) < 15))
     .map(({ s, elev }) => ({ name: s.name, lat: s.lat, lon: s.lon, elev, re: new RegExp("\\b" + s.name.replace(/^(mount|mt\.?)\s+/i, "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "i") }));
   // biggest-looking first: height over distance
-  return [...named, ...seedPk].sort((a, b) => b.elev / Math.max(5, km(p, b)) - a.elev / Math.max(5, km(p, a))).slice(0, 6);
+  return [...named.filter(n => n.elev - base >= minRise * 0.8), ...seedPk].sort((a, b) => (b.elev - base) / Math.max(5, km(p, b)) - (a.elev - base) / Math.max(5, km(p, a))).slice(0, 6);
 }
 let MTN = null, AIR = null, LOCAL = null, SEA = null;
 
 async function loadExtras(force) {
   const key = locKey(); if (!force && MTN && MTN.key === key && Date.now() - MTN.at < 60 * 60000) return false;
-  const near = peaksNear(LOC);
   let changed = false;
   try {
+    const r = await omFetch(`https://api.open-meteo.com/v1/forecast?latitude=${LOC.lat.toFixed(3)}&longitude=${LOC.lon.toFixed(3)}&minutely_15=precipitation&forecast_minutely_15=12&past_minutely_15=2` +
+      `&hourly=cape,snowfall,snow_depth,temperature_2m,relative_humidity_2m,wind_speed_10m&past_days=2&forecast_days=3&timeformat=unixtime&timezone=GMT`);
+    LOCAL = { key, at: Date.now(), ...(await r.json()) }; changed = true;
+  } catch (e) { }
+  try {
+    const near = peaksNear(LOC);
     if (near.length) {
       const r = await omFetch("https://api.open-meteo.com/v1/forecast?latitude=" + near.map(p => p.lat).join(",") + "&longitude=" + near.map(p => p.lon).join(",") +
         "&hourly=" + LEVELS.map(([l]) => `cloud_cover_${l}hPa`).join(",") + ",snowfall&past_days=2&forecast_days=8&timeformat=unixtime&timezone=GMT");
@@ -40,15 +45,12 @@ async function loadExtras(force) {
       MTN = { key, at: Date.now(), peaks: near.map((p, i) => ({ ...p, h: j[i].hourly })) }; changed = true;
     } else MTN = { key, at: Date.now(), peaks: [] };
   } catch (e) { MTN = MTN || null; }
-  try {
-    const r = await omFetch(`https://api.open-meteo.com/v1/forecast?latitude=${LOC.lat.toFixed(3)}&longitude=${LOC.lon.toFixed(3)}&minutely_15=precipitation&forecast_minutely_15=12&past_minutely_15=2` +
-      `&hourly=cape,snowfall,snow_depth,temperature_2m,relative_humidity_2m,wind_speed_10m&past_days=2&forecast_days=3&timeformat=unixtime&timezone=GMT`);
-    LOCAL = { key, at: Date.now(), ...(await r.json()) }; changed = true;
-  } catch (e) { }
-  const coast = SPOTS.filter(x => (x.cats.includes("coast") || x.kind === "beach" || x.kind === "lighthouse") && km(LOC, x) < 50).sort((a, b) => km(LOC, a) - km(LOC, b))[0];
+  const coast = SPOTS.filter(x => (x.cats.includes("coast") || x.kind === "lighthouse" || (x.kind === "beach" && !/river|lake|swimming|pond|creek/i.test(x.name))) && km(LOC, x) < 50).sort((a, b) => km(LOC, a) - km(LOC, b))[0];
+  SEA = null;
   if (coast) try {
     const r = await omFetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${coast.lat.toFixed(3)}&longitude=${coast.lon.toFixed(3)}&hourly=wave_height,wave_period&forecast_days=3&timeformat=unixtime&timezone=GMT`);
-    const j = await r.json(); if (j.hourly) { SEA = { key, at: Date.now(), h: j.hourly, near: coast.name }; changed = true; }
+    const j = await r.json(); const off = j.latitude != null ? km(coast, { lat: j.latitude, lon: j.longitude }) : 99;
+    SEA = j.hourly && off < 15 && (j.hourly.wave_height || []).some(v => v != null) ? { key, at: Date.now(), h: j.hourly, near: coast.name } : null; changed = true;
   } catch (e) { }
   try {
     const r = await omFetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LOC.lat.toFixed(2)}&longitude=${LOC.lon.toFixed(2)}&hourly=aerosol_optical_depth,dust,pm2_5&forecast_days=5&timeformat=unixtime&timezone=GMT`);
@@ -89,9 +91,9 @@ function rainbowAt(p, t) {   // showers with sun breaks and the sun low enough (
 function landscape() {
   const near = SPOTS.filter(x => km(LOC, x) < 60), c = k => near.filter(k).length;
   return {
-    coast: c(x => x.cats.includes("coast") || x.kind === "beach" || x.kind === "lighthouse") >= 3,
+    coast: !!SEA,
     mountains: !!(MTN && MTN.peaks.length),
-    desert: c(x => x.kind === "arch" || /canyon|slot|wash|butte|mesa/i.test(x.name)) >= 3 || (LOC.lat < 38.5 && LOC.lon > -120 && LOC.lon < -103),
+    desert: c(x => x.kind === "arch") >= 2 || (LOC.lat > 31 && LOC.lat < 42 && LOC.lon > -117.5 && LOC.lon < -105.5),
     lakes: c(x => x.kind === "lake" || x.cats.includes("reflection")) >= 3,
     plains: !(MTN && MTN.peaks.length) && LOC.lon > -105 && LOC.lon < -94,
   };
