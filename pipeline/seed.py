@@ -47,7 +47,10 @@ def _overpass(q, rounds=2):
     for i, u in enumerate(OVERPASS * rounds):
         try:
             r = http(u, method="POST", data={"data": q}, timeout=600, tries=1)
-            return r.json()["elements"]
+            j = r.json()
+            if "runtime error" in (j.get("remark") or ""):   # Overpass answers 200 with no data when a query times out
+                raise RuntimeError(j["remark"][:160])
+            return j["elements"]
         except Exception as e:
             log.warning("overpass %s: %s", u, e)
             time.sleep(20 * (i + 1))
@@ -77,10 +80,14 @@ def _query_box(state, box=None, q_only=False):
 def query(state):
     """Whole state in one go; big states (TX, CA...) time out, so fall back to 2° x 2° pieces of the state's bounding box."""
     try:
-        return _overpass(_query_box(state, q_only=True), rounds=1)
+        els = _overpass(_query_box(state, q_only=True), rounds=1)
+        if els:
+            return els
     except RuntimeError:
         log.warning("%s: whole-state query failed, splitting into pieces", state)
     bb = _overpass(f'[out:json][timeout:120];rel["ISO3166-2"="{STATES[state]}"][admin_level=4];out bb;')[0]["bounds"]
+    if bb["maxlon"] - bb["minlon"] > 60:   # Alaska's Aleutians cross the date line: keep the mainland
+        bb = {**bb, "minlon": -170.0, "maxlon": -129.0}
     out, seen = [], set()
     la = math.floor(bb["minlat"])
     while la < bb["maxlat"]:
