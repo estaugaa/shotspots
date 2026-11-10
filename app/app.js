@@ -632,7 +632,7 @@ function specialsHtml() {
   const atHome = km(LOC, HOME) < 60;
   if (KP && KP.max != null && KP.max >= 5) items.push(["🌌", `Aurora possible: Kp ${KP.max.toFixed(1)} forecast`, `${KP.when || ""}. ` + (atHome ? "Washougal needs about Kp 6 on camera; Trout Lake or Satus Pass about 5.5." : LOC.lat >= 44 ? "Look low on the northern horizon from somewhere dark; a phone's night mode picks up colour the eye can't see." : "This far south it will only show low on the northern horizon, if at all.")]);
   // rainy-day playbook
-  { const w0 = allWindows(LOC, 40)[0], s0 = w0 && skyAt(LOC, w0), mo = +laYMD(now).slice(5, 7);
+  { const aw = allWindows(LOC, PLAN_HOURS), w0 = aw[clamp(UI.focus, 0, aw.length - 1)] || aw[0], s0 = w0 && skyAt(LOC, w0), mo = +laYMD(w0 ? w0.peak : now).slice(5, 7);
     if (s0 && ["rain", "showers", "snow"].includes(s0.mode)) {
       const best = (cat) => { const r = rankFor(w0, s => s.cats.includes(cat))[0]; return r ? r.s : null; };
       const wf = best("waterfall"), ct = best("city"), fc = mo >= 9 && mo <= 11 ? best("fallcolor") : null;
@@ -642,7 +642,8 @@ function specialsHtml() {
         mo >= 10 && mo <= 11 ? (atHome ? "Mushroom season: look on mossy logs along Gorge falls trails." : "Mushroom season: look on mossy logs along shaded trails.") + " The 70–300 focuses close enough for raindrop details." : "Use the 70–300 at minimum focus for raindrops on leaves, spider webs and lichen.",
         !atHome ? "When the rain lifts, mist often hangs on hills and over water: the half hour after a shower is worth being out." : "When the rain lifts, mist hangs on the Gorge cliffs. Crown Point and Cape Horn are the classic views of it.",
         s0.mode === "snow" ? "Snow plus overcast gives the evergreens clean, graphic shapes. Overexpose +1 so the snow stays white." : ""].filter(Boolean);
-      items.push(["☔", s0.mode === "snow" ? "Snow-day ideas" : "Rainy-day ideas", ideas.join(" ")]); } }
+      const dlab = winDay(w0) === laYMD(now) ? "" : ` for ${dayTab(winDay(w0))}`;
+      items.push(["☔", (s0.mode === "snow" ? "Snow-day ideas" : "Rainy-day ideas") + dlab, ideas.join(" ")]); } }
   // NWS alerts
   (NWS && NWS.items || []).slice(0, 2).forEach(a => items.push([a.ic || "⚠️", a.headline, a.tip || a.area || ""]));
   const fa = fogAdvisoryAt(LOC); if (fa && !(NWS && NWS.items || []).some(a => /Fog/.test(a.headline))) items.push(["🌫️", `${fa.event} here until ${fmtT(new Date(fa.ends))}`, "Fog shots: valleys and water are socked in. Viewpoints above the fog may see a sea of cloud."]);
@@ -764,6 +765,8 @@ function hours12(s) {
 function nightHelp(s) {
   const e = dayEvents(s, laYMD(new Date())), m = moonPos(new Date(), s.lat, s.lon), nw = nightWindow(s);
   const npf = (f, N) => Math.round((35 * N + 30 * 3.03) / f);
+  const camName = typeof KITS !== "undefined" && typeof kitId === "function" ? KITS[kitId()].name : "your camera";
+  if (typeof kitId === "function" && kitId() !== "fuji_xt5") return `<details><summary>Night settings for ${esc(camName)}</summary><ul class="plain"><li>Use night mode or a tripod with a 3 s timer; 10–30 s exposures pick up the Milky Way.</li><li>Tap to focus on a bright star or distant light, then lock focus (AE/AF lock).</li><li>Turn the screen brightness down and wait 20 minutes for your eyes to adjust.</li></ul></details>`;
   return `<details open><summary>Night settings for your X-T5</summary><ul class="plain">
     <li>Moon ${Math.round(m.illum * 100)}% lit${e.moonrise ? ", rises " + fmtT(e.moonrise) : ""}${e.moonset ? ", sets " + fmtT(e.moonset) : ""}.${nw && nw.dark ? ` Moon-free dark ${fmtT(nw.dark.s)}–${fmtT(nw.dark.e)}.` : ""}</li>
     <li>Pinpoint stars: 16 mm f/2.8 → ${npf(16, 2.8)} s max; 27 mm f/2.8 → ${npf(27, 2.8)} s (NPF rule at the X-T5's pixel size). ISO 3200–6400.</li>

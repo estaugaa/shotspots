@@ -220,10 +220,27 @@ def build(state):
         out.append({"id": f"seed-{e['type'][0]}{e['id']}", "name": name, "lat": round(lat, 5), "lon": round(lon, 5), "cats": cats, "light": light, "effort": effort,
                     "tip": _tip(kind, t, tip), "kind": kind, "score": round(score, 1), "osm": f"{e['type']}/{e['id']}", "wd": t.get("wikidata"), "state": state})
     out = _hotspots(state, out, dup)
+    _shore_pins(out)
     tiles = defaultdict(list)
     for s in out:
         tiles[f"{math.floor(s['lat'])}_{math.floor(s['lon'])}"].append(s)
     return tiles
+
+
+def _shore_pins(out):
+    """Lake pins come from the middle of the water. Use a viewpoint/beach/park on the same lake when OSM or eBird has one."""
+    shore = [s for s in out if s["kind"] in ("viewpoint", "beach", "hotspot", "lighthouse", "refuge")]
+    for s in out:
+        if s["kind"] != "lake":
+            continue
+        word = next((w for w in re.findall(r"[A-Za-z']{3,}", s["name"]) if w.lower() not in ("lake", "the", "reservoir", "pond")), "").lower()
+        best = min((x for x in shore if word and word in x["name"].lower() and km(s["lat"], s["lon"], x["lat"], x["lon"]) < 6),
+                   key=lambda x: km(s["lat"], s["lon"], x["lat"], x["lon"]), default=None)
+        if best:
+            s["lat"], s["lon"] = best["lat"], best["lon"]
+            s["tip"] += f" Pin moved to {best['name']} on the shore."
+        else:
+            s["tip"] += " The pin marks the middle of the lake: pick a shore spot facing the light."
 
 
 _KNOWN = None
