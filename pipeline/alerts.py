@@ -13,7 +13,7 @@ written to the (public) repo; only a hash of dead endpoints is kept.
 """
 import datetime as dt, hashlib, json
 from zoneinfo import ZoneInfo
-from .common import spots, write_json, read_json, FEED, DATA, http, secret, log, utcnow, iso
+from .common import spots, write_json, read_json, FEED, DATA, ROOT, http, secret, log, utcnow, iso
 
 LA = ZoneInfo("America/Los_Angeles")
 ADIR = DATA / "alerts"
@@ -536,20 +536,114 @@ def run():
 
 
 def widget(F, S, shown, now):
-    """feed/widget.json: a ~2 KB summary for the Home Screen widget (Scriptable) - next light at home, top alerts,
-    weekend picks, and the HRRR odds at home for the next sunrise and sunset."""
+    """feed/widget.json for the Home Screen widget (Scriptable), about 4 KB:
+      now     conditions at home right now (Open-Meteo)
+      light   the next 3 sunrises/sunsets: odds at home, a verdict, the best spot within an hour that faces the light
+              (curated spots, HRRR odds at that spot) and when to leave
+      days    7-day strip: a rough 0-100 for each sunrise and sunset at home (canvas of mid/high cloud x low cloud x rain)
+      night   tonight at home: cloud after twilight, moon
+      wild    wildlife events at their peak now
+      alerts / weekend / smoke   as before"""
+    import math
     home = next((v for v in VALLEY if v in S), None)
+    H = S.get(home) or {"lat": 45.582, "lon": -122.353}
+    try:   # real drive minutes from home (app/data.js); estimate for research spots without one
+        _src = (ROOT / "app" / "data.js").read_text(); DRV = {x["id"]: x.get("drive") for x in json.loads(_src[_src.index("{"):].rstrip().rstrip(";"))["spots"]}
+    except Exception:
+        DRV = {}
+    dmin = lambda s: DRV.get(s["id"]) or round(6 + min(km_home(s), 10) * 1.25 / 55 * 60 + max(0, km_home(s) - 10) * 1.15 / 95 * 60)
+    sky = [x for x in S.values() if set(x["cats"]) & SKY and dmin(x) <= 60 and not x.get("closed")]
+    fogs = [x for x in S.values() if "fog" in x["cats"] or x["id"] in ("larch-sherrard", "silver-star", "angels-rest", "cape-horn", "crown-point")]
+
+    def verdict(pc, pf, pcl):
+        if pf is not None and pf >= 50: return "Fog likely"
+        if pc is None: return "No forecast yet"
+        return "Strong color" if pc >= 60 else "Good odds" if pc >= 35 else "Some chance" if pc >= 15 else "Little color"
+
     light = []
-    for k in range(2):
-        d = F.day(home, (dt.datetime.now(LA) + dt.timedelta(days=k)).strftime("%Y-%m-%d")) if home else None
+    for k in range(3):
+        dy = (dt.datetime.now(LA) + dt.timedelta(days=k)).strftime("%Y-%m-%d")
+        d = F.day(home, dy) if home else None
         for kind, fld in (("sunrise", "or"), ("sunset", "os")):
-            if d and d.get(fld) and d[fld] > now:
-                row = F.hrrr(home, d[fld]) or {}
-                light.append({"kind": kind, "at": iso(dt.datetime.fromtimestamp(d[fld] * 60, dt.timezone.utc)), "golden_start": iso(dt.datetime.fromtimestamp((d[fld] - (0 if kind == "sunrise" else 50)) * 60, dt.timezone.utc)),
-                              "p_color": row.get("p_color"), "p_clear": row.get("p_clear"), "p_fog": row.get("p_fog")})
+            if not (d and d.get(fld) and d[fld] > now):
+                continue
+            row = F.hrrr(home, d[fld]) or {}
+            best = None
+            for x in sky:
+                if x.get("light") not in (kind, "both"):
+                    continue
+                dd = F.day(x["id"], dy); r = dd and dd.get(fld) and F.hrrr(x["id"], dd[fld])
+                if r and r.get("p_color") is not None and (best is None or r["p_color"] - dmin(x) * 0.2 > best[0]):
+                    best = (r["p_color"] - dmin(x) * 0.2, x, r["p_color"], dmin(x))
+            at = dt.datetime.fromtimestamp(d[fld] * 60, dt.timezone.utc)
+            item = {"kind": kind, "at": iso(at), "golden_start": iso(dt.datetime.fromtimestamp((d[fld] - (0 if kind == "sunrise" else 50)) * 60, dt.timezone.utc)),
+                    "p_color": row.get("p_color"), "p_clear": row.get("p_clear"), "p_fog": row.get("p_fog"), "verdict": verdict(row.get("p_color"), row.get("p_fog"), row.get("p_clear"))}
+            if best and best[2] >= 15:
+                lead = 20 if kind == "sunset" else 35   # sunrise: be set up for blue hour
+                item["best"] = {"id": best[1]["id"], "name": best[1]["name"], "p": best[2], "drive": best[3],
+                                "leave": iso(at - dt.timedelta(minutes=best[3] + lead))}
+            if row.get("p_fog") is not None and row["p_fog"] >= 40:
+                fa = (read_json(FEED / "fogabove.json", {}) or {}).get("spots", {})
+                pick = next((x for x in fogs if x["id"] in fa), None) or next(iter(fogs), None)
+                if pick: item["fogspot"] = {"id": pick["id"], "name": pick["name"], "drive": dmin(pick)}
+            light.append(item)
+    light = sorted(light, key=lambda x: x["at"])[:3]
+
+    nowc, days, night = None, [], None
+    try:
+        j = http("https://api.open-meteo.com/v1/forecast", params={"latitude": H["lat"], "longitude": H["lon"], "current": "temperature_2m,precipitation,cloud_cover,weather_code,wind_speed_10m",
+                 "hourly": "cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,precipitation_probability", "daily": "sunrise,sunset",
+                 "forecast_days": 7, "timezone": "America/Los_Angeles", "temperature_unit": "fahrenheit", "wind_speed_unit": "mph"}, timeout=40).json()
+        c = j["current"]; WMO = {0: "Clear", 1: "Mostly clear", 2: "Partly cloudy", 3: "Overcast", 45: "Fog", 48: "Fog", 51: "Drizzle", 53: "Drizzle", 55: "Drizzle", 61: "Rain", 63: "Rain", 65: "Heavy rain",
+                                  71: "Snow", 73: "Snow", 75: "Heavy snow", 80: "Showers", 81: "Showers", 82: "Heavy showers", 95: "Thunderstorm"}
+        nowc = {"temp": round(c["temperature_2m"]), "desc": WMO.get(c["weather_code"], "Cloudy"), "rain": c["precipitation"] > 0.05, "cloud": c["cloud_cover"], "wind": round(c["wind_speed_10m"])}
+        h = j["hourly"]; tt = h["time"]
+        def at_hour(iso_local):
+            k = min(range(len(tt)), key=lambda i: abs(dt.datetime.fromisoformat(tt[i]) - dt.datetime.fromisoformat(iso_local)))
+            return {f: h[f][k] for f in h if f != "time"}
+        def est(r):   # same shape as the app: mid/high canvas, low cloud blocks, rain kills it
+            canvas = max(r["cloud_cover_mid"], r["cloud_cover_high"] * 0.9)
+            f = 0.32 if canvas < 10 else 0.32 + 0.68 * min(1, (canvas - 10) / 40) if canvas <= 70 else (0.85 if r["cloud_cover_mid"] < 30 else max(0.2, 1 - (canvas - 70) / 30 * 0.8))
+            g = 1 if r["cloud_cover_low"] <= 30 else 0.72 if r["cloud_cover_low"] <= 60 else 0.38
+            return round(100 * f * g * (1 - min(0.8, (r["precipitation_probability"] or 0) / 100)))
+        for di, ymd in enumerate(j["daily"]["time"]):
+            sr, ss = est(at_hour(j["daily"]["sunrise"][di])), est(at_hour(j["daily"]["sunset"][di]))
+            days.append({"date": ymd, "sunrise": sr, "sunset": ss})
+        # tonight: from 90 min after sunset to 1 am
+        ss0 = dt.datetime.fromisoformat(j["daily"]["sunset"][0]) + dt.timedelta(minutes=90)
+        if dt.datetime.now(LA).replace(tzinfo=None) > ss0 + dt.timedelta(hours=5):
+            ss0 = dt.datetime.fromisoformat(j["daily"]["sunset"][1]) + dt.timedelta(minutes=90)
+        cc = [h["cloud_cover"][i] for i, t in enumerate(tt) if ss0 <= dt.datetime.fromisoformat(t) <= ss0 + dt.timedelta(hours=5)]
+        moon = None
+        try:
+            from . import ephem
+            moon = round(100 * float(ephem.moon_illum(ephem.ts_unix(dt.datetime.now(dt.timezone.utc).timestamp()))))
+        except Exception:
+            pass
+        if cc:
+            m = sum(cc) / len(cc)
+            night = {"cloud": round(m), "moon": moon, "from": ss0.strftime("%-I:%M %p"),
+                     "verdict": ("Clear and dark" if m <= 20 and (moon is None or moon < 40) else "Clear, bright moon" if m <= 20 else "Partly cloudy" if m <= 50 else "Cloudy")}
+    except Exception as e:
+        log.warning("widget conditions: %s", e)
+
+    wild = []
+    try:
+        src = (ROOT / "app" / "data.js").read_text(); D = json.loads(src[src.index("{"):].rstrip().rstrip(";"))
+        md = dt.datetime.now(LA).strftime("%m-%d")
+        inr = lambda a, b: a <= md <= b if a <= b else md >= a or md <= b
+        for ev in D.get("WEVENTS", []):
+            for w in ev.get("windows", []):
+                if w.get("peak") and inr(*w["peak"]):
+                    sp = next((S[i] for i in ev.get("spots", []) if i in S), None)
+                    wild.append({"icon": ev.get("icon", "🦅"), "name": ev["name"], "spot": sp and sp["name"], "id": sp and sp["id"], "session": ev.get("session")})
+    except Exception as e:
+        log.warning("widget wildlife: %s", e)
+
     wk = read_json(FEED / "weekend.json", {}) or {}
     tidy = lambda a: {"title": a["title"], "body": a["body"][:140], "p": a.get("p"), "rule": a["rule"], "at": a.get("at"), "spot": (a.get("spots") or [None])[0]}
-    write_json("widget.json", {"gen": iso(utcnow()), "light": sorted(light, key=lambda x: x["at"])[:2], "alerts": [tidy(a) for a in shown if a["rule"] != "smoke"][:3],
+    write_json("widget.json", {"v": 2, "gen": iso(utcnow()), "home": "Washougal", "now": nowc, "light": light, "days": days, "night": night, "wild": wild[:3],
+                               "alerts": [tidy(a) for a in shown if a["rule"] != "smoke"][:3],
                                "smoke": next((a["title"] for a in shown if a["rule"] == "smoke"), None),
                                "weekend": [tidy(p) for p in (wk.get("picks") or [])][:3] if wk.get("sun", "") >= dt.datetime.now(LA).strftime("%Y-%m-%d") else []})
 
