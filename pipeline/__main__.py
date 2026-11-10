@@ -156,7 +156,7 @@ def manifest():
 
 
 JOBS = {"goes": job_goes, "conditions": job_conditions, "daily": job_daily, "weekly": job_weekly, "monthly": job_monthly,
-        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata, "darkgrid": job_darkgrid, "seedlight": job_seedlight, "gonowtest": job_gonowtest, "seedpop": job_seedpop, "hours": job_hours}
+        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata, "darkgrid": job_darkgrid, "seedlight": job_seedlight, "gonowtest": job_gonowtest, "seedpop": job_seedpop, "hours": job_hours, "hourscur": lambda: __import__("pipeline.hours", fromlist=["x"]) and run_module("hours", __import__("pipeline.hours", fromlist=["x"]).curated, "MEASURED", "opening hours, researched spots")}
 
 if __name__ == "__main__":
     for j in sys.argv[1:]:
