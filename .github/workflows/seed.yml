@@ -45,9 +45,16 @@ jobs:
             ss-cache-
       - run: pip install -r requirements.txt
       - id: st
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           S="${{ inputs.states }}"
-          if [ -z "$S" ]; then S=$(python tools/seed_index.py --missing); fi
+          if [ -z "$S" ]; then
+            # scheduled fill-in: stand aside while a rebuild is running (two writers clash on border tiles)
+            n=$(gh api "repos/${{ github.repository }}/actions/workflows/seed.yml/runs?status=in_progress" --jq '[.workflow_runs[]|select(.id != ${{ github.run_id }})]|length')
+            if [ "$n" != "0" ]; then echo "another seed run is going; skipping"; echo "states=" >> $GITHUB_OUTPUT; exit 0; fi
+            S=$(python tools/seed_index.py --missing)
+          fi
           # long lists run 8 states per run, then hand the rest to the next run (one at a time, so border tiles never clash)
           set -- $S; NOW="${*:1:4}"; REST="${*:5}"
           echo "states=$NOW" >> $GITHUB_OUTPUT; echo "rest=$REST" >> $GITHUB_OUTPUT; echo "now: $NOW / later: $REST"
