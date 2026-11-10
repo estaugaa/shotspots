@@ -127,3 +127,85 @@ def run():
     write_json("darksky.json", {"gen": iso(utcnow()), "calibration": {"C": C, "rmse_mag": round(rmse, 2), "n": len(refs), "source": "your SQM readings" if len(cal) >= 3 else "light-pollution-map reference values"},
                                 "spots": out, "note": "VIIRS Black Marble radiance -> modeled zenith SQM and 16-sector horizon glow shares (% of total glow)."})
     return f"{len(out)} spots, calibration rmse {rmse:.2f} mag on {len(refs)} refs"
+
+
+# ---------- national grid ----------
+# Same physics as the per-spot model, run once a year over the lower 48 on a ~4.6 km grid with an FFT, then
+# shipped at 1/8 degree so the app can rate the sky anywhere. Values are calibrated on the same reference SQMs.
+NAT_H, NAT_V = range(5, 12), range(4, 7)        # VNP46A4 tiles: 130-60 W, 20-50 N
+DS = 10                                          # 2400 px/tile -> 240 cells (1/24 degree)
+ALPHA = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"   # 0.1 mag steps from 16.0
+
+
+def _small_tile(year, tile, token):
+    p = CACHE / f"vnp46a4s_{year}_{tile}.npy"
+    if p.exists():
+        return np.load(p)
+    full = CACHE / f"vnp46a4_{year}_{tile}.npy"
+    keep = full.exists()
+    try:
+        a = fetch_tile(year, tile, token)
+    except StopIteration:      # all-ocean tile: no file in the listing
+        a = np.zeros((2400, 2400), np.float32)
+    a = np.where(a > 0.5, a, 0).reshape(240, DS, 240, DS).mean((1, 3)).astype(np.float32)
+    np.save(p, a)
+    if not keep and full.exists() and tile not in TILES:
+        full.unlink()          # national tiles: keep only the downsampled copy in the cache
+    return a
+
+
+def _fftconv(a, k):
+    sh = (a.shape[0] + k.shape[0] - 1, a.shape[1] + k.shape[1] - 1)
+    out = np.fft.irfft2(np.fft.rfft2(a, sh) * np.fft.rfft2(k, sh), sh)
+    r0, c0 = k.shape[0] // 2, k.shape[1] // 2
+    return out[r0:r0 + a.shape[0], c0:c0 + a.shape[1]]
+
+
+def national(force=False):
+    old = read_json(__import__("pathlib").Path("feed") / "darkgrid.json", None)
+    if old and not force and (utcnow() - __import__("datetime").datetime.fromisoformat(old["gen"].replace("Z", "+00:00"))).days < 150:
+        return "fresh (annual data); skipped"
+    tok = secret("EARTHDATA_TOKEN")
+    if not tok:
+        raise RuntimeError("EARTHDATA_TOKEN not set")
+    year = utcnow().year - 1
+    for y in (year, year - 1, year - 2):
+        try:
+            rows = [np.hstack([_small_tile(y, f"h{h:02d}v{v:02d}", tok) for h in NAT_H]) for v in NAT_V]
+            break
+        except Exception as e:
+            log.warning("national VNP46A4 %s: %s", y, e)
+    else:
+        raise RuntimeError("no national VNP46A4 tiles")
+    a = np.vstack(rows)                     # lat 50 -> 20, lon -130 -> -60, 1/24 degree
+    step = 10 / 240
+    lat = 50 - (np.arange(a.shape[0]) + 0.5) * step
+    zen = np.zeros_like(a)
+    for band_lat in (25, 35, 45):           # longitude spacing shrinks with latitude: one kernel per band
+        ky = step * 111.2; kx = ky * math.cos(math.radians(band_lat))
+        n = int(200 / kx) + 1; m = int(200 / ky) + 1
+        X, Y = np.meshgrid(np.arange(-n, n + 1) * kx, np.arange(-m, m + 1) * ky)
+        d = np.maximum(np.hypot(X, Y), 0.7); K = np.where(d < 200, d ** -2.3 * np.exp(-d / 150.0), 0)
+        area = (ky * kx)                    # km^2 per cell (radiance is a cell mean)
+        z = _fftconv(a * area, K)
+        sel = np.abs(lat - band_lat) <= 5 if band_lat != 25 else lat < 30
+        if band_lat == 45: sel = lat >= 40
+        zen[sel] = z[sel]
+    # calibrate on the reference SQMs, sampled from this grid
+    def at(la, lo): return zen[int((50 - la) / step), int((lo + 130) / step)]
+    cal = read_json(CONFIG / "sqm_readings.json", [])
+    refs = [(c["lat"], c["lon"], c["sqm"]) for c in cal] if len(cal) >= 3 else list(REF.values())
+    zs = [max(at(la, lo), 0) for la, lo, _ in refs]
+    best = min(((sum((22.0 - 2.5 * math.log10(1 + 10 ** lc * z) - q) ** 2 for z, (_, _, q) in zip(zs, refs)), 10 ** lc) for lc in np.linspace(-6, 3, 361)))
+    C = best[1]
+    sqm = np.minimum(22.0 - 2.5 * np.log10(1 + C * np.maximum(zen, 0)), 22.0)
+    # ship at 1/8 degree (3x3 mean of brightness, not of magnitudes)
+    h3, w3 = sqm.shape[0] // 3 * 3, sqm.shape[1] // 3 * 3
+    lum = (10 ** (-0.4 * sqm[:h3, :w3])).reshape(h3 // 3, 3, w3 // 3, 3).mean((1, 3))
+    out = -2.5 * np.log10(lum)
+    q = np.clip(np.round((out - 16.0) * 10), 0, 60).astype(int)
+    d = "".join(ALPHA[v] for v in q.ravel())
+    write_json("darkgrid.json", {"gen": iso(utcnow()), "year": y, "n": 50.0, "w": -130.0, "d": 0.125, "nx": q.shape[1], "ny": q.shape[0],
+                                 "alphabet": ALPHA, "base": 16.0, "step": 0.1, "C": C, "rmse_mag": round(math.sqrt(best[0] / len(refs)), 2), "q": d,
+                                 "note": "Modeled zenith sky brightness (SQM, mag/arcsec^2) from NASA VIIRS Black Marble annual radiance; rows north to south."})
+    return f"{q.shape[1]}x{q.shape[0]} grid from {y}, rmse {best[0] ** .5 / len(refs) ** .5:.2f} mag"

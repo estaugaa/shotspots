@@ -8,10 +8,16 @@
 const LP = { C: 0.7943, k: 2.0, ext: 150, cities: [[45.52,-122.68,300],[45.52,-122.58,200],[45.58,-122.7,90],[45.47,-122.7,60],[45.63,-122.67,110],[45.64,-122.55,110],[45.7,-122.66,60],[45.5,-122.43,115],[45.54,-122.4,35],[45.59,-122.42,27],[45.58,-122.35,17],[45.49,-122.8,100],[45.52,-122.93,110],[45.42,-122.77,110],[45.38,-122.65,110],[45.43,-122.55,100],[45.78,-122.53,22],[45.81,-122.74,12],[45.4,-122.26,13],[45.26,-122.69,18],[44.94,-123.03,215],[45.14,-122.86,26],[46.14,-122.94,50],[45.86,-122.83,20],[45.71,-121.52,9],[45.73,-121.49,4],[45.6,-121.18,16],[45.69,-121.88,3],[45.82,-120.82,3.5],[46.6,-120.51,130],[47.25,-122.44,600],[47.04,-122.9,150],[44.06,-121.31,100],[45.21,-123.2,34],[45.3,-122.97,25],[45.52,-123.11,26],[46.19,-123.83,10],[46.0,-123.92,7],[45.46,-123.84,5],[44.96,-124.0,9],[46.23,-119.15,300],[45.84,-119.29,19],[47.42,-120.31,70],[47.0,-120.55,20],[44.27,-121.17,35],[44.05,-123.09,270],[44.6,-123.15,110],[46.7,-122.95,25],[45.3,-121.75,0.4],[45.67,-121.89,1.2],[45.29,-122.33,4],[45.15,-122.58,10],[45.9,-122.74,6],[45.86,-122.41,2],[44.3,-120.84,10],[45.89,-123.96,1.7],[45.36,-120.21,0.7],[45.6,-120.2,0.4]] };
 const SQM_MEASURED = { "scout-cape-horn-uplands": 21.21, "scout-dark-washougal": 21.56, "larch-mtn": 21.53 };
 const __sqmCache = {};
-function sqmKnown(lat, lon) { let m = 1e9; for (const [la, lo] of LP.cities) { const d = Math.hypot((lat - la) * 111.2, (lon - lo) * 111.2 * Math.cos(lat * D2R)); if (d < m) m = d; } return m < 250; }
+// National grid (feed/darkgrid.json, VIIRS-based, 1/8 degree) covers the lower 48 outside the hand-calibrated Northwest model
+function gridSqm(lat, lon) { const g = typeof fd === "function" && fd("darkgrid"); if (!g || !g.q) return null;
+  const y = Math.floor((g.n - lat) / g.d), x = Math.floor((lon - g.w) / g.d); if (x < 0 || y < 0 || x >= g.nx || y >= g.ny) return null;
+  const v = g.alphabet.indexOf(g.q[y * g.nx + x]); return v < 0 ? null : g.base + v * g.step; }
+function nwKnown(lat, lon) { let m = 1e9; for (const [la, lo] of LP.cities) { const d = Math.hypot((lat - la) * 111.2, (lon - lo) * 111.2 * Math.cos(lat * D2R)); if (d < m) m = d; } return m < 250; }
+function sqmKnown(lat, lon) { return nwKnown(lat, lon) || gridSqm(lat, lon) != null; }
 function sqmAt(lat, lon) {
   const k = lat.toFixed(3) + "," + lon.toFixed(3); if (__sqmCache[k]) return __sqmCache[k];
-  if (!sqmKnown(lat, lon)) return (__sqmCache[k] = 20.0);   // light-pollution model only covers the Northwest: assume suburban
+  if (!nwKnown(lat, lon)) { const g = gridSqm(lat, lon); if (g == null) return 20.0;   // not mapped (yet): assume suburban, don't cache
+    return (__sqmCache[k] = g); }
   let a = 0; for (const [la, lo, p] of LP.cities) { const d = Math.hypot((lat - la) * 111.2, (lon - lo) * 111.2 * Math.cos(lat * D2R)); a += p * Math.pow(Math.max(d, 2), -LP.k) * Math.exp(-d / LP.ext); }
   return (__sqmCache[k] = Math.min(21.95, 22.0 - 2.5 * Math.log10(1 + LP.C * a)));
 }

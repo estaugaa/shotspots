@@ -75,12 +75,18 @@ def job_weekly():
     run_module("phenology", obs.phenology, "MEASURED", "USA-NPN observations")
     run_module("wildlife", wildlife.run, "ESTIMATED", "encounter rates")
     run_module("darksky", viirs.run, "MODELED", "VIIRS Black Marble sky brightness")
+    run_module("darkgrid", viirs.national, "MODELED", "VIIRS national sky-brightness grid (annual)")
     run_module("originality", flickr.run, "MEASURED", "Flickr geotagged photos")
 
 
 def job_trails():
     from . import trails
     run_module("trails", lambda: trails.run(budget_min=300), "MEASURED", "OpenStreetMap walking route from parking + DEM climb")
+
+
+def job_darkgrid():
+    from . import viirs
+    run_module("darkgrid", lambda: viirs.national(force=True), "MODELED", "VIIRS national sky-brightness grid (annual)")
 
 
 def job_natdata():
@@ -113,7 +119,7 @@ def manifest():
 
 
 JOBS = {"goes": job_goes, "conditions": job_conditions, "daily": job_daily, "weekly": job_weekly, "monthly": job_monthly,
-        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata}
+        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata, "darkgrid": job_darkgrid}
 
 if __name__ == "__main__":
     for j in sys.argv[1:]:

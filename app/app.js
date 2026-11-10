@@ -495,6 +495,8 @@ function fitFor(s, w) {
   n *= KCAP[w.kind] || 1;
   // starter spots all share the same sky, so let how notable a place is (Wikipedia links, photos) break ties
   if (s.seed && s.score != null) n += Math.max(-3, Math.min(8, (Math.log2(Math.max(1, s.score)) - 2.3) * 3));
+  // starter spots haven't been checked (pin, which way it faces, access), so trust them a little less than researched ones
+  if (s.seed) n *= 0.9;
   if (road) { n -= 10; why.push(road.short || road.title); }
   return { n: Math.round(clamp(n, 0, 100)), why, sk };
 }
@@ -505,7 +507,7 @@ function rankFor(w, filter) {
     const d = driveMin(s), walk = WALK[s.effort] || 15, leave = new Date((w.kind === "night" ? (w.dark ? w.dark.s : w.start) : w.peak).getTime() - (d + walk) * 60000);
     const reachable = now + (d + walk * 0.5) * 60000 < w.end.getTime();
     if (!reachable) continue;
-    list.push({ s, f, d, leave, r: f.n - d * 0.28 + (UI.group === "water" && s.cats[0] === "waterfall" ? 8 : 0) });   // Waterfalls filter: the falls themselves first
+    list.push({ s, f, d, leave, r: f.n - d * 0.28 + (s.seed ? 0 : 4) + (UI.group === "water" && s.cats[0] === "waterfall" ? 8 : 0) });   // Waterfalls filter: the falls themselves first
   }
   return list.sort((a, b) => b.r - a.r);
 }

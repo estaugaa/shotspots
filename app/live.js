@@ -86,6 +86,14 @@ async function loadFlow() {
     LIVE.flow = out; store.set("flow", out); mark("flow", true, Object.keys(out.s).length + " river gauges");
   } catch (e) { mark("flow", false, String(e.message || e)); }
 }
+async function streamAt(s) {
+  if (s._stream !== undefined) return s._stream;
+  try { const q = `[out:json][timeout:15];way(around:60,${s.lat},${s.lon})[waterway~"^(river|stream)$"][name];out tags 3;`;
+    const r = await fetch("https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(q)); const j = await r.json();
+    const w = (j.elements || []).sort((a, b) => (a.tags.waterway === "river" ? 0 : 1) - (b.tags.waterway === "river" ? 0 : 1))[0];
+    return (s._stream = w ? w.tags.name : null);
+  } catch (e) { return null; }
+}
 async function nearGauge(s) {
   if (s.gauge !== undefined) return s.gauge;
   if (!(s.cats.includes("waterfall") || s.kind === "waterfall" || /falls|river|creek|rapids/i.test(s.name))) return (s.gauge = null);
@@ -94,7 +102,9 @@ async function nearGauge(s) {
     // A gauge only says something about this spot if it's on the same stream: the stream's name has to appear in the
     // spot's name or description (then up to 20 km), or the gauge is right next to it (3 km). Big rivers like the
     // Columbia say nothing about side-creek waterfalls.
-    const txt = (s.name + " " + (s.tip || "")).toLowerCase(); let best = null, bd = 1e9;
+    let txt = (s.name + " " + (s.tip || "")).toLowerCase(); let best = null, bd = 1e9;
+    // Waterfalls rarely say which river they're on: ask OpenStreetMap for the named stream under the pin
+    if (!/\b(river|creek|fork)\b/.test(txt)) { const st = await streamAt(s); if (st) txt += " " + st.toLowerCase(); }
     for (const ts of j.value.timeSeries || []) { const g = ts.sourceInfo.geoLocation.geogLocation, d = km(s, { lat: g.latitude, lon: g.longitude });
       const stream = ts.sourceInfo.siteName.toLowerCase().split(/\s+(?:nr|near|at|abv|above|blw|below|bl|ab)\s+/)[0].replace(/\b(river|creek|cr|r|fork|ck)\b\.?/g, "").replace(/\s+/g, " ").trim();
       if (/columbia|willamette|snake/.test(stream)) continue;
