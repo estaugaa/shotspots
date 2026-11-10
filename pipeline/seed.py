@@ -17,6 +17,8 @@ from .common import secret, http, spots, write_json, FEED, log, utcnow, iso, km,
 OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass.private.coffee/api/interpreter"]
 STATES = {k: "US-" + k for k in "AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY".split()}
 PER_TILE = 200
+TIMEOUT = 600     # per request; pieces use a shorter one
+FAILED = set()    # (state, tile) pieces that failed this run: keep what those tiles had before
 KIND_FLOOR = 20   # every kind keeps its best few per tile, so peaks can't crowd out viewpoints, lakes and birding spots
 
 # [key, test, cats, light, effort, base score, tip]
@@ -55,14 +57,14 @@ TYPES = [
 def _overpass(q, rounds=2):
     for i, u in enumerate(OVERPASS * rounds):
         try:
-            r = http(u, method="POST", data={"data": q}, timeout=600, tries=1)
+            r = http(u, method="POST", data={"data": q}, timeout=TIMEOUT, tries=1)
             j = r.json()
             if "runtime error" in (j.get("remark") or ""):   # Overpass answers 200 with no data when a query times out
                 raise RuntimeError(j["remark"][:160])
             return j["elements"]
         except Exception as e:
             log.warning("overpass %s: %s", u, e)
-            time.sleep(20 * (i + 1))
+            time.sleep(10 * (i + 1))
     raise RuntimeError("Overpass unavailable")
 
 
@@ -91,13 +93,16 @@ def _query_box(state, box=None, q_only=False):
 
 
 def query(state):
-    """Whole state in one go; big states (TX, CA...) time out, so fall back to 2° x 2° pieces of the state's bounding box."""
+    """Whole state in one go; big states (TX, CA...) time out, so fall back to 1° pieces of the state's bounding box."""
+    global TIMEOUT
     try:
+        TIMEOUT = 400
         els = _overpass(_query_box(state, q_only=True), rounds=1)
         if els:
             return els
     except RuntimeError:
         log.warning("%s: whole-state query failed, splitting into pieces", state)
+    TIMEOUT = 170
     bb = _overpass(f'[out:json][timeout:120];rel["ISO3166-2"="{STATES[state]}"][admin_level=4];out bb;')[0]["bounds"]
     if bb["maxlon"] - bb["minlon"] > 60:   # Alaska's Aleutians cross the date line: keep the mainland
         bb = {**bb, "minlon": -170.0, "maxlon": -129.0}
@@ -107,14 +112,14 @@ def query(state):
         lo = math.floor(bb["minlon"])
         while lo < bb["maxlon"]:
             try:
-                for e in _query_box(state, (la, lo, la + 2, lo + 2)):
+                for e in _overpass(_query_box(state, (la, lo, la + 1, lo + 1), q_only=True).replace("[timeout:300]", "[timeout:150]"), rounds=1):
                     k = (e["type"], e["id"])
                     if k not in seen:
                         seen.add(k); out.append(e)
             except RuntimeError:
-                log.warning("%s: piece %s,%s failed", state, la, lo)
-            lo += 2
-        la += 2
+                log.warning("%s: piece %s,%s failed", state, la, lo); FAILED.add((state, f"{la}_{lo}"))
+            lo += 1
+        la += 1
     return out
 
 
@@ -312,9 +317,14 @@ def run(states):
             log.warning("%s failed: %s", st, e); continue
         # a tile can straddle a state line: merge with what other states already wrote there
         n = 0
+        for k in [k for st2, k in FAILED if st2 == st and k not in tiles]:
+            tiles[k] = []    # failed squares with nothing new still keep their old spots
         for k, lst in tiles.items():
             p = sdir / f"{k}.json"
-            prev = [x for x in read_json(p, {"spots": []})["spots"] if x.get("state") != st]
+            old = read_json(p, {"spots": []})["spots"]
+            prev = [x for x in old if x.get("state") != st]
+            if (st, k) in FAILED:   # this square's query failed: keep what we had for it, add what's new
+                ids = {x["id"] for x in lst}; prev += [x for x in old if x.get("state") == st and x["id"] not in ids]
             allx = _cap(prev + lst)
             p.write_text(json.dumps({"tile": k, "spots": allx}, separators=(",", ":")))
             idx["tiles"][k] = len(allx)

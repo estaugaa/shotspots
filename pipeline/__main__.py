@@ -38,8 +38,7 @@ def job_weekend():
 
 def job_daily():
     job_verifyobs()
-    from . import viirs, seedlight
-    run_module("seedlight", lambda: seedlight.run(budget_min=25), "MODELED", "terrain facing for starter spots (new tiles)")
+    from . import viirs
     run_module("darkgrid", viirs.national, "MODELED", "VIIRS national sky-brightness grid (skips while fresh; retries daily if NASA's server was down)")
     from . import terrain, light, obs, sentinel, access, wildlife
     run_module("terrain", lambda: terrain.run(budget_min=25), "MODELED", "USGS 3DEP horizons")
