@@ -78,6 +78,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run seed.yml -f states="${{ steps.st.outputs.rest }}"
+      - name: Last batch done - work out which way the new starter spots face
+        if: ${{ !cancelled() && steps.st.outputs.rest == '' && inputs.states != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run job.yml -f job=seedlight
   publish:
     needs: run
     if: always()
