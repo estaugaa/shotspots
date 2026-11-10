@@ -111,7 +111,9 @@ async function loadWx(force) {
 // Open-Meteo, with a fallback through our Cloudflare Worker when the direct request is refused (rate limits, outages)
 const WORKER_URL = "https://shotspots-forms.shotspots-eric.workers.dev"; let WXERR = null;
 async function omFetch(url) {
-  try { const r = await fetch(url); if (r.ok) return r; WXERR = "HTTP " + r.status; } catch (e) { WXERR = String(e.message || e); }
+  // a busy server sometimes holds the request open instead of refusing it: give up after 9 s and use the proxy
+  try { const ac = new AbortController(), t = setTimeout(() => ac.abort(), 9000); const r = await fetch(url, { signal: ac.signal }); clearTimeout(t);
+    if (r.ok) return r; WXERR = "HTTP " + r.status; } catch (e) { WXERR = e.name === "AbortError" ? "timed out after 9 s" : String(e.message || e); }
   const r2 = await fetch(WORKER_URL + "/om?u=" + encodeURIComponent(url)); if (!r2.ok) throw new Error(WXERR + "; via proxy HTTP " + r2.status); return r2;
 }
 function wxMiss() { return !WX ? (navigator.onLine === false ? "offline: no forecast" : "forecast loading") : "no forecast point near here yet"; }

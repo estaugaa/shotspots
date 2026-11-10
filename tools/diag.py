@@ -5,7 +5,6 @@ URL = "https://estaugaa.github.io/shotspots/"
 os.makedirs("ux", exist_ok=True)
 # name, location, prefs, filter group, (day, window kind), extra actions
 S = [
- ("7 Boise stargazer, drive 90", {"lat": 43.615, "lon": -116.202, "label": "Boise"}, {"maxDrive": 90}, "night", ("today", "night"), ["nighttab"]),
  ("11 Moab stargazer, drive 60", {"lat": 38.573, "lon": -109.55, "label": "Moab"}, {"maxDrive": 60}, "night", ("today", "night"), []),
  ("10 Bend waterfalls, drive 60", {"lat": 44.058, "lon": -121.315, "label": "Bend"}, {"maxDrive": 60}, "water", ("tomorrow", "morning"), []),
  ("2 Hood River sunrise, drive 45", {"lat": 45.709, "lon": -121.521, "label": "Hood River"}, {"maxDrive": 45}, "all", ("tomorrow", "sunrise"), []),
@@ -50,7 +49,7 @@ async def main():
                 out.append("--- night sky tab:\n" + (await pg.evaluate("document.querySelector('#v-sky').innerText"))[:1800]); await pg.evaluate("show('now')")
             tops = await pg.evaluate("[...document.querySelectorAll('#v-now .picks [data-spot]')].slice(0, 2).map(a => a.dataset.spot)")
             for k, sid in enumerate(tops):
-                await pg.evaluate(f"openSpot({json.dumps(sid)})"); await pg.wait_for_timeout(5000)
+                await pg.evaluate(f"openSpot({json.dumps(sid)})"); await pg.wait_for_timeout(14000)
                 if k == 0: await pg.screenshot(path=f"ux/t{name.split()[0]}_spot.png")
                 body = await pg.evaluate("document.querySelector('#sheetBody')?.innerText || ''")
                 secs = [h for h in ["Tides", "River now", "Weather alerts here", "Getting there", "Rain, past 48 h", "Night sky here", "Best photos here", "Seen here"] if h in body]

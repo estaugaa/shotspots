@@ -88,11 +88,16 @@ async function loadFlow() {
 }
 async function streamAt(s) {
   if (s._stream !== undefined) return s._stream;
-  try { const q = `[out:json][timeout:15];way(around:60,${s.lat},${s.lon})[waterway~"^(river|stream)$"][name];out tags 3;`;
-    const r = await fetch("https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(q)); const j = await r.json();
-    const w = (j.elements || []).sort((a, b) => (a.tags.waterway === "river" ? 0 : 1) - (b.tags.waterway === "river" ? 0 : 1))[0];
-    return (s._stream = w ? w.tags.name : null);
-  } catch (e) { return null; }
+  const memo = store.get("streams", {}); if (s.id in memo) return (s._stream = memo[s.id]);
+  const q = `[out:json][timeout:15];way(around:60,${s.lat},${s.lon})[waterway~"^(river|stream)$"][name];out tags 3;`;
+  for (const host of ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"]) {
+    try { const ac = new AbortController(), t = setTimeout(() => ac.abort(), 8000);
+      const r = await fetch(host + "?data=" + encodeURIComponent(q), { signal: ac.signal }); clearTimeout(t); if (!r.ok) continue; const j = await r.json();
+      const w = (j.elements || []).sort((a, b) => (a.tags.waterway === "river" ? 0 : 1) - (b.tags.waterway === "river" ? 0 : 1))[0];
+      s._stream = w ? w.tags.name : null; memo[s.id] = s._stream; store.set("streams", memo); return s._stream;
+    } catch (e) { /* try the next mirror */ }
+  }
+  return null;
 }
 async function nearGauge(s) {
   if (s.gauge !== undefined) return s.gauge;
