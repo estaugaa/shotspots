@@ -498,7 +498,8 @@ function fitFor(s, w) {
   if (s.seed && side && GOLDK.has(w.kind)) {
     if (s.light === "blocked") { n *= 0.7; why.push("hills block the low sun here"); }
     else if (s.hz && (s.light === side || s.light === "both")) { n += 4; why.push(`open view toward the ${side === "sunrise" ? "east" : "west"}`); }
-    const KW = /bridge|landmark/.test(s.kind) ? 0.85 : s.kind === "waterfall" ? 0.85 : s.kind === "refuge" ? 0.85 : 1; n *= KW;   // bridges, landmarks and falls are better at blue hour or in soft light
+    const KW = /bridge|landmark/.test(s.kind) ? 0.85 : s.kind === "waterfall" ? 0.85 : s.kind === "refuge" ? 0.85 : 1; n *= KW;
+    if (/^seed-r/.test(s.id) || /^(grand canyon|.* (wilderness|national forest|national park|recreation area))$/i.test(s.name)) n *= 0.8;   // big areas: the pin is just the middle of them   // bridges, landmarks and falls are better at blue hour or in soft light
   }
   if (s.seed && BLUEK.has(w.kind) && /bridge|landmark|lighthouse/.test(s.kind)) n += 5;
   if (w.kind !== "night" && !BLUEK.has(w.kind) && s.light === "night") n -= 25;
