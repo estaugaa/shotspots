@@ -91,6 +91,26 @@ def job_seedlight():
     run_module("seedlight", lambda: seedlight.run(budget_min=300), "MODELED", "terrain facing for starter spots (USGS 3DEP)")
 
 
+def job_gonowtest():
+    """Dry run of go-now alerts for sample places (nothing is sent): logs what each would get right now and over the next day."""
+    import datetime as dt
+    from . import gonow
+    from .common import utcnow
+    places = {"Seattle": (47.61, -122.33), "Denver": (39.74, -104.99), "Moab": (38.57, -109.55), "Bend": (44.06, -121.31), "Sedona": (34.87, -111.76), "Spokane": (47.66, -117.43)}
+    out = []
+    for name, (la, lo) in places.items():
+        sub = {"lat": la, "lon": lo, "travel": "drive", "limit": 60, "kinds": ["color", "dark"], "utc_offset": -7 * 3600 if lo > -115 else -8 * 3600}
+        for h in range(0, 30, 2):   # step through the next 30 hours as if the job ran then (forecast is current)
+            t = utcnow() + dt.timedelta(hours=h)
+            c = gonow.color_alerts(sub, t) if True else []
+            lh = (t + dt.timedelta(seconds=sub["utc_offset"])).hour
+            d = gonow.dark_alerts(sub, t, lh)
+            for a in c + d:
+                out.append(f"{name} @+{h}h: {a['title']} | {a['body']}")
+    print("\n".join(out) or "no alerts would fire for the sample places in the next 30 h")
+    return f"{len(out)} would-be alerts"
+
+
 def job_darkgrid():
     from . import viirs
     run_module("darkgrid", lambda: viirs.national(force=True), "MODELED", "VIIRS national sky-brightness grid (annual)")
@@ -126,7 +146,7 @@ def manifest():
 
 
 JOBS = {"goes": job_goes, "conditions": job_conditions, "daily": job_daily, "weekly": job_weekly, "monthly": job_monthly,
-        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata, "darkgrid": job_darkgrid, "seedlight": job_seedlight}
+        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata, "darkgrid": job_darkgrid, "seedlight": job_seedlight, "gonowtest": job_gonowtest}
 
 if __name__ == "__main__":
     for j in sys.argv[1:]:
