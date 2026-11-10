@@ -154,7 +154,8 @@ fitFor = function (s, w) {
     const sev = sevenAt(w.peak.getTime()); if (sev && sev.tr <= 3 && clearF >= 0.8) { n += 4; why.push("good transparency"); }
   }
   if (road) { n -= 10; why.push(road.short || road.title); }
-  if (s.seed) n = n * 0.9 + (s.score != null ? Math.max(-2, Math.min(4, (Math.log2(Math.max(1, s.score)) - 2.3) * 1.6)) : 0) + (q - 21) * 6 * clearF;   // starter spots: notability and every bit of darkness count
+  if (!s.seed) n += 3;
+  if (s.seed) n = n + (s.score != null ? Math.max(-2, Math.min(4, (Math.log2(Math.max(1, s.score)) - 2.3) * 1.6)) : 0) + (q - 21) * 6 * clearF;   // starter spots: notability and every bit of darkness count
   n *= KCAP.night || 0.95;
   return { n: Math.round(clamp(n, 0, 100)), why, sk: null, sqm: q };
 };

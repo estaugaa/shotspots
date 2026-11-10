@@ -74,11 +74,16 @@ function driveMin(s) {   // travel minutes: driving, or walking when Settings sa
   if (PREFS.travel === "walk") return Math.round(km(LOC, s) * 1.3 / 4.8 * 60);
   const k = locKey(); if (DRIVES[k] && DRIVES[k].m[s.id] != null) return DRIVES[k].m[s.id];
   if (atHome() && s.drive != null) return s.drive;
-  return Math.round(6 + km(LOC, s) * 1.32 / 62 * 60);
+  const d = km(LOC, s); return Math.round(6 + Math.min(d, 15) * 1.3 / 45 * 60 + Math.max(0, d - 15) * 1.2 / 85 * 60);   // town streets, then highway
 }
 async function loadDrives(ids) {
   const k = locKey(); const have = DRIVES[k] && Date.now() - DRIVES[k].at < 6 * 36e5 ? DRIVES[k] : { at: Date.now(), m: {} };
-  const need = ids.filter(id => have.m[id] == null).slice(0, 90); if (!need.length) return false;
+  const all = ids.filter(id => have.m[id] == null).slice(0, 180); if (!all.length) return false;
+  let any = false;
+  for (let c = 0; c < all.length; c += 90) { if (await _route(all.slice(c, c + 90), have, k)) any = true; }
+  return any;
+}
+async function _route(need, have, k) {
   const coords = [[LOC.lon, LOC.lat], ...need.map(id => byId[id].park ? [byId[id].park[1], byId[id].park[0]] : [byId[id].lon, byId[id].lat])].map(c => c[0].toFixed(5) + "," + c[1].toFixed(5)).join(";");
   try {
     const r = await fetch("https://router.project-osrm.org/table/v1/driving/" + coords + "?sources=0&annotations=duration");
@@ -506,8 +511,8 @@ function fitFor(s, w) {
   n *= KCAP[w.kind] || 1;
   // starter spots all share the same sky, so let how notable a place is (Wikipedia links, photos) break ties
   if (s.seed && s.score != null) n += Math.max(-2, Math.min(4, (Math.log2(Math.max(1, s.score)) - 2.3) * 1.6));
-  // starter spots haven't been checked (pin, which way it faces, access), so trust them a little less than researched ones
-  if (s.seed) n *= 0.9;
+  // quality prior: researched spots are hand-picked; starter spots earn theirs from Wikipedia links, photos and eBird species
+  if (!s.seed) n += 3;
   if (road) { n -= 10; why.push(road.short || road.title); }
   return { n: Math.round(clamp(n, 0, 100)), why, sk };
 }
@@ -518,7 +523,7 @@ function rankFor(w, filter) {
     const d = driveMin(s), walk = WALK[s.effort] || 15, leave = new Date((w.kind === "night" ? (w.dark ? w.dark.s : w.start) : w.peak).getTime() - (d + walk) * 60000);
     const reachable = now + (d + walk * 0.5) * 60000 < w.end.getTime();
     if (!reachable) continue;
-    list.push({ s, f, d, leave, r: f.n - d * 0.28 + (s.seed ? 0 : 4) + (UI.group === "water" && s.cats[0] === "waterfall" ? 8 : 0) });   // Waterfalls filter: the falls themselves first
+    list.push({ s, f, d, leave, r: f.n - d * 0.28 + (UI.group === "water" && s.cats[0] === "waterfall" ? 8 : 0) });   // Waterfalls filter: the falls themselves first
   }
   return list.sort((a, b) => b.r - a.r);
 }
@@ -579,11 +584,14 @@ function plannerHtml(all, tops) {
   let h = `<div class="planner" id="planner"><div class="daytabs" role="tablist">${days.map(d => { const n = dayBest(d);
     return `<button class="daytab" role="tab" data-day="${d}" aria-selected="${d === UI.day}"><span>${d === star ? "★ " : ""}${dayTab(d)}</span><small class="${scoreCls(n)}">${n || "–"}</small></button>`; }).join("")}</div>`;
   const idx = all.map((w, i) => i).filter(i => winDay(all[i]) === UI.day);
-  const best = Math.max(0, ...idx.map(i => tops[i] ? tops[i].f.n : 0));
-  const bestI = idx.find(i => tops[i] && tops[i].f.n === best), nBest = idx.filter(i => tops[i] && tops[i].f.n === best).length;   // one "best" chip, and none when all tie
+  // a sunrise/sunset under solid cloud can still score well (waterfalls, birds), but it isn't a colourful sunrise: say so
+  const soft = i => { const w = all[i]; if (!GOLDK.has(w.kind)) return false; const k = skyAt(LOC, w); return !!(k && k.cc >= 85); };
+  const bestOf = i => tops[i] && !soft(i) ? tops[i].f.n : 0;
+  const best = Math.max(0, ...idx.map(bestOf));
+  const bestI = idx.find(i => bestOf(i) === best), nBest = idx.filter(i => bestOf(i) === best).length;   // one "best" chip, and none when all tie
   h += `<div class="winchips">${idx.map(i => { const w = all[i], t = tops[i], n = t ? t.f.n : 0;
     const flag = alertAt.some(x => x >= w.start.getTime() && x < w.end.getTime());
-    return `<button class="winchip${i === UI.focus ? " on" : ""}" data-focus="${i}" aria-pressed="${i === UI.focus}"><span class="wk">${KSHORT2[w.kind]}${flag ? ` <i class="adot" title="alert"></i>` : ""}</span><span class="wt">${chipTime(w)}</span><span class="score sm ${scoreCls(n)}">${n || "–"}</span>${n && n === best && i === bestI && nBest < idx.length ? `<span class="wbest">best</span>` : ""}</button>`; }).join("")}</div></div>`;
+    return `<button class="winchip${i === UI.focus ? " on" : ""}" data-focus="${i}" aria-pressed="${i === UI.focus}"><span class="wk">${KSHORT2[w.kind]}${flag ? ` <i class="adot" title="alert"></i>` : ""}</span><span class="wt">${chipTime(w)}${soft(i) ? " · ☁ soft" : ""}</span><span class="score sm ${scoreCls(n)}">${n || "–"}</span>${n && n === best && i === bestI && nBest < idx.length ? `<span class="wbest">best</span>` : ""}</button>`; }).join("")}</div></div>`;
   return h;
 }
 function renderNow() {
@@ -613,7 +621,9 @@ function renderNow() {
   h += specialsHtml();
   el.innerHTML = h;
   const ids = ranked.slice(0, 40).map(x => x.s.id);
-  if (!atHome() || LOC.src === "gps") loadDrives(SPOTS.filter(s => km(LOC, s) < 160).sort((a, b) => km(LOC, a) - km(LOC, b)).slice(0, 80).map(s => s.id).concat(ids)).then(ch => ch && render());
+  if ((!atHome() || LOC.src === "gps") && PREFS.travel !== "walk") { const L = maxTravel(), near = SPOTS.filter(s => km(LOC, s) < 160).sort((a, b) => km(LOC, a) - km(LOC, b));
+    const edge = near.filter(s => { const e = driveMin(s); return e > L * 0.6 && e < L * 1.6; }).sort((a, b) => (a.seed ? 1 : 0) - (b.seed ? 1 : 0) || (b.score || 0) - (a.score || 0));
+    loadDrives([...new Set([...near.slice(0, 60), ...edge.slice(0, 100)].map(s => s.id))].concat(ids)).then(ch => ch && render()); }
   const on = el.querySelector(".winchip.on"); if (on && on.scrollIntoView) on.scrollIntoView({ block: "nearest", inline: "center" });
 }
 function specialsHtml() {
