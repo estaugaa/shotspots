@@ -74,7 +74,7 @@ jobs:
             git push && break; sleep $((RANDOM % 20 + 5))
           done
       - name: Hand the remaining states to the next run
-        if: always() && steps.st.outputs.rest != ''
+        if: ${{ !cancelled() && steps.st.outputs.rest != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run seed.yml -f states="${{ steps.st.outputs.rest }}"
