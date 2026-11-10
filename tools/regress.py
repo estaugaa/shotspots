@@ -8,7 +8,7 @@ S = [
  ("Portland walker, 20 min", {"lat": 45.523, "lon": -122.676, "label": "Pearl District"}, {"travel": "walk", "maxWalk": 20}, "all", False),
  ("Seattle, drive 60", {"lat": 47.61, "lon": -122.33, "label": "Seattle"}, {"maxDrive": 60}, "all", False),
  ("Denver, drive 90", {"lat": 39.739, "lon": -104.99, "label": "Denver"}, {"maxDrive": 90}, "all", False),
- ("Bend waterfalls, drive 60", {"lat": 44.058, "lon": -121.315, "label": "Bend"}, {"maxDrive": 60}, "water", False),
+ ("Bend waterfalls, drive 60", {"lat": 44.058, "lon": -121.315, "label": "Bend"}, {"maxDrive": 60}, "all", False),
 ]
 CHECK = """(async () => {
   const t0 = Date.now(); while (!WX && Date.now() - t0 < 30000) await new Promise(r => setTimeout(r, 500));

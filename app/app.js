@@ -601,7 +601,7 @@ function renderNow() {
     <button class="chip" data-v="sky" style="margin:4px 0 8px">Night sky details: Milky Way, moon, planets ›</button>`; }
   // the headline is for where you are; say so when the top pick is somewhere with different weather
   { const t0 = ranked[0]; if (t0 && km(LOC, t0.s) > 25) {
-      if (w.kind === "night") { const here = hourAt(nearestPt(LOC, 60), w.peak), there = nightCloud(t0.s, w);
+      if (w.kind === "night") { const here = hourAt(nearestPt(LOC, 60), w.peak), there = typeof nightCloud === "function" ? nightCloud(t0.s, w) : null;   // sky.js loads after this file
         if (here && there && Math.abs(here.cc - there.cc) >= 30) h += `<p class="why">That's for here. At ${esc(t0.s.name)}: ${there.cc <= 20 ? "clear" : there.cc <= 50 ? "partly cloudy" : "cloudy"} (${Math.round(there.cc)}% cloud).</p>`; }
       else if (v && t0.f.sk) { const vt = verdict(t0.f.sk); if (vt.cls !== v.cls) h += `<p class="why">That's for here. At ${esc(t0.s.name)}: ${esc(vt.txt.split(". ")[0])}.</p>`; } } }
   h += top.length ? `<ul class="picks">${top.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<p class="empty">${typeof SEED !== "undefined" && SEED.busy ? "Still finding spots near you…" : !WX ? "Waiting for the forecast…" : UI.group !== "all" && !SPOTS.some(s => groupTest[UI.group] && groupTest[UI.group](s) && !tooFar(s)) ? `No ${(GROUPS.find(g => g[0] === UI.group) || [, "matching"])[1].toLowerCase()} spots within your travel limit here yet. Tap Show all above, or allow more travel time in Settings.` : "No spots you can reach in time. Pick a later window above, or allow more travel time in Settings."}</p>`;
