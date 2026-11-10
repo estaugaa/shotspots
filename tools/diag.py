@@ -5,7 +5,16 @@ URL = "https://estaugaa.github.io/shotspots/"
 os.makedirs("ux", exist_ok=True)
 # name, location, prefs, filter group, (day, window kind), extra actions
 S = [
- ("A Portland waterfalls, drive 45", {"lat": 45.52, "lon": -122.68, "label": "Portland"}, {"maxDrive": 45}, "water", ("tomorrow", "morning"), []),
+ ("1 Owner planning Saturday sunset, drive 90", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 90}, "all", ("sat", "sunset"), []),
+ ("2 Seattle birder, morning, drive 45", {"lat": 47.61, "lon": -122.33, "label": "Seattle"}, {"maxDrive": 45}, "life", ("tomorrow", "morning"), []),
+ ("3 Tacoma sunset, drive 30", {"lat": 47.253, "lon": -122.444, "label": "Tacoma"}, {"maxDrive": 30}, "all", ("tomorrow", "sunset"), []),
+ ("4 Packwood (Rainier) sunrise, drive 60", {"lat": 46.607, "lon": -121.67, "label": "Packwood"}, {"maxDrive": 60}, "all", ("tomorrow", "sunrise"), []),
+ ("5 Bellingham sunset, drive 60", {"lat": 48.75, "lon": -122.48, "label": "Bellingham"}, {"maxDrive": 60}, "all", ("tomorrow", "sunset"), []),
+ ("6 Spokane stargazer, drive 90", {"lat": 47.659, "lon": -117.426, "label": "Spokane"}, {"maxDrive": 90}, "night", ("today", "night"), []),
+ ("7 Leavenworth sunrise, drive 45", {"lat": 47.596, "lon": -120.661, "label": "Leavenworth"}, {"maxDrive": 45}, "all", ("tomorrow", "sunrise"), []),
+ ("8 Long Beach WA sunset, drive 30", {"lat": 46.352, "lon": -124.054, "label": "Long Beach"}, {"maxDrive": 30}, "all", ("tomorrow", "sunset"), []),
+ ("9 Vancouver WA walker sunset, walk 30", {"lat": 45.627, "lon": -122.673, "label": "Downtown Vancouver"}, {"travel": "walk", "maxWalk": 30}, "all", ("tomorrow", "sunset"), []),
+ ("10 Hood River waterfalls, drive 60", {"lat": 45.709, "lon": -121.521, "label": "Hood River"}, {"maxDrive": 60}, "water", ("tomorrow", "morning"), []),
 ]
 PICK = """(([day, kind]) => { const all = allWindows(LOC, PLAN_HOURS); const t0 = Date.now();
   const WD = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
