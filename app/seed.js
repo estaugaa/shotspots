@@ -17,12 +17,14 @@ async function loadSeed() {
   if (!want.length) return;
   const real = SPOTS.filter(s => !s.seed && !s.osm);
   SEED.busy = true; setTimeout(() => { SEED.busy = false; }, 20000);
-  const got = await Promise.all(want.map(k => fetch(`feed/seed/${k}.json`).then(r => r.ok ? r.json() : null).catch(() => null)));
+  const [got, pops] = await Promise.all([Promise.all(want.map(k => fetch(`feed/seed/${k}.json`).then(r => r.ok ? r.json() : null).catch(() => null))),
+    Promise.all(want.map(k => fetch(`feed/seedpop/${k}.json`).then(r => r.ok ? r.json() : null).catch(() => null)))]);   // photos & sightings per spot (pipeline/seedpop.py)
   let added = 0;
   got.forEach((t, i) => { if (!t) return; SEED.tiles.add(want[i]);
     for (const x of t.spots) { if (byId[x.id] || real.some(s => Math.abs(s.lat - x.lat) < 0.004 && Math.abs(s.lon - x.lon) < 0.006)) continue;
       const ps = ((fd("photostats") || {}).spots || {})[x.id];   // learned from when people photograph it
       if (/bridge|landmark/.test(x.kind) && x.cats) x.cats = x.cats.map(c => c === "historic" ? "landmark" : c);
+      const pp = pops[i] && pops[i][x.id]; if (pp) { x.pop = pp[0]; x.refs = { commons: pp[1], flickr: pp[2], inat: pp[3] }; }
       const s = { ...x, region: `${SEED_KIND[x.kind] || "Place"} · starter spot`, months: ps && ps.months || null, light: ps && ps.light || x.light, osm: true, seed: true, src: [], osmUrl: `https://www.openstreetmap.org/${x.osm}`, ps };
       SPOTS.push(s); byId[s.id] = s; added++; } });
   SEED.n += added;

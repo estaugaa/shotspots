@@ -121,6 +121,12 @@ async function omFetch(url) {
     if (r.ok) return r; WXERR = "HTTP " + r.status; } catch (e) { WXERR = e.name === "AbortError" ? "timed out after 9 s" : String(e.message || e); }
   const r2 = await fetch(WORKER_URL + "/om?u=" + encodeURIComponent(url)); if (!r2.ok) throw new Error(WXERR + "; via proxy HTTP " + r2.status); return r2;
 }
+// how well-known a starter spot is: Wikipedia/Wikidata links and eBird species (seed score), plus geotagged photos on
+// Commons and Flickr and iNaturalist sightings (pop). About -2 for an obscure pin, up to +6 for a famous one.
+function seedFame(s) {
+  const wiki = s.score != null ? (Math.log2(Math.max(1, s.score)) - 2.3) * 1.2 : 0, pop = s.pop != null ? (s.pop - 6) * 0.35 : 0;
+  return Math.max(-2, Math.min(6, wiki + pop));
+}
 function wxMiss() { return !WX ? (navigator.onLine === false ? "offline: no forecast" : "forecast loading") : "no forecast point near here yet"; }
 function nearestPt(p, maxKm, exclude) {
   if (!WX) return null; let best = null, bd = 1e9;
@@ -510,7 +516,7 @@ function fitFor(s, w) {
   if (w.kind !== "night" && !BLUEK.has(w.kind) && s.light === "night") n -= 25;
   n *= KCAP[w.kind] || 1;
   // starter spots all share the same sky, so let how notable a place is (Wikipedia links, photos) break ties
-  if (s.seed && s.score != null) n += Math.max(-2, Math.min(4, (Math.log2(Math.max(1, s.score)) - 2.3) * 1.6));
+  if (s.seed) n += seedFame(s);
   // quality prior: researched spots are hand-picked; starter spots earn theirs from Wikipedia links, photos and eBird species
   if (!s.seed) n += 3;
   if (s.kind === "hotspot" && UI.group !== "life" && !why.some(x => /sightings|peak|staging|migration|rut/.test(x))) n *= 0.7;

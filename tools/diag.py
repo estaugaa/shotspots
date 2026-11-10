@@ -6,10 +6,11 @@ os.makedirs("ux", exist_ok=True)
 # name, location, prefs, filter group, (day, window kind), extra actions
 S = [
  ("1 Washougal sunset, drive 60", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 60}, "all", ("tomorrow", "sunset"), []),
- ("2 Seattle sunrise, drive 60", {"lat": 47.61, "lon": -122.33, "label": "Seattle"}, {"maxDrive": 60}, "all", ("tomorrow", "sunrise"), []),
- ("3 Bend sunset, drive 45", {"lat": 44.058, "lon": -121.315, "label": "Bend"}, {"maxDrive": 45}, "all", ("tomorrow", "sunset"), []),
+ ("2 Cannon Beach sunset, drive 30", {"lat": 45.892, "lon": -123.961, "label": "Cannon Beach"}, {"maxDrive": 30}, "all", ("tomorrow", "sunset"), []),
+ ("3 Moab sunrise, drive 45", {"lat": 38.573, "lon": -109.55, "label": "Moab"}, {"maxDrive": 45}, "all", ("tomorrow", "sunrise"), []),
  ("4 Denver sunset, drive 60", {"lat": 39.739, "lon": -104.99, "label": "Denver"}, {"maxDrive": 60}, "all", ("tomorrow", "sunset"), []),
- ("5 Jackson sunrise, drive 45", {"lat": 43.48, "lon": -110.762, "label": "Jackson"}, {"maxDrive": 45}, "all", ("tomorrow", "sunrise"), []),
+ ("5 Asheville sunrise, drive 60", {"lat": 35.595, "lon": -82.551, "label": "Asheville"}, {"maxDrive": 60}, "all", ("tomorrow", "sunrise"), []),
+ ("6 Boise sunset, drive 60", {"lat": 43.615, "lon": -116.202, "label": "Boise"}, {"maxDrive": 60}, "all", ("tomorrow", "sunset"), []),
 ]
 PICK = """(([day, kind]) => { const all = allWindows(LOC, PLAN_HOURS); const t0 = Date.now();
   const WD = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
@@ -26,7 +27,7 @@ CHECKS = """(() => { const all = allWindows(LOC, PLAN_HOURS), w = all[UI.focus],
   const scores = ranked.slice(0, 10).map(x => x.f.n), spread = scores.length ? Math.max(...scores) - Math.min(...scores) : 0;
   const tz = TZ;
   const dm = DRIVES[locKey()] ? DRIVES[locKey()].m : {};
-  const ex = { mtn: MTN ? MTN.peaks.map(p => p.name + (peakOut(PEAKS.find(x => x.name === p.name), LOC, w.peak) || {}).out) : null, air: airAt(w.peak), rb: rainbowAt(LOC, w.peak) };
+  const ex = { land: landscape(), rain: rainSoon(), sea: SEA ? SEA.near : null, mtn: MTN ? MTN.peaks.map(p => p.name + ':' + ((peakOut(p, LOC, w.peak) || {}).out) + ':snow' + Math.round(freshSnowOn(p))) : null, air: airAt(w.peak), rb: rainbowAt(LOC, w.peak) };
   return { ex, routed: Object.keys(dm).length, multnomah: [dm.multnomah, driveMin(byId.multnomah)], tz, wx: !!WX, wxErr: WX && WX.err || (typeof WXERR !== 'undefined' ? WXERR : null), wxPts: WX ? WX.pts.length : 0, hz: HZN ? HZN.paths.length : 0, chip, top, chipMatches: chip === top,
            tooFarListed: far, leak, alertline: !!document.querySelector('.alertline'), spots: SPOTS.length, ranked: ranked.length, top10spread: spread,
            seeing: typeof SEVEN !== 'undefined' && SEVEN ? (SEVEN.err || SEVEN.note || 'ok') : 'n/a' }; })()"""

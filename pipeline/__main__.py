@@ -111,6 +111,11 @@ def job_gonowtest():
     return f"{len(out)} would-be alerts"
 
 
+def job_seedpop():
+    from . import seedpop
+    run_module("seedpop", lambda: seedpop.run(budget_min=300), "MEASURED", "starter-spot popularity: Commons, Flickr, iNaturalist")
+
+
 def job_darkgrid():
     from . import viirs
     run_module("darkgrid", lambda: viirs.national(force=True), "MODELED", "VIIRS national sky-brightness grid (annual)")
@@ -146,7 +151,7 @@ def manifest():
 
 
 JOBS = {"goes": job_goes, "conditions": job_conditions, "daily": job_daily, "weekly": job_weekly, "monthly": job_monthly,
-        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata, "darkgrid": job_darkgrid, "seedlight": job_seedlight, "gonowtest": job_gonowtest}
+        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata, "darkgrid": job_darkgrid, "seedlight": job_seedlight, "gonowtest": job_gonowtest, "seedpop": job_seedpop}
 
 if __name__ == "__main__":
     for j in sys.argv[1:]:

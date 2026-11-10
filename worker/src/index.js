@@ -56,7 +56,7 @@ export default {
     // Only Open-Meteo hosts; identical requests share a 15-minute edge cache.
     if (req.method === "GET" && url.pathname === "/om") {
       let u; try { u = new URL(url.searchParams.get("u") || ""); } catch (e) { return json(req, { ok: false, error: "bad url" }, 400); }
-      if (u.protocol !== "https:" || !/^(api|air-quality-api)\.open-meteo\.com$/.test(u.hostname)) return json(req, { ok: false, error: "not allowed" }, 400);
+      if (u.protocol !== "https:" || !/^(api|air-quality-api|marine-api)\.open-meteo\.com$/.test(u.hostname)) return json(req, { ok: false, error: "not allowed" }, 400);
       const cache = caches.default, key = new Request(u.toString()); let res = await cache.match(key);
       if (!res) { const up = await fetch(u.toString(), { headers: { "User-Agent": "ShotSpots/1.0" } }); if (!up.ok) return json(req, { ok: false, error: "open-meteo " + up.status }, up.status);
         res = new Response(await up.text(), { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=900" } }); await cache.put(key, res.clone()); }
