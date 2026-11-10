@@ -65,7 +65,7 @@ fitFor = function (s, w) {
   const dk = fd("darksky"); if (w.kind === "night" && dk && dk.spots[s.id] && f.sqm != null) { /* sky.js already scored darkness; VIIRS value replaces the model below */ }
   const hr = hrrrRow(s.id, w.peak);
   if (hr && w.kind !== "night") {
-    if (GOLDK.has(w.kind) && hr.p_color != null && s.cats.some(c => SKY.includes(c))) { const adj = (hr.p_color - 40) * 0.15; n += adj; why.push(`${hr.p_color}% chance of colour (HRRR)`); }
+    if (GOLDK.has(w.kind) && hr.p_color != null && s.cats.some(c => SKY.includes(c))) { const adj = (hr.p_color - 40) * 0.15; n += adj; why.push(hr.p_color <= 15 ? "the hour-by-hour model sees little colour here" : `${hr.p_color}% chance of colour (hour-by-hour model)`); }
     if (hr.p_fog >= 40 && (s.cats.includes("waterfall") || s.cats.includes("fallcolor") || LIFE.some(c => s.cats.includes(c)))) why.push(`${hr.p_fog}% chance of fog here`);
   }
   // above the fog: low spots fogged + this spot above the measured inversion top

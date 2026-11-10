@@ -69,7 +69,7 @@ def _query_box(state, box=None, q_only=False):
       nwr{a}[leisure=nature_reserve][name][wikidata];
       nwr{a}[boundary=protected_area][protection_title~"Wildlife|Refuge|Bird",i][name];
       nwr{a}[leisure=bird_hide][name];
-      nwr{a}[natural=beach][name][wikidata];
+      nwr{a}[natural=beach][name];
       way{a}[man_made=bridge][name][wikidata]; way{a}[bridge][wikidata][name];
       nwr{a}[historic~"^(castle|fort|monument|ruins|ship|mine)$"][name][wikidata];
       nwr{a}[tourism=attraction][name][wikidata];

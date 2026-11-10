@@ -100,7 +100,7 @@ async function loadWx(force) {
   const pts = wxPoints();
   const url = "https://api.open-meteo.com/v1/forecast?latitude=" + pts.map(p => p.lat.toFixed(3)).join(",") + "&longitude=" + pts.map(p => p.lon.toFixed(3)).join(",") +
     "&hourly=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,visibility,relative_humidity_2m,dew_point_2m,temperature_2m,wind_speed_10m,precipitation_probability,weather_code,precipitation" +
-    "&past_days=2&forecast_days=5&timeformat=unixtime&wind_speed_unit=mph&temperature_unit=fahrenheit&timezone=GMT";
+    "&past_days=2&forecast_days=8&timeformat=unixtime&wind_speed_unit=mph&temperature_unit=fahrenheit&timezone=GMT";
   try {
     const r = await omFetch(url);
     let j = await r.json(); if (!Array.isArray(j)) j = [j];
@@ -497,14 +497,14 @@ function fitFor(s, w) {
   // starter spots: terrain says which way they open up (pipeline/seedlight.py)
   if (s.seed && side && GOLDK.has(w.kind)) {
     if (s.light === "blocked") { n *= 0.7; why.push("hills block the low sun here"); }
-    else if (s.light === side || s.light === "both") { n += 4; why.push(`open view toward the ${side === "sunrise" ? "east" : "west"}`); }
-    const KW = /bridge|landmark/.test(s.kind) ? 0.85 : s.kind === "waterfall" ? 0.85 : 1; n *= KW;   // bridges, landmarks and falls are better at blue hour or in soft light
+    else if (s.hz && (s.light === side || s.light === "both")) { n += 4; why.push(`open view toward the ${side === "sunrise" ? "east" : "west"}`); }
+    const KW = /bridge|landmark/.test(s.kind) ? 0.85 : s.kind === "waterfall" ? 0.85 : s.kind === "refuge" ? 0.85 : 1; n *= KW;   // bridges, landmarks and falls are better at blue hour or in soft light
   }
   if (s.seed && BLUEK.has(w.kind) && /bridge|landmark|lighthouse/.test(s.kind)) n += 5;
   if (w.kind !== "night" && !BLUEK.has(w.kind) && s.light === "night") n -= 25;
   n *= KCAP[w.kind] || 1;
   // starter spots all share the same sky, so let how notable a place is (Wikipedia links, photos) break ties
-  if (s.seed && s.score != null) n += Math.max(-3, Math.min(8, (Math.log2(Math.max(1, s.score)) - 2.3) * 3));
+  if (s.seed && s.score != null) n += Math.max(-2, Math.min(4, (Math.log2(Math.max(1, s.score)) - 2.3) * 1.6));
   // starter spots haven't been checked (pin, which way it faces, access), so trust them a little less than researched ones
   if (s.seed) n *= 0.9;
   if (road) { n -= 10; why.push(road.short || road.title); }
@@ -557,7 +557,7 @@ function diversify(list, n) { const out = [], used = new Set();
     if (!used.has(c) || !out.length || x.r < out[0].r - 15) { out.push(x); used.add(c); } }
   for (const x of list) { if (out.length >= n) break; if (!out.includes(x)) out.push(x); }
   return out.sort((a, b) => b.r - a.r); }
-const PLAN_HOURS = 112;   // ~4.5 days: covers the whole weekend from Thursday
+const PLAN_HOURS = 168;   // a week ahead, so Monday can plan the weekend (days 6-7 are rough)
 const KSHORT2 = { blueAM: "Blue hour", sunrise: "Sunrise", morning: "Morning", midday: "Midday", afternoon: "Afternoon", sunset: "Sunset", bluePM: "Blue hour", night: "Night" };
 function winDay(w) { return laYMD(w.kind === "night" ? w.start : w.peak); }
 function dayTab(ymd) { const y = laYMD(new Date()); if (ymd === y) return "Today"; if (ymd === addDays(y, 1)) return "Tomorrow";
@@ -574,8 +574,9 @@ function plannerHtml(all, tops) {
   if (!UI.day || !days.includes(UI.day)) UI.day = winDay(all[UI.focus]);
   const dayBest = d => Math.max(0, ...all.map((w, i) => winDay(w) === d && tops[i] ? tops[i].f.n : 0));
   const alertAt = (window.upcoming ? upcoming() : []).map(a => new Date(a.at).getTime());
+  const bests = days.map(dayBest), top = Math.max(...bests), star = bests.filter(x => x >= top - 4).length === 1 ? days[bests.indexOf(top)] : null;   // mark the best day when it clearly stands out
   let h = `<div class="planner" id="planner"><div class="daytabs" role="tablist">${days.map(d => { const n = dayBest(d);
-    return `<button class="daytab" role="tab" data-day="${d}" aria-selected="${d === UI.day}"><span>${dayTab(d)}</span><small class="${scoreCls(n)}">${n || "–"}</small></button>`; }).join("")}</div>`;
+    return `<button class="daytab" role="tab" data-day="${d}" aria-selected="${d === UI.day}"><span>${d === star ? "★ " : ""}${dayTab(d)}</span><small class="${scoreCls(n)}">${n || "–"}</small></button>`; }).join("")}</div>`;
   const idx = all.map((w, i) => i).filter(i => winDay(all[i]) === UI.day);
   const best = Math.max(0, ...idx.map(i => tops[i] ? tops[i].f.n : 0));
   const bestI = idx.find(i => tops[i] && tops[i].f.n === best), nBest = idx.filter(i => tops[i] && tops[i].f.n === best).length;   // one "best" chip, and none when all tie
@@ -607,7 +608,7 @@ function renderNow() {
   h += top.length ? `<ul class="picks">${top.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<p class="empty">${typeof SEED !== "undefined" && SEED.busy ? "Still finding spots near you…" : !WX ? "Waiting for the forecast…" : UI.group !== "all" && !SPOTS.some(s => groupTest[UI.group] && groupTest[UI.group](s) && !tooFar(s)) ? `No ${(GROUPS.find(g => g[0] === UI.group) || [, "matching"])[1].toLowerCase()} spots within your travel limit here yet. Tap Show all above, or allow more travel time in Settings.` : "No spots you can reach in time. Pick a later window above, or allow more travel time in Settings."}</p>`;
   if (more.length) h += UI.more ? `<ul class="picks" style="border-top:0">${more.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<button class="more" id="moreBtn">${more.length} more options</button>`;
   h += `</div>`;
-  h += `<p class="muted scorenote">Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–5 use a single forecast model, so treat them as rough.</p>`;
+  h += `<p class="muted scorenote">Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.</p>`;
   h += specialsHtml();
   el.innerHTML = h;
   const ids = ranked.slice(0, 40).map(x => x.s.id);
