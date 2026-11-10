@@ -5,16 +5,11 @@ URL = "https://estaugaa.github.io/shotspots/"
 os.makedirs("ux", exist_ok=True)
 # name, location, prefs, filter group, (day, window kind), extra actions
 S = [
- ("1 Owner planning Saturday sunset, drive 90", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 90}, "all", ("sat", "sunset"), []),
- ("2 Seattle birder, morning, drive 45", {"lat": 47.61, "lon": -122.33, "label": "Seattle"}, {"maxDrive": 45}, "life", ("tomorrow", "morning"), []),
- ("3 Tacoma sunset, drive 30", {"lat": 47.253, "lon": -122.444, "label": "Tacoma"}, {"maxDrive": 30}, "all", ("tomorrow", "sunset"), []),
- ("4 Packwood (Rainier) sunrise, drive 60", {"lat": 46.607, "lon": -121.67, "label": "Packwood"}, {"maxDrive": 60}, "all", ("tomorrow", "sunrise"), []),
- ("5 Bellingham sunset, drive 60", {"lat": 48.75, "lon": -122.48, "label": "Bellingham"}, {"maxDrive": 60}, "all", ("tomorrow", "sunset"), []),
- ("6 Spokane stargazer, drive 90", {"lat": 47.659, "lon": -117.426, "label": "Spokane"}, {"maxDrive": 90}, "night", ("today", "night"), []),
- ("7 Leavenworth sunrise, drive 45", {"lat": 47.596, "lon": -120.661, "label": "Leavenworth"}, {"maxDrive": 45}, "all", ("tomorrow", "sunrise"), []),
- ("8 Long Beach WA sunset, drive 30", {"lat": 46.352, "lon": -124.054, "label": "Long Beach"}, {"maxDrive": 30}, "all", ("tomorrow", "sunset"), []),
- ("9 Vancouver WA walker sunset, walk 30", {"lat": 45.627, "lon": -122.673, "label": "Downtown Vancouver"}, {"travel": "walk", "maxWalk": 30}, "all", ("tomorrow", "sunset"), []),
- ("10 Hood River waterfalls, drive 60", {"lat": 45.709, "lon": -121.521, "label": "Hood River"}, {"maxDrive": 60}, "water", ("tomorrow", "morning"), []),
+ ("1 Washougal sunset, drive 60", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 60}, "all", ("tomorrow", "sunset"), []),
+ ("2 Seattle sunrise, drive 60", {"lat": 47.61, "lon": -122.33, "label": "Seattle"}, {"maxDrive": 60}, "all", ("tomorrow", "sunrise"), []),
+ ("3 Bend sunset, drive 45", {"lat": 44.058, "lon": -121.315, "label": "Bend"}, {"maxDrive": 45}, "all", ("tomorrow", "sunset"), []),
+ ("4 Denver sunset, drive 60", {"lat": 39.739, "lon": -104.99, "label": "Denver"}, {"maxDrive": 60}, "all", ("tomorrow", "sunset"), []),
+ ("5 Jackson sunrise, drive 45", {"lat": 43.48, "lon": -110.762, "label": "Jackson"}, {"maxDrive": 45}, "all", ("tomorrow", "sunrise"), []),
 ]
 PICK = """(([day, kind]) => { const all = allWindows(LOC, PLAN_HOURS); const t0 = Date.now();
   const WD = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
@@ -31,7 +26,8 @@ CHECKS = """(() => { const all = allWindows(LOC, PLAN_HOURS), w = all[UI.focus],
   const scores = ranked.slice(0, 10).map(x => x.f.n), spread = scores.length ? Math.max(...scores) - Math.min(...scores) : 0;
   const tz = TZ;
   const dm = DRIVES[locKey()] ? DRIVES[locKey()].m : {};
-  return { routed: Object.keys(dm).length, multnomah: [dm.multnomah, driveMin(byId.multnomah)], tz, wx: !!WX, wxErr: WX && WX.err || (typeof WXERR !== 'undefined' ? WXERR : null), wxPts: WX ? WX.pts.length : 0, hz: HZN ? HZN.paths.length : 0, chip, top, chipMatches: chip === top,
+  const ex = { mtn: MTN ? MTN.peaks.map(p => p.name + (peakOut(PEAKS.find(x => x.name === p.name), LOC, w.peak) || {}).out) : null, air: airAt(w.peak), rb: rainbowAt(LOC, w.peak) };
+  return { ex, routed: Object.keys(dm).length, multnomah: [dm.multnomah, driveMin(byId.multnomah)], tz, wx: !!WX, wxErr: WX && WX.err || (typeof WXERR !== 'undefined' ? WXERR : null), wxPts: WX ? WX.pts.length : 0, hz: HZN ? HZN.paths.length : 0, chip, top, chipMatches: chip === top,
            tooFarListed: far, leak, alertline: !!document.querySelector('.alertline'), spots: SPOTS.length, ranked: ranked.length, top10spread: spread,
            seeing: typeof SEVEN !== 'undefined' && SEVEN ? (SEVEN.err || SEVEN.note || 'ok') : 'n/a' }; })()"""
 async def main():
