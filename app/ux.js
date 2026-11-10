@@ -5,7 +5,7 @@
    - guidance for taking a useful conditions photo */
 "use strict";
 const SPOT_ORDER = [
-  [/^How a pro would work it/, 10], [/^Best photos here|^Right now from people there/, 20], [/^Best months/, 25],
+  [/^How to shoot it/, 10], [/^Best photos here|^Right now from people there/, 20], [/^Best months/, 25],
   [/^Getting there/, 30], [/^Light here today/, 35], [/^Wildlife here this week/, 40], [/^Seen here in the last/, 45],
   [/^Smoke and haze/, 55], [/^Odds next 18 hours/, 60], [/^Access/, 70], [/^Check before you go/, 72], [/^Conditions now/, 74],
   [/^Experimental ideas/, 90], [/^See others/, 92], [/^Sources/, 95]];
