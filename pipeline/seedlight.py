@@ -11,7 +11,7 @@ import numpy as np
 from .common import log, FEED
 from .terrain import fetch_dem, apparent_alt, destination
 
-KINDS = {"peak", "viewpoint", "beach", "arch", "lighthouse"}
+KINDS = {"peak", "viewpoint", "beach", "arch", "lighthouse", "lake", "pass", "lookout"}
 AZS = np.arange(0, 360, 5)
 D = np.geomspace(200, 25000, 70)
 E_SEC, W_SEC = (AZS >= 60) & (AZS <= 125), (AZS >= 235) & (AZS <= 300)

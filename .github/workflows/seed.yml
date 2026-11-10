@@ -13,6 +13,7 @@ concurrency:
   cancel-in-progress: false
 permissions:
   contents: write
+  actions: write
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -47,7 +48,9 @@ jobs:
         run: |
           S="${{ inputs.states }}"
           if [ -z "$S" ]; then S=$(python tools/seed_index.py --missing); fi
-          echo "states=$S" >> $GITHUB_OUTPUT; echo "states: $S"
+          # long lists run 8 states per run, then hand the rest to the next run (one at a time, so border tiles never clash)
+          set -- $S; NOW="${*:1:8}"; REST="${*:9}"
+          echo "states=$NOW" >> $GITHUB_OUTPUT; echo "rest=$REST" >> $GITHUB_OUTPUT; echo "now: $NOW / later: $REST"
       - if: steps.st.outputs.states != ''
         run: python -m pipeline seed $STATES
         env:
@@ -70,6 +73,11 @@ jobs:
             python tools/seed_index.py && git add feed/seed/index.json && { git diff --cached --quiet || git commit -qm "seed: index [skip ci]"; }
             git push && break; sleep $((RANDOM % 20 + 5))
           done
+      - name: Hand the remaining states to the next run
+        if: always() && steps.st.outputs.rest != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run seed.yml -f states="${{ steps.st.outputs.rest }}"
   publish:
     needs: run
     if: always()

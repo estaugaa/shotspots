@@ -12,11 +12,12 @@ tips; nightly research (RESEARCH.md, reach mode) then promotes the highest-ranke
 """
 import json, math, re, time
 from collections import defaultdict
-from .common import http, spots, write_json, FEED, log, utcnow, iso, km, read_json
+from .common import secret, http, spots, write_json, FEED, log, utcnow, iso, km, read_json
 
 OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass.private.coffee/api/interpreter"]
 STATES = {k: "US-" + k for k in "AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY".split()}
-PER_TILE = 120
+PER_TILE = 200
+KIND_FLOOR = 20   # every kind keeps its best few per tile, so peaks can't crowd out viewpoints, lakes and birding spots
 
 # [key, test, cats, light, effort, base score, tip]
 TYPES = [
@@ -32,6 +33,14 @@ TYPES = [
      "Steam reads best in cold air at first light. Check access rules; many springs are on private or tribal land."),
     ("refuge", lambda t: t.get("leisure") in ("nature_reserve", "bird_hide") or re.search(r"wildlife|refuge|bird", t.get("protection_title", ""), re.I) or t.get("protect_class") in ("4",) or "wildlife" in t.get("name", "").lower() and t.get("boundary") == "protected_area",
      ["wildlife", "birds"], "sunrise", "short", 3, "Wildlife is most active in the first two hours after sunrise. Stay on trails, use your car as a blind on auto routes and give animals space."),
+    ("lookout", lambda t: t.get("man_made") == "tower" and re.search(r"observation|fire", t.get("tower:type", "") + " " + t.get("name", ""), re.I), ["vista", "mountain"], "both", "hike", 4,
+     "A lookout tower or fire lookout: a full-circle view, so it works at sunrise and sunset. Many are staffed in summer and some can be rented."),
+    ("pass", lambda t: t.get("mountain_pass") == "yes", ["mountain", "vista"], "both", "road", 2,
+     "A mountain pass: easy high ground by car. Fog often fills the valleys on either side at sunrise; check winter road conditions."),
+    ("cave", lambda t: t.get("natural") == "cave_entrance", ["geology"], "both", "short", 2,
+     "A cave entrance. Bring a headlamp and a tripod; light from the opening makes the picture. Check whether it's closed for bats or ice."),
+    ("lake", lambda t: t.get("natural") == "water" and t.get("water", "lake") in ("lake", "reservoir", "pond", "oxbow"), ["reflection", "vista"], "both", "road", 2,
+     "A lake: calm air at dawn gives mirror reflections, and mist often sits on the water on cold mornings."),
     ("peak", lambda t: t.get("natural") == "peak", ["mountain", "vista"], "sunset", "hike", 2,
      "A notable summit. Check the road and trail first; first and last light on high ground is the reason to go, and it's often the subject from below."),
     ("beach", lambda t: t.get("natural") == "beach", ["coast", "reflection"], "sunset", "short", 2,
@@ -70,6 +79,10 @@ def _query_box(state, box=None, q_only=False):
       nwr{a}[boundary=protected_area][protection_title~"Wildlife|Refuge|Bird",i][name];
       nwr{a}[leisure=bird_hide][name];
       nwr{a}[natural=beach][name];
+      nwr{a}[natural=water][name][wikidata];
+      node{a}[mountain_pass=yes][name];
+      nwr{a}[man_made=tower]["tower:type"~"observation|fire"][name];
+      node{a}[natural=cave_entrance][name];
       way{a}[man_made=bridge][name][wikidata]; way{a}[bridge][wikidata][name];
       nwr{a}[historic~"^(castle|fort|monument|ruins|ship|mine)$"][name][wikidata];
       nwr{a}[tourism=attraction][name][wikidata];
@@ -206,10 +219,51 @@ def build(state):
             score -= 4
         out.append({"id": f"seed-{e['type'][0]}{e['id']}", "name": name, "lat": round(lat, 5), "lon": round(lon, 5), "cats": cats, "light": light, "effort": effort,
                     "tip": _tip(kind, t, tip), "kind": kind, "score": round(score, 1), "osm": f"{e['type']}/{e['id']}", "wd": t.get("wikidata"), "state": state})
+    out = _hotspots(state, out, dup)
     tiles = defaultdict(list)
     for s in out:
         tiles[f"{math.floor(s['lat'])}_{math.floor(s['lon'])}"].append(s)
     return tiles
+
+
+def _hotspots(state, out, dup):
+    """eBird hotspots with a real species list. Next to an OSM refuge: enrich it. Otherwise: a new birding spot."""
+    key = secret("EBIRD_KEY")
+    if not key:
+        return out
+    try:
+        hs = http(f"https://api.ebird.org/v2/ref/hotspot/US-{state}", params={"fmt": "json"}, headers={"X-eBirdApiToken": key}, timeout=120).json()
+    except Exception as e:
+        log.warning("%s eBird hotspots: %s", state, e); return out
+    refs = [s for s in out if s["kind"] == "refuge"]
+    added = 0
+    for h in hs:
+        n = h.get("numSpeciesAllTime") or 0
+        if n < 80:
+            continue
+        lat, lon, name = h["lat"], h["lng"], h["locName"]
+        near = next((s for s in refs if km(lat, lon, s["lat"], s["lon"]) < 0.6), None)
+        if near:
+            near["ebird"] = h["locId"]; near["species"] = max(n, near.get("species", 0)); near["score"] = round(near["score"] + 2 * math.log2(n / 50), 1); continue
+        if dup(lat, lon, name.split("--")[0].split("(")[0].strip()):
+            continue
+        name = re.sub(r"\s*\(.*?\)\s*$", "", name).replace("--", ": ")
+        out.append({"id": f"seed-e{h['locId']}", "name": name, "lat": round(lat, 5), "lon": round(lon, 5), "cats": ["wildlife", "birds"], "light": "sunrise", "effort": "short",
+                    "tip": f"eBird birding hotspot with {n} species recorded. Birds are most active in the first two hours after sunrise; recent sightings at ebird.org/hotspot/{h['locId']}.",
+                    "kind": "hotspot", "score": round(2 + 3 * math.log2(n / 50), 1), "ebird": h["locId"], "species": n, "state": state})
+        added += 1
+    log.info("%s: %d eBird hotspots added, %d refuges enriched", state, added, sum(1 for s in refs if s.get("ebird")))
+    return out
+
+
+def _cap(lst):
+    """Best PER_TILE by score, but each kind keeps its top KIND_FLOOR first."""
+    lst = sorted(lst, key=lambda x: -x["score"]); keep, per = [], defaultdict(int)
+    for x in lst:
+        if per[x["kind"]] < KIND_FLOOR:
+            keep.append(x); per[x["kind"]] += 1
+    rest = [x for x in lst if x not in keep]
+    return sorted(keep + rest[:max(0, PER_TILE - len(keep))], key=lambda x: -x["score"])
 
 
 def run(states):
@@ -227,7 +281,7 @@ def run(states):
         for k, lst in tiles.items():
             p = sdir / f"{k}.json"
             prev = [x for x in read_json(p, {"spots": []})["spots"] if x.get("state") != st]
-            allx = sorted(prev + lst, key=lambda x: -x["score"])[:PER_TILE]
+            allx = _cap(prev + lst)
             p.write_text(json.dumps({"tile": k, "spots": allx}, separators=(",", ":")))
             idx["tiles"][k] = len(allx)
             n += sum(1 for x in allx if x["state"] == st)
