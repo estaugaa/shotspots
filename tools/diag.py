@@ -5,12 +5,20 @@ URL = "https://estaugaa.github.io/shotspots/"
 os.makedirs("ux", exist_ok=True)
 # name, location, prefs, filter group, (day, window kind), extra actions
 S = [
- ("11 Moab stargazer, drive 60", {"lat": 38.573, "lon": -109.55, "label": "Moab"}, {"maxDrive": 60}, "night", ("today", "night"), []),
- ("10 Bend waterfalls, drive 60", {"lat": 44.058, "lon": -121.315, "label": "Bend"}, {"maxDrive": 60}, "water", ("tomorrow", "morning"), []),
- ("2 Hood River sunrise, drive 45", {"lat": 45.709, "lon": -121.521, "label": "Hood River"}, {"maxDrive": 45}, "all", ("tomorrow", "sunrise"), []),
+ ("1 Owner planning Saturday sunset, drive 90", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 90}, "all", ("sat", "sunset"), []),
+ ("2 Vancouver WA walker, sunrise, walk 30", {"lat": 45.627, "lon": -122.673, "label": "Downtown Vancouver"}, {"travel": "walk", "maxWalk": 30}, "all", ("tomorrow", "sunrise"), []),
+ ("3 Government Camp mountain sunrise, drive 30", {"lat": 45.304, "lon": -121.754, "label": "Government Camp"}, {"maxDrive": 30}, "land", ("tomorrow", "sunrise"), []),
+ ("4 Astoria coast sunset, drive 30", {"lat": 46.188, "lon": -123.831, "label": "Astoria"}, {"maxDrive": 30}, "all", ("tomorrow", "sunset"), []),
+ ("5 Honolulu walker sunset, walk 30", {"lat": 21.281, "lon": -157.837, "label": "Waikiki"}, {"travel": "walk", "maxWalk": 30}, "all", ("tomorrow", "sunset"), []),
+ ("6 Salt Lake City sunset, drive 60", {"lat": 40.761, "lon": -111.891, "label": "Salt Lake City"}, {"maxDrive": 60}, "all", ("tomorrow", "sunset"), []),
+ ("7 Grand Canyon (Tusayan) sunrise, drive 30", {"lat": 35.973, "lon": -112.127, "label": "Tusayan"}, {"maxDrive": 30}, "all", ("tomorrow", "sunrise"), []),
+ ("8 Santa Fe sunset, drive 45", {"lat": 35.687, "lon": -105.938, "label": "Santa Fe"}, {"maxDrive": 45}, "all", ("tomorrow", "sunset"), []),
+ ("9 Missoula stargazer, drive 60", {"lat": 46.872, "lon": -113.994, "label": "Missoula"}, {"maxDrive": 60}, "night", ("today", "night"), ["nighttab"]),
+ ("10 Portland rainy-day waterfalls, drive 45", {"lat": 45.52, "lon": -122.68, "label": "Portland"}, {"maxDrive": 45}, "water", ("tomorrow", "morning"), []),
 ]
 PICK = """(([day, kind]) => { const all = allWindows(LOC, PLAN_HOURS); const t0 = Date.now();
-  const want = day === "today" ? laYMD(new Date()) : day === "tomorrow" ? laYMD(new Date(t0 + 864e5)) : laYMD(new Date(t0 + 2 * 864e5));
+  const WD = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+  const want = day === "today" ? laYMD(new Date()) : day === "tomorrow" ? laYMD(new Date(t0 + 864e5)) : WD.includes(day) ? (() => { for (let k = 1; k < 8; k++) { const d = new Date(t0 + k * 864e5); if (d.toLocaleDateString("en-US", { timeZone: TZ, weekday: "short" }).toLowerCase().startsWith(day)) return laYMD(d); } })() : laYMD(new Date(t0 + 2 * 864e5));
   // tap the day button like a person would, then the window chip
   const db = [...document.querySelectorAll('[data-day]')].find(b => b.dataset.day === want); if (db) db.click();
   const i = all.findIndex(w => winDay(w) === want && w.kind === kind);
@@ -21,7 +29,8 @@ CHECKS = """(() => { const all = allWindows(LOC, PLAN_HOURS), w = all[UI.focus],
   const txt = document.querySelector('#v-now').innerText, home = km(LOC, HOME) < 60;
   const leak = home ? [] : ["Gorge", "Washougal", "Ridgefield", "Crown Point", "Sauvie", "Columbia"].filter(k => txt.includes(k));
   const scores = ranked.slice(0, 10).map(x => x.f.n), spread = scores.length ? Math.max(...scores) - Math.min(...scores) : 0;
-  return { wx: !!WX, wxErr: WX && WX.err || (typeof WXERR !== 'undefined' ? WXERR : null), wxPts: WX ? WX.pts.length : 0, hz: HZN ? HZN.paths.length : 0, chip, top, chipMatches: chip === top,
+  const tz = TZ;
+  return { tz, wx: !!WX, wxErr: WX && WX.err || (typeof WXERR !== 'undefined' ? WXERR : null), wxPts: WX ? WX.pts.length : 0, hz: HZN ? HZN.paths.length : 0, chip, top, chipMatches: chip === top,
            tooFarListed: far, leak, alertline: !!document.querySelector('.alertline'), spots: SPOTS.length, ranked: ranked.length, top10spread: spread,
            seeing: typeof SEVEN !== 'undefined' && SEVEN ? (SEVEN.err || SEVEN.note || 'ok') : 'n/a' }; })()"""
 async def main():
