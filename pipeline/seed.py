@@ -226,6 +226,16 @@ def build(state):
     return tiles
 
 
+_KNOWN = None
+def _near_known(lat, lon, name):
+    """A hotspot sub-unit of a place we already have ("Ridgefield NWR: Carty Unit" next to Ridgefield NWR)."""
+    global _KNOWN
+    if _KNOWN is None:
+        _KNOWN = [(s["lat"], s["lon"], s["name"].lower()) for s in spots()]
+    w = next((x for x in re.findall(r"[A-Za-z']{4,}", name) if x.lower() not in ("park", "lake", "river", "creek", "wildlife", "area", "national", "refuge", "trail", "regional", "county", "state")), "").lower()
+    return bool(w) and any(km(lat, lon, a, b) < 4 and w in n for a, b, n in _KNOWN)
+
+
 def _hotspots(state, out, dup):
     """eBird hotspots with a real species list. Next to an OSM refuge: enrich it. Otherwise: a new birding spot."""
     key = secret("EBIRD_KEY")
@@ -239,13 +249,14 @@ def _hotspots(state, out, dup):
     added = 0
     for h in hs:
         n = h.get("numSpeciesAllTime") or 0
-        if n < 80:
+        if n < 110:
             continue
         lat, lon, name = h["lat"], h["lng"], h["locName"]
         near = next((s for s in refs if km(lat, lon, s["lat"], s["lon"]) < 0.6), None)
         if near:
             near["ebird"] = h["locId"]; near["species"] = max(n, near.get("species", 0)); near["score"] = round(near["score"] + 2 * math.log2(n / 50), 1); continue
-        if dup(lat, lon, name.split("--")[0].split("(")[0].strip()):
+        base = re.split(r"--|:|\(", name)[0].strip()
+        if dup(lat, lon, base) or _near_known(lat, lon, base):
             continue
         name = re.sub(r"\s*\(.*?\)\s*$", "", name).replace("--", ": ")
         out.append({"id": f"seed-e{h['locId']}", "name": name, "lat": round(lat, 5), "lon": round(lon, 5), "cats": ["wildlife", "birds"], "light": "sunrise", "effort": "short",
@@ -262,8 +273,14 @@ def _cap(lst):
     for x in lst:
         if per[x["kind"]] < KIND_FLOOR:
             keep.append(x); per[x["kind"]] += 1
-    rest = [x for x in lst if x not in keep]
-    return sorted(keep + rest[:max(0, PER_TILE - len(keep))], key=lambda x: -x["score"])
+    ids = {id(x) for x in keep}
+    for x in lst:
+        if len(keep) >= PER_TILE:
+            break
+        if id(x) in ids or (x["kind"] == "hotspot" and per["hotspot"] >= 35):   # birding hotspots: at most 35 per tile
+            continue
+        keep.append(x); per[x["kind"]] += 1
+    return sorted(keep, key=lambda x: -x["score"])
 
 
 def run(states):
