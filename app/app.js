@@ -510,7 +510,7 @@ function fitFor(s, w) {
     if (s.light === "blocked") { n *= 0.7; why.push("hills block the low sun here"); }
     else if (s.hz && (s.light === side || s.light === "both")) { n += 4; why.push(`open view toward the ${side === "sunrise" ? "east" : "west"}`); }
     const KW = /bridge|landmark/.test(s.kind) ? 0.85 : s.kind === "waterfall" ? 0.85 : s.kind === "refuge" ? 0.85 : 1; n *= KW;
-    if (/^seed-r/.test(s.id) || /^(grand canyon|.* (wilderness|national forest|national park|recreation area))$/i.test(s.name)) n *= 0.8;   // big areas: the pin is just the middle of them   // bridges, landmarks and falls are better at blue hour or in soft light
+   // big areas: the pin is just the middle of them   // bridges, landmarks and falls are better at blue hour or in soft light
   }
   if (s.seed && BLUEK.has(w.kind) && /bridge|landmark|lighthouse/.test(s.kind)) n += 5;
   if (w.kind !== "night" && !BLUEK.has(w.kind) && s.light === "night") n -= 25;
@@ -519,6 +519,10 @@ function fitFor(s, w) {
   if (s.seed) n += seedFame(s);
   // quality prior: researched spots are hand-picked; starter spots earn theirs from Wikipedia links, photos and eBird species
   if (!s.seed) n += 3;
+  // big areas (parks, wildernesses): the pin is just the middle of them, not a place to stand
+  if (s.seed && (/^seed-r/.test(s.id) || /^(grand canyon|.* (wilderness|national forest|national park|national monument|recreation area|preserve))$/i.test(s.name)) && UI.group !== "life") n *= 0.7;
+  // starter summits: often no trail (buttes inside canyons, remote peaks). Trust them only when people actually photograph from there
+  if (s.seed && s.kind === "peak" && !(s.pop >= 8) && s.effort !== "road") n *= s.pop != null ? 0.75 : 0.85;
   if (s.kind === "hotspot" && UI.group !== "life" && !why.some(x => /sightings|peak|staging|migration|rut/.test(x))) n *= 0.7;
   if (road) { n -= 10; why.push(road.short || road.title); }
   return { n: Math.round(clamp(n, 0, 100)), why, sk };
