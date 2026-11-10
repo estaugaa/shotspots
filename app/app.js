@@ -179,7 +179,7 @@ function allWindows(p, hours) {
   const now = Date.now(), key = p.lat.toFixed(2) + "," + p.lon.toFixed(2) + "," + Math.floor(now / 300000) + "," + (hours || 40);
   if (__winCache[key]) return __winCache[key];
   const out = [], y = laYMD(new Date());
-  for (let k = -1; k < 5; k++) {
+  for (let k = -1; k < 8; k++) {
     const ymd = addDays(y, k), e = dayEvents(p, ymd); if (!e.sunrise || !e.sunset) continue;
     const civD = e.civilDawn || addMin(e.sunrise, -32), civK = e.civilDusk || addMin(e.sunset, 32);
     const astD = e.astroDawn || addMin(civD, -70), astK = e.astroDusk || addMin(civK, 70);
