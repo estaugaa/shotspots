@@ -1,4 +1,4 @@
-const V="ss2-v59";
+const V="ss2-v61";
 const SHELL=["./","index.html","style.css","app.js","live.js","sky.js","stars.js","now.js","glossary.js","ux.js","debug.js","feed.js","shots.js","research.js","alerts.js","access.js","desktop.js","photolog.js","forms.js","nearby.js","camera.js","photos.js","seed.js","kit.js","prefs.js","astro.js","data.js","manifest.webmanifest","icon-180.png","icon-192.png",
 "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js","https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>Promise.all(SHELL.map(u=>c.add(new Request(u,{cache:"reload"})).catch(()=>{})))).then(()=>self.skipWaiting()));});
@@ -22,6 +22,8 @@ self.addEventListener("fetch",e=>{
 
 // push alerts from the pipeline (alerts.py)
 self.addEventListener("push",e=>{let d={};try{d=e.data.json();}catch(x){d={title:"ShotSpots",body:e.data?e.data.text():""};}
-  e.waitUntil(self.registration.showNotification(d.title||"ShotSpots",{body:d.body||"",tag:d.tag||"ss",icon:"icon-192.png",badge:"icon-192.png",data:{url:d.url||"./#alerts"}}));});
-self.addEventListener("notificationclick",e=>{e.notification.close();const url=(e.notification.data&&e.notification.data.url)||"./#alerts";
-  e.waitUntil(clients.matchAll({type:"window",includeUncontrolled:true}).then(ws=>{for(const w of ws){if("focus"in w){w.postMessage({open:"alerts"});return w.focus();}}return clients.openWindow(url);}));});
+  e.waitUntil(self.registration.showNotification(d.title||"ShotSpots",{body:d.body||"",tag:d.tag||"ss",icon:"icon-192.png",badge:"icon-192.png",actions:d.actions||[],data:{url:d.url||"./#alerts",key:d.key||d.tag||""}}));});
+self.addEventListener("notificationclick",e=>{e.notification.close();const nd=e.notification.data||{};
+  if(e.action==="went"||e.action==="missed"){e.waitUntil(fetch("https://shotspots-forms.shotspots-eric.workers.dev/f/outcome",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams({alert:nd.key||"",result:e.action,at:new Date().toISOString()}).toString()}).catch(()=>{}));return;}
+  const url=nd.url||"./#alerts";
+  e.waitUntil(clients.matchAll({type:"window",includeUncontrolled:true}).then(ws=>{for(const w of ws){if("focus"in w){w.postMessage({open:"alerts",url});return w.focus();}}return clients.openWindow(url);}));});

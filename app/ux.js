@@ -60,3 +60,8 @@ const CAM_TIPS = `<details class="camtips"><summary>What makes a useful report p
   <li><b>Take it near the peak time</b> (within 15 minutes) and at the spot, so it's verified.</li></ul></details>`;
 { const _cr = typeof camRender === "function" ? camRender : null;
   if (_cr) camRender = function () { const r = _cr.apply(this, arguments); const el = $("#camSheet .sheetbody"); if (el && !el.querySelector(".camtips")) { const send = el.querySelector("#camSend"); (send || el.lastElementChild).insertAdjacentHTML("beforebegin", CAM_TIPS); } return r; }; }
+
+/* links like ./#spot=<id> (from go-now notifications) open that spot once spots have loaded */
+function openSpotFromHash() { const m = location.hash.match(/^#spot=([\w-]+)/); if (!m) return; let n = 0;
+  const go = () => { if (typeof byId !== "undefined" && byId[m[1]]) { history.replaceState(null, "", location.pathname); openSpot(m[1]); } else if (n++ < 30) setTimeout(go, 500); }; go(); }
+window.addEventListener("hashchange", openSpotFromHash); setTimeout(openSpotFromHash, 600);

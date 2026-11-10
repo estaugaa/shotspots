@@ -63,6 +63,13 @@ async function pushState() {
   const reg = await navigator.serviceWorker.getRegistration(); const sub = reg && await reg.pushManager.getSubscription().catch(() => null);
   return { can: true, on: !!sub && Notification.permission === "granted", denied: Notification.permission === "denied", sub };
 }
+function goNowHtml(ps) {
+  const k = store.get("goKinds", ["color", "dark"]), box = (id, t) => `<label class="chk"><input type="checkbox" data-gokind="${id}"${k.includes(id) ? " checked" : ""}> ${t}</label>`;
+  return `<div class="sect"><p><b>Go-now alerts, wherever you are.</b> ${km(LOC, HOME) < 60 ? "Away from home, alerts" : "Alerts"} are worked out for where you are and your travel limit (${maxTravel()} min ${PREFS.travel === "walk" ? "on foot" : "by car"}): a strong sunrise or sunset 45–120 minutes ahead, checked against the latest satellite scan, and clear dark nights by late afternoon. At most two a week. Your location is sent rounded to about 5 km.</p>
+    ${box("color", "Strong sunrise or sunset")} ${box("dark", "Clear, dark night")}</div>`;
+}
+document.addEventListener("change", e => { const t = e.target.closest("[data-gokind]"); if (!t) return;
+  const k = [...document.querySelectorAll("[data-gokind]")].filter(x => x.checked).map(x => x.dataset.gokind); store.set("goKinds", k); store.set("pushLoc", null); pushMoved().catch(() => { }); toast("Saved"); });
 async function openAlerts() {
   const el = ensureSheet("alSheet", "Alerts"); const a = fd("alerts"); const st = (a && a.settings) || {}; const ps = await pushState();
   const u = upcoming(), nm = a ? a.near_misses.filter(x => new Date(x.at || x.t * 60000) > Date.now()) : [];
@@ -77,7 +84,7 @@ async function openAlerts() {
     <div class="sect">${u.length ? u.map(alertRow).join("") : `<p class="muted">Nothing lined up in the next three days at ${st.min_prob || 60}% or better. ${nm.length ? "Closest calls are below." : ""}</p>`}</div>
     ${nm.length ? `<h3 style="margin-top:22px">Close calls (under your ${st.min_prob || 60}% bar)</h3><div class="sect nearmiss">${nm.slice(0, 4).map(alertRow).join("")}</div>` : ""}
     ${weekendHtml(true)}
-    <h3>Notifications</h3>${notif}
+    <h3>Notifications</h3>${notif}${goNowHtml(ps)}
     ${!isOwner() ? `<p class="muted" style="font-size:14px">Alerts are tuned for the Washougal, Portland and Columbia Gorge area: fog, colourful skies, sun or moon alignments, dark skies and aurora within about 150 km.</p>` : `<h3>Alert settings</h3>
     <form id="alForm" class="stack">
       <label>Only alert at this chance or better (%)<input type="number" name="min_prob" min="20" max="95" step="5" value="${st.min_prob || 60}"></label>
@@ -100,13 +107,24 @@ async function pushOn() {
     const perm = await Notification.requestPermission(); if (perm !== "granted") { toast("Notifications weren't allowed"); return openAlerts(); }
     const reg = await navigator.serviceWorker.ready;
     const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64u(VAPID_PUBLIC) });
-    const ok = await postForm("push_sub", { action: "subscribe", sub: JSON.stringify(sub), device: (IS_IOS ? "iPhone" : navigator.platform || "device") + " " + new Date().toISOString().slice(0, 10) });
+    const ok = await postForm("push_sub", { action: "subscribe", sub: JSON.stringify(sub), device: (IS_IOS ? "iPhone" : navigator.platform || "device") + " " + new Date().toISOString().slice(0, 10), ...pushWhere() });
+    store.set("pushLoc", { lat: LOC.lat, lon: LOC.lon });
     store.set("pushOn", true);
     reg.showNotification("ShotSpots", { body: "Notifications work on this device. Alerts start with the next forecast (within 3 hours).", icon: "icon-192.png", tag: "local-test" });
     toast(ok ? "Notifications on" : "Turned on here, but couldn't reach the server. Try again when online.");
   } catch (e) { toast("Couldn't turn on notifications: " + (e.message || e)); }
   openAlerts();
 }
+// 'Go now' alerts are worked out for where you are: send a rough location (about 5 km), travel limit and time zone
+function pushWhere() { const r = v => (Math.round(v * 20) / 20).toFixed(2);
+  return { lat: r(LOC.lat), lon: r(LOC.lon), travel: PREFS.travel, limit: String(maxTravel()), kinds: store.get("goKinds", ["color", "dark"]).join(","), tzoff: String(-new Date().getTimezoneOffset() * 60) }; }
+async function pushMoved() {   // you've moved more than ~20 km (a trip): update the subscription so alerts follow you
+  if (!store.get("pushOn", false) || !("serviceWorker" in navigator)) return; const last = store.get("pushLoc", null);
+  if (last && km(last, LOC) < 20) return;
+  const reg = await navigator.serviceWorker.getRegistration(); const sub = reg && await reg.pushManager.getSubscription().catch(() => null); if (!sub) return;
+  if (await postForm("push_sub", { action: "update", sub: JSON.stringify(sub), ...pushWhere() })) store.set("pushLoc", { lat: LOC.lat, lon: LOC.lon });
+}
+setTimeout(() => { pushMoved().catch(() => { }); }, 8000);
 async function pushOff() {
   const reg = await navigator.serviceWorker.getRegistration(); const sub = reg && await reg.pushManager.getSubscription();
   if (sub) { await postForm("push_sub", { action: "unsubscribe", sub: JSON.stringify(sub) }); await sub.unsubscribe().catch(() => { }); }
@@ -129,7 +147,7 @@ document.addEventListener("submit", async e => {
   const go = () => { if (/^#alert/.test(location.hash)) { history.replaceState(null, "", location.pathname); openAlerts(); } };
   window.addEventListener("hashchange", go);
   (async () => { for (let i = 0; i < 60 && !FEED.m; i++) await new Promise(r => setTimeout(r, 250)); await feedGet("alerts"); if (UI.view === "now") renderNow(); go(); })();
-  if (navigator.serviceWorker) navigator.serviceWorker.addEventListener("message", ev => { if (ev.data && ev.data.open === "alerts") openAlerts(); });
+  if (navigator.serviceWorker) navigator.serviceWorker.addEventListener("message", ev => { if (!ev.data || ev.data.open !== "alerts") return; const m = /#spot=([\w-]+)/.exec(ev.data.url || ""); if (m) location.hash = "spot=" + m[1]; else openAlerts(); });
 })();
 
 /* ---------- weekend plan (Thu-Sun) ---------- */

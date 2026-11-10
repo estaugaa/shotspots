@@ -484,7 +484,15 @@ def subscriptions():
         if d.get("action") == "unsubscribe":
             live.pop(ep, None)
         elif h8(ep) not in dead:
-            live[ep] = {"sub": sub, "at": s.get("created_at"), "device": d.get("device") or ""}
+            v = {"sub": sub, "at": s.get("created_at"), "device": d.get("device") or live.get(ep, {}).get("device", "")}
+            try:   # rough location and travel limit, for 'go now' alerts anywhere (pipeline/gonow.py)
+                v.update(lat=round(float(d["lat"]), 2), lon=round(float(d["lon"]), 2), travel=d.get("travel") or "drive",
+                         limit=int(float(d.get("limit") or 60)), kinds=[x for x in str(d.get("kinds") or "color,dark").split(",") if x],
+                         utc_offset=int(float(d.get("tzoff") or -28800)))
+            except Exception:
+                if ep in live:
+                    v.update({k: live[ep][k] for k in ("lat", "lon", "travel", "limit", "kinds", "utc_offset") if k in live[ep]})
+            live[ep] = v
     return live
 
 
@@ -568,12 +576,19 @@ def push(shown, st, now):
         if h8(ep) not in sent["subs"]:
             msgs.append((ep, {"title": "ShotSpots alerts are on", "body": "You'll get a heads-up here when fog, colour, an alignment or a dark sky lines up.", "tag": "welcome", "url": "./#alerts"}))
             sent["subs"].append(h8(ep))
+    # devices near home get the hand-tuned home rules; devices elsewhere get 'go now' alerts for where they are
+    home_eps = [ep for ep, v in subs.items() if v.get("lat") is None or km_home({"lat": v["lat"], "lon": v["lon"]}) < 60]
+    try:
+        from . import gonow
+        msgs += gonow.run({ep: v for ep, v in subs.items() if ep not in home_eps}, sent)
+    except Exception as e:
+        log.warning("go-now alerts failed: %s", e)
     fresh = [a for a in shown if a["rule"] in st["push_rules"] and a["key"] not in sent["keys"]]
     aur = [a for a in fresh if a["rule"] == "aurora" and (not quiet or st.get("aurora_overrides_quiet", True))][:1]
     todo = aur + ([] if quiet else sorted([a for a in fresh if a["rule"] != "aurora" and a["t"] > now + 45],
                                           key=lambda a: -a["p"])[:max(0, min(2, st["max_per_day"] - n_today))])
     for a in todo:
-        for ep in subs:
+        for ep in home_eps:
             msgs.append((ep, {"title": a["title"], "body": a["body"], "tag": a["key"], "url": f"./#alert={a['key']}", "urgent": bool(a.get("urgent"))}))
         sent["keys"][a["key"]] = dt.datetime.now(LA).strftime("%Y-%m-%dT%H:%M")
     ok = fail = 0
