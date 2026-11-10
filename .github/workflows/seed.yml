@@ -6,6 +6,8 @@ on:
         description: "State codes, space separated (WA OR ID CA ...)"
         default: "WA OR"
         required: true
+  schedule:
+    - cron: "17 10 * * *"   # daily: fill in any state that has no starter spots yet (one run, states in sequence)
 concurrency:
   group: long-${{ github.workflow }}-${{ inputs.states }}   # long jobs queue separately so the 30-minute updates aren't blocked or cancel them
   cancel-in-progress: false
@@ -41,9 +43,15 @@ jobs:
             ss-cache-seed-
             ss-cache-
       - run: pip install -r requirements.txt
-      - run: python -m pipeline seed $STATES
+      - id: st
+        run: |
+          S="${{ inputs.states }}"
+          if [ -z "$S" ]; then S=$(python tools/seed_index.py --missing); fi
+          echo "states=$S" >> $GITHUB_OUTPUT; echo "states: $S"
+      - if: steps.st.outputs.states != ''
+        run: python -m pipeline seed $STATES
         env:
-          STATES: ${{ inputs.states }}
+          STATES: ${{ steps.st.outputs.states }}
       - uses: actions/cache/save@v4
         if: always()
         with:
