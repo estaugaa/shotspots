@@ -38,7 +38,8 @@ def job_weekend():
 
 def job_daily():
     job_verifyobs()
-    from . import viirs
+    from . import viirs, seedlight
+    run_module("seedlight", lambda: seedlight.run(budget_min=25), "MODELED", "terrain facing for starter spots (new tiles)")
     run_module("darkgrid", viirs.national, "MODELED", "VIIRS national sky-brightness grid (skips while fresh; retries daily if NASA's server was down)")
     from . import terrain, light, obs, sentinel, access, wildlife
     run_module("terrain", lambda: terrain.run(budget_min=25), "MODELED", "USGS 3DEP horizons")
@@ -86,6 +87,11 @@ def job_trails():
     run_module("trails", lambda: trails.run(budget_min=300), "MEASURED", "OpenStreetMap walking route from parking + DEM climb")
 
 
+def job_seedlight():
+    from . import seedlight
+    run_module("seedlight", lambda: seedlight.run(budget_min=300), "MODELED", "terrain facing for starter spots (USGS 3DEP)")
+
+
 def job_darkgrid():
     from . import viirs
     run_module("darkgrid", lambda: viirs.national(force=True), "MODELED", "VIIRS national sky-brightness grid (annual)")
@@ -121,7 +127,7 @@ def manifest():
 
 
 JOBS = {"goes": job_goes, "conditions": job_conditions, "daily": job_daily, "weekly": job_weekly, "monthly": job_monthly,
-        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata, "darkgrid": job_darkgrid}
+        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata, "darkgrid": job_darkgrid, "seedlight": job_seedlight}
 
 if __name__ == "__main__":
     for j in sys.argv[1:]:

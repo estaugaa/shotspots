@@ -493,6 +493,13 @@ function fitFor(s, w) {
   if (s.months && !s.months.includes(month)) { n *= 0.45; why.push("out of season"); }
   const side = AMK.has(w.kind) ? "sunrise" : PMK.has(w.kind) ? "sunset" : null;
   if (side && !s.cats.some(c => LIFE.includes(c)) && (GOLDK.has(w.kind) || BLUEK.has(w.kind)) && (s.light === "sunrise" || s.light === "sunset") && s.light !== side) { n = GOLDK.has(w.kind) ? n * 0.55 : n - 6; why.push(`faces ${s.light === "sunrise" ? "east: a sunrise spot" : "west: a sunset spot"}`); }
+  // starter spots: terrain says which way they open up (pipeline/seedlight.py)
+  if (s.seed && side && GOLDK.has(w.kind)) {
+    if (s.light === "blocked") { n *= 0.7; why.push("hills block the low sun here"); }
+    else if (s.light === side || s.light === "both") { n += 4; why.push(`open view toward the ${side === "sunrise" ? "east" : "west"}`); }
+    const KW = /bridge|landmark/.test(s.kind) ? 0.85 : s.kind === "waterfall" ? 0.85 : 1; n *= KW;   // bridges, landmarks and falls are better at blue hour or in soft light
+  }
+  if (s.seed && BLUEK.has(w.kind) && /bridge|landmark|lighthouse/.test(s.kind)) n += 5;
   if (w.kind !== "night" && !BLUEK.has(w.kind) && s.light === "night") n -= 25;
   n *= KCAP[w.kind] || 1;
   // starter spots all share the same sky, so let how notable a place is (Wikipedia links, photos) break ties
