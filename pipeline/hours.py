@@ -33,7 +33,8 @@ def curated():
     sp = spots()
     for i in range(0, len(sp), 25):
         ch = sp[i:i + 25]
-        q = "[out:json][timeout:150];(" + "".join(f'nwr(around:250,{s["lat"]},{s["lon"]})[opening_hours][name];' for s in ch) + ");out tags center;"
+        # only the place itself: parks, gardens, reserves, attractions - not the shop, cafe, library or visitor centre next door
+        q = "[out:json][timeout:150];(" + "".join(f'nwr(around:250,{s["lat"]},{s["lon"]})[opening_hours][name][~"^(leisure|tourism)$"~"^(park|garden|nature_reserve|attraction|zoo|theme_park|viewpoint)$"];' for s in ch) + ");out tags center;"
         try:
             els = _op(q)
         except Exception as e:
@@ -45,12 +46,16 @@ def curated():
                 c = e.get("center") or e
                 if "lat" not in c or abs(c["lat"] - s["lat"]) > 0.004 or abs(c["lon"] - s["lon"]) > 0.006:
                     continue
-                shared = w & _words(e["tags"].get("name", ""))
-                if shared and (best is None or len(shared) > best[0]):
+                ew = _words(e["tags"].get("name", "")); shared = w & ew
+                if not shared or len(shared) / max(1, len(w | ew)) < 0.5:
+                    continue
+                if best is None or len(shared) > best[0]:
                     best = (len(shared), e["tags"]["opening_hours"], e["tags"]["name"])
             if best:
                 out[s["id"]] = {"oh": best[1], "from": best[2]}
         time.sleep(2)
+    for k, v in (read_json(__import__("pathlib").Path(__file__).resolve().parents[1] / "config" / "hours_overrides.json", {}) or {}).items():
+        out[k] = {"oh": v["oh"], "from": v.get("from", "checked by hand")}   # gated places OSM doesn't have (or has wrong)
     write_json("hours.json", {"gen": iso(utcnow()), "spots": out})
     return f"{len(out)} researched spots have opening hours"
 
