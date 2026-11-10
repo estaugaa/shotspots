@@ -1,1 +1,1 @@
-{"ok":false,"kind":"MODELED","note":"RuntimeError: no national VNP46A4 tiles","at":"2026-11-10T02:32:22Z","secs":780.7}
+{"ok":true,"kind":"MODELED","note":"560x240 grid from 2025, rmse 0.20 mag","at":"2026-11-10T02:39:16Z","secs":114.2}
