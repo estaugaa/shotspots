@@ -39,6 +39,8 @@ CHECKS = """(() => { const all = allWindows(LOC, PLAN_HOURS), w = all[UI.focus],
   return { ex, routed: Object.keys(dm).length, multnomah: [dm.multnomah, driveMin(byId.multnomah)], tz, wx: !!WX, wxErr: WX && WX.err || (typeof WXERR !== 'undefined' ? WXERR : null), wxPts: WX ? WX.pts.length : 0, hz: HZN ? HZN.paths.length : 0, chip, top, chipMatches: chip === top,
            tooFarListed: far, leak, alertline: !!document.querySelector('.alertline'), spots: SPOTS.length, ranked: ranked.length, top10spread: spread,
            seeing: typeof SEVEN !== 'undefined' && SEVEN ? (SEVEN.err || SEVEN.note || 'ok') : 'n/a' }; })()"""
+import sys
+if len(sys.argv) > 1: S = [x for x in S if x[0].split()[0] in sys.argv[1:]]
 async def main():
     out = []
     async with async_playwright() as p:
@@ -67,7 +69,7 @@ async def main():
                 await pg.evaluate(f"openSpot({json.dumps(sid)})"); await pg.wait_for_timeout(14000)
                 if k == 0: await pg.screenshot(path=f"ux/t{name.split()[0]}_spot.png")
                 body = await pg.evaluate("document.querySelector('#sheetBody')?.innerText || ''")
-                secs = [h for h in ["Tides", "River now", "Weather alerts here", "Getting there", "Rain, past 48 h", "Night sky here", "Best photos here", "Seen here"] if h in body]
+                secs = [h for h in ["notices", "Seen here", "Tides", "River now", "Weather alerts here", "Getting there", "Rain, past 48 h", "Night sky here", "Best photos here", "Seen here"] if h in body]
                 out.append(f"--- spot #{k+1} page ({sid}) sections={secs}:\n" + body[:1800])
             await c.close()
             await asyncio.sleep(12)   # space runs so one runner IP doesn't get rate-limited
