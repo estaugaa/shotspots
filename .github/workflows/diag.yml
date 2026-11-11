@@ -1,6 +1,9 @@
 name: Diagnostic
 on:
   workflow_dispatch:
+    inputs:
+      script:
+        default: tools/diag.py
 permissions:
   contents: write
 jobs:
@@ -21,7 +24,7 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - run: pip install playwright && python -m playwright install --with-deps chromium
-      - run: python tools/diag.py
+      - run: python ${{ inputs.script || 'tools/diag.py' }}
       - name: Push outputs to the diag-out branch
         if: always()
         run: |
