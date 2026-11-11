@@ -77,13 +77,44 @@ function peaksFor(s) {
   return (MTN ? MTN.peaks : PEAKS).filter(p => { const d = km(s, p); return d < 160 && (p.re.test(txt) || (d < 60 && s.cats.some(c => c === "vista" || c === "mountain"))); });
 }
 function airAt(t) { if (!AIR) return null; const i = _idx(AIR.h, t); if (i < 0) return null; return { aod: AIR.h.aerosol_optical_depth[i], dust: AIR.h.dust[i], pm: AIR.h.pm2_5[i] }; }
-function rainbowAt(p, t) {   // showers with sun breaks and the sun low enough (under 42 degrees) for the bow to be above the horizon
+// Rainbows need three things at once: the sun low (3-40 degrees; the bow is a 42-degree circle around the point opposite
+// the sun), sunshine where you stand, and rain falling on the side away from the sun. Near you this uses a 15-minute
+// forecast at you plus a ring of points 10 and 20 miles out in 8 directions (sunshine from direct radiation, rain from
+// precipitation); further away it falls back to the hourly grid on both sides of the spot.
+let RBOW = null;
+const RB_DIRS = [0, 45, 90, 135, 180, 225, 270, 315], RB_KM = [16, 32];
+async function loadRainbow(force) {
+  const key = locKey(); if (!force && RBOW && RBOW.key === key && Date.now() - RBOW.at < 15 * 60000) return false;
+  const pts = [{ lat: LOC.lat, lon: LOC.lon }, ...RB_DIRS.flatMap(az => RB_KM.map(d => dest(LOC, az, d)))];
+  try {
+    const r = await omFetch("https://api.open-meteo.com/v1/forecast?latitude=" + pts.map(p => p.lat.toFixed(3)).join(",") + "&longitude=" + pts.map(p => p.lon.toFixed(3)).join(",") +
+      "&minutely_15=precipitation,direct_normal_irradiance&forecast_minutely_15=192&timeformat=unixtime&timezone=GMT");
+    let j = await r.json(); if (!Array.isArray(j)) j = [j];
+    RBOW = { key, at: Date.now(), t: j[0].minutely_15.time, here: j[0].minutely_15, ring: RB_DIRS.map((az, i) => ({ az, near: j[1 + i * 2].minutely_15, far: j[2 + i * 2].minutely_15 })) };
+    return true;
+  } catch (e) { return false; }
+}
+const DIR8 = ["north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest"];
+function rainbow15(t) {   // near you, at time t: {dir, alt, strength} or null
+  if (!RBOW) return null; const ts = t.getTime() / 1000; let i = -1, bd = 1e12;
+  RBOW.t.forEach((x, k) => { const d = Math.abs(x - ts); if (d < bd) { bd = d; i = k; } }); if (i < 0 || bd > 600) return null;
+  const sp = sunPos(t, LOC.lat, LOC.lon); if (sp.alt < 3 || sp.alt > 40) return null;
+  if ((RBOW.here.direct_normal_irradiance[i] || 0) < 120) return null;          // no sun on you, no bow
+  const anti = (sp.az + 180) % 360, ring = RBOW.ring.slice().sort((a, b) => Math.abs(((a.az - anti + 540) % 360) - 180) - Math.abs(((b.az - anti + 540) % 360) - 180));
+  const opp = ring[0], toSun = RBOW.ring.find(x => x.az === (opp.az + 180) % 360);
+  const wet = m => (m.precipitation[i] || 0) >= 0.15;                           // mm per 15 min: a real shower
+  const rainAway = wet(opp.near) || wet(opp.far), sunSide = !(toSun && wet(toSun.near));
+  if (!rainAway || !sunSide) return null;
+  return { dir: DIR8[Math.round(anti / 45) % 8], alt: Math.round(sp.alt), strength: wet(opp.near) && wet(opp.far) ? "good" : "fair", miles: wet(opp.near) ? "10" : "20" };
+}
+function rainbowAt(p, t) {
+  if (RBOW && km(LOC, p) < 25) { const r = rainbow15(t) || rainbow15(new Date(t.getTime() - 15 * 6e4)) || rainbow15(new Date(t.getTime() + 15 * 6e4)); return r; }
   const sp = sunPos(t, p.lat, p.lon); if (sp.alt < 3 || sp.alt > 40) return null;
-  const c = hourAt(nearestPt(p, 60), t); if (!c) return null;
-  const showers = [80, 81, 82].includes(c.code) || (c.pop >= 40 && c.precip >= 0.1 && c.precip < 4);
-  if (!showers || c.cc < 30 || c.cc > 88) return null;
-  const az = (sp.az + 180) % 360, dir = ["north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest"][Math.round(az / 45) % 8];
-  return { dir, alt: Math.round(sp.alt) };
+  const here = hourAt(nearestPt(p, 60), t), away = hourAt(nearestPt(dest(p, (sp.az + 180) % 360, 25), 60), t), toward = hourAt(nearestPt(dest(p, sp.az, 25), 60), t);
+  if (!here || !away) return null;
+  const showers = c => [80, 81, 82].includes(c.code) || (c.pop >= 40 && c.precip >= 0.1 && c.precip < 4);
+  if (here.cc > 85 || !showers(away) || (toward && toward.cc > 90)) return null;
+  return { dir: DIR8[Math.round(((sp.az + 180) % 360) / 45) % 8], alt: Math.round(sp.alt), strength: "fair" };
 }
 
 
@@ -124,7 +155,7 @@ fitFor = function (s, w) {
     if (a.aod >= 0.5 || a.pm >= 35) { if (far) { n *= 0.85; why.push("heavy haze or smoke: distant views wash out"); } if (GOLDK.has(w.kind)) why.push("the sun will look deep red through the haze"); }
     else if (a.aod >= 0.15 && GOLDK.has(w.kind)) { n += 4; why.push("light haze: warmer, redder light"); }
   }
-  const rb = rainbowAt(s, w.peak); if (rb) { n += 5; why.push(`rainbow chance: showers with sun breaks, look ${rb.dir}`); }
+  const rb = rainbowAt(s, w.peak); if (rb) { n += 5; why.push(`rainbow chance: sun on you, showers to the ${rb.dir}; face ${rb.dir}`); }
   if (MTN) for (const pk of peaksFor(s).slice(0, 1)) { const P = MTN.peaks.find(x => x.name === pk.name), o = P && peakOut(P, s, w.peak), sn = freshSnowOn(P);
     if (o && o.out && sn >= 3) { n += 5; why.push(`fresh snow on ${pk.name} (${Math.round(sn)} cm in 2 days)`); }
     if (o && o.out && w.kind === "sunset" && s.light !== "sunset" && pk.re.test(s.name + " " + (s.tip || ""))) why.push(`alpenglow on ${pk.name} just after sunset`); }
@@ -141,8 +172,10 @@ function extrasHtml() {
   const items = [];
   if (MTN && MTN.peaks.length) { const st = MTN.peaks.slice(0, 4).map(p => { const o = peakOut(PEAKS.find(x => x.name === p.name), LOC, w.peak); return o ? `${p.name} ${o.out ? "✓" : o.hidden ? "✗" : "?"}` : null; }).filter(Boolean);
     if (st.length) items.push(`<div class="item"><b>🏔️ Mountains at ${wTitle(w).toLowerCase()}</b><p>${esc(st.join(" · "))} <span class="muted">(✓ likely out, ✗ likely in cloud)</span></p></div>`); }
-  for (let k = 1; k <= 36; k++) { const t = new Date(Date.now() + k * 36e5), rb = rainbowAt(LOC, t);
-    if (rb) { items.push(`<div class="item"><b>🌈 Rainbow chance ${dayTab(laYMD(t)).toLowerCase()} around ${fmtT(t)}</b><p>Showers with breaks of sun while it's low (${rb.alt}°). Face ${rb.dir}, away from the sun; the bow sits 42° from the shadow of your head.</p></div>`); break; } }
+  { let start = null, end = null, info = null;
+    for (let k = 0; k <= 48 * 4; k++) { const t = new Date(Date.now() + k * 15 * 6e4), rb = RBOW ? rainbow15(t) : (k % 4 === 0 ? rainbowAt(LOC, t) : null);
+      if (rb && !start) { start = t; info = rb; } if (start && !rb && (RBOW || k % 4 === 0)) { end = t; break; } }
+    if (start) items.push(`<div class="item"><b>🌈 Rainbow chance ${dayTab(laYMD(start)).toLowerCase()} ${fmtT(start)}${end ? "–" + fmtT(end) : ""}${info.strength === "good" ? " (good)" : ""}</b><p>Sun on you with showers about ${info.miles || "10–20"} miles to the ${info.dir}, sun ${info.alt}° up. Face ${info.dir}, away from the sun: the bow sits 42° around the shadow of your head. ${RBOW ? "Checked every 15 minutes." : ""}</p></div>`); }
   const L = landscape(), rs = rainSoon();
   if (rs && (rs.nowWet || rs.at)) items.unshift(`<div class="item"><b>${rs.nowWet ? "☔ Raining now" : "🌦️ Rain on the way"}</b><p>${rs.nowWet ? (rs.at ? `Should ease around ${fmtT(rs.at)}.` : "Steady for the next 3 hours.") : `Starting around ${fmtT(rs.at)}.`} <span class="muted">15-minute forecast, updated hourly from radar.</span></p></div>`);
   if (MTN) MTN.peaks.slice(0, 3).forEach(P => { const sn = freshSnowOn(P), o = peakOut(P, LOC, w.peak);
@@ -169,4 +202,6 @@ renderNow = function () {
   return r;
 };
 setTimeout(() => loadExtras().then(ch => { if (ch) { __topsKey = ""; render(); } }).catch(() => { }), 2500);
+setTimeout(() => loadRainbow().then(ch => { if (ch) { __topsKey = ""; render(); } }).catch(() => { }), 4000);
+setInterval(() => { if (document.visibilityState === "visible") loadRainbow().then(ch => { if (ch) { __topsKey = ""; render(); } }).catch(() => { }); }, 15 * 60000);
 setInterval(() => loadExtras().then(ch => { if (ch) { __topsKey = ""; render(); } }).catch(() => { }), 30 * 60000);
