@@ -56,7 +56,7 @@ jobs:
             S=$(python tools/seed_index.py --missing)
           fi
           # long lists run 8 states per run, then hand the rest to the next run (one at a time, so border tiles never clash)
-          set -- $S; NOW="${*:1:4}"; REST="${*:5}"
+          set -- $S; NOW="${*:1:8}"; REST="${*:9}"
           echo "states=$NOW" >> $GITHUB_OUTPUT; echo "rest=$REST" >> $GITHUB_OUTPUT; echo "now: $NOW / later: $REST"
       - if: steps.st.outputs.states != ''
         run: sudo apt-get install -y -qq osmium-tool >/dev/null
