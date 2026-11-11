@@ -59,6 +59,8 @@ jobs:
           set -- $S; NOW="${*:1:4}"; REST="${*:5}"
           echo "states=$NOW" >> $GITHUB_OUTPUT; echo "rest=$REST" >> $GITHUB_OUTPUT; echo "now: $NOW / later: $REST"
       - if: steps.st.outputs.states != ''
+        run: sudo apt-get install -y -qq osmium-tool >/dev/null
+      - if: steps.st.outputs.states != ''
         run: python -m pipeline seed $STATES
         env:
           STATES: ${{ steps.st.outputs.states }}
@@ -81,7 +83,7 @@ jobs:
             git push && break; sleep $((RANDOM % 20 + 5))
           done
       - name: Hand the remaining states to the next run
-        if: ${{ !cancelled() && steps.st.outputs.rest != '' }}
+        if: always() && steps.st.outputs.rest != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run seed.yml -f states="${{ steps.st.outputs.rest }}"

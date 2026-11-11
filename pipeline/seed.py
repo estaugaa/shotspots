@@ -11,6 +11,7 @@ tips; nightly research (RESEARCH.md, reach mode) then promotes the highest-ranke
     python -m pipeline seed WA OR
 """
 import json, math, re, time
+from pathlib import Path
 from collections import defaultdict
 from .common import secret, http, spots, write_json, FEED, log, utcnow, iso, km, read_json
 
@@ -92,7 +93,85 @@ def _query_box(state, box=None, q_only=False):
     return q if q_only else _overpass(q)
 
 
+GEOFABRIK = {"AL": "alabama", "AK": "alaska", "AZ": "arizona", "AR": "arkansas", "CA": "california", "CO": "colorado", "CT": "connecticut", "DE": "delaware",
+             "FL": "florida", "GA": "georgia", "HI": "hawaii", "ID": "idaho", "IL": "illinois", "IN": "indiana", "IA": "iowa", "KS": "kansas", "KY": "kentucky",
+             "LA": "louisiana", "ME": "maine", "MD": "maryland", "MA": "massachusetts", "MI": "michigan", "MN": "minnesota", "MS": "mississippi", "MO": "missouri",
+             "MT": "montana", "NE": "nebraska", "NV": "nevada", "NH": "new-hampshire", "NJ": "new-jersey", "NM": "new-mexico", "NY": "new-york", "NC": "north-carolina",
+             "ND": "north-dakota", "OH": "ohio", "OK": "oklahoma", "OR": "oregon", "PA": "pennsylvania", "RI": "rhode-island", "SC": "south-carolina", "SD": "south-dakota",
+             "TN": "tennessee", "TX": "texas", "UT": "utah", "VT": "vermont", "VA": "virginia", "WA": "washington", "WV": "west-virginia", "WI": "wisconsin", "WY": "wyoming"}
+
+
+def _wanted(typ, t):
+    """The same selection as the Overpass query, applied to tags from the state extract."""
+    has = lambda *k: all(t.get(x) for x in k)
+    if typ == "n" and t.get("tourism") == "viewpoint": return True
+    if typ == "n" and (t.get("waterway") == "waterfall" or t.get("natural") == "waterfall") and has("name"): return True
+    if typ == "n" and t.get("natural") == "peak" and has("name") and (t.get("wikidata") or t.get("prominence")): return True
+    if t.get("man_made") == "lighthouse" or t.get("natural") == "arch": return True
+    if typ == "n" and t.get("natural") in ("hot_spring", "cave_entrance") and has("name"): return True
+    if t.get("leisure") == "nature_reserve" and has("name", "wikidata"): return True
+    if t.get("boundary") == "protected_area" and has("name") and re.search(r"wildlife|refuge|bird", t.get("protection_title", ""), re.I): return True
+    if t.get("leisure") == "bird_hide" and has("name"): return True
+    if t.get("natural") == "beach" and has("name"): return True
+    if t.get("natural") == "water" and has("name", "wikidata"): return True
+    if typ == "n" and t.get("mountain_pass") == "yes" and has("name"): return True
+    if t.get("man_made") == "tower" and re.search(r"observation|fire", t.get("tower:type", ""), re.I) and has("name"): return True
+    if typ == "w" and (t.get("man_made") == "bridge" or t.get("bridge")) and has("name", "wikidata"): return True
+    if re.match(r"^(castle|fort|monument|ruins|ship|mine)$", t.get("historic", "")) and has("name", "wikidata"): return True
+    if t.get("tourism") == "attraction" and has("name", "wikidata"): return True
+    return False
+
+
+def _from_extract(state):
+    """Download the state's OpenStreetMap extract (Geofabrik) and filter it locally with osmium - no busy public servers."""
+    import subprocess, tempfile, shutil
+    if not shutil.which("osmium") or state not in GEOFABRIK:
+        return None
+    d = Path(tempfile.mkdtemp())
+    pbf, sub, js = d / "s.osm.pbf", d / "f.osm.pbf", d / "f.geojsonseq"
+    url = f"https://download.geofabrik.de/north-america/us/{GEOFABRIK[state]}-latest.osm.pbf"
+    subprocess.run(["curl", "-sfL", "--retry", "3", "-o", str(pbf), url], check=True, timeout=1800)
+    flt = ["n/tourism=viewpoint", "n/waterway=waterfall", "n/natural=waterfall,peak,hot_spring,cave_entrance", "nwr/man_made=lighthouse,tower", "nwr/natural=arch,beach,water",
+           "nwr/leisure=nature_reserve,bird_hide", "nwr/boundary=protected_area", "n/mountain_pass=yes", "w/man_made=bridge", "w/bridge", "nwr/historic", "nwr/tourism=attraction"]
+    subprocess.run(["osmium", "tags-filter", "-O", "-o", str(sub), str(pbf), *flt], check=True, timeout=1800)
+    subprocess.run(["osmium", "export", "-O", "-f", "geojsonseq", "--add-unique-id=type_id", "-o", str(js), str(sub)], check=True, timeout=1800)
+    els = []
+    with open(js) as fh:
+        for line in fh:
+            line = line.strip().lstrip("\x1e")
+            if not line:
+                continue
+            f = json.loads(line); t = f.get("properties") or {}; uid = str(f.get("id") or t.pop("@id", ""))
+            typ = uid[:1]
+            if typ not in "nwr" or not _wanted(typ, t):
+                continue
+            g = f.get("geometry") or {}; c = g.get("coordinates")
+            if g.get("type") == "Point": lon, lat = c
+            else:
+                flat = []
+                def walk(x):
+                    if x and isinstance(x[0], (int, float)): flat.append(x)
+                    else:
+                        for y in x: walk(y)
+                walk(c)
+                if not flat: continue
+                lon = sum(p[0] for p in flat) / len(flat); lat = sum(p[1] for p in flat) / len(flat)
+            els.append({"type": {"n": "node", "w": "way", "r": "relation"}[typ], "id": int(uid[1:]) if uid[1:].isdigit() else uid[1:], "lat": lat, "lon": lon, "tags": t})
+    shutil.rmtree(d, ignore_errors=True)
+    # several features can come from one OSM object (e.g. a relation as area and lines): keep one
+    uniq = {}
+    for e in els: uniq.setdefault((e["type"], e["id"]), e)
+    log.info("%s: %d elements from the Geofabrik extract", state, len(uniq))
+    return list(uniq.values())
+
+
 def query(state):
+    try:
+        els = _from_extract(state)
+        if els is not None:
+            return els
+    except Exception as e:
+        log.warning("%s: extract route failed (%s); trying Overpass", state, e)
     """Whole state in one go; big states (TX, CA...) time out, so fall back to 1° pieces of the state's bounding box."""
     global TIMEOUT
     try:
