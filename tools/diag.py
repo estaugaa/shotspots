@@ -5,8 +5,20 @@ URL = "https://estaugaa.github.io/shotspots/"
 os.makedirs("ux", exist_ok=True)
 # name, location, prefs, filter group, (day, window kind), extra actions
 S = [
- ("2 Portland walker, today sunset, walk 30 (was 6, then 5)", {"lat": 45.519, "lon": -122.679, "label": "Downtown Portland"}, {"travel": "walk", "maxWalk": 30}, "all", ("tomorrow", "sunset"), []),
- ("2b Portland walker, tomorrow noon-ish morning, walk 30", {"lat": 45.519, "lon": -122.679, "label": "Downtown Portland"}, {"travel": "walk", "maxWalk": 30}, "all", ("tomorrow", "morning"), []),
+ ("1 Owner in Washougal, tomorrow sunrise, drive 60 (7 > 8)", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 60}, "all", ("tomorrow", "sunrise"), []),
+ ("2 Portland walker, sunset, walk 30 (6 > 5 > ~6)", {"lat": 45.519, "lon": -122.679, "label": "Downtown Portland"}, {"travel": "walk", "maxWalk": 30}, "all", ("today", "sunset"), []),
+ ("3 Cannon Beach, tomorrow sunset, drive 30 (4 > 7)", {"lat": 45.892, "lon": -123.961, "label": "Cannon Beach"}, {"maxDrive": 30}, "all", ("tomorrow", "sunset"), []),
+ ("4 Seattle, tomorrow sunrise, drive 60 (3 > 5)", {"lat": 47.61, "lon": -122.33, "label": "Seattle"}, {"maxDrive": 60}, "all", ("tomorrow", "sunrise"), []),
+ ("5 Denver, tomorrow sunset, drive 90 (5 > 6)", {"lat": 39.739, "lon": -104.99, "label": "Denver"}, {"maxDrive": 90}, "all", ("tomorrow", "sunset"), []),
+ ("6 Moab, tomorrow sunrise, drive 60 (6 > 5)", {"lat": 38.573, "lon": -109.55, "label": "Moab"}, {"maxDrive": 60}, "all", ("tomorrow", "sunrise"), []),
+ ("7 Hood River, tomorrow sunrise, drive 45 (7 > 7)", {"lat": 45.709, "lon": -121.521, "label": "Hood River"}, {"maxDrive": 45}, "all", ("tomorrow", "sunrise"), []),
+ ("8 Boise stargazer, drive 90 (4 > 5)", {"lat": 43.615, "lon": -116.202, "label": "Boise"}, {"maxDrive": 90}, "night", ("today", "night"), []),
+ ("9 Jackson wildlife, tomorrow morning, drive 60 (3 > 7)", {"lat": 43.48, "lon": -110.762, "label": "Jackson"}, {"maxDrive": 60}, "life", ("tomorrow", "morning"), []),
+ ("10 Grand Canyon (Tusayan), tomorrow sunrise, drive 30 (5 > 6)", {"lat": 35.973, "lon": -112.127, "label": "Tusayan"}, {"maxDrive": 30}, "all", ("tomorrow", "sunrise"), []),
+ ("11 San Francisco walker, tomorrow sunset, walk 30 (was 2)", {"lat": 37.795, "lon": -122.405, "label": "San Francisco"}, {"travel": "walk", "maxWalk": 30}, "all", ("tomorrow", "sunset"), []),
+ ("12 New York birder, tomorrow morning, drive 60 (was 2)", {"lat": 40.713, "lon": -74.006, "label": "New York"}, {"maxDrive": 60}, "life", ("tomorrow", "morning"), []),
+ ("13 Austin TX sunset, drive 45 (new)", {"lat": 30.267, "lon": -97.743, "label": "Austin"}, {"maxDrive": 45}, "all", ("tomorrow", "sunset"), []),
+ ("14 Miami sunrise, drive 45 (new)", {"lat": 25.774, "lon": -80.19, "label": "Miami"}, {"maxDrive": 45}, "all", ("tomorrow", "sunrise"), []),
 ]
 PICK = """(([day, kind]) => { const all = allWindows(LOC, PLAN_HOURS); const t0 = Date.now();
   const WD = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
