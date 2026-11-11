@@ -12,19 +12,30 @@ const ago = ms => { const m = Math.round((Date.now() - ms) / 60000); return m < 
 function mark(k, ok, note) { LIVE.status[k] = { ok, note, at: Date.now() }; }
 async function getJson(url, opt) { const r = await fetch(url, opt); if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); }
 
-/* ---- iNaturalist: one regional call, binned to spots ---- */
+/* ---- iNaturalist: birds (10 d), mammals (30 d) and wildflowers flagged as flowering (14 d), binned to spots ---- */
+const INAT_Q = [["bird", 10, "iconic_taxa=Aves&photos=true"], ["mam", 30, "iconic_taxa=Mammalia"], ["bloom", 14, "iconic_taxa=Plantae&term_id=12&term_value_id=13&quality_grade=research,needs_id"]];
 async function loadInat() {
-  if (LIVE.inat && Date.now() - LIVE.inat.at < 3 * 36e5 && LIVE.inat.key === locKey()) return;
-  const d1 = laYMD(new Date(Date.now() - 10 * 864e5));
-  const url = `https://api.inaturalist.org/v1/observations?lat=${LOC.lat.toFixed(3)}&lng=${LOC.lon.toFixed(3)}&radius=90&d1=${d1}&iconic_taxa=Aves,Mammalia&photos=true&geoprivacy=open&order=desc&order_by=observed_on&per_page=200`;
-  try { const j = await getJson(url);
-    const rows = (j.results || []).filter(o => o.geojson && o.taxon).map(o => ({ lat: o.geojson.coordinates[1], lon: o.geojson.coordinates[0], n: o.taxon.preferred_common_name || o.taxon.name,
+  if (LIVE.inat && Date.now() - LIVE.inat.at < 3 * 36e5 && LIVE.inat.key === locKey() && LIVE.inat.v === 2) return;
+  const one = async ([g, days, q]) => { const d1 = laYMD(new Date(Date.now() - days * 864e5));
+    const j = await getJson(`https://api.inaturalist.org/v1/observations?lat=${LOC.lat.toFixed(3)}&lng=${LOC.lon.toFixed(3)}&radius=90&d1=${d1}&${q}&geoprivacy=open&order=desc&order_by=observed_on&per_page=200`);
+    return (j.results || []).filter(o => o.geojson && o.taxon).map(o => ({ g, lat: o.geojson.coordinates[1], lon: o.geojson.coordinates[0], n: o.taxon.preferred_common_name || o.taxon.name,
       sci: o.taxon.name, rank: o.taxon.rank, cnt: o.taxon.observations_count || 0, d: o.observed_on, img: o.photos && o.photos[0] && o.photos[0].url ? o.photos[0].url.replace("square", "small") : "",
-      url: o.uri, mam: o.taxon.iconic_taxon_name === "Mammalia" }));
-    LIVE.inat = { at: Date.now(), key: locKey(), rows }; store.set("inat", LIVE.inat); mark("inat", true, rows.length + " sightings in 10 days");
-  } catch (e) { mark("inat", false, String(e.message || e)); }
+      url: o.uri, mam: g === "mam" })); };
+  const got = await Promise.allSettled(INAT_Q.map(one)), rows = got.flatMap(x => x.status === "fulfilled" ? x.value : []);
+  if (!rows.length && got.some(x => x.status === "rejected")) { mark("inat", false, String(got.find(x => x.status === "rejected").reason.message || "failed")); return; }
+  LIVE.inat = { at: Date.now(), key: locKey(), rows, v: 2 }; store.set("inat", LIVE.inat);
+  const c = g => rows.filter(r => r.g === g).length; mark("inat", true, `${c("bird")} bird, ${c("mam")} mammal and ${c("bloom")} in-bloom sightings`);
 }
+// most-reported species near a spot for one group, e.g. [["elk", 4], ["black bear", 1]]
+function inatTop(s, g, kmR) { const m = new Map(); inatNear(s, kmR).filter(o => o.g === g && o.rank !== "genus" && o.rank !== "family").forEach(o => m.set(o.n.toLowerCase(), (m.get(o.n.toLowerCase()) || 0) + 1)); return [...m].sort((a, b) => b[1] - a[1]); }
 function inatNear(s, kmR) { return LIVE.inat ? LIVE.inat.rows.filter(o => km(s, o) <= (kmR || 2.5)) : []; }
+
+/* ---- National Park Service alerts and timed entry (feed/nps.json, pipeline/nps.py) ---- */
+function npsAt(s) { const f = typeof fd === "function" && fd("nps"); if (!f || !f.parks) return null;
+  return f.parks.find(p => p.b ? s.lon >= p.b[0] && s.lon <= p.b[2] && s.lat >= p.b[1] && s.lat <= p.b[3] && p.r.some(r => inRing(s.lon, s.lat, r)) : p.pt && km(s, { lat: p.pt[1], lon: p.pt[0] }) <= 8) || null; }
+function npsHtml(s) { const p = npsAt(s); if (!p) return "";
+  const al = (p.al || []).filter(a => a.cat !== "Information" || /clos|road|trail|shuttle|reserv|timed|permit/i.test(a.t));
+  return `<h3>${esc(p.n)}: notices</h3>${p.te ? `<p><b>Timed entry or a reservation may be needed.</b> ${esc(p.te)}</p>` : ""}${al.length ? `<ul class="plain">${al.map(a => `<li><b>${esc(a.cat)}:</b> ${a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.t)}</a>` : esc(a.t)}${a.d ? `<br><small class="muted">${esc(a.d)}</small>` : ""}</li>`).join("")}</ul>` : ""}<p class="muted" style="font-size:13px">From the park's own alerts (NPS). Check whether a notice covers this viewpoint. <a href="${esc(p.url || "https://www.nps.gov")}" target="_blank" rel="noopener">Park conditions</a></p>`; }
 
 /* ---- eBird notable (needs free key) ---- */
 async function loadEbird() {
@@ -135,7 +146,11 @@ fitFor = function (s, w) {
   let n = f.n; const why = f.why;
   if (s.cats.includes("waterfall")) { const r = rain48(s); if (r != null && r >= 0.4) { if (DAYK.has(w.kind) || n >= 60) n += 8; why.unshift(`${r.toFixed(1)} in of rain in 2 days: falls running big`); } else if (r != null && r < 0.05 && +laYMD(w.peak).slice(5, 7) >= 7 && +laYMD(w.peak).slice(5, 7) <= 10) { n -= 6; why.push("dry spell: flow may be thin"); } }
   const lt = lowTideNear(s, w); if (lt) { n += 10; why.unshift(`low tide ${fmtT(new Date(lt.t))} (${lt.v.toFixed(1)} ft): wet-sand reflections`); }
-  if (s.cats.some(c => LIFE.includes(c))) { const obs = inatNear(s, 2.5); if (obs.length >= 3) { n += Math.min(10, obs.length); why.push(`${obs.length} bird/mammal sightings logged here in 10 days`); } }
+  if (s.cats.some(c => LIFE.includes(c))) { const obs = inatNear(s, 2.5).filter(o => o.g === "bird"); if (obs.length >= 3) { n += Math.min(10, obs.length); why.push(`${obs.length} bird sightings logged here in 10 days`); }
+    const mm = inatTop(s, "mam", 3); if (mm.length) { const tot = mm.reduce((a, x) => a + x[1], 0); n += Math.min(14, 6 + 2 * tot); why.unshift(`${mm[0][0]} seen here ${mm[0][1]}× this month${mm.length > 1 ? `, plus ${mm.slice(1, 3).map(x => x[0]).join(", ")}` : ""}`); } }
+  if (s.cats.includes("wildflowers") || s.kind === "meadow") { const bl = inatTop(s, "bloom", 2.5); const tot = bl.reduce((a, x) => a + x[1], 0);
+    if (tot >= 2) { n += Math.min(14, 4 + 2 * tot); why.unshift(`in bloom now: ${bl.slice(0, 3).map(x => x[0]).join(", ")} (${tot} reports in 2 weeks)`); } }
+  const np = npsAt(s); if (np) { const cl = (np.al || []).find(a => a.cat === "Park Closure"); if (cl) why.push(`park notice: ${cl.t.slice(0, 70)}`); if (np.te) why.push("park may need a timed-entry reservation"); }
   const eb = LIVE.ebird && LIVE.ebird.rows.filter(o => km(s, o) <= 3); if (eb && eb.length) { n += 12; why.unshift(`rare bird: ${eb[0].n} reported ${eb[0].t.slice(5, 10)}`); }
   return { ...f, n: Math.round(clamp(n, 0, 100)), why };
 };
@@ -175,12 +190,13 @@ async function fillLive(s) {
   const st = await tideStation(s);
   if (st) { const c = await loadTides(st); if (c) { const up = c.p.filter(x => x.t > Date.now() - 2 * 36e5).slice(0, 5);
       h += `<h3>Tides (${TIDE_NAMES[st] || st})</h3><div class="kv">${up.map(x => `<span>${x.type === "L" ? "Low" : "High"}</span><span>${fmtDate(new Date(x.t))} ${fmtT(new Date(x.t))}, ${x.v.toFixed(1)} ft</span>`).join("")}</div>`; } }
+  h += npsHtml(s);
   // sightings
   const eb = LIVE.ebird ? LIVE.ebird.rows.filter(o => km(s, o) <= 3) : [];
   if (eb.length) h += `<h3>Rare birds reported here</h3><ul class="plain">${eb.map(o => `<li><a href="https://ebird.org/checklist/${o.sub}" target="_blank" rel="noopener">${esc(o.n)}</a>${o.cnt ? " ×" + o.cnt : ""}, ${o.t.slice(5, 16)}</li>`).join("")}</ul>`;
   if (s.cats.some(c => LIFE.includes(c)) || inatNear(s, 2.5).length) {
-    const obs = inatNear(s, 2.5), uniq = []; const seen = new Set(); obs.forEach(o => { if (!seen.has(o.sci)) { seen.add(o.sci); uniq.push(o); } });
-    h += `<h3>Seen here in the last 10 days</h3>` + (uniq.length ? `<div class="obs">${uniq.slice(0, 9).map(o => `<a href="${o.url}" target="_blank" rel="noopener">${o.img ? `<img src="${o.img}" alt="" loading="lazy">` : ""}${esc(o.n)}<small>${o.d ? o.d.slice(5) : ""}${o.cnt && o.cnt < 2000 ? " · uncommon" : ""}</small></a>`).join("")}</div><p class="muted" style="font-size:13px">From iNaturalist observations within 2.5 km.</p>`
+    const obs = inatNear(s, 2.5).sort((a, b) => (a.g === "bird") - (b.g === "bird")), uniq = []; const seen = new Set(); obs.forEach(o => { if (!seen.has(o.sci)) { seen.add(o.sci); uniq.push(o); } });
+    h += `<h3>Seen here in the last few weeks</h3>` + (uniq.length ? `<div class="obs">${uniq.slice(0, 9).map(o => `<a href="${o.url}" target="_blank" rel="noopener">${o.img ? `<img src="${o.img}" alt="" loading="lazy">` : ""}${esc(o.n)}<small>${o.d ? o.d.slice(5) : ""}${o.cnt && o.cnt < 2000 ? " · uncommon" : ""}</small></a>`).join("")}</div><p class="muted" style="font-size:13px">From iNaturalist within 2.5 km: mammals in the last 30 days, flowers in bloom in the last 14, birds in the last 10.</p>`
       : `<p class="muted">${LIVE.inat ? "No iNaturalist photos logged within 2.5 km lately." : "Loading recent sightings…"}</p>`);
     h += `<p><a href="https://ebird.org/hotspots?env.minX=${(s.lon - .03).toFixed(3)}&env.maxX=${(s.lon + .03).toFixed(3)}&env.minY=${(s.lat - .02).toFixed(3)}&env.maxY=${(s.lat + .02).toFixed(3)}" target="_blank" rel="noopener">eBird hotspots here</a></p>`;
   }

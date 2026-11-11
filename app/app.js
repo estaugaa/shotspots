@@ -525,7 +525,7 @@ function fitFor(s, w) {
   if (s.seed && s.kind === "peak" && !(s.pop >= 12) && s.effort !== "road") n *= s.pop != null ? 0.65 : 0.8;
   // lookout towers: real fire lookouts are great; city observation towers are often rides or closed - trust them when people photograph from them
   if (s.seed && s.kind === "lookout" && !(s.pop >= 10) && /garden|park|fair|amusement|six flags|ride|plaza/i.test(s.name)) n *= 0.5;
-  if (s.kind === "hotspot" && UI.group !== "life" && !why.some(x => /at peak|staging|migration|\brut\b|run in season/.test(x))) n *= 0.65;   // a season event, not just routine sightings
+  if (s.kind === "hotspot" && UI.group !== "life" && !why.some(x => /at peak|staging|migration|\brut\b|run in season|seen here \d|in bloom now/.test(x))) n *= 0.65;   // a season event, not just routine sightings
   if (road) { n -= 10; why.push(road.short || road.title); }
   return { n: Math.round(clamp(n, 0, 100)), why, sk };
 }

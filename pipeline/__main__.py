@@ -47,6 +47,8 @@ def job_daily():
     run_module("flow", obs.flow, "MEASURED", "USGS discharge vs daily percentiles")
     run_module("sentinel", sentinel.run, "ESTIMATED", "Sentinel-2 colour/snow vs summer baseline")
     run_module("access", access.run, "MEASURED", "PAD-US land status + USFS alerts")
+    from . import nps
+    run_module("nps", nps.run, "MEASURED", "NPS park alerts, closures and timed entry")
     run_module("fish", lambda: (wildlife.fish() and "ok"), "MEASURED", "DART Bonneville counts")
     from . import snow
     run_module("snow", snow.run, "MEASURED", "SNOTEL snow depth + researched seasonal road/permit rules")
@@ -156,7 +158,7 @@ def manifest():
 
 
 JOBS = {"goes": job_goes, "conditions": job_conditions, "daily": job_daily, "weekly": job_weekly, "monthly": job_monthly,
-        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata, "darkgrid": job_darkgrid, "seedlight": job_seedlight, "gonowtest": job_gonowtest, "seedpop": job_seedpop, "hours": job_hours, "hourscur": lambda: __import__("pipeline.hours", fromlist=["x"]) and run_module("hours", __import__("pipeline.hours", fromlist=["x"]).curated, "MEASURED", "opening hours, researched spots")}
+        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata, "nps": lambda: run_module("nps", __import__("pipeline.nps", fromlist=["x"]).run, "MEASURED", "NPS park alerts, closures and timed entry"), "darkgrid": job_darkgrid, "seedlight": job_seedlight, "gonowtest": job_gonowtest, "seedpop": job_seedpop, "hours": job_hours, "hourscur": lambda: __import__("pipeline.hours", fromlist=["x"]) and run_module("hours", __import__("pipeline.hours", fromlist=["x"]).curated, "MEASURED", "opening hours, researched spots")}
 
 if __name__ == "__main__":
     for j in sys.argv[1:]:
