@@ -27,7 +27,9 @@ async function loadInat() {
   const c = g => rows.filter(r => r.g === g).length; mark("inat", true, `${c("bird")} bird, ${c("mam")} mammal and ${c("bloom")} in-bloom sightings`);
 }
 // most-reported species near a spot for one group, e.g. [["elk", 4], ["black bear", 1]]
-function inatTop(s, g, kmR) { const m = new Map(); inatNear(s, kmR).filter(o => o.g === g && o.rank !== "genus" && o.rank !== "family").forEach(o => m.set(o.n.toLowerCase(), (m.get(o.n.toLowerCase()) || 0) + 1)); return [...m].sort((a, b) => b[1] - a[1]); }
+const SMALL_MAM = /squirrel|chipmunk|mouse|\brats?\b|woodrat|vole|gopher|shrew|\bmoles?\b|\bbats?\b|myotis|cottontail|jackrabbit|rabbit|hare\b|opossum|raccoon|skunk|marmot|ground squirrel|kangaroo/i;   // common or too small to plan a trip around
+const MAM_NAME = n => n.replace(/^wapiti$/, "elk").replace(/^(american|common|north american) /, "");
+function inatTop(s, g, kmR) { const m = new Map(); inatNear(s, kmR).filter(o => o.g === g && o.rank !== "genus" && o.rank !== "family" && !(g === "mam" && SMALL_MAM.test(o.n))).forEach(o => { const k = MAM_NAME(o.n.toLowerCase()); m.set(k, (m.get(k) || 0) + 1); }); return [...m].sort((a, b) => b[1] - a[1]); }
 function inatNear(s, kmR) { return LIVE.inat ? LIVE.inat.rows.filter(o => km(s, o) <= (kmR || 2.5)) : []; }
 
 /* ---- National Park Service alerts and timed entry (feed/nps.json, pipeline/nps.py) ---- */
@@ -147,7 +149,7 @@ fitFor = function (s, w) {
   if (s.cats.includes("waterfall")) { const r = rain48(s); if (r != null && r >= 0.4) { if (DAYK.has(w.kind) || n >= 60) n += 8; why.unshift(`${r.toFixed(1)} in of rain in 2 days: falls running big`); } else if (r != null && r < 0.05 && +laYMD(w.peak).slice(5, 7) >= 7 && +laYMD(w.peak).slice(5, 7) <= 10) { n -= 6; why.push("dry spell: flow may be thin"); } }
   const lt = lowTideNear(s, w); if (lt) { n += 10; why.unshift(`low tide ${fmtT(new Date(lt.t))} (${lt.v.toFixed(1)} ft): wet-sand reflections`); }
   if (s.cats.some(c => LIFE.includes(c))) { const obs = inatNear(s, 2.5).filter(o => o.g === "bird"); if (obs.length >= 3) { n += Math.min(10, obs.length); why.push(`${obs.length} bird sightings logged here in 10 days`); }
-    const mm = inatTop(s, "mam", 3); if (mm.length) { const tot = mm.reduce((a, x) => a + x[1], 0); n += Math.min(14, 6 + 2 * tot); why.unshift(`${mm[0][0]} seen here ${mm[0][1]}× this month${mm.length > 1 ? `, plus ${mm.slice(1, 3).map(x => x[0]).join(", ")}` : ""}`); } }
+    const mm = inatTop(s, "mam", 3); if (mm.length) { const tot = mm.reduce((a, x) => a + x[1], 0); n += UI.group === "life" ? Math.min(14, 6 + 2 * tot) : Math.min(5, 2 + tot); /* full lift only when hunting wildlife */ why.unshift(`${mm[0][0]} seen here ${mm[0][1]}× this month${mm.length > 1 ? `, plus ${mm.slice(1, 3).map(x => x[0]).join(", ")}` : ""}`); } }
   if (s.cats.includes("wildflowers") || s.kind === "meadow") { const bl = inatTop(s, "bloom", 2.5); const tot = bl.reduce((a, x) => a + x[1], 0);
     if (tot >= 2) { n += Math.min(14, 4 + 2 * tot); why.unshift(`in bloom now: ${bl.slice(0, 3).map(x => x[0]).join(", ")} (${tot} reports in 2 weeks)`); } }
   const np = npsAt(s); if (np) { const cl = (np.al || []).find(a => a.cat === "Park Closure"); if (cl) why.push(`park notice: ${cl.t.slice(0, 70)}`); if (np.te) why.push("park may need a timed-entry reservation"); }
