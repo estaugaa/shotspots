@@ -35,7 +35,7 @@ async def ctx(b, w=390, h=844, mobile=True, loc=HOME, prefs=None, fresh=False, s
         await c.add_init_script("if(!sessionStorage.getItem('uxinit')){" + "".join(f"localStorage.setItem({json.dumps(k)}, {json.dumps(json.dumps(v))});" for k, v in st.items()) + "sessionStorage.setItem('uxinit','1')}")
     pg = await c.new_page(); pg.errs = []
     pg.on("pageerror", lambda e: pg.errs.append(str(e)[:160]))
-    pg.on("console", lambda m: m.type == "error" and pg.errs.append("console: " + m.text[:140]))
+    pg.on("response", lambda r: r.status >= 400 and pg.errs.append(f"{r.status} {r.url[:90]}"))
     return c, pg
 
 async def audit(pg, sel, tag):
