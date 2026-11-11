@@ -29,7 +29,7 @@ async function loadInat() {
 // most-reported species near a spot for one group, e.g. [["elk", 4], ["black bear", 1]]
 const SMALL_MAM = /squirrel|chipmunk|mouse|\brats?\b|woodrat|vole|gopher|shrew|\bmoles?\b|\bbats?\b|myotis|cottontail|jackrabbit|rabbit|hare\b|opossum|raccoon|skunk|marmot|ground squirrel|kangaroo/i;   // common or too small to plan a trip around
 const MAM_NAME = n => n.replace(/^wapiti$/, "elk").replace(/^(american|common|north american) /, "");
-function inatTop(s, g, kmR) { const m = new Map(); inatNear(s, kmR).filter(o => o.g === g && o.rank !== "genus" && o.rank !== "family" && !(g === "mam" && SMALL_MAM.test(o.n))).forEach(o => { const k = MAM_NAME(o.n.toLowerCase()); m.set(k, (m.get(k) || 0) + 1); }); return [...m].sort((a, b) => b[1] - a[1]); }
+function inatTop(s, g, kmR) { const m = new Map(); inatNear(s, kmR).filter(o => o.g === g && /^(species|subspecies|variety)$/.test(o.rank) && !(g === "mam" && SMALL_MAM.test(o.n))).forEach(o => { const k = MAM_NAME(o.n.toLowerCase()); m.set(k, (m.get(k) || 0) + 1); }); return [...m].sort((a, b) => b[1] - a[1]); }
 function inatNear(s, kmR) { return LIVE.inat ? LIVE.inat.rows.filter(o => km(s, o) <= (kmR || 2.5)) : []; }
 
 /* ---- National Park Service alerts and timed entry (feed/nps.json, pipeline/nps.py) ---- */
@@ -154,6 +154,7 @@ fitFor = function (s, w) {
     if (tot >= 2) { n += Math.min(14, 4 + 2 * tot); why.unshift(`in bloom now: ${bl.slice(0, 3).map(x => x[0]).join(", ")} (${tot} reports in 2 weeks)`); } }
   const np = npsAt(s); if (np) { const cl = (np.al || []).find(a => a.cat === "Park Closure"); if (cl) why.push(`park notice: ${cl.t.slice(0, 70)}`); if (np.te) why.push("park may need a timed-entry reservation"); }
   const eb = LIVE.ebird && LIVE.ebird.rows.filter(o => km(s, o) <= 3); if (eb && eb.length) { n += 12; why.unshift(`rare bird: ${eb[0].n} reported ${eb[0].t.slice(5, 10)}`); }
+  if (s.kind === "hotspot" && UI.group !== "life" && n > f.n && !why.some(x => /in bloom now|rare bird/.test(x))) n = f.n + (n - f.n) * 0.35;   // sightings don't make a birding spot a sunrise spot
   return { ...f, n: Math.round(clamp(n, 0, 100)), why };
 };
 
