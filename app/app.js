@@ -581,17 +581,17 @@ const KSHORT2 = { blueAM: "Blue hour", sunrise: "Sunrise", morning: "Morning", m
 function winDay(w) { return laYMD(w.kind === "night" ? w.start : w.peak); }
 function dayTab(ymd) { const y = laYMD(new Date()); if (ymd === y) return "Today"; if (ymd === addDays(y, 1)) return "Tomorrow";
   return new Date(ymd + "T12:00:00").toLocaleDateString("en-US", { weekday: "short" }); }
-let __topsKey = "", __tops = [];
+let __tops3 = [], __topsKey = "", __tops = [];
 function windowTops(all) {   // best spot per window, cached per forecast/feed state
   const k = all.length + "|" + SPOTS.length + "|" + (all[0] && all[0].start.getTime()) + "|" + (WX ? WX.at : 0) + "|" + (window.FEED && FEED.m ? FEED.m.gen : "") + "|" + Object.keys(SAVED).length + "|" + LOC.lat + "|" + UI.group + "|" + PREFS.travel + maxTravel() + "|" + (HZN ? HZN.at : 0);
-  if (k !== __topsKey) { __tops = all.map(x => rankFor(x)[0] || null); __topsKey = k; }
+  if (k !== __topsKey) { __tops3 = []; __tops = all.map((x, i) => { const r = rankFor(x); __tops3[i] = r.length ? Math.round(r.slice(0, 3).reduce((a, y) => a + y.f.n, 0) / Math.min(3, r.length)) : 0; return r[0] || null; }); __topsKey = k; }
   return __tops;
 }
 function chipTime(w) { return w.kind === "night" ? (w.dark ? fmtT(w.dark.s) : "all night") : w.live ? "now" : fmtT(GOLDK.has(w.kind) ? w.peak : w.start); }
 function plannerHtml(all, tops) {
   const days = [...new Set(all.map(winDay))];
   if (!UI.day || !days.includes(UI.day)) UI.day = winDay(all[UI.focus]);
-  const dayBest = d => Math.max(0, ...all.map((w, i) => winDay(w) === d && tops[i] ? tops[i].f.n : 0));
+  const dayBest = d => Math.max(0, ...all.map((w, i) => winDay(w) === d ? (__tops3[i] || 0) : 0));   // top-3 average: the best single spot hits 100 most days near home
   const alertAt = (window.upcoming ? upcoming() : []).map(a => new Date(a.at).getTime());
   const bests = days.map(dayBest), top = Math.max(...bests), star = bests.filter(x => x >= top - 4).length === 1 ? days[bests.indexOf(top)] : null;   // mark the best day when it clearly stands out
   let h = `<div class="planner" id="planner"><div class="daytabs" role="tablist">${days.map(d => { const n = dayBest(d);
@@ -773,7 +773,7 @@ function hours12(s) {
   const pt = nearestPt(s, 60); if (!pt) return ""; const t0 = Math.ceil(Date.now() / 36e5) * 36e5; let cells = "";
   for (let k = 0; k < 12; k++) { const t = new Date(t0 + k * 36e5), c = hourAt(pt, t); if (!c) continue;
     cells += `<div><small>${t.toLocaleTimeString("en-US", { timeZone: TZ, hour: "numeric" }).replace(" ", "").toLowerCase()}</small><span>${wxIcon(c, t, s)}</span><small>${fmtDeg(c.tf)}</small>${c.pop >= 30 ? `<small class="pop" title="chance of rain">💧${c.pop}%</small>` : ""}</div>`; }
-  return cells ? `<div class="hours" aria-label="Next 12 hours here">${cells}</div>${cells.includes("💧") ? `<p class="muted" style="font-size:12px;margin:2px 0 0">💧 chance of rain that hour</p>` : ""}` : "";
+  return cells ? `<div class="hours" tabindex="0" role="region" aria-label="Next 12 hours here">${cells}</div>${cells.includes("💧") ? `<p class="muted" style="font-size:12px;margin:2px 0 0">💧 chance of rain that hour</p>` : ""}` : "";
 }
 function nightHelp(s) {
   const e = dayEvents(s, laYMD(new Date())), m = moonPos(new Date(), s.lat, s.lon), nw = nightWindow(s);
@@ -801,7 +801,7 @@ function openSpot(id) {
       <button class="btn" id="saveBtn" data-id="${s.id}">${SAVED[s.id] ? "★ Saved" : "☆ Save"}</button>
       <button class="btn" id="shotBtn" data-id="${s.id}">📷 Shot it</button>${navigator.share ? `<button class="btn" id="shareBtn" data-id="${s.id}">Share</button>` : ""}</div>
     ${hours12(s)}
-    <p class="label" style="margin-bottom:0">Scores here, every window</p><div class="next3 nextw">${n3}</div>`;
+    <p class="label" style="margin-bottom:0">Scores here, every window</p><div class="next3 nextw" tabindex="0" role="region" aria-label="Scores here, every window">${n3}</div>`;
   if (road) h += `<div class="alertbox"><b>${esc(road.title)}</b><br>${esc(road.text || road.short || "")}</div>`;
   if (s.alert) h += `<div class="alertbox">${esc(s.alert)}</div>`;
   if (wl.length) h += wl.map(x => `<div class="item"><b>${x.ev.icon || ""} ${esc(x.ev.name)}${x.peak ? " — peak now" : " — in season"}</b><p>${esc(x.ev.tips || x.ev.what || "")}</p></div>`).join("");

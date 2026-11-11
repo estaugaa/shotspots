@@ -76,9 +76,9 @@ function welcomeHtml() {
     <p>It's starting from Washougal, Washington, but your device's time zone says you're elsewhere. Use your location and it'll find photo spots around you.</p>
     <div class="chips"><button class="chip" id="welcomeGps">Use my location</button><button class="chip" id="welcomeLoc">Pick a place</button><button class="chip" id="welcomeOk">Stay in the Northwest</button></div></div>`;
   return `<div class="welcome"><h3>Welcome to ShotSpots</h3>
-    <p>It plans photo outings around Portland, Washougal and the Columbia Gorge: pick a day and a light window above, and it ranks the spots for that light, the forecast and the drive.</p>
-    <p>Drive times start from Washougal. Set your own starting point so they fit you.</p>
-    <div class="chips"><button class="chip" id="welcomeSetup">Set home, travel and units</button><button class="chip" data-openalerts="1">Get alerts</button><button class="chip" id="welcomeOk">Got it</button></div></div>`;
+    <p>It plans photo outings: pick a day and a light window above, and it ranks nearby spots for that light, the forecast and the drive.</p>
+    <p>Drive times start from Washougal, Washington. Use your location so they start from you.</p>
+    <div class="chips"><button class="chip primary" id="welcomeGps">Use my location</button><button class="chip" id="welcomeSetup">Travel and units</button><button class="chip" data-openalerts="1">Get alerts</button><button class="chip" id="welcomeOk">Got it</button></div></div>`;
 }
 const _renderNowF = renderNow;
 renderNow = function () { _renderNowF(); const h = welcomeHtml(); const v = $("#v-now"); if (h && v && !v.querySelector(".welcome")) { const d = v.querySelector("#winDetail"); (d || v).insertAdjacentHTML(d ? "beforebegin" : "afterbegin", h); } };

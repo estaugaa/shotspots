@@ -32,7 +32,7 @@ async def ctx(b, w=390, h=844, mobile=True, loc=HOME, prefs=None, fresh=False, s
                             geolocation={"latitude": loc["lat"], "longitude": loc["lon"]}, permissions=["geolocation"], device_scale_factor=1)
     if not fresh:
         st = {"ss2:loc": {**loc, "src": "search", "at": 9e12}, "ss2:prefs": {"units": "us", "travel": "drive", "maxDrive": 60, "maxWalk": 30, "start": "gps", **(prefs or {})}, "ss2:group": "all", "ss2:welcomed": True}
-        await c.add_init_script("".join(f"localStorage.setItem({json.dumps(k)}, {json.dumps(json.dumps(v))});" for k, v in st.items()))
+        await c.add_init_script("if(!sessionStorage.getItem('uxinit')){" + "".join(f"localStorage.setItem({json.dumps(k)}, {json.dumps(json.dumps(v))});" for k, v in st.items()) + "sessionStorage.setItem('uxinit','1')}")
     pg = await c.new_page(); pg.errs = []
     pg.on("pageerror", lambda e: pg.errs.append(str(e)[:160]))
     pg.on("console", lambda m: m.type == "error" and pg.errs.append("console: " + m.text[:140]))
@@ -41,7 +41,9 @@ async def ctx(b, w=390, h=844, mobile=True, loc=HOME, prefs=None, fresh=False, s
 async def audit(pg, sel, tag):
     a = await pg.evaluate(AUDIT, sel); log(f"  AUDIT {tag}: {json.dumps(a)}"); return a
 
-async def shot(pg, n, full=False): await pg.screenshot(path=f"ux/{n}.png", full_page=full)
+async def shot(pg, n, full=False):
+    try: await pg.screenshot(path=f"ux/{n}.png", full_page=full, animations="disabled", timeout=60000)
+    except Exception as e: log("  (screenshot", n, "failed)")
 
 async def t1(b):  # brand-new user, no saved state
     c, pg = await ctx(b, fresh=True); t0 = time.time(); await pg.goto(URL)
@@ -133,7 +135,7 @@ async def t8(b):  # slow phone: 4x CPU + slow 4G, then offline reload
     t0 = time.time(); await pg.goto(URL); dcl = round((time.time() - t0) * 1000)
     ready = await pg.evaluate(READY); log("  slow: page", dcl, "ms, first spot +", ready, "ms")
     shots = []
-    for k in range(4): await pg.wait_for_timeout(1500); await shot(pg, f"u8_slow_{k}")
+    await pg.wait_for_timeout(3000); await shot(pg, "u8_slow")
     perf = await pg.evaluate("(()=>{const r=performance.getEntriesByType('resource');return {requests:r.length,kb:Math.round(r.reduce((s,x)=>s+(x.transferSize||0),0)/1024),biggest:r.sort((a,b)=>b.transferSize-a.transferSize).slice(0,6).map(x=>x.name.split('/').slice(-2).join('/').slice(0,50)+' '+Math.round(x.transferSize/1024)+'kb')}})()")
     log("  first load:", json.dumps(perf))
     await pg.wait_for_timeout(8000)
