@@ -522,8 +522,10 @@ function fitFor(s, w) {
   // big areas (parks, wildernesses): the pin is just the middle of them, not a place to stand
   if (s.seed && (/^seed-r/.test(s.id) || /^(grand canyon|.* (wilderness|national forest|national park|national monument|recreation area|preserve))$/i.test(s.name)) && UI.group !== "life") n *= 0.7;
   // starter summits: often no trail (buttes inside canyons, remote peaks). Trust them only when people actually photograph from there
-  if (s.seed && s.kind === "peak" && !(s.pop >= 8) && s.effort !== "road") n *= s.pop != null ? 0.75 : 0.85;
-  if (s.kind === "hotspot" && UI.group !== "life" && !why.some(x => /sightings|peak|staging|migration|rut/.test(x))) n *= 0.7;
+  if (s.seed && s.kind === "peak" && !(s.pop >= 12) && s.effort !== "road") n *= s.pop != null ? 0.65 : 0.8;
+  // lookout towers: real fire lookouts are great; city observation towers are often rides or closed - trust them when people photograph from them
+  if (s.seed && s.kind === "lookout" && !(s.pop >= 10) && /garden|park|fair|amusement|six flags|ride|plaza/i.test(s.name)) n *= 0.5;
+  if (s.kind === "hotspot" && UI.group !== "life" && !why.some(x => /at peak|staging|migration|\brut\b|run in season/.test(x))) n *= 0.65;   // a season event, not just routine sightings
   if (road) { n -= 10; why.push(road.short || road.title); }
   return { n: Math.round(clamp(n, 0, 100)), why, sk };
 }
