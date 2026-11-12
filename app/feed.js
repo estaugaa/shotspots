@@ -7,6 +7,7 @@ const LAZY = ["planner", "wildlife", "originality", "report", "verify_positions"
 async function feedGet(name) {
   if (FEED.d[name]) return FEED.d[name];
   if (FEED.loading[name]) return FEED.loading[name];
+  if (FEED.m && FEED.m.files && !FEED.m.files.includes(name + ".json")) return null;   // not published (yet): don't ask
   FEED.loading[name] = fetch(`feed/${name}.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).catch(() => null).then(j => { if (j) FEED.d[name] = j; delete FEED.loading[name]; return j; });
   return FEED.loading[name];
 }
