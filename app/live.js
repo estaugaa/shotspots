@@ -34,7 +34,8 @@ function inatNear(s, kmR) { return LIVE.inat ? LIVE.inat.rows.filter(o => km(s, 
 
 /* ---- National Park Service alerts and timed entry (feed/nps.json, pipeline/nps.py) ---- */
 function npsAt(s) { const f = typeof fd === "function" && fd("nps"); if (!f || !f.parks) return null;
-  return f.parks.find(p => p.b ? s.lon >= p.b[0] && s.lon <= p.b[2] && s.lat >= p.b[1] && s.lat <= p.b[3] && p.r.some(r => inRing(s.lon, s.lat, r)) : p.pt && km(s, { lat: p.pt[1], lon: p.pt[0] }) <= 8) || null; }
+  return f.parks.find(p => p.b ? s.lon >= p.b[0] && s.lon <= p.b[2] && s.lat >= p.b[1] && s.lat <= p.b[3] && p.r.some(r => inRing(s.lon, s.lat, r)) : p.pt && km(s, { lat: p.pt[1], lon: p.pt[0] }) <= 2.5 && nameShare(s.name + " " + (s.region || ""), p.n)) || null; }   // no outline yet: only a close spot that names the park
+const nameShare = (a, b) => { const w = x => new Set(x.toLowerCase().match(/[a-z]{5,}/g) || []), A = w(a); return [...w(b)].some(x => A.has(x) && !/national|historic|memorial|recreation|preserve|monument|seashore|lakeshore/.test(x)); };
 function npsHtml(s) { const p = npsAt(s); if (!p) return "";
   const al = (p.al || []).filter(a => a.cat !== "Information" || /clos|road|trail|shuttle|reserv|timed|permit/i.test(a.t));
   return `<h3>${esc(p.n)}: notices</h3>${p.te ? `<p><b>Timed entry or a reservation may be needed.</b> ${esc(p.te)}</p>` : ""}${al.length ? `<ul class="plain">${al.map(a => `<li><b>${esc(a.cat)}:</b> ${a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.t)}</a>` : esc(a.t)}${a.d ? `<br><small class="muted">${esc(a.d)}</small>` : ""}</li>`).join("")}</ul>` : ""}<p class="muted" style="font-size:13px">From the park's own alerts (NPS). Check whether a notice covers this viewpoint. <a href="${esc(p.url || "https://www.nps.gov")}" target="_blank" rel="noopener">Park conditions</a></p>`; }
@@ -152,7 +153,8 @@ fitFor = function (s, w) {
     const mm = inatTop(s, "mam", 3); if (mm.length) { const tot = mm.reduce((a, x) => a + x[1], 0); n += UI.group === "life" ? Math.min(14, 6 + 2 * tot) : Math.min(5, 2 + tot); /* full lift only when hunting wildlife */ why.unshift(`${mm[0][0]} seen here ${mm[0][1]}× this month${mm.length > 1 ? `, plus ${mm.slice(1, 3).map(x => x[0]).join(", ")}` : ""}`); } }
   if (s.cats.includes("wildflowers") || s.kind === "meadow") { const bl = inatTop(s, "bloom", 2.5); const tot = bl.reduce((a, x) => a + x[1], 0);
     if (tot >= 2) { n += Math.min(14, 4 + 2 * tot); why.unshift(`in bloom now: ${bl.slice(0, 3).map(x => x[0]).join(", ")} (${tot} reports in 2 weeks)`); } }
-  const np = npsAt(s); if (np) { const cl = (np.al || []).find(a => a.cat === "Park Closure"); if (cl) why.push(`park notice: ${cl.t.slice(0, 70)}`); if (np.te) why.push("park may need a timed-entry reservation"); }
+  // lists only carry park notices that plainly concern this spot; every notice is on the spot page
+  const np = npsAt(s); if (np) { const cl = (np.al || []).find(a => a.cat === "Park Closure" && nameShare(s.name, a.t)); if (cl) why.unshift(`closure notice: ${cl.t.slice(0, 70)}`); if (np.te) why.push("park may need a timed-entry reservation"); }
   const eb = LIVE.ebird && LIVE.ebird.rows.filter(o => km(s, o) <= 3); if (eb && eb.length) { n += 12; why.unshift(`rare bird: ${eb[0].n} reported ${eb[0].t.slice(5, 10)}`); }
   if (s.kind === "hotspot" && UI.group !== "life" && n > f.n && !why.some(x => /in bloom now|rare bird/.test(x))) n = f.n + (n - f.n) * 0.35;   // sightings don't make a birding spot a sunrise spot
   return { ...f, n: Math.round(clamp(n, 0, 100)), why };
