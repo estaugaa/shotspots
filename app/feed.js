@@ -2,7 +2,7 @@
    Every number shown from the feed carries its provenance (MEASURED / MODELED / ESTIMATED). */
 "use strict";
 const FEED = { m: null, d: {}, loading: {} };
-const EAGER = ["spots_extra", "research_status", "alerts", "goes", "hrrr", "light", "climo", "flow", "sounding", "sentinel", "darksky", "access", "calibration", "phenology", "snow", "access_rules", "weekend", "trails", "reports", "photos", "obs", "birds", "fogabove", "photostats", "verify_obs", "nwsfog", "goes_grid", "darkgrid", "hours", "nps"];
+const EAGER = ["spots_extra", "research_status", "alerts", "goes", "climo", "flow", "sounding", "sentinel", "darksky", "access", "calibration", "phenology", "snow", "access_rules", "weekend", "trails", "reports", "photos", "obs", "birds", "fogabove", "photostats", "nwsfog", "goes_grid", "darkgrid", "hours", "nps"];
 const LAZY = ["planner", "wildlife", "originality", "report", "verify_positions", "solves", "outcomes_public"];
 async function feedGet(name) {
   if (FEED.d[name]) return FEED.d[name];
@@ -13,10 +13,15 @@ async function feedGet(name) {
 async function loadFeed() {
   FEED.m = await fetch("feed/manifest.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).catch(() => null);
   if (!FEED.m) return false;
-  for (const k of [...EAGER, ...LAZY]) delete FEED.d[k];
-  await Promise.all(EAGER.filter(n => FEED.m.files.includes(n + ".json")).map(feedGet));
+  for (const k of [...EAGER, ...REGIONAL, ...LAZY, "verify_obs"]) delete FEED.d[k];
+  await Promise.all(EAGER.concat(nearResearched() ? REGIONAL : []).filter(n => FEED.m.files.includes(n + ".json")).map(feedGet));
   return true;
 }
+/* hrrr + light are per-spot forecasts for the researched spots (Pacific Northwest): about 1 MB, so only fetched near them */
+const REGIONAL = ["hrrr", "light"];
+function nearResearched() { return typeof LOC !== "undefined" && SPOTS.some(s => !s.seed && km(LOC, s) < 250); }
+function regionalFeeds() { if (!FEED.m || !nearResearched() || REGIONAL.every(n => FEED.d[n] || FEED.loading[n])) return;
+  Promise.all(REGIONAL.filter(n => FEED.m.files.includes(n + ".json")).map(feedGet)).then(() => render()); }
 const fd = n => FEED.d[n] || null;
 const ST = n => (FEED.m && FEED.m.status && FEED.m.status[n]) || null;
 const KIND_TAG = { MEASURED: "measured", MODELED: "modeled", ESTIMATED: "estimate" };
@@ -221,5 +226,5 @@ renderSettings = async function () {
 };
 
 /* ---------- boot ---------- */
-loadFeed().then(ok => { if (ok) { render(); Promise.all(["wildlife", "planner"].map(feedGet)).then(render); } });
+loadFeed().then(ok => { if (ok) { render(); Promise.all(["wildlife", "planner", "verify_obs"].map(feedGet)).then(render); } });
 document.addEventListener("visibilitychange", () => { if (!document.hidden && FEED.m && Date.now() - new Date(FEED.m.gen) > 20 * 60000) loadFeed().then(ok => ok && render()); });

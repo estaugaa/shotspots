@@ -124,8 +124,9 @@ async function omFetch(url) {
 // how well-known a starter spot is: Wikipedia/Wikidata links and eBird species (seed score), plus geotagged photos on
 // Commons and Flickr and iNaturalist sightings (pop). About -2 for an obscure pin, up to +6 for a famous one.
 function seedFame(s) {
-  const wiki = s.score != null ? (Math.log2(Math.max(1, s.score)) - 2.3) * 1.2 : 0, pop = s.pop != null ? (s.pop - 6) * 0.35 : 0;
-  return Math.max(-2, Math.min(6, wiki + pop));
+  // pop: 3 = median mapped place, 10 = top 3% (a well-known landmark), 12.6 = top 1%. Icons need to clear ordinary spots
+  const wiki = s.score != null ? (Math.log2(Math.max(1, s.score)) - 2.3) * 1.2 : 0, pop = s.pop != null ? (s.pop >= 4 ? (s.pop - 4) * 0.8 : (s.pop - 4) * 0.4) : 0;
+  return Math.max(-2, Math.min(10, wiki + pop));
 }
 function wxMiss() { return !WX ? (navigator.onLine === false ? "offline: no forecast" : "forecast loading") : "no forecast point near here yet"; }
 function nearestPt(p, maxKm, exclude) {
@@ -525,7 +526,7 @@ function fitFor(s, w) {
   if (s.seed && s.kind === "peak" && !(s.pop >= 12) && s.effort !== "road") n *= s.pop != null ? 0.65 : 0.8;
   // lookout towers: real fire lookouts are great; city observation towers are often rides or closed - trust them when people photograph from them
   if (s.seed && s.kind === "lookout" && !(s.pop >= 10) && /garden|park|fair|amusement|six flags|ride|plaza/i.test(s.name)) n *= 0.5;
-  if (s.kind === "hotspot" && UI.group !== "life" && !why.some(x => /at peak|staging|migration|\brut\b|run in season|in bloom now/.test(x))) n *= 0.65;   // a season event, not just routine sightings
+  if (s.kind === "hotspot" && UI.group !== "life" && !why.some(x => /at peak|staging|migration|\brut\b|run in season|in bloom now/.test(x))) n *= GOLDK.has(w.kind) ? 0.55 : 0.65;   // a season event, not just routine sightings
   if (road) { n -= 10; why.push(road.short || road.title); }
   return { n: Math.round(clamp(n, 0, 100)), why, sk };
 }
@@ -555,6 +556,12 @@ function stripSvg(p, wins) {
     marks += `<text class="lbl" x="${clamp(xx, 22, W - 22)}" y="44" text-anchor="middle">${w.kind === "sunrise" ? "↑" : "↓"} ${fmtT(w.peak).replace(" ", "")}</text>`; });
   const nx = x(Date.now());
   return `<div class="strip" aria-hidden="true"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="height:56px">${rects}${marks}<line class="now" x1="${nx}" x2="${nx}" y1="2" y2="34"/><text class="lbl" x="${nx + 3}" y="6" style="font-size:10px">now</text></svg></div>`;
+}
+// one tappable line on the main screen; the bars open underneath (they used to push the first spot below the fold)
+function skyLine(sk) {
+  if (!sk) return "";
+  const p = v => Math.round(v) + "%";
+  return `<details class="skyd"><summary>Cloud here: high ${p(sk.high)}, mid ${p(sk.mid)}, low ${p(sk.low)}${sk.block != null ? `, toward the light ${p(sk.block)}` : ""}</summary>${skyBars(sk)}</details>`;
 }
 function skyBars(sk) {
   if (!sk) return "";
@@ -618,8 +625,8 @@ function renderNow() {
   if ((tops[UI.focus] || null) !== (ranked[0] || null) && (!tops[UI.focus] || !ranked[0] || tops[UI.focus].f.n !== ranked[0].f.n)) tops[UI.focus] = ranked[0] || null;
   let h = plannerHtml(all, tops);
   h += `<div class="window" id="winDetail"><div class="wtitle"><h2>${wTitle(w)}</h2><span class="when">${w.live ? "until " + fmtT(w.end) : fmtIn(w.kind === "night" && w.dark ? w.dark.s : w.start)}</span></div>
-    <p class="muted" style="margin:2px 0 0">${timeTxt}</p>`;
-  if (v) h += `<p class="verdict ${v.cls}">${v.txt}</p><p class="why">${esc(sk ? sk.why.join(", ") : (WX ? "No forecast for this place." : loadWx.retry ? "The forecast service is busy; trying again in a few seconds…" : "Loading the forecast…"))}</p>${skyBars(sk)}`;
+    <p class="muted wtime">${timeTxt}</p>`;
+  if (v) h += `<p class="verdict ${v.cls}">${v.txt}</p><p class="why">${esc(sk ? sk.why.join(", ") : (WX ? "No forecast for this place." : loadWx.retry ? "The forecast service is busy; trying again in a few seconds…" : "Loading the forecast…"))}</p>${skyLine(sk)}`;
   else { const c = hourAt(nearestPt(LOC, 60), w.peak); h += `<p class="verdict ${c && c.cc <= 20 ? "good" : "mid"}">${c ? (c.cc <= 20 ? "Clear and dark enough for stars" : c.cc <= 50 ? "Partly cloudy: gaps for stars" : "Cloudy: skip the stars") : "Forecast doesn't reach this far yet"}</p>
     <button class="chip" data-v="sky" style="margin:4px 0 8px">Night sky details: Milky Way, moon, planets ›</button>`; }
   // the headline is for where you are; say so when the top pick is somewhere with different weather
@@ -786,6 +793,21 @@ function nightHelp(s) {
     <li>Focus: magnify a bright star or planet in live view, focus by hand, then tape the ring.</li>
     <li>Turn on Long Exposure NR for single frames; turn it off when stacking.</li></ul></details>`;
 }
+// Apple Maps on iPhone/iPad/Mac, Google Maps everywhere else (maps.apple.com is a dead end on Android)
+const APPLE = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);
+function mapsUrl(lat, lon, name) { return APPLE ? `https://maps.apple.com/?daddr=${lat},${lon}&dirflg=${PREFS.travel === "walk" ? "w" : "d"}${name ? "&q=" + encodeURIComponent(name) : ""}`
+  : `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}&travelmode=${PREFS.travel === "walk" ? "walking" : "driving"}`; }
+// the answer people open a spot for: when is it best in the next ~40 hours, and when to leave
+function bestTimeHtml(s, wins, d) {
+  const now = Date.now(), WALKM = { road: 2, short: 10, hike: 30, hard: 60 }[s.effort] ?? 15;
+  const sc = wins.map(w => ({ w, f: fitFor(s, w) })).filter(x => x.f && x.w.end.getTime() > now);
+  if (!sc.length) return "";
+  const b = sc.reduce((a, x) => x.f.n > a.f.n ? x : a);
+  if (b.f.n < 25) return `<p class="besttime muted">No strong window here in the next day and a half.</p>`;
+  const at = b.w.kind === "night" ? (b.w.dark ? b.w.dark.s : b.w.start) : b.w.peak, leave = new Date(at.getTime() - (d + WALKM) * 60000);
+  const dw = dayWord(at), lv = leave < now ? (b.w.live ? "go now" : "leave now") : `leave by ${fmtT(leave)}`;
+  return `<p class="besttime"><b class="bt-${scoreCls(b.f.n)}">${b.f.n}</b> Best next: <b>${dw === "Today" && b.w.kind === "night" ? "Tonight" : dw} ${KSHORT2[b.w.kind] || b.w.kind}</b>, ${fmtT(at)}. ${lv}.${b.f.why && b.f.why[0] ? ` <span class="muted">${esc(b.f.why[0])}</span>` : ""}</p>`;
+}
 function openSpot(id) {
   const s = byId[id]; if (!s) return; haptic();
   const wins = allWindows(s, 40), month = +laYMD(new Date()).slice(5, 7);
@@ -797,7 +819,8 @@ function openSpot(id) {
   const n3 = wins.map(w => { const f = fitFor(s, w); const dw = w.kind === "night" ? dayWord(w.start) : dayWord(w.peak); return `<div><small>${w.kind === "night" && dw === "Today" ? "Tonight" : ({ Today: "Today", Tomorrow: "Tmrw" })[dw] || dw.slice(0, 3)}</small><small><b class="k">${KSHORT[w.kind]}</b></small><b style="color:var(${f && f.n >= 70 ? "--moss" : f && f.n >= 45 ? "--gold" : "--muted"})">${f ? f.n : "–"}</b><small>${fmtT(GOLDK.has(w.kind) ? w.peak : w.start)}</small></div>`; }).join("");
   const wl = wildlifeNow(s);
   let h = `<h2 id="sheetTitle">${esc(s.name)}</h2><p class="sub">${esc(s.region)} · ${fmtDur(d)} ${PREFS.travel === "walk" ? "walk" : "drive"}${s.effort ? " · " + ({ road: "roadside", short: "short walk", hike: "hike", hard: "strenuous" }[s.effort]) : ""}${s.approx ? " · approximate pin" : ""}</p>
-    <div class="actions"><a class="btn primary" href="https://maps.apple.com/?daddr=${s.park ? s.park[0] : la},${s.park ? s.park[1] : lo}&dirflg=d">Directions${s.park ? " to trailhead" : ""}</a>
+    ${bestTimeHtml(s, wins, d)}
+    <div class="actions"><a class="btn primary" href="${mapsUrl(s.park ? s.park[0] : la, s.park ? s.park[1] : lo)}" target="_blank" rel="noopener">Directions${s.park ? " to trailhead" : ""}</a>
       <button class="btn" id="saveBtn" data-id="${s.id}">${SAVED[s.id] ? "★ Saved" : "☆ Save"}</button>
       <button class="btn" id="shotBtn" data-id="${s.id}">📷 Shot it</button>${navigator.share ? `<button class="btn" id="shareBtn" data-id="${s.id}">Share</button>` : ""}</div>
     ${hours12(s)}
@@ -822,7 +845,7 @@ function closeSheet() { $("#sheet").hidden = true; }
 
 /* ---------- location ---------- */
 function setLoc(l, quiet) {
-  LOC = { ...l, at: Date.now() }; store.set("loc", LOC); ALIGN_CACHE = ALIGN_CACHE;
+  LOC = { ...l, at: Date.now() }; store.set("loc", LOC); if (typeof regionalFeeds === "function") regionalFeeds();
   updLoc(); if (!quiet) toast(`Planning from ${l.label}`);
   loadWx(true).then(render); render();
 }
@@ -830,21 +853,28 @@ function updLoc() { $("#locName").textContent = LOC.label + (LOC.src === "gps" ?
 function gps(timeout) {
   return new Promise(res => { if (!navigator.geolocation) return res(false);
     navigator.geolocation.getCurrentPosition(async p => { const l = { lat: p.coords.latitude, lon: p.coords.longitude, label: "Here", src: "gps" };
-      l.label = await revName(l) || "Current location"; setLoc(l, true); res(true); }, () => res(false), { enableHighAccuracy: false, timeout: timeout || 10000, maximumAge: 5 * 60000 }); });
+      l.label = await revName(l) || "Current location"; setLoc(l, true); res(true); }, e => { gps.err = e && e.code; res(false); }, { enableHighAccuracy: false, timeout: timeout || 10000, maximumAge: 5 * 60000 }); });
 }
 async function revName(l) {
   if (km(l, HOME) < 1.5) return "Home"; const pr = PRESETS.map(p => ({ n: p[0], d: km(l, { lat: p[1], lon: p[2] }) })).sort((a, b) => a.d - b.d)[0];
   try { const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=14&lat=${l.lat}&lon=${l.lon}`); const j = await r.json(); const a = j.address || {};
     return a.neighbourhood || a.suburb || a.hamlet || a.village || a.town || a.city || (pr && pr.d < 6 ? "Near " + pr.n : null); } catch (e) { return pr && pr.d < 8 ? "Near " + pr.n : null; }
 }
+let SEARCH_SEQ = 0;
 async function searchPlace(q) {
-  const msg = $("#locMsg"), hits = $("#locHits"); msg.textContent = "Searching…"; hits.innerHTML = "";
+  const msg = $("#locMsg"), hits = $("#locHits"), seq = ++SEARCH_SEQ; q = (q || "").trim();
+  if (q.length < 2) { msg.textContent = "Type at least two letters."; return; }
+  msg.textContent = "Searching…"; hits.innerHTML = "";
   const pre = PRESETS.filter(p => p[0].toLowerCase().includes(q.toLowerCase())).map(p => ({ label: p[0], lat: p[1], lon: p[2] }));
-  let list = [...pre];
-  try { const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&countrycodes=us&viewbox=-124.3,46.9,-120.0,44.5&bounded=0&q=${encodeURIComponent(q)}`);
-    const j = await r.json(); list = list.concat(j.map(x => ({ label: x.name || x.display_name.split(",")[0], sub: x.display_name.split(",").slice(1, 3).join(","), lat: +x.lat, lon: +x.lon }))); } catch (e) { }
-  if (!list.length) { msg.textContent = "No match. Try a town, park or address."; return; }
-  msg.textContent = ""; hits.innerHTML = list.slice(0, 7).map((x, i) => `<button class="lrow" data-hit="${i}"><span><b>${esc(x.label)}</b><small>${esc(x.sub || "")}</small></span><span class="muted">${fmtKm(km(LOC, x))}</span></button>`).join("");
+  let list = [...pre], failed = false;
+  // nudge results toward where you are now, not toward one region
+  const vb = [LOC.lon - 3, LOC.lat + 2, LOC.lon + 3, LOC.lat - 2].map(v => v.toFixed(2)).join(",");
+  try { const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&countrycodes=us&viewbox=${vb}&bounded=0&q=${encodeURIComponent(q)}`);
+    if (!r.ok) throw new Error(r.status);
+    const j = await r.json(); list = list.concat(j.map(x => ({ label: x.name || x.display_name.split(",")[0], sub: x.display_name.split(",").slice(1, 3).join(","), lat: +x.lat, lon: +x.lon }))); } catch (e) { failed = true; }
+  if (seq !== SEARCH_SEQ) return;   // a newer search is under way
+  if (!list.length) { msg.textContent = failed ? (navigator.onLine === false ? "You're offline. Connect and search again, or use your location." : "Place search isn't responding. Try again in a moment.") : `No match for "${q}". Try a town, park or address.`; return; }
+  msg.textContent = failed ? "Place search isn't responding; showing saved places only." : ""; hits.innerHTML = list.slice(0, 7).map((x, i) => `<button class="lrow" data-hit="${i}"><span><b>${esc(x.label)}</b><small>${esc(x.sub || "")}</small></span><span class="muted">${fmtKm(km(LOC, x))}</span></button>`).join("");
   hits._list = list;
 }
 
@@ -929,7 +959,7 @@ document.addEventListener("click", e => {
   if (t.id === "locClose") { $("#locSheet").hidden = true; return; }
   if (t.id === "sheetClose") { history.back(); return; }
   if (t.id === "fresh") { toast("Refreshing…", 1500); return refresh(true); }
-  if (t.id === "useGps") { $("#locMsg").textContent = "Finding you…"; gps(12000).then(ok => { if (ok) { $("#locSheet").hidden = true; toast(`Planning from ${LOC.label}`); } else $("#locMsg").textContent = "Location is off for ShotSpots. Turn it on in Settings › Privacy › Location Services, or search for a place."; }); }
+  if (t.id === "useGps") { $("#locMsg").textContent = "Finding you…"; gps(12000).then(ok => { if (ok) { $("#locSheet").hidden = true; toast(`Planning from ${LOC.label}`); } else $("#locMsg").textContent = gps.err === 1 ? (/iPhone|iPad/.test(navigator.userAgent) ? "Location is off for this site. Turn it on in Settings › Privacy & Security › Location Services › Safari Websites, or search for a place below." : "Location is blocked for this site. Allow it from the lock icon in the address bar, or search for a place below.") : "Couldn't get a location fix. Try again outdoors, or search for a place below."; }); return; }
 });
 document.addEventListener("click", e => { const p = e.target.closest("[data-preset]"); if (!p) return; const x = PRESETS[+p.dataset.preset]; $("#locSheet").hidden = true;
   setLoc(x[0].startsWith("Washougal") ? { ...HOME } : { lat: x[1], lon: x[2], label: x[0], src: "preset" }); });

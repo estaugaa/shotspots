@@ -29,7 +29,7 @@ openSpot = function (id) {
   if (tr && tr.kind !== "none" && tr.park) {
     const mi = tr.m / 1609.34, ft = x => Math.round(x * 3.281).toLocaleString();
     const mins = Math.round(mi / 2.5 * 60 + (tr.m >= 800 ? tr.up_m || 0 : 0) * 3.281 / 1000 * 30);
-    const dir = `https://maps.apple.com/?daddr=${tr.park.lat},${tr.park.lon}&q=${encodeURIComponent(tr.park.name)}`;
+    const dir = mapsUrl(tr.park.lat, tr.park.lon, tr.park.name);
     h += tr.kind === "roadside" && (s.effort === "hike" || s.effort === "hard")
       ? `<p style="font-size:15px"><b>Starts at</b> <a href="${dir}" target="_blank" rel="noopener">${esc(tr.park.name)}</a>. The pin marks the trailhead, so the hike itself isn't measured here; see the description above.</p>`
       : tr.kind === "roadside"

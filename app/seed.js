@@ -7,6 +7,10 @@ const SEED = { idx: null, tiles: new Set(), n: 0 };
 if (typeof D !== "undefined" && D.CATS && !D.CATS.landmark) D.CATS.landmark = { label: "Landmarks", color: (D.CATS.historic || {}).color || "var(--rust)" };
 const SEED_KIND = { waterfall: "Waterfall", viewpoint: "Viewpoint", peak: "Summit", lighthouse: "Lighthouse", arch: "Arch", hotspring: "Hot spring", refuge: "Refuge", beach: "Beach", bridge: "Bridge", landmark: "Landmark", hotspot: "Birding hotspot", lake: "Lake", pass: "Mountain pass", lookout: "Lookout tower", cave: "Cave" };
 SEED.ready = fetch("feed/seed/index.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { SEED.idx = j; }).catch(() => { });
+// which tiles have popularity / opening-hours files yet (both jobs fill in over time); null = unknown, so try all
+SEED.has = { seedpop: null, seedhours: null };
+["seedpop", "seedhours"].forEach(d => fetch(`feed/${d}/index.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { if (Array.isArray(j)) SEED.has[d] = new Set(j); }).catch(() => { }));
+const seedHas = (d, k) => !SEED.has[d] || SEED.has[d].has(k);
 const seedCovers = () => !!(SEED.idx && SEED.idx.tiles[`${Math.floor(LOC.lat)}_${Math.floor(LOC.lon)}`]);
 async function loadSeed() {
   await SEED.ready; if (!SEED.idx) return;
@@ -18,8 +22,8 @@ async function loadSeed() {
   const real = SPOTS.filter(s => !s.seed && !s.osm);
   SEED.busy = true; setTimeout(() => { SEED.busy = false; }, 20000);
   const [got, pops] = await Promise.all([Promise.all(want.map(k => fetch(`feed/seed/${k}.json`).then(r => r.ok ? r.json() : null).catch(() => null))),
-    Promise.all(want.map(k => fetch(`feed/seedpop/${k}.json`).then(r => r.ok ? r.json() : null).catch(() => null)))]);
-  want.forEach(k => fetch(`feed/seedhours/${k}.json`).then(r => r.ok ? r.json() : null).then(j => { if (j && typeof SEEDHOURS !== "undefined") Object.assign(SEEDHOURS, j); }).catch(() => { }));   // photos & sightings per spot (pipeline/seedpop.py)
+    Promise.all(want.map(k => !seedHas("seedpop", k) ? null : fetch(`feed/seedpop/${k}.json`).then(r => r.ok ? r.json() : null).catch(() => null)))]);
+  want.filter(k => seedHas("seedhours", k)).forEach(k => fetch(`feed/seedhours/${k}.json`).then(r => r.ok ? r.json() : null).then(j => { if (j && typeof SEEDHOURS !== "undefined") Object.assign(SEEDHOURS, j); }).catch(() => { }));   // photos & sightings per spot (pipeline/seedpop.py)
   let added = 0;
   got.forEach((t, i) => { if (!t) return; SEED.tiles.add(want[i]);
     for (const x of t.spots) { if (byId[x.id] || real.some(s => Math.abs(s.lat - x.lat) < 0.004 && Math.abs(s.lon - x.lon) < 0.006)) continue;

@@ -370,3 +370,14 @@ details>summary{padding-top:10px;padding-bottom:10px}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .hours:focus-visible,.next3:focus-visible{outline:2px solid var(--river);outline-offset:2px}
 .chip.primary{background:var(--moss);color:var(--onaccent);border-color:var(--moss);font-weight:700}
+.wtime{margin:2px 0 0;font-size:14px}
+.skyd{margin:6px 0 10px;font-size:13px;color:var(--muted)}
+.skyd>summary{cursor:pointer;list-style:none;padding-top:8px;padding-bottom:8px}
+.skyd>summary::-webkit-details-marker{display:none}
+.skyd>summary::after{content:" ▾";font-size:11px}
+.skyd[open]>summary::after{content:" ▴"}
+.skyd .sky{margin-top:4px}
+.besttime{margin:6px 0 10px;font-size:15px;line-height:1.4}
+.besttime>b:first-child{display:inline-block;min-width:34px;padding:2px 6px;margin-right:6px;border-radius:6px;text-align:center;color:var(--onaccent);background:var(--moss)}
+.besttime>b.bt-s-mid:first-child{background:var(--gold);color:#1B1408}
+.besttime>b.bt-s-lo:first-child{background:var(--line);color:var(--ink)}

@@ -89,6 +89,7 @@ def seed(budget_min=200):
                     out[s["id"]] = oh; found += 1
         write_json(o, out); tiles += 1
         time.sleep(1)
+    (od / "index.json").write_text(json.dumps(sorted(f.stem for f in od.glob("*_*.json"))))   # the app only asks for tiles that exist
     return f"{tiles} tiles checked, {found} starter spots with opening hours"
 
 

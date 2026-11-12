@@ -24,7 +24,10 @@ def _commons(lat, lon):
 
 def _flickr(key, lat, lon):
     j = http("https://api.flickr.com/services/rest/", params={"method": "flickr.photos.search", "api_key": key, "lat": lat, "lon": lon, "radius": 0.25,
-             "radius_units": "km", "per_page": 1, "media": "photos", "content_type": 1, "format": "json", "nojsoncallback": 1}, timeout=30, tries=2).json()
+             "radius_units": "km", "per_page": 1, "media": "photos", "content_type": 1, "format": "json", "nojsoncallback": 1,
+             "has_geo": 1, "min_taken_date": "2005-01-01"}, timeout=30, tries=2).json()   # without a date limit Flickr only searches the last 12 hours
+    if j.get("stat") == "fail":
+        raise RuntimeError(f"flickr: {j.get('message')}")
     return int(j.get("photos", {}).get("total") or 0)
 
 
@@ -37,15 +40,17 @@ def run(budget_min=300):
     key = secret("FLICKR_KEY")
     sd, od = FEED / "seed", FEED / "seedpop"; od.mkdir(exist_ok=True)
     t0, tiles, n = time.time(), 0, 0
-    for f in sorted(sd.glob("*_*.json")):
+    # tiles with no file first, then ones scored before Flickr counted (v1), then the rest by age
+    rank = lambda f: (lambda o: (0, "") if not o else (1, "") if o.get("_v", 1) < 2 else (2, o.get("_at", "")))(read_json(od / f.name, {}) or {})
+    for f in sorted(sd.glob("*_*.json"), key=rank):
         if time.time() - t0 > budget_min * 60:
             open(".more", "w").write("1")   # out of time with tiles left: the workflow queues another run
             break
         o = od / f.name; old = read_json(o, {}) or {}
-        if old.get("_at", "") >= _days_ago(120):
+        if old.get("_at", "") >= _days_ago(120) and old.get("_v", 1) >= 2:
             continue
         spots = sorted((s for s in json.loads(f.read_text()).get("spots", []) if s.get("kind") != "hotspot"), key=lambda s: -(s.get("score") or 0))[:PER_TILE]
-        out = {"_at": iso(utcnow())[:10]}
+        out = {"_at": iso(utcnow())[:10], "_v": 2}
         for s in spots:
             try:
                 c = _commons(s["lat"], s["lon"]); time.sleep(0.2)
@@ -58,6 +63,7 @@ def run(budget_min=300):
             n += 1
         write_json(o, out); tiles += 1
     left = sum(1 for f in sd.glob("*_*.json") if (read_json(od / f.name, {}) or {}).get("_at", "") < _days_ago(120))
+    (od / "index.json").write_text(json.dumps(sorted(f.stem for f in od.glob("*_*.json"))))   # the app only asks for tiles that exist
     return f"{tiles} tiles, {n} spots scored; {left} tiles left"
 
 
