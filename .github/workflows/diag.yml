@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-24.04   # Playwright can't install its browser deps on 26.04 yet
     timeout-minutes: 30
     env:
+      FLICKR_KEY: ${{ secrets.FLICKR_KEY }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}

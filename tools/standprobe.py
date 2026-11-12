@@ -41,10 +41,38 @@ def photos(s, radius):
                         "d": (ii.get("timestamp") or "")[:4], "img": ii.get("thumburl"), "url": ii.get("descriptionurl")})
         time.sleep(0.5)
     return out
+FK = os.environ.get("FLICKR_KEY")
+def flickr(s, radius_km):
+    """Flickr geotags (street-level accuracy only), with compass heading read from EXIF for up to 40 photos."""
+    if not FK: return []
+    out = []
+    for page in (1, 2):
+        j = S.get("https://api.flickr.com/services/rest/", params={"method": "flickr.photos.search", "api_key": FK, "lat": s["lat"], "lon": s["lon"], "radius": radius_km, "radius_units": "km",
+              "has_geo": 1, "min_taken_date": "2005-01-01", "accuracy": 15, "content_type": 1, "media": "photos", "per_page": 250, "page": page,
+              "extras": "geo,owner_name,url_q,date_taken", "format": "json", "nojsoncallback": 1}, timeout=60).json()
+        ph = (j.get("photos") or {}).get("photo") or []
+        for p in ph:
+            if int(p.get("accuracy") or 0) < 15: continue
+            out.append({"t": p.get("title") or "", "lat": float(p["latitude"]), "lon": float(p["longitude"]), "h": None, "hs": None, "u": "f:" + p["owner"], "d": (p.get("datetaken") or "")[:4],
+                        "img": p.get("url_q"), "url": f"https://www.flickr.com/photos/{p['owner']}/{p['id']}", "fid": p["id"], "src": "flickr"})
+        if len(ph) < 250: break
+        time.sleep(0.5)
+    # heading from EXIF: one call per photo, one photo per photographer, nearest first
+    seen, n = set(), 0
+    for p in sorted(out, key=lambda x: m((x["lat"], x["lon"]), (s["lat"], s["lon"]))):
+        if p["u"] in seen or n >= 40: continue
+        seen.add(p["u"]); n += 1
+        try:
+            e = S.get("https://api.flickr.com/services/rest/", params={"method": "flickr.photos.getExif", "api_key": FK, "photo_id": p["fid"], "format": "json", "nojsoncallback": 1}, timeout=30).json()
+            for t in (e.get("photo") or {}).get("exif") or []:
+                if t.get("tag") == "GPSImgDirection": h = num(str((t.get("raw") or {}).get("_content", "")).split()[0]); p["h"], p["hs"] = (round(h) % 360, "exif") if h is not None else (None, None)
+        except Exception: pass
+        time.sleep(0.25)
+    return out
 def analyse(s):
     subj = bool(SUBJ & set(s["cats"]))
     key = [w for w in re.findall(r"[A-Za-z]{5,}", s["name"]) if w.lower() not in {"falls", "state", "point", "regional", "park", "national", "refuge", "trail", "historic", "creek", "preserve", "wildlife", "viewpoint", "mansion", "house", "bridge", "tunnels", "forum", "women", "portland", "lookout", "pullout", "river", "beach", "eagle", "natural"}]
-    P = photos(s, 1500 if subj else 400)
+    P = photos(s, 1500 if subj else 400) + flickr(s, 1.5 if subj else 0.4)
     near = []
     for p in P:
         d = m((p["lat"], p["lon"]), (s["lat"], s["lon"]))
@@ -79,5 +107,5 @@ json.dump(OUT, open("ux/stand.json", "w"))
 lines = []
 for r in OUT:
     st = r.get("stand") or {}
-    lines.append(f"{r['id']:<18} {r.get('role','?'):<10} all={r.get('n_all')} used={r.get('n_used')} users={r.get('n_users')} heading={r.get('n_head')} (exif {r.get('n_exif')}) | stand: {st.get('users','-')} people, {st.get('dist_from_pin','-')} m from pin, face {st.get('face','-')} {st.get('how','')} agree={st.get('agree','')} | light={r.get('light')} {r.get('error','')}")
+    lines.append(f"{r['id']:<18} flickr={sum(1 for x in r.get('photos',[]) if x.get('src')=='flickr')} {r.get('role','?'):<10} all={r.get('n_all')} used={r.get('n_used')} users={r.get('n_users')} heading={r.get('n_head')} (exif {r.get('n_exif')}) | stand: {st.get('users','-')} people, {st.get('dist_from_pin','-')} m from pin, face {st.get('face','-')} {st.get('how','')} agree={st.get('agree','')} | light={r.get('light')} {r.get('error','')}")
 open("ux/stand.txt", "w").write("\n".join(lines))
