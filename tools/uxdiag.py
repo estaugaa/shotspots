@@ -35,7 +35,7 @@ async def ctx(b, w=390, h=844, mobile=True, loc=HOME, prefs=None, fresh=False, s
         await c.add_init_script("if(!sessionStorage.getItem('uxinit')){" + "".join(f"localStorage.setItem({json.dumps(k)}, {json.dumps(json.dumps(v))});" for k, v in st.items()) + "sessionStorage.setItem('uxinit','1')}")
     pg = await c.new_page(); pg.errs = []
     pg.on("pageerror", lambda e: pg.errs.append(str(e)[:160]))
-    pg.on("response", lambda r: r.status >= 400 and pg.errs.append(f"{r.status} {r.url[:90]}"))
+    pg.on("response", lambda r: (r.status >= 400 or "nominatim" in r.url) and pg.errs.append(f"{r.status} {r.url[:150]}"))
     return c, pg
 
 async def audit(pg, sel, tag):
@@ -75,7 +75,7 @@ async def t4(b):  # change location via search
     c, pg = await ctx(b); await pg.goto(URL); await pg.evaluate(READY); await pg.wait_for_timeout(5000)
     await pg.tap("#locBtn"); await pg.wait_for_timeout(600); await shot(pg, "u4a_locsheet"); await audit(pg, "#locSheet", "location sheet")
     await pg.fill("#locQ", "Bend, OR"); await pg.press("#locQ", "Enter"); await pg.wait_for_timeout(3500)
-    hits = await pg.evaluate("[...document.querySelectorAll('#locHits button,#locHits a')].map(x=>x.innerText.trim().slice(0,50))"); log("  hits:", hits[:5])
+    hits = await pg.evaluate("[...document.querySelectorAll('#locHits button,#locHits a')].map(x=>x.innerText.trim().slice(0,50))"); log("  hits:", hits[:5], "| message:", await pg.evaluate("document.querySelector('#locMsg').textContent"))
     t0 = time.time()
     if hits: await pg.locator("#locHits button, #locHits a").first.tap()
     await pg.wait_for_timeout(500); log("  loc sheet closed =", await pg.evaluate("document.querySelector('#locSheet').hidden"), "| header:", await pg.evaluate("document.querySelector('#locName').innerText"))
@@ -168,6 +168,8 @@ async def t10(b):  # big text (accessibility font scaling 150%) + reduced motion
 TESTS = [("1 Brand-new visitor, no saved state", t1), ("2 Smallest phone (320x568)", t2), ("3 Spot page: open, scroll, Back", t3),
          ("4 Change location to Bend by search", t4), ("5 Settings: switch to walking, persists", t5), ("6 Every tab", t6),
          ("7 Dark mode, night vision, accessibility, keyboard", t7), ("8 Slow phone + offline", t8), ("9 Desktop + iPad", t9), ("10 Big text + landscape", t10)]
+import sys
+if len(sys.argv) > 1: TESTS = [t for t in TESTS if t[0].split()[0] in sys.argv[1:]]
 async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch()
