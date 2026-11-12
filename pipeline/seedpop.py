@@ -39,6 +39,7 @@ def run(budget_min=300):
     t0, tiles, n = time.time(), 0, 0
     for f in sorted(sd.glob("*_*.json")):
         if time.time() - t0 > budget_min * 60:
+            open(".more", "w").write("1")   # out of time with tiles left: the workflow queues another run
             break
         o = od / f.name; old = read_json(o, {}) or {}
         if old.get("_at", "") >= _days_ago(120):

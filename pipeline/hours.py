@@ -66,6 +66,7 @@ def seed(budget_min=200):
     cutoff = iso(utcnow())[:10]
     for f in sorted(sd.glob("*_*.json")):
         if time.time() - t0 > budget_min * 60:
+            open(".more", "w").write("1")   # out of time with tiles left: the workflow queues another run
             break
         o = od / f.name; old = read_json(o, {}) or {}
         if old.get("_at") and (utcnow() - __import__("datetime").datetime.fromisoformat(old["_at"] + "T00:00:00+00:00")).days < 30:

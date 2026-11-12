@@ -5,3 +5,4 @@ feed/*.tmp
 _site/
 worker/wrangler.toml
 worker/.wrangler/
+.more

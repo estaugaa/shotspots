@@ -10,6 +10,7 @@ concurrency:
   cancel-in-progress: false
 permissions:
   contents: write
+  actions: write   # long jobs (seedpop, hours) queue their own next run until done
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -57,6 +58,13 @@ jobs:
           git add -A -- feed data config inbox
           git diff --cached --quiet || git commit -m "job: update feed [skip ci]"
           for i in 1 2 3; do git pull --rebase -X theirs && git push && break; sleep 5; done
+      - name: Queue the next run if work is left
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB: ${{ inputs.job }}
+        run: |
+          if [ -f .more ]; then echo "work left: queueing another $JOB run"; gh workflow run job.yml --ref main -f job="$JOB"; fi
   publish:
     needs: run
     if: always()
