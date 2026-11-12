@@ -95,7 +95,7 @@ async function _route(need, have, k) {
 
 /* ---------- weather (Open-Meteo) ---------- */
 function wxPoints() {
-  const pts = [...GRID, { id: "me", n: "Here", lat: LOC.lat, lon: LOC.lon }];
+  const pts = [...GRID.filter(g => km(g, LOC) < 400), { id: "me", n: "Here", lat: LOC.lat, lon: LOC.lon }];   // the fixed grid is Northwest-only: skip it elsewhere
   const far = SPOTS.filter(s => !s.closed && !tooFar(s) && !pts.some(p => km(p, s) < 45));
   const cells = {}; for (const s of far) { const k = `${Math.round(s.lat * 2) / 2},${Math.round(s.lon * 2) / 2}`; (cells[k] = cells[k] || []).push(s); }
   Object.values(cells).sort((a, b) => b.length - a.length).slice(0, 8).forEach((g, i) => pts.push({ id: "x" + i, n: g[0].name, lat: g.reduce((a, s) => a + s.lat, 0) / g.length, lon: g.reduce((a, s) => a + s.lon, 0) / g.length }));
