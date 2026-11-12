@@ -158,7 +158,7 @@ def manifest():
 
 
 JOBS = {"goes": job_goes, "conditions": job_conditions, "daily": job_daily, "weekly": job_weekly, "monthly": job_monthly,
-        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata, "nps": lambda: run_module("nps", __import__("pipeline.nps", fromlist=["x"]).run, "MEASURED", "NPS park alerts, closures and timed entry"), "darkgrid": job_darkgrid, "seedlight": job_seedlight, "gonowtest": job_gonowtest, "seedpop": job_seedpop, "hours": job_hours, "hourscur": lambda: __import__("pipeline.hours", fromlist=["x"]) and run_module("hours", __import__("pipeline.hours", fromlist=["x"]).curated, "MEASURED", "opening hours, researched spots")}
+        "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata, "stands": lambda: run_module("stands", __import__("pipeline.stands", fromlist=["x"]).run, "MEASURED", "Where photographers stand + classic direction (Commons, OSM, Mapillary)"), "nps": lambda: run_module("nps", __import__("pipeline.nps", fromlist=["x"]).run, "MEASURED", "NPS park alerts, closures and timed entry"), "darkgrid": job_darkgrid, "seedlight": job_seedlight, "gonowtest": job_gonowtest, "seedpop": job_seedpop, "hours": job_hours, "hourscur": lambda: __import__("pipeline.hours", fromlist=["x"]) and run_module("hours", __import__("pipeline.hours", fromlist=["x"]).curated, "MEASURED", "opening hours, researched spots")}
 
 if __name__ == "__main__":
     for j in sys.argv[1:]:
