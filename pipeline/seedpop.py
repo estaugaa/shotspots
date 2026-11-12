@@ -41,16 +41,17 @@ def run(budget_min=300):
     sd, od = FEED / "seed", FEED / "seedpop"; od.mkdir(exist_ok=True)
     t0, tiles, n = time.time(), 0, 0
     # tiles with no file first, then ones scored before Flickr counted (v1), then the rest by age
-    rank = lambda f: (lambda o: (0, "") if not o else (1, "") if o.get("_v", 1) < 2 else (2, o.get("_at", "")))(read_json(od / f.name, {}) or {})
+    V = 2 if key else 1   # v2 = scored with Flickr; without a key there is nothing to re-score for
+    rank = lambda f: (lambda o: (0, "") if not o else (1, "") if o.get("_v", 1) < V else (2, o.get("_at", "")))(read_json(od / f.name, {}) or {})
     for f in sorted(sd.glob("*_*.json"), key=rank):
         if time.time() - t0 > budget_min * 60:
             open(".more", "w").write("1")   # out of time with tiles left: the workflow queues another run
             break
         o = od / f.name; old = read_json(o, {}) or {}
-        if old.get("_at", "") >= _days_ago(120) and old.get("_v", 1) >= 2:
+        if old.get("_at", "") >= _days_ago(120) and old.get("_v", 1) >= V:
             continue
         spots = sorted((s for s in json.loads(f.read_text()).get("spots", []) if s.get("kind") != "hotspot"), key=lambda s: -(s.get("score") or 0))[:PER_TILE]
-        out = {"_at": iso(utcnow())[:10], "_v": 2}
+        out = {"_at": iso(utcnow())[:10], "_v": V}
         for s in spots:
             try:
                 c = _commons(s["lat"], s["lon"]); time.sleep(0.2)
