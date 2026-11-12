@@ -8,8 +8,8 @@ if (typeof D !== "undefined" && D.CATS && !D.CATS.landmark) D.CATS.landmark = { 
 const SEED_KIND = { waterfall: "Waterfall", viewpoint: "Viewpoint", peak: "Summit", lighthouse: "Lighthouse", arch: "Arch", hotspring: "Hot spring", refuge: "Refuge", beach: "Beach", bridge: "Bridge", landmark: "Landmark", hotspot: "Birding hotspot", lake: "Lake", pass: "Mountain pass", lookout: "Lookout tower", cave: "Cave" };
 SEED.ready = fetch("feed/seed/index.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { SEED.idx = j; }).catch(() => { });
 // which tiles have popularity / opening-hours files yet (both jobs fill in over time); null = unknown, so try all
-SEED.has = { seedpop: null, seedhours: null };
-SEED.hasReady = Promise.all(["seedpop", "seedhours"].map(d => fetch(`feed/${d}/index.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { if (Array.isArray(j)) SEED.has[d] = new Set(j); }).catch(() => { })));
+SEED.has = { seedpop: null, seedhours: null, stands: null };
+SEED.hasReady = Promise.all(["seedpop", "seedhours", "stands"].map(d => fetch(`feed/${d}/index.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { if (Array.isArray(j)) SEED.has[d] = new Set(j); }).catch(() => { })));
 const seedHas = (d, k) => !SEED.has[d] || SEED.has[d].has(k);
 const seedCovers = () => !!(SEED.idx && SEED.idx.tiles[`${Math.floor(LOC.lat)}_${Math.floor(LOC.lon)}`]);
 async function loadSeed() {
@@ -24,6 +24,8 @@ async function loadSeed() {
   await SEED.hasReady;   // so missing popularity/hours tiles aren't requested
   const [got, pops] = await Promise.all([Promise.all(want.map(k => fetch(`feed/seed/${k}.json`).then(r => r.ok ? r.json() : null).catch(() => null))),
     Promise.all(want.map(k => !seedHas("seedpop", k) ? null : fetch(`feed/seedpop/${k}.json`).then(r => r.ok ? r.json() : null).catch(() => null)))]);
+  // where photographers stand + classic direction (pipeline/stands.py)
+  want.filter(k => seedHas("stands", k) && SEED.has.stands).forEach(k => fetch(`feed/stands/${k}.json`).then(r => r.ok ? r.json() : null).then(j => { if (j) { Object.assign(STANDS, j); applyStands(); } }).catch(() => { }));
   want.filter(k => seedHas("seedhours", k)).forEach(k => fetch(`feed/seedhours/${k}.json`).then(r => r.ok ? r.json() : null).then(j => { if (j && typeof SEEDHOURS !== "undefined") Object.assign(SEEDHOURS, j); }).catch(() => { }));   // photos & sightings per spot (pipeline/seedpop.py)
   let added = 0;
   got.forEach((t, i) => { if (!t) return; SEED.tiles.add(want[i]);
@@ -59,3 +61,31 @@ openSpot = function (id) { _openSeed(id); const s = byId[id]; if (!s || !s.seed)
   const ps = s.ps ? ` From ${s.ps.n} photos taken here, people shoot it mostly ${({ sunrise: "at sunrise", sunset: "at sunset", both: "at sunrise and sunset", night: "at night", day: "in daylight" })[s.ps.light]}${s.ps.months ? `, busiest in ${s.ps.months.map(m => ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m - 1]).join(", ")}` : ""}.` : "";
   const h = `<p class="seednote muted" style="font-size:14px"><span class="seasontag">Starter spot</span>${ps} From <a href="${s.osmUrl}" target="_blank" rel="noopener">OpenStreetMap</a>${s.wd ? ` and <a href="https://www.wikidata.org/wiki/${s.wd}" target="_blank" rel="noopener">Wikidata</a>` : ""}. The tip is general and the pin isn't checked yet; ShotSpots researches the most notable starter spots first. Scores, light and drive times work the same as for any spot.</p>`;
   a ? a.insertAdjacentHTML("afterend", h) : b.insertAdjacentHTML("afterbegin", h); };
+
+/* ---- where to stand ---- */
+const STANDS = {};
+fetch("feed/stands/researched.json").then(r => r.ok ? r.json() : null).then(j => { if (j) { Object.assign(STANDS, j); applyStands(); } }).catch(() => { });
+const CONFIDENT = new Set(["photos", "feature", "agree"]);
+// a confident classic direction replaces the terrain guess for starter spots (researched spots keep their hand-checked light)
+function applyStands() {
+  let changed = 0;
+  for (const s of SPOTS) { const st = STANDS[s.id]; if (!st || s._stand) continue; s._stand = st; changed++;
+    if (s.seed && st.f != null && CONFIDENT.has(st.fs)) { const e = Math.abs(((st.f - 90) + 540) % 360 - 180), w = Math.abs(((st.f - 270) + 540) % 360 - 180);
+      s.light = e <= 55 ? "sunrise" : w <= 55 ? "sunset" : "side"; s.hz = s.light !== "side"; }
+    if (st.u >= 4) s.standFame = Math.min(4, Math.log2(st.u) - 1);   // many photographers in one spot = a known view
+  }
+  if (changed && typeof render === "function") { clearTimeout(applyStands.t); applyStands.t = setTimeout(render, 300); }
+}
+function standHtml(s) {
+  const st = s._stand || STANDS[s.id]; if (!st || (!st.st && st.f == null)) return "";
+  const CW = b => ["north", "north-northeast", "northeast", "east-northeast", "east", "east-southeast", "southeast", "south-southeast", "south", "south-southwest", "southwest", "west-southwest", "west", "west-northwest", "northwest", "north-northwest"][Math.round(((b % 360) + 360) % 360 / 22.5) % 16];
+  const br = (a, b) => { const y = Math.sin((b.lon - a.lon) * Math.PI / 180) * Math.cos(b.lat * Math.PI / 180), x = Math.cos(a.lat * Math.PI / 180) * Math.sin(b.lat * Math.PI / 180) - Math.sin(a.lat * Math.PI / 180) * Math.cos(b.lat * Math.PI / 180) * Math.cos((b.lon - a.lon) * Math.PI / 180); return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360; };
+  let h = `<h3>Where to stand</h3>`;
+  if (st.st) { const p = { lat: st.st[0], lon: st.st[1] };
+    h += st.d >= 25 ? `<p>${st.u ? `Most photographers (${st.u} in shared photos)` : "The mapped viewpoint"} stand <b>${st.d} m ${CW(br(s, p))}</b> of this pin.</p>` : `<p>${st.u ? `Most photographers (${st.u} in shared photos) stand` : "The mapped viewpoint is"} right at this pin.</p>`;
+    if (st.d >= 25) h += `<div class="actions"><a class="btn" href="${mapsUrl(p.lat, p.lon)}" target="_blank" rel="noopener">Directions to the spot</a></div>`; }
+  if (st.f != null) h += CONFIDENT.has(st.fs) ? `<p>The classic shot faces <b>${CW(st.f)}</b>${st.fs === "photos" ? ", from the compass in people’s photos" : st.fs === "feature" ? ", toward the feature" : ", where two sources agree"}.</p>`
+    : `<p class="muted">Street-level photos here often point ${CW(st.f)}. Unconfirmed: road traffic can skew this.</p>`;
+  if (st.ex && st.ex.length) h += `<p class="muted" style="font-size:13px">Examples: ${st.ex.map(e => `<a href="${esc(e[1])}" target="_blank" rel="noopener">${esc(e[0])}</a>`).join(", ")} (Wikimedia Commons)</p>`;
+  return h;
+}

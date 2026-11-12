@@ -194,13 +194,13 @@ def run(budget_min=300):
         if o.get("_at", "") >= iso(utcnow() - __import__("datetime").timedelta(days=120))[:10]:
             continue
         pp = read_json(FEED / "seedpop" / f.name, {}) or {}
-        spots = [dict(s, pop=(pp.get(s["id"]) or [None])[0]) for s in (read_json(f, {}) or {}).get("spots", [])]
-        spots = sorted([s for s in spots if _worth(s)], key=lambda s: -(s.get("pop") or 0))
-        vps = osm_viewpoints(spots)
+        allsp = [dict(s, pop=(pp.get(s["id"]) or [None])[0]) for s in (read_json(f, {}) or {}).get("spots", [])]
+        spots = sorted([s for s in allsp if _worth(s)], key=lambda s: -(s.get("pop") or 0))
+        vps = [(s["lat"], s["lon"]) for s in allsp if s.get("kind") in ("viewpoint", "lookout")]   # OSM viewpoints are already in the starter-spot data
         out = {"_at": iso(utcnow())[:10]}
         for s in spots:
             try:
-                r = analyse(s, [v for v in vps if m(v, (s["lat"], s["lon"])) < 400]); n += 1
+                r = analyse(s, [v for v in vps if 1 < m(v, (s["lat"], s["lon"])) < 400] if s.get("kind") not in ("viewpoint", "lookout") else []); n += 1
                 if r: out[s["id"]] = r; found += 1
             except Exception as e:
                 log(f"stands {s['id']}: {e}")
@@ -208,4 +208,5 @@ def run(budget_min=300):
         tiles += 1
     (od / "index.json").write_text(json.dumps(sorted(f.stem for f in od.glob("*_*.json"))))
     left = sum(1 for f in sd.glob("*_*.json") if not (od / f.name).exists())
+    log(f"stands: {n} spots in {round((time.time() - t0) / 60)} min")
     return f"{tiles} tiles, {n} spots checked, {found} with a stand or direction; {left} tiles left"

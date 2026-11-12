@@ -126,7 +126,7 @@ async function omFetch(url) {
 function seedFame(s) {
   // pop: 3 = median mapped place, 10 = top 3% (a well-known landmark), 12.6 = top 1%. Icons need to clear ordinary spots
   const wiki = s.score != null ? (Math.log2(Math.max(1, s.score)) - 2.3) * 1.2 : 0, pop = s.pop != null ? (s.pop >= 4 ? (s.pop - 4) * 0.8 : (s.pop - 4) * 0.4) : 0;
-  return Math.max(-2, Math.min(10, wiki + pop));
+  return Math.max(-2, Math.min(10, wiki + pop + (s.standFame || 0)));
 }
 function wxMiss() { return !WX ? (navigator.onLine === false ? "offline: no forecast" : "forecast loading") : "no forecast point near here yet"; }
 function nearestPt(p, maxKm, exclude) {
@@ -824,7 +824,7 @@ function openSpot(id) {
       <button class="btn" id="saveBtn" data-id="${s.id}">${SAVED[s.id] ? "★ Saved" : "☆ Save"}</button>
       <button class="btn" id="shotBtn" data-id="${s.id}">📷 Shot it</button>${navigator.share ? `<button class="btn" id="shareBtn" data-id="${s.id}">Share</button>` : ""}</div>
     ${hours12(s)}
-    <p class="label" style="margin-bottom:0">Scores here, every window</p><div class="next3 nextw" tabindex="0" role="region" aria-label="Scores here, every window">${n3}</div>`;
+    <p class="label" style="margin-bottom:0">Scores here, every window</p><div class="next3 nextw" tabindex="0" role="region" aria-label="Scores here, every window">${n3}</div>${typeof standHtml === "function" ? standHtml(s) : ""}`;
   if (road) h += `<div class="alertbox"><b>${esc(road.title)}</b><br>${esc(road.text || road.short || "")}</div>`;
   if (s.alert) h += `<div class="alertbox">${esc(s.alert)}</div>`;
   if (wl.length) h += wl.map(x => `<div class="item"><b>${x.ev.icon || ""} ${esc(x.ev.name)}${x.peak ? " — peak now" : " — in season"}</b><p>${esc(x.ev.tips || x.ev.what || "")}</p></div>`).join("");
