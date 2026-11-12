@@ -9,7 +9,7 @@ const SEED_KIND = { waterfall: "Waterfall", viewpoint: "Viewpoint", peak: "Summi
 SEED.ready = fetch("feed/seed/index.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { SEED.idx = j; }).catch(() => { });
 // which tiles have popularity / opening-hours files yet (both jobs fill in over time); null = unknown, so try all
 SEED.has = { seedpop: null, seedhours: null };
-["seedpop", "seedhours"].forEach(d => fetch(`feed/${d}/index.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { if (Array.isArray(j)) SEED.has[d] = new Set(j); }).catch(() => { }));
+SEED.hasReady = Promise.all(["seedpop", "seedhours"].map(d => fetch(`feed/${d}/index.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { if (Array.isArray(j)) SEED.has[d] = new Set(j); }).catch(() => { })));
 const seedHas = (d, k) => !SEED.has[d] || SEED.has[d].has(k);
 const seedCovers = () => !!(SEED.idx && SEED.idx.tiles[`${Math.floor(LOC.lat)}_${Math.floor(LOC.lon)}`]);
 async function loadSeed() {
@@ -21,6 +21,7 @@ async function loadSeed() {
   if (!want.length) return;
   const real = SPOTS.filter(s => !s.seed && !s.osm);
   SEED.busy = true; setTimeout(() => { SEED.busy = false; }, 20000);
+  await SEED.hasReady;   // so missing popularity/hours tiles aren't requested
   const [got, pops] = await Promise.all([Promise.all(want.map(k => fetch(`feed/seed/${k}.json`).then(r => r.ok ? r.json() : null).catch(() => null))),
     Promise.all(want.map(k => !seedHas("seedpop", k) ? null : fetch(`feed/seedpop/${k}.json`).then(r => r.ok ? r.json() : null).catch(() => null)))]);
   want.filter(k => seedHas("seedhours", k)).forEach(k => fetch(`feed/seedhours/${k}.json`).then(r => r.ok ? r.json() : null).then(j => { if (j && typeof SEEDHOURS !== "undefined") Object.assign(SEEDHOURS, j); }).catch(() => { }));   // photos & sightings per spot (pipeline/seedpop.py)
