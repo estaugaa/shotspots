@@ -69,6 +69,77 @@ def flickr(s, radius_km):
         except Exception: pass
         time.sleep(0.25)
     return out
+CW = {"N": 0, "NNE": 22.5, "NE": 45, "ENE": 67.5, "E": 90, "ESE": 112.5, "SE": 135, "SSE": 157.5, "S": 180, "SSW": 202.5, "SW": 225, "WSW": 247.5, "W": 270, "WNW": 292.5, "NW": 315, "NNW": 337.5}
+def osm_dir(v):
+    """OSM direction=*: degrees, compass letters, a range '45-135', or a list 'N;E'. Returns (centre, width) or None."""
+    v = (v or "").strip().upper()
+    parts = [x.strip() for x in v.split(";") if x.strip()]
+    hs = []
+    for x in parts:
+        if "-" in x and not x.startswith("-"):
+            a, b = [CW.get(y.strip(), num(y.strip())) for y in x.split("-", 1)]
+            if a is not None and b is not None:
+                w = (b - a) % 360; hs.append(((a + w / 2) % 360, w)); continue
+        h = CW.get(x, num(x))
+        if h is not None: hs.append((h % 360, 0))
+    if not hs: return None
+    if len(hs) == 1: return hs[0]
+    f, R = circ([h for h, _ in hs]); return (f, 180 * (1 - R))
+def osm_viewpoints(s, radius=400):
+    q_ = f'[out:json][timeout:60];(node(around:{radius},{s["lat"]},{s["lon"]})[tourism=viewpoint];way(around:{radius},{s["lat"]},{s["lon"]})[tourism=viewpoint];);out center tags;'
+    for url in ("https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"):
+        try:
+            j = S.post(url, data={"data": q_}, timeout=90).json(); break
+        except Exception: j = {}
+    out = []
+    for e in j.get("elements", []):
+        la, lo = e.get("lat") or e.get("center", {}).get("lat"), e.get("lon") or e.get("center", {}).get("lon")
+        t = e.get("tags", {}); d = osm_dir(t.get("direction") or t.get("viewpoint:direction"))
+        out.append({"lat": la, "lon": lo, "name": t.get("name"), "dir": t.get("direction") or t.get("viewpoint:direction"), "face": None if not d else round(d[0]), "width": None if not d else round(d[1]),
+                    "dist": round(m((la, lo), (s["lat"], s["lon"]))), "id": f'{e["type"]}/{e["id"]}'})
+    return sorted(out, key=lambda x: x["dist"])
+def wikidata_pov(s, km_=1.5):
+    sp = f"""SELECT ?item ?itemLabel ?pov WHERE {{ SERVICE wikibase:around {{ ?item wdt:P625 ?loc . bd:serviceParam wikibase:center "Point({s['lon']} {s['lat']})"^^geo:wktLiteral; wikibase:radius "{km_}" }}
+      ?item wdt:P1259 ?pov . SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }} }} LIMIT 20"""
+    try: j = S.get("https://query.wikidata.org/sparql", params={"query": sp, "format": "json"}, timeout=60).json()
+    except Exception: return []
+    out = []
+    for b in j.get("results", {}).get("bindings", []):
+        mm = re.findall(r"[-\d.]+", b["pov"]["value"])
+        if len(mm) >= 2: out.append({"name": b.get("itemLabel", {}).get("value"), "lon": float(mm[0]), "lat": float(mm[1])})
+    return out
+MT = os.environ.get("MAPILLARY_TOKEN")
+def mapillary(lat, lon, half_m=120):
+    """Street-level photos near a point. Keeps 'off-axis' frames: ones pointing well away from the direction the camera was travelling,
+    i.e. someone stopped and aimed at something, not a dashcam rolling past."""
+    if not MT: return None
+    dl = half_m / 111320; dn = half_m / (111320 * math.cos(math.radians(lat)))
+    try:
+        j = S.get("https://graph.mapillary.com/images", params={"access_token": MT, "bbox": f"{lon-dn},{lat-dl},{lon+dn},{lat+dl}", "limit": 2000,
+                  "fields": "id,geometry,compass_angle,captured_at,sequence,is_pano,creator"}, timeout=90).json()
+    except Exception as e: return {"error": str(e)[:120]}
+    if "error" in j: return {"error": str(j["error"])[:160]}
+    rows = [x for x in j.get("data", []) if not x.get("is_pano") and x.get("compass_angle") is not None]
+    seq = {}
+    for x in rows: seq.setdefault(x.get("sequence"), []).append(x)
+    off, users = [], set()
+    for sq, xs in seq.items():
+        xs.sort(key=lambda x: x.get("captured_at") or 0)
+        for i, x in enumerate(xs):
+            c = x["geometry"]["coordinates"]; nb = xs[i + 1] if i + 1 < len(xs) else (xs[i - 1] if i else None)
+            if nb:
+                nc = nb["geometry"]["coordinates"]; mv = m((c[1], c[0]), (nc[1], nc[0]))
+                if mv > 3:   # moving: compare heading with travel direction
+                    tb = bearing((c[1], c[0]), (nc[1], nc[0])) if nb is not x and i + 1 < len(xs) else bearing((nc[1], nc[0]), (c[1], c[0]))
+                    if abs((x["compass_angle"] - tb + 540) % 360 - 180) < 50: continue   # looking where it was going
+            off.append(x["compass_angle"] % 360); users.add((x.get("creator") or {}).get("id") if isinstance(x.get("creator"), dict) else sq)
+    res = {"n": len(rows), "seqs": len(seq), "off": len(off), "users": len(users)}
+    if len(off) >= 4:
+        # strongest 45-degree sector, then its circular mean
+        best = max(range(0, 360, 15), key=lambda a: sum(1 for h in off if abs((h - a + 540) % 360 - 180) <= 22.5))
+        sec = [h for h in off if abs((h - best + 540) % 360 - 180) <= 22.5]
+        f, R = circ(sec); res.update(face=round(f), share=round(len(sec) / len(off), 2), n_sec=len(sec))
+    return res
 def analyse(s):
     subj = bool(SUBJ & set(s["cats"]))
     key = [w for w in re.findall(r"[A-Za-z]{5,}", s["name"]) if w.lower() not in {"falls", "state", "point", "regional", "park", "national", "refuge", "trail", "historic", "creek", "preserve", "wildlife", "viewpoint", "mansion", "house", "bridge", "tunnels", "forum", "women", "portland", "lookout", "pullout", "river", "beach", "eagle", "natural"}]
@@ -97,6 +168,11 @@ def analyse(s):
             f, R = circ(hs); res["stand"].update(face=round(f), agree=round(R, 2), n_head=len(hs), how="measured")
         elif subj and m((lat, lon), (s["lat"], s["lon"])) > 30:
             res["stand"].update(face=round(bearing((lat, lon), (s["lat"], s["lon"]))), how="toward subject")
+    res["osm"] = osm_viewpoints(s)[:4]
+    res["wd"] = wikidata_pov(s)
+    st = res.get("stand") or {}
+    at = (st["lat"], st["lon"]) if st else (res["osm"][0]["lat"], res["osm"][0]["lon"]) if res["osm"] and res["osm"][0]["dist"] < 250 else (s["lat"], s["lon"])
+    res["mly"] = mapillary(*at)
     return res
 OUT = []; spots = json.load(open("tools/stand_spots.json"))
 if os.environ.get("ONLY"): spots = [x for x in spots if x["id"] in os.environ["ONLY"].split(",")]
@@ -113,5 +189,7 @@ json.dump(OUT, open("ux/stand.json", "w"))
 lines = []
 for r in OUT:
     st = r.get("stand") or {}
-    lines.append(f"{r['id']:<18} flickr={sum(1 for x in r.get('photos',[]) if x.get('src')=='flickr')} {r.get('role','?'):<10} all={r.get('n_all')} used={r.get('n_used')} users={r.get('n_users')} heading={r.get('n_head')} (exif {r.get('n_exif')}) | stand: {st.get('users','-')} people, {st.get('dist_from_pin','-')} m from pin, face {st.get('face','-')} {st.get('how','')} agree={st.get('agree','')} | light={r.get('light')} {r.get('error','')}")
+    o = (r.get("osm") or [{}])[0]; ml = r.get("mly") or {}
+    lines.append(f"{r['id']:<18} OSM vp={len(r.get('osm') or [])} nearest={o.get('dist','-')}m dir={o.get('dir')} | WD pov={len(r.get('wd') or [])} | MLY n={ml.get('n','-')} off={ml.get('off','-')} face={ml.get('face','-')} share={ml.get('share','-')} {ml.get('error','')}")
+    lines.append(f"{'':<18} {r.get('role','?'):<10} all={r.get('n_all')} used={r.get('n_used')} users={r.get('n_users')} heading={r.get('n_head')} (exif {r.get('n_exif')}) | stand: {st.get('users','-')} people, {st.get('dist_from_pin','-')} m from pin, face {st.get('face','-')} {st.get('how','')} agree={st.get('agree','')} | light={r.get('light')} {r.get('error','')}")
 open("ux/stand.txt", "w").write(_dbg + "\n" + "\n".join(lines))
