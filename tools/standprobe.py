@@ -99,6 +99,12 @@ def analyse(s):
             res["stand"].update(face=round(bearing((lat, lon), (s["lat"], s["lon"]))), how="toward subject")
     return res
 OUT = []; spots = json.load(open("tools/stand_spots.json"))
+if os.environ.get("ONLY"): spots = [x for x in spots if x["id"] in os.environ["ONLY"].split(",")]
+_dbg = "FLICKR_KEY set: %s (len %d)" % (bool(FK), len(FK or ""))
+try:
+    r = S.get("https://api.flickr.com/services/rest/", params={"method": "flickr.photos.search", "api_key": FK or "", "lat": 45.5762, "lon": -122.1158, "radius": 0.5, "has_geo": 1, "min_taken_date": "2005-01-01", "per_page": 3, "format": "json", "nojsoncallback": 1}, timeout=30)
+    _dbg += f" | HTTP {r.status_code}: {r.text[:300]}"
+except Exception as e: _dbg += f" | error {e}"
 for s in spots:
     try: OUT.append(analyse(s))
     except Exception as e: OUT.append({"id": s["id"], "name": s["name"], "error": str(e)[:200]})
@@ -108,4 +114,4 @@ lines = []
 for r in OUT:
     st = r.get("stand") or {}
     lines.append(f"{r['id']:<18} flickr={sum(1 for x in r.get('photos',[]) if x.get('src')=='flickr')} {r.get('role','?'):<10} all={r.get('n_all')} used={r.get('n_used')} users={r.get('n_users')} heading={r.get('n_head')} (exif {r.get('n_exif')}) | stand: {st.get('users','-')} people, {st.get('dist_from_pin','-')} m from pin, face {st.get('face','-')} {st.get('how','')} agree={st.get('agree','')} | light={r.get('light')} {r.get('error','')}")
-open("ux/stand.txt", "w").write("\n".join(lines))
+open("ux/stand.txt", "w").write(_dbg + "\n" + "\n".join(lines))
