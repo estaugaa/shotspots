@@ -183,7 +183,7 @@ def run(budget_min=300):
                 r = analyse(s, []); n += 1
                 if r: out[s["id"]] = r; found += 1
             except Exception as e:
-                log(f"stands {s['id']}: {e}")
+                log.info(f"stands {s['id']}: {e}")
         rp.write_text(json.dumps(out, separators=(",", ":")))
     pops = {}
     for f in sorted(sd.glob("*_*.json"), key=lambda f: (od / f.name).exists()):
@@ -203,10 +203,10 @@ def run(budget_min=300):
                 r = analyse(s, [v for v in vps if 1 < m(v, (s["lat"], s["lon"])) < 400] if s.get("kind") not in ("viewpoint", "lookout") else []); n += 1
                 if r: out[s["id"]] = r; found += 1
             except Exception as e:
-                log(f"stands {s['id']}: {e}")
+                log.info(f"stands {s['id']}: {e}")
         (od / f.name).write_text(json.dumps(out, separators=(",", ":")))
         tiles += 1
     (od / "index.json").write_text(json.dumps(sorted(f.stem for f in od.glob("*_*.json"))))
     left = sum(1 for f in sd.glob("*_*.json") if not (od / f.name).exists())
-    log(f"stands: {n} spots in {round((time.time() - t0) / 60)} min")
+    log.info(f"stands: {n} spots in {round((time.time() - t0) / 60)} min")
     return f"{tiles} tiles, {n} spots checked, {found} with a stand or direction; {left} tiles left"

@@ -67,7 +67,7 @@ def _bounds(codes):
             if b:
                 got[c] = {"b": b, "r": r}
         except Exception as e:
-            log(f"nps bounds {c}: {e}")
+            log.info(f"nps bounds {c}: {e}")
         time.sleep(0.4)
     BOUNDS.write_text(json.dumps({"gen": iso(utcnow()), "t": time.time(), "parks": got}, separators=(",", ":")))
     return got
@@ -83,7 +83,7 @@ def run():
     try:
         fees = _all("feespasses")
     except Exception as e:
-        log(f"nps feespasses: {e}")
+        log.info(f"nps feespasses: {e}")
     te = {}
     for f in fees:
         code = f.get("parkCode")
