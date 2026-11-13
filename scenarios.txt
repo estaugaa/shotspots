@@ -1,0 +1,1100 @@
+
+######## 1 Owner in Washougal, tomorrow sunrise, drive 60 (7 > 8)
+first spot 100 ms | window=Tomorrow sunrise 7:07 AM | errors=[]
+CHECKS {"ex": {"land": {"coast": false, "mountains": false, "desert": false, "lakes": true, "plains": false}, "rain": {"nowWet": true, "at": "2026-11-13 19:45:00+00:00", "max": 0.6}, "sea": null, "mtn": null, "air": null, "rb": null}, "routed": 0, "multnomah": [null, 40], "tz": "America/Los_Angeles", "wx": true, "wxErr": null, "wxPts": 17, "hz": 12, "chip": 100, "top": 100, "chipMatches": true, "tooFarListed": [], "leak": [], "alertline": false, "spots": 1701, "ranked": 506, "top10spread": 32, "seeing": "ok"}
+Light
+Night sky
+Calendar
+🌧
+Drizzle now · 53°F · easing around 11:45 AM. · Portland airport reports rain
+Today
+87
+Tomorrow
+93
+Sun
+100
+Mon
+94
+Tue
+99
+Wed
+99
+Thu
+100
+Fri
+90
+Blue hour
+6:00 AM
+100
+best
+Sunrise
+7:07 AM · ☁ soft
+100
+Morning
+7:52 AM
+100
+Midday
+11:00 AM
+73
+Afternoon
+3:00 PM
+83
+Sunset
+4:39 PM · ☁ soft
+100
+Blue hour
+4:50 PM
+100
+Night
+9:07 PM
+58
+Tomorrow sunrise
+in 20 h 41 m
+
+7:07 AM · golden 6:46 AM–7:52 AM
+
+Report conditions
+
+Little sunrise color likely. The score is for soft overcast light: waterfalls, forest and birds
+
+low cloud deck (100%), little high cloud to catch color, 100% low cloud, cloud 25 mi east (100%) will likely block the light
+
+Cloud here: high 0%, mid 0%, low 100%, toward the light 100%
+100
+Ridgefield National Wildlife Refuge
+Wildlife
+coyote seen here 5× this month, plus white-tailed deer; 🦩 Sandhill crane staging at peak
+45 min
+Close to home
+91
+Crystal Springs Rhododendron Garden
+Gardens
+black-tailed deer seen here 3× this month, plus beaver, coyote; low sun backlights the leaves
+34 min
+Portland
+88
+Vancouver Lake & Shillapoo wildlife areas
+Birding
+white-tailed deer seen here 3× this month; 🦩 Sandhill crane staging at peak
+30 min
+Close to home
+7 more options
+
+Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.
+
+In season now
+Cackling Goose at Ridgefield National Wildlife Refuge
+Cackling Goose sightings here are near their yearly high this week. Go early: dawn and the two hours after are best.
+Peak season
+Green-winged Teal at Smith & Bybee Wetlands
+Green-winged Teal sightings here are near their yearly high this week. Go early: dawn and the two hours after are best.
+Peak season
+Fall colour near peak at Sandy River Delta (Thousand Acres)
+Satellite images show the trees here near peak colour (as of Nov 4). Soft overcast or the first sun brings it out best.
+Near peak
+☔ Raining now
+
+Should ease around 11:45 AM. 15-minute forecast, updated hourly from radar.
+
+Also worth knowing
+☔ Rainy-day ideas for Tomorrow
+
+Waterfalls run biggest now; Willamette Falls overlook (Hwy 99E, Oregon City) is your best bet. Use 1/4–1 s and wipe the lens between frames. Wet leaves are at their most saturated: Ridgefield National Wildlife Refuge. A polarizer cuts the glare off wet leaves. At blue hour, puddles and wet pavement mirror the lights. Shoot low at Eastmoreland elm streets (SE 29th Ave & Reed College Pl). Mushroom season: look on mossy logs along Gorge falls trails. The 5× (then crop in) focuses close enough for raindrop details. When the rain lifts, 
+--- spot #1 page (ridgefield) sections=['Seen here', 'Getting there', 'Best photos here', 'Seen here']:
+Ridgefield National Wildlife Refuge
+
+Close to home · 45 min drive · roadside
+
+Your take:
+More like this
+Not for me
+
+100 Best next: Today Sunset, 4:41 PM. leave by 3:54 PM. coyote seen here 5× this month, plus white-tailed deer
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+11am
+🌧
+54°
+💧81%
+12pm
+🌧
+55°
+💧75%
+1pm
+☁️
+55°
+💧42%
+2pm
+☁️
+55°
+💧34%
+3pm
+☁️
+54°
+4pm
+☁️
+52°
+5pm
+☁️
+49°
+6pm
+☁️
+49°
+7pm
+☁️
+49°
+8pm
+🌙
+48°
+9pm
+🌙
+49°
+10pm
+☁️
+48°
+
+💧 chance of rain that hour
+
+Scores here, every window
+
+Today
+Morning
+87
+7:53 AM
+Today
+Midday
+76
+11:00 AM
+Today
+Afternoon
+86
+3:00 PM
+Today
+Sunset
+100
+4:41 PM
+Today
+PM blue
+100
+4:52 PM
+Tonight
+Night
+–
+6:24 PM
+Tmrw
+AM blue
+100
+6:01 AM
+Tmrw
+Sunrise
+100
+7:09 AM
+Tmrw
+Morning
+100
+7:55 AM
+Tmrw
+Midday
+76
+11:00 AM
+Tmrw
+Afternoon
+86
+3:00 PM
+Tmrw
+Sunset
+100
+4:40 PM
+Tmrw
+PM blue
+100
+4:51 PM
+Tmrw
+Night
+–
+6:24 PM
+🦩 Sandhill crane staging — peak now
+
+Stay in the car on the Ridgefield River S auto tour. On Sauvie, bird from Reeder and Rentenaar roads; much of the north island is closed Oct 1–Apr 30.
+
+🦢 Tundra & Trumpeter swans — in season
+
+Calm mornings give reflections on Carty Lake; check the refuge's loop hours.
+
+Waterbirds and lingering fall color. Use your truck as a blind on the auto-tour route and bring your longest lens.
+
+How to shoot it
+
+Ridgefield's auto tour route is a moving blind. Animals tolerate cars but flee people, so stay inside and shoot from the window with a bean bag. The open loop is the best place in the region to photograph Sandhill Cranes, Tundra Swans and harriers at eye level.
+
+A sunrise spot, best Oct–Mar. It's roadside, so it works on short notice when conditions line up. Wildlife timing: Sandhill crane staging (09/20–11/30, 02/20–03/31); Tundra & Trumpeter swans (11/10–03/10); Short-eared owls at dusk (11/15–03/15).
+
+Landscape: Fog lift
+--- spot #2 page (crystal-springs) sections=['Seen here', 'Getting there', 'Best photos here', 'Seen here']:
+Crystal Springs Rhododendron Garden
+
+Portland · 34 min drive · short walk
+
+Your take:
+More like this
+Not for me
+
+73 Best next: Today Afternoon, 3:28 PM. leave by 2:44 PM. black-tailed deer seen here 3× this month, plus beaver, coyote
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+11am
+🌧
+55°
+💧78%
+12pm
+🌧
+55°
+💧71%
+1pm
+☁️
+56°
+💧31%
+2pm
+☁️
+55°
+3pm
+☁️
+55°
+4pm
+☁️
+50°
+5pm
+☁️
+49°
+6pm
+☁️
+49°
+7pm
+☁️
+48°
+8pm
+☁️
+48°
+9pm
+🌙
+48°
+10pm
+☁️
+48°
+💧30%
+
+💧 chance of rain that hour
+
+Scores here, every window
+
+Today
+Morning
+64
+7:52 AM
+Today
+Midday
+53
+11:00 AM
+Today
+Afternoon
+73
+3:00 PM
+Today
+Sunset
+60
+4:42 PM
+Today
+PM blue
+34
+4:53 PM
+Tonight
+Night
+–
+6:24 PM
+Tmrw
+AM blue
+34
+6:01 AM
+Tmrw
+Sunrise
+71
+7:08 AM
+Tmrw
+Morning
+67
+7:53 AM
+Tmrw
+Midday
+53
+11:00 AM
+Tmrw
+Afternoon
+63
+3:00 PM
+Tmrw
+Sunset
+60
+4:41 PM
+Tmrw
+PM blue
+34
+4:52 PM
+Tmrw
+Night
+–
+6:23 PM
+
+A spring-fed lake wraps the garden, with many nesting and feeding waterfowl and small waterfalls built from Mt. Hood and Mt. Adams rock. Rhododendrons and azaleas peak from the early show (first weekend of April) through Mother's Day; in fall the companion trees turn. Open 10–5:30 (Wed from 1); gates lock at 5:30.
+
+Lens: the 5× (then crop in) for waterfowl and blossom close-ups; kit zoom for lake reflections.
+
+Pass: Admission ($9 adult)
+
+How to shoot it
+
+Rhododendron garden in spring. An overcast-day spot, best Apr–May, Oct–Feb. A short walk, so you can wait for the forecast and still make it.
+
+Landscape: Rhododendrons on overcast days. Look for one perfect specimen and isolate it with the 5× (then crop in) at close focus. Backlight petals for glow. Peak color lasts about a week.
+
+Birds & wildlife: Wood Ducks and herons on the lake. Birds take off and land into the wind, so they'll come toward you. Fill only 30–40% of the frame so you can crop and give 
+
+######## 6 Moab, tomorrow sunrise, drive 60 (6 > 5)
+first spot 1897 ms | window=Tomorrow sunrise 6:59 AM | errors=[]
+CHECKS {"ex": {"land": {"coast": false, "mountains": true, "desert": true, "lakes": false, "plains": false}, "rain": {"nowWet": false, "at": null, "max": 0}, "sea": null, "mtn": ["Mount Waas:false:snow0", "Mount Tukuhnikivatz:false:snow0", "Mount Mellenthin:false:snow0", "Mount Peale:false:snow0", "Abajo Peak:false:snow0", "Lone Cone:false:snow0"], "air": {"aod": 0.06, "dust": 0, "pm": 0.3}, "rb": null}, "routed": 389, "multnomah": [null, 953], "tz": "America/Denver", "wx": true, "wxErr": null, "wxPts": 8, "hz": 14, "chip": 44, "top": 44, "chipMatches": true, "tooFarListed": [], "leak": [], "alertline": false, "spots": 1376, "ranked": 109, "top10spread": 22, "seeing": "ok"}
+Light
+Night sky
+Calendar
+☀
+Clear now · 57°F · dry for the next few hours.
+Today
+68
+Tomorrow
+75
+Sun
+95
+Mon
+95
+Tue
+92
+Wed
+100
+Thu
+100
+Fri
+100
+Blue hour
+5:59 AM
+32
+Sunrise
+6:59 AM · ☁ soft
+44
+Morning
+7:38 AM
+68
+Midday
+12:00 PM
+52
+Afternoon
+3:56 PM
+62
+Sunset
+5:05 PM · ☁ soft
+35
+Blue hour
+5:15 PM
+24
+Night
+9:37 PM
+82
+best
+351 starter spots near you (what's that?)
+Tomorrow sunrise
+in 19 h 34 m
+
+6:59 AM · golden 6:40 AM–7:38 AM
+
+Report conditions
+
+Rain at sunrise: little color. Try storm surf, waterfalls or moody forest instead
+
+77% chance of rain
+
+Cloud here: high 100%, mid 100%, low 11%, toward the light 100%
+44
+Balanced Rock
+Landmarks
+open view toward the east
+30 min
+Landmark
+35
+Mille Creek Falls (Left Hand)
+Waterfalls
+rain at dawn: wait for full daylight; rain: no glare, saturated moss (bring a lens cloth)
+14 min
+Waterfall
+22
+Moab: Mill Creek Parkway West of US191
+Wildlife
+gray fox seen here 1× this month
+2 min
+Birding hotspot
+7 more options
+
+Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.
+
+Also worth knowing
+☔ Rainy-day ideas for Tomorrow
+
+Waterfalls run biggest now; Mille Creek Falls (Left Hand) is your best bet. Use 1/4–1 s and wipe the lens between frames. Mushroom season: look on mossy logs along shaded trails. The 5× (then crop in) focuses close enough for raindrop details. When the rain lifts, mist often hangs on hills and over water: the half hour after a shower is worth being out.
+
+☄️ Leonids peak Mon, Nov 16
+
+Up to 15/hr in a dark sky. Very fast; radiant rises after midnight. Moon 43% lit.
+
+🛰 Fog and cloud right now
+no fog near you
+--- spot #1 page (seed-w489326134) sections=['Seen here', 'Best photos here', 'Seen here']:
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Balanced Rock
+
+Landmark · starter spot · 30 min drive · short walk
+
+Your take:
+More like this
+Not for me
+
+44 Best next: Tomorrow Sunrise, 6:59 AM. leave by 6:19 AM. open view toward the east
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+12pm
+☀️
+62°
+1pm
+☁️
+65°
+2pm
+☁️
+64°
+3pm
+☁️
+63°
+4pm
+☁️
+62°
+5pm
+☁️
+56°
+6pm
+☁️
+54°
+7pm
+☁️
+52°
+8pm
+☁️
+51°
+9pm
+☁️
+51°
+10pm
+☁️
+50°
+11pm
+☁️
+49°
+
+Scores here, every window
+
+Today
+Morning
+24
+7:37 AM
+Today
+Midday
+20
+12:00 PM
+Today
+Afternoon
+23
+3:57 PM
+Today
+Sunset
+25
+5:06 PM
+Today
+PM blue
+26
+5:16 PM
+Tonight
+Night
+–
+6:37 PM
+Tmrw
+AM blue
+32
+5:59 AM
+Tmrw
+Sunrise
+44
+6:59 AM
+Tmrw
+Morning
+24
+7:38 AM
+Tmrw
+Midday
+20
+12:00 PM
+Tmrw
+Afternoon
+23
+3:56 PM
+Tmrw
+Sunset
+25
+5:05 PM
+Tmrw
+PM blue
+26
+5:15 PM
+Tmrw
+Night
+–
+6:37 PM
+How to shoot it
+
+A sunrise spot, best any month. A short walk, so you can wait for the forecast and still make it.
+
+Best photos here
+Quality
+User:Dschwen · CC BY-SA 3.0
+Quality
+Sanjay Acharya · CC BY-SA 3.0
+m01229 from USA · CC BY-SA 2.0
+Mobilus In Mobili · CC BY-SA 2.0
+Farragutful · CC BY-SA 4.0
+Farragutful · CC BY-SA 4.0
+Farragutful · CC BY-SA 4.0
+Farragutful · CC BY-SA 4.0
+
+Wikimedia Commons. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.
+
+Seen here in the last few weeks
+Western Deer Mouse
+10-18
+
+From iNaturalist within 2.5 km: mammals in the last 30 days, flowers in bloom in the last 14, birds in the last 10.
+
+eBird hotspots here
+
+Check before you go
+Map, traffic and opening hours
+OpenStreetMap details
+Where to stand
+
+Most photographers (5 in shared photos) stand 60 m west-northwest of this pin.
+
+Directions to the spot
+
+The classic shot f
+--- spot #2 page (seed-n9947875300) sections=['Seen here', 'Rain, past 48 h', 'Best photos here', 'Seen here']:
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Mille Creek Falls (Left Hand)
+
+Waterfall · starter spot · 14 min drive · short walk
+
+Your take:
+More like this
+Not for me
+
+68 Best next: Tomorrow Morning, 9:48 AM. leave by 9:24 AM. rain: no glare, saturated moss
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+12pm
+☀️
+62°
+1pm
+☁️
+65°
+2pm
+☁️
+64°
+3pm
+☁️
+63°
+4pm
+☁️
+62°
+5pm
+☁️
+56°
+6pm
+☁️
+54°
+7pm
+☁️
+52°
+8pm
+☁️
+51°
+9pm
+☁️
+51°
+10pm
+☁️
+50°
+11pm
+☁️
+49°
+
+Scores here, every window
+
+Today
+Morning
+24
+7:36 AM
+Today
+Midday
+52
+12:00 PM
+Today
+Afternoon
+62
+3:57 PM
+Today
+Sunset
+35
+5:06 PM
+Today
+PM blue
+22
+5:16 PM
+Tonight
+Night
+–
+6:37 PM
+Tmrw
+AM blue
+22
+5:58 AM
+Tmrw
+Sunrise
+35
+6:58 AM
+Tmrw
+Morning
+68
+7:37 AM
+Tmrw
+Midday
+52
+12:00 PM
+Tmrw
+Afternoon
+62
+3:56 PM
+Tmrw
+Sunset
+35
+5:05 PM
+Tmrw
+PM blue
+22
+5:15 PM
+Tmrw
+Night
+–
+6:37 PM
+
+Best under soft overcast or in shade so the highlights don't blow out. A slow shutter (1/4–1 s on a tripod) smooths the water; flow peaks after rain and snowmelt.
+
+Starter spot From OpenStreetMap. The tip is general and the pin isn't checked yet; ShotSpots researches the most notable starter spots first. Scores, light and drive times work the same as for any spot.
+
+How to shoot it
+
+An overcast-day spot, best any month. A short walk, so you can wait for the forecast and still make it.
+
+Landscape: A polarizer cuts the glare off wet rock and moss and deepens the greens by a stop. Wipe the front element between frames and shoot from the spray side last.
+
+Best photos here
+cnors17 · CC BY-NC
+yo_baby_sup · CC BY-NC
+Parker James Lloyd · CC BY
+Tucker Hastings · CC BY-NC
+Elan Trybuch · CC BY-NC
+allistradiotto · CC BY-NC
+
+iNaturalist. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist 
+
+######## 9 Jackson wildlife, tomorrow morning, drive 60 (3 > 7)
+first spot 985 ms | window=Tomorrow morning 9:59 AM | errors=[]
+CHECKS {"ex": {"land": {"coast": false, "mountains": true, "desert": false, "lakes": true, "plains": false}, "rain": {"nowWet": false, "at": null, "max": 0}, "sea": null, "mtn": ["Rendezvous Peak:false:snow0", "Rendezvous Mountain:false:snow0", "Grand Teton:false:snow0", "Sheep Mountain:false:snow0", "Housetop Mountain:false:snow0", "Doubletop Peak:false:snow0"], "air": {"aod": 0.07, "dust": 0, "pm": 1.9}, "rb": null}, "routed": 573, "multnomah": [null, 687], "tz": "America/Denver", "wx": true, "wxErr": "timed out after 9 s", "wxPts": 9, "hz": 14, "chip": 62, "top": 62, "chipMatches": true, "tooFarListed": [], "leak": [], "alertline": false, "spots": 1790, "ranked": 33, "top10spread": 8, "seeing": "ok"}
+Light
+Night sky
+Calendar
+☁
+Overcast now · 40°F · dry for the next few hours.
+Today
+70
+Tomorrow
+77
+Sun
+85
+Mon
+85
+Tue
+77
+Wed
+66
+Thu
+72
+Fri
+77
+Blue hour
+6:10 AM
+39
+Sunrise
+7:15 AM · ☁ soft
+77
+Morning
+7:58 AM
+62
+best
+Midday
+12:00 PM
+36
+Afternoon
+3:46 PM
+48
+Sunset
+4:58 PM · ☁ soft
+62
+Blue hour
+5:09 PM
+39
+Night
+9:23 PM
+–
+
+Showing only birds & wildlife spots
+Show all
+
+526 starter spots near you (what's that?)
+Tomorrow morning
+in 20 h 51 m
+
+7:58 AM–12:00 PM
+
+Report conditions
+
+Overcast: even light for waterfalls, forests and birds
+
+overcast (100%), 100% low cloud
+
+Cloud here: high 56%, mid 100%, low 100%, toward the light 60%
+62
+National Elk Refuge
+Wildlife
+beaver seen here 1× this month, plus coyote; morning: birds still active
+2 min
+Birding hotspot
+62
+National Elk Refuge: Bert's Bench
+Wildlife
+beaver seen here 1× this month, plus coyote; morning: birds still active
+2 min
+Birding hotspot
+62
+Jackson Hole & Greater Yellowstone Visitor Center
+Wildlife
+beaver seen here 1× this month, plus coyote; morning: birds still active
+2 min
+Birding hotspot
+7 more options
+
+Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.
+
+Also worth knowing
+☄️ Leonids peak Mon, Nov 16
+
+Up to 15/hr in a dark sky. Very fast; radiant rises after midnight. Moon 43% lit.
+
+🛰 Fog and cloud right now
+no fog near you
+--- spot #1 page (seed-eL603410) sections=['Seen here', 'Best photos here', 'Seen here']:
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+National Elk Refuge
+
+Birding hotspot · starter spot · 2 min drive · short walk
+
+Your take:
+More like this
+Not for me
+
+77 Best next: Tomorrow Sunrise, 7:15 AM. leave by 7:03 AM. beaver seen here 1× this month, plus coyote
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+12pm
+⛅
+45°
+1pm
+☁️
+51°
+2pm
+☁️
+53°
+3pm
+☀️
+54°
+4pm
+☀️
+51°
+5pm
+☁️
+46°
+6pm
+☁️
+44°
+7pm
+☁️
+43°
+8pm
+☁️
+42°
+9pm
+☁️
+39°
+10pm
+☁️
+39°
+11pm
+☁️
+38°
+
+Scores here, every window
+
+Today
+Morning
+62
+7:57 AM
+Today
+Midday
+36
+12:00 PM
+Today
+Afternoon
+45
+3:47 PM
+Today
+Sunset
+62
+4:59 PM
+Today
+PM blue
+39
+5:10 PM
+Tonight
+Night
+–
+6:38 PM
+Tmrw
+AM blue
+39
+6:10 AM
+Tmrw
+Sunrise
+77
+7:15 AM
+Tmrw
+Morning
+62
+7:58 AM
+Tmrw
+Midday
+36
+12:00 PM
+Tmrw
+Afternoon
+48
+3:46 PM
+Tmrw
+Sunset
+62
+4:58 PM
+Tmrw
+PM blue
+39
+5:09 PM
+Tmrw
+Night
+–
+6:38 PM
+
+eBird birding hotspot with 185 species recorded. Birds are most active in the first two hours after sunrise; recent sightings at ebird.org/hotspot/L603410.
+
+Starter spot From OpenStreetMap. The tip is general and the pin isn't checked yet; ShotSpots researches the most notable starter spots first. Scores, light and drive times work the same as for any spot.
+
+How to shoot it
+
+A sunrise spot, best any month. A short walk, so you can wait for the forecast and still make it.
+
+Birds & wildlife: Shoot at eye level. Back off the moment behavior changes. Learn the calls; you'll hear the bird long before you see it.
+
+Best photos here
+Brian White · CC BY
+Whitney Brook Matson · CC BY
+Sean Cozart · CC BY-NC
+Sean Cozart · CC BY-NC
+Sean Cozart · CC BY-NC
+Sean Cozart · CC BY-NC
+
+iNaturalist. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with i
+--- spot #2 page (seed-eL7276896) sections=['Seen here', 'Best photos here', 'Seen here']:
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+National Elk Refuge: Bert's Bench
+
+Birding hotspot · starter spot · 2 min drive · short walk
+
+Your take:
+More like this
+Not for me
+
+77 Best next: Tomorrow Sunrise, 7:15 AM. leave by 7:03 AM. beaver seen here 1× this month, plus coyote
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+12pm
+⛅
+45°
+1pm
+☁️
+51°
+2pm
+☁️
+53°
+3pm
+☀️
+54°
+4pm
+☀️
+51°
+5pm
+☁️
+46°
+6pm
+☁️
+44°
+7pm
+☁️
+43°
+8pm
+☁️
+42°
+9pm
+☁️
+39°
+10pm
+☁️
+39°
+11pm
+☁️
+38°
+
+Scores here, every window
+
+Today
+Morning
+62
+7:57 AM
+Today
+Midday
+35
+12:00 PM
+Today
+Afternoon
+45
+3:47 PM
+Today
+Sunset
+62
+4:59 PM
+Today
+PM blue
+39
+5:10 PM
+Tonight
+Night
+–
+6:38 PM
+Tmrw
+AM blue
+39
+6:10 AM
+Tmrw
+Sunrise
+77
+7:15 AM
+Tmrw
+Morning
+62
+7:58 AM
+Tmrw
+Midday
+35
+12:00 PM
+Tmrw
+Afternoon
+48
+3:46 PM
+Tmrw
+Sunset
+62
+4:58 PM
+Tmrw
+PM blue
+39
+5:09 PM
+Tmrw
+Night
+–
+6:38 PM
+
+eBird birding hotspot with 160 species recorded. Birds are most active in the first two hours after sunrise; recent sightings at ebird.org/hotspot/L7276896.
+
+Starter spot From OpenStreetMap. The tip is general and the pin isn't checked yet; ShotSpots researches the most notable starter spots first. Scores, light and drive times work the same as for any spot.
+
+How to shoot it
+
+A sunrise spot, best any month. A short walk, so you can wait for the forecast and still make it.
+
+Birds & wildlife: Know the behavior before the gear. Let the animal habituate. Put the sun at your back and the wind at your back too.
+
+Best photos here
+♥ 4
+csledge · CC BY-NC
+Tony Webster · CC BY-SA 2.0
+Hansueli Krapf · CC BY-SA 4.0
+Hansueli Krapf · CC BY-SA 4.0
+George Chrisman · CC BY-NC
+isaac newell · CC BY-NC
+George Chrisman · CC BY-NC
+Larry Thornton · CC BY-NC
+
+iNaturalist, Wikimedia Commons. Featured and Quality ph
