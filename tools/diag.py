@@ -56,7 +56,9 @@ async def main():
             first = await pg.evaluate("""new Promise(r => { const t0 = performance.now(); const iv = setInterval(() => { if (document.querySelector('#v-now [data-spot]')) { clearInterval(iv); r(Math.round(performance.now() - t0)); } }, 100); setTimeout(() => { clearInterval(iv); r(-1); }, 25000); })""")
             await pg.wait_for_timeout(10000)
             win = await pg.evaluate(PICK, [day, kind]); await pg.wait_for_timeout(3000)
-            chk = await pg.evaluate(CHECKS)
+            try: chk = await pg.evaluate(CHECKS)
+            except Exception:   # the app reloads once when a new version was just published: wait and retry
+                await pg.wait_for_timeout(8000); chk = await pg.evaluate(CHECKS)
             await pg.screenshot(path=f"ux/t{name.split()[0]}_now.png")
             txt = await pg.evaluate("document.querySelector('#v-now')?.innerText || ''")
             out.append(f"\n######## {name}\nfirst spot {first} ms | window={win} | errors={errs[:3]}\nCHECKS {json.dumps(chk, default=str)}\n" + txt[:2600])
