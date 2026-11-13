@@ -16,7 +16,11 @@ FOG_SPOTS = {"cape-horn-lookout", "womens-forum", "vista-house", "jonsrud", "ang
 def _candidates():
     out = [s for s in spots() if VIEW_CATS & set(s.get("cats", [])) or s["id"] in FOG_SPOTS]
     idx = read_json(FEED / "seed" / "index.json", {"tiles": {}})
+    # starter spots only in tiles near the researched spots: nationwide it is tens of thousands of points and the
+    # hourly run never finishes (it timed out from Nov 9 to 13 and took birds + HRRR down with it)
+    near = {f"{la}_{lo}" for r in out for la in range(int(r["lat"] // 1) - 1, int(r["lat"] // 1) + 2) for lo in range(int(r["lon"] // 1) - 1, int(r["lon"] // 1) + 2)}
     for k in idx["tiles"]:
+        if k not in near: continue
         out += [s for s in read_json(FEED / "seed" / f"{k}.json", {"spots": []})["spots"] if s.get("kind") in ("viewpoint", "peak")]
     return out
 
