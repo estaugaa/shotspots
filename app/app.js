@@ -287,7 +287,7 @@ function skyCalc(p, w, pt, sp, probePt) {
   if (c.pop >= 60) why.push(`${c.pop}% chance of rain`);
   else {
     if (!GOLDK.has(w.kind)) why.push(c.cc >= 80 ? `overcast (${c.cc}%)` : c.cc >= 30 ? `${c.cc}% cloud` : `mostly clear (${c.cc}%)`); else if (canvas >= 15 && canvas <= 75) why.push(`${canvas}% mid/high cloud to catch color`); else if (canvas < 15) why.push(c.low >= 60 ? `low cloud deck (${c.low}%), little high cloud to catch color` : `mostly clear overhead (${c.cc}%)`); else why.push(cirrus ? `thin high cloud overhead (${c.high}%): it can glow if the light gets under it` : `thick cloud overhead (${c.cc}%)`);
-    if (c.low >= 45) why.push(`${c.low}% low cloud`);
+    if (c.low >= 45 && !why.some(x => /low cloud deck/.test(x))) why.push(`${c.low}% low cloud`);
     const side = w.kind === "sunset" ? "west" : "east";
     if (hz && hz.sat != null) why.push(hz.sat <= 30 ? `satellite now: the path toward the ${side} is open` : `satellite now: cloud along the path toward the ${side} (${hz.sat}%)`);
     if (hz && GOLDK.has(w.kind)) why.push(block <= 30 ? `clear gap toward the ${side}: light can get under the clouds` : block <= 60 ? `patchy cloud toward the ${side} (${block}%): the light may break through` : `cloud ${fmtKm(hz.worst)} ${side} (${block}%) will likely block the light`);
