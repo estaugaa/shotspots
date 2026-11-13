@@ -59,7 +59,7 @@ async def main():
             chk = await pg.evaluate(CHECKS)
             await pg.screenshot(path=f"ux/t{name.split()[0]}_now.png")
             txt = await pg.evaluate("document.querySelector('#v-now')?.innerText || ''")
-            out.append(f"\n######## {name}\nfirst spot {first} ms | window={win} | errors={errs[:3]}\nCHECKS {json.dumps(chk)}\n" + txt[:2600])
+            out.append(f"\n######## {name}\nfirst spot {first} ms | window={win} | errors={errs[:3]}\nCHECKS {json.dumps(chk, default=str)}\n" + txt[:2600])
             if "nighttab" in extra:
                 await pg.evaluate("show('sky')")
                 await pg.wait_for_timeout(4000)
