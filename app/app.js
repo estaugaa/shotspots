@@ -286,7 +286,7 @@ function skyCalc(p, w, pt, sp, probePt) {
   const why = [];
   if (c.pop >= 60) why.push(`${c.pop}% chance of rain`);
   else {
-    if (!GOLDK.has(w.kind)) why.push(c.cc >= 80 ? `overcast (${c.cc}%)` : c.cc >= 30 ? `${c.cc}% cloud` : `mostly clear (${c.cc}%)`); else if (canvas >= 15 && canvas <= 75) why.push(`${canvas}% mid/high cloud to catch color`); else if (canvas < 15) why.push(`mostly clear overhead (${c.cc}%)`); else why.push(cirrus ? `thin high cloud overhead (${c.high}%): it can glow if the light gets under it` : `thick cloud overhead (${c.cc}%)`);
+    if (!GOLDK.has(w.kind)) why.push(c.cc >= 80 ? `overcast (${c.cc}%)` : c.cc >= 30 ? `${c.cc}% cloud` : `mostly clear (${c.cc}%)`); else if (canvas >= 15 && canvas <= 75) why.push(`${canvas}% mid/high cloud to catch color`); else if (canvas < 15) why.push(c.low >= 60 ? `low cloud deck (${c.low}%), little high cloud to catch color` : `mostly clear overhead (${c.cc}%)`); else why.push(cirrus ? `thin high cloud overhead (${c.high}%): it can glow if the light gets under it` : `thick cloud overhead (${c.cc}%)`);
     if (c.low >= 45) why.push(`${c.low}% low cloud`);
     const side = w.kind === "sunset" ? "west" : "east";
     if (hz && hz.sat != null) why.push(hz.sat <= 30 ? `satellite now: the path toward the ${side} is open` : `satellite now: cloud along the path toward the ${side} (${hz.sat}%)`);
@@ -526,6 +526,8 @@ function fitFor(s, w) {
   if (s.seed && s.kind === "peak" && !(s.pop >= 12) && s.effort !== "road") n *= s.pop != null ? 0.65 : 0.8;
   // lookout towers: real fire lookouts are great; city observation towers are often rides or closed - trust them when people photograph from them
   if (s.seed && s.kind === "lookout" && !(s.pop >= 10) && /garden|park|fair|amusement|six flags|ride|plaza/i.test(s.name)) n *= 0.5;
+  // an eBird hotspot named just for a town ("Jackson", "Moab") covers the whole town: no place to go
+  if (s.kind === "hotspot" && !/[:(]|park|lake|pond|marsh|refuge|reserve|preserve|trail|river|creek|bay|beach|island|wetland|slough|sanctuary|garden|area|point|dam|canyon|meadow|lagoon|reservoir|springs?\b|woods|forest|ranch|farm|center|road|loop|overlook/i.test(s.name)) n *= 0.4;
   if (s.kind === "hotspot" && UI.group !== "life" && !why.some(x => /at peak|staging|migration|\brut\b|run in season|in bloom now/.test(x))) n *= GOLDK.has(w.kind) ? 0.55 : 0.65;   // a season event, not just routine sightings
   if (road) { n -= 10; why.push(road.short || road.title); }
   return { n: Math.round(clamp(n, 0, 100)), why, sk };

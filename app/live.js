@@ -27,8 +27,9 @@ async function loadInat() {
   const c = g => rows.filter(r => r.g === g).length; mark("inat", true, `${c("bird")} bird, ${c("mam")} mammal and ${c("bloom")} in-bloom sightings`);
 }
 // most-reported species near a spot for one group, e.g. [["elk", 4], ["black bear", 1]]
-const SMALL_MAM = /squirrel|chipmunk|mouse|\brats?\b|woodrat|vole|gopher|shrew|\bmoles?\b|\bbats?\b|myotis|cottontail|jackrabbit|rabbit|hare\b|opossum|raccoon|skunk|marmot|ground squirrel|kangaroo/i;   // common or too small to plan a trip around
-const MAM_NAME = n => n.replace(/^wapiti$/, "elk").replace(/^(american|common|north american) /, "");
+const SMALL_MAM = /coypu|nutria|muskrat|prairie dog|squirrel|chipmunk|mouse|\brats?\b|woodrat|vole|gopher|shrew|\bmoles?\b|\bbats?\b|myotis|cottontail|jackrabbit|rabbit|hare\b|opossum|raccoon|skunk|marmot|ground squirrel|kangaroo/i;   // common or too small to plan a trip around
+// "columbian white-tailed deer" -> "white-tailed deer", "mountain coyote" -> "coyote", "tamanend's bottlenose dolphin" -> "bottlenose dolphin"
+const MAM_NAME = n => n.replace(/^wapiti$/, "elk").replace(/^(american|common|north american|columbian|columbia|mountain(?! lion| goat| beaver)|rocky mountain|pacific|atlantic|california|eastern|western|northern|southern|olympic|sitka|desert|tule|roosevelt(?:'s)?|tamanend's|plains|great basin|nelson's|audubon's) (?=\S)/, "").replace(/^(american|common) /, "");
 function inatTop(s, g, kmR) { const m = new Map(); inatNear(s, kmR).filter(o => o.g === g && /^(species|subspecies|variety)$/.test(o.rank) && !(g === "mam" && SMALL_MAM.test(o.n))).forEach(o => { const k = MAM_NAME(o.n.toLowerCase()); m.set(k, (m.get(k) || 0) + 1); }); return [...m].sort((a, b) => b[1] - a[1]); }
 function inatNear(s, kmR) { return LIVE.inat ? LIVE.inat.rows.filter(o => km(s, o) <= (kmR || 2.5)) : []; }
 
