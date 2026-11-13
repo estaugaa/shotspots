@@ -1,1 +1,1 @@
-{"ok":false,"kind":"MEASURED","note":"TypeError: 'Logger' object is not callable","at":"2026-11-13T09:05:54Z","secs":18050.0}
+{"ok":true,"kind":"MEASURED","note":"182 tiles, 4306 spots checked, 465 with a stand or direction; 0 tiles left","at":"2026-11-13T10:52:45Z","secs":6223.2}
