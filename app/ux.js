@@ -65,3 +65,18 @@ const CAM_TIPS = `<details class="camtips"><summary>What makes a useful report p
 function openSpotFromHash() { const m = location.hash.match(/^#spot=([\w-]+)/); if (!m) return; let n = 0;
   const go = () => { if (typeof byId !== "undefined" && byId[m[1]]) { history.replaceState(null, "", location.pathname); openSpot(m[1]); } else if (n++ < 30) setTimeout(go, 500); }; go(); }
 window.addEventListener("hashchange", openSpotFromHash); setTimeout(openSpotFromHash, 600);
+
+/* ---- spot page layout, applied after every add-on has inserted its piece ----
+   main actions (Directions, Save) stay big; logging and reporting become one row of small buttons;
+   the photos sit right under them; "Your take" moves to the end. */
+function tidySheetTop(b) {
+  const act = b.querySelector(".actions"); if (!act) return;
+  let minor = b.querySelector(".minoracts");
+  const out = b.querySelector("#outcomeBtn"), cam = b.querySelector(".camb");
+  if ((out || cam) && !minor) { minor = document.createElement("div"); minor.className = "minoracts"; act.after(minor); }
+  if (minor) { if (out && out.parentElement !== minor) minor.appendChild(out); if (cam && cam.parentElement !== minor) minor.appendChild(cam); }
+  const ph = b.querySelector(".photosbox"), after = minor || act;
+  if (ph && after.nextElementSibling !== ph) after.after(ph);
+  const v = b.querySelector(".votes"); if (v && v !== b.lastElementChild) { v.classList.add("votes-end"); b.appendChild(v); }
+}
+{ const _oT = openSpot; openSpot = function (id) { _oT.apply(this, arguments); const b = $("#sheetBody"); if (b) { tidySheetTop(b); setTimeout(() => tidySheetTop(b), 1500); } }; }

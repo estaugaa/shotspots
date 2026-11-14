@@ -809,8 +809,9 @@ function bestTimeHtml(s, wins, d) {
   const b = sc.reduce((a, x) => x.f.n > a.f.n ? x : a);
   if (b.f.n < 25) return `<p class="besttime muted">No strong window here in the next day and a half.</p>`;
   const at = b.w.kind === "night" ? (b.w.dark ? b.w.dark.s : b.w.start) : b.w.peak, leave = new Date(at.getTime() - (d + WALKM) * 60000);
-  const dw = dayWord(at), lv = leave < now ? (b.w.live ? "go now" : "leave now") : `leave by ${fmtT(leave)}`;
-  return `<p class="besttime"><b class="bt-${scoreCls(b.f.n)}">${b.f.n}</b> Best next: <b>${dw === "Today" && b.w.kind === "night" ? "Tonight" : dw} ${KSHORT2[b.w.kind] || b.w.kind}</b>, ${fmtT(at)}. ${lv}.${b.f.why && b.f.why[0] ? ` <span class="muted">${esc(b.f.why[0])}</span>` : ""}</p>`;
+  const dw = dayWord(at), lv = leave < now ? (b.w.live ? "Go now" : "Leave now") : `Leave by ${fmtT(leave)}`, kn = (KSHORT2[b.w.kind] || b.w.kind).toLowerCase();
+  const when = b.w.kind === "night" ? (dw === "Today" ? "Tonight" : `${dw} night`) : dw === "Today" ? `This ${kn}` : dw === "Tomorrow" ? `Tomorrow ${kn}` : `${dw} ${kn}`;
+  return `<p class="besttime"><b class="bt-${scoreCls(b.f.n)}">${b.f.n}</b> Best next: <b>${when}</b>, ${fmtT(at)}. ${lv}.${b.f.why && b.f.why[0] ? ` <span class="muted">${esc(b.f.why[0])}</span>` : ""}</p>`;
 }
 function openSpot(id) {
   const s = byId[id]; if (!s) return; haptic();

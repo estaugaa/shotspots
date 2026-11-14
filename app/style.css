@@ -381,3 +381,7 @@ details>summary{padding-top:10px;padding-bottom:10px}
 .besttime>b:first-child{display:inline-block;min-width:34px;padding:2px 6px;margin-right:6px;border-radius:6px;text-align:center;color:var(--onaccent);background:var(--moss)}
 .besttime>b.bt-s-mid:first-child{background:var(--gold);color:#1B1408}
 .besttime>b.bt-s-lo:first-child{background:var(--line);color:var(--ink)}
+
+.minoracts{display:flex;flex-wrap:wrap;gap:8px;margin:-2px 0 12px}
+.minoracts .btn{font-size:14px;padding:6px 12px;min-height:36px;background:transparent}
+.votes-end{margin-top:18px;padding-top:12px;border-top:1px solid var(--line)}

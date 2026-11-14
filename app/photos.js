@@ -114,6 +114,7 @@ async function photosInto(s, box) {
   box.innerHTML = reportsHtml(s) + head + (list.length ? strip(list) + `<p class="muted" style="font-size:13px">${srcs.join(", ")}. <b>Featured</b> and <b>Quality</b> photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.</p>`
     : "");
   wire(box, s, list);
+  const b = box.closest("#sheetBody"); if (b && typeof tidySheetTop === "function") tidySheetTop(b);
 }
 function wire(box, s, list) { const st = box.querySelectorAll(".photostrip"); const rep = box.querySelector("[data-rep]");
   st.forEach(x => { x._list = x === rep ? ((fd("reports") || {}).reports || []).filter(r => r.spot === s.id).slice(0, 6).map(r => ({ thumb: "feed/" + r.img, big: "feed/" + r.img, page: "#", src: "ShotSpots report", title: `${phAgo(r.at)} at ${s.name}`, by: [r.sky, r.fog === "yes" ? "fog" : "", r.color && r.color !== "none" ? r.color + " colour" : ""].filter(Boolean).join(", "), lic: predCheck(r) })) : list; }); }
