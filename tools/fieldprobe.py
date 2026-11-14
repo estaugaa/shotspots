@@ -22,10 +22,12 @@ async def main():
         O.append("copy button: " + str(await pg.locator("[data-copyll]").count()))
         await pg.keyboard.press("Escape"); await pg.evaluate("document.querySelector('.tabs button[data-v=\"spots\"]')?.click()"); await pg.wait_for_timeout(2500)
         O.append("export box: " + str(await pg.locator("#exportBox").count()))
-        await pg.evaluate("window.__dl=[]; download=(n,t)=>window.__dl.push([n,t])")
+        await pg.evaluate("window.__dl=[]; download=function(n,t){ window.__dl.push([n, String(t)]); }")
         await pg.evaluate("exportSaved('gpx'); exportSaved('kml')")
         dl = await pg.evaluate("window.__dl")
+        O.append(f'downloads captured: {len(dl)} {[ (x[0], type(x[1]).__name__) for x in dl]}')
         for n, t in dl:
+            t = t or ''
             ok = await pg.evaluate("t=>{const d=new DOMParser().parseFromString(t,'application/xml');return !d.querySelector('parsererror')}", t)
             O.append(f"{n}: valid xml={ok}, waypoints={t.count('<wpt')+t.count('<Placemark')}, has note={'upper lot' in t} :: {t[:260]!r}")
         await pg.evaluate("document.querySelector('.tabs button[data-v=\"map\"]')?.click()"); await pg.wait_for_timeout(3000)
@@ -34,4 +36,6 @@ async def main():
         O.append("note after reload: " + await pg.evaluate("(document.querySelector('#noteBox')||{}).value||''"))
         O.append("errors: " + json.dumps(errs[:5])); await b.close()
     open("ux/field.txt", "w").write("\n".join(O))
-asyncio.run(main())
+try: asyncio.run(main())
+except Exception as e:
+    O.append("PROBE CRASH: " + str(e)[:300]); open("ux/field.txt", "w").write("\n".join(O))
