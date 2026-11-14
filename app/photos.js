@@ -12,8 +12,8 @@ const COMMONS = "https://commons.wikimedia.org/w/api.php";
 const JURY = { "Featured pictures on Wikimedia Commons": ["Featured", 30], "Quality images": ["Quality", 20], "Valued images sorted by promotion date": ["Valued", 10], "Valued images": ["Valued", 10] };
 const PH_TTL = 7 * 864e5, __ph = {};
 const phStrip = h => { const d = document.createElement("div"); d.innerHTML = h || ""; return (d.textContent || "").trim(); };
-const phGet = k => { try { const v = JSON.parse(localStorage.getItem("ss2:ph:" + k) || "null"); return v && Date.now() - v.at < PH_TTL ? v.list : null; } catch (e) { return null; } };
-const phPut = (k, list) => { try { localStorage.setItem("ss2:ph:" + k, JSON.stringify({ at: Date.now(), list })); } catch (e) { } };
+const phGet = k => { try { const v = JSON.parse(localStorage.getItem("ss2:ph2:" + k) || "null"); return v && Date.now() - v.at < PH_TTL ? v.list : null; } catch (e) { return null; } };
+const phPut = (k, list) => { try { localStorage.setItem("ss2:ph2:" + k, JSON.stringify({ at: Date.now(), list })); } catch (e) { } };
 const phRadius = s => s.cats.some(c => ["vista", "mountain"].includes(c)) ? 900 : 600;
 
 const PH_NOISE = /interior|inside|plaque|\bsigns?\b|museum|exhibit|menu|restroom|toilet|parking|brochure|panel|ceiling/i;   // not the view
@@ -35,7 +35,8 @@ async function inatNearP(s) {
   const base = `https://api.inaturalist.org/v1/observations?lat=${s.lat}&lng=${s.lon}&radius=${phRadius(s) / 1000}&photos=true&quality_grade=research&photo_license=cc-by,cc-by-nc,cc-by-sa,cc-by-nc-sa,cc0&per_page=30`;
   let r = await fetch(base + "&order_by=votes&order=desc"); if (!r.ok) r = await fetch(base);   // faves order, else newest
   const j = await r.json();
-  return (j.results || []).filter(o => o.photos && o.photos[0]).map(o => { const p = o.photos[0], name = o.taxon ? (o.taxon.preferred_common_name || o.taxon.name) : "Observation";
+  // skip common or invasive critters (a white nutria is fun, but not why you'd go)
+  return (j.results || []).filter(o => o.photos && o.photos[0] && !(o.taxon && typeof SMALL_MAM !== "undefined" && SMALL_MAM.test(o.taxon.preferred_common_name || ""))).map(o => { const p = o.photos[0], name = o.taxon ? (o.taxon.preferred_common_name || o.taxon.name) : "Observation";
     return { src: "iNaturalist", thumb: p.url.replace("square", "medium"), big: p.url.replace("square", "large"), page: o.uri, title: name.replace(/^./, c => c.toUpperCase()),
       by: (p.attribution || "").replace(/^\(c\)\s*/i, "").replace(/,.*$/, "").slice(0, 60), lic: (p.license_code || "").toUpperCase().replace(/^CC-/, "CC "), faves: o.faves_count || 0,
       badge: (o.faves_count || 0) >= 3 ? `♥ ${o.faves_count}` : null, rank: 4 + Math.min(12, (o.faves_count || 0) * 2) }; })
