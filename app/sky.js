@@ -85,7 +85,7 @@ const DSO = [
   { n: "Hercules Cluster (M13)", ra: 250.4, dec: 36.5, minAlt: 35, lens: "70–300 at 300 mm, 0.8 s, ISO 6400; stack", note: "A tight ball of 300,000 stars; small at 300 mm, so crop." },
   { n: "Triangulum Galaxy (M33)", ra: 23.5, dec: 30.7, minAlt: 35, lens: "70–300 at 150 mm, 1.5 s, ISO 6400; deep stack and dark site only", note: "Very faint; a Bortle 3–4 test target." },
 ];
-function polarisTip() { return "Star trails: aim north at Polaris (altitude ≈ your latitude, 45.6°). 16 mm, f/4, ISO 800, 30 s frames for 45–90 min; blend in StarStaX or Sequator."; }
+function polarisTip() { return `Star trails: aim north at Polaris (altitude ≈ your latitude, ${Math.abs(LOC.lat).toFixed(1)}°). 16 mm, f/4, ISO 800, 30 s frames for 45–90 min; blend in StarStaX or Sequator.`; }
 
 /* ---------- night data ---------- */
 const cap = x => x[0].toUpperCase() + x.slice(1);
