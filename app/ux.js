@@ -5,7 +5,7 @@
    - guidance for taking a useful conditions photo */
 "use strict";
 const SPOT_ORDER = [
-  [/^How to shoot it/, 10], [/^Best photos here|^Right now from people there/, 20], [/^Best months/, 25],
+  [/^How to shoot it/, 10], [/^Best photos here|^Right now from people there/, 5], [/^Best months/, 25],
   [/^Getting there/, 30], [/^Light here today/, 35], [/^Wildlife here this week/, 40], [/^Seen here in the last/, 45],
   [/^Smoke and haze/, 55], [/^Odds next 18 hours/, 60], [/^Access/, 70], [/^Check before you go/, 72], [/^Conditions now/, 74],
   [/^Experimental ideas/, 90], [/^See others/, 92], [/^Sources/, 95]];
@@ -36,7 +36,7 @@ function orderSpotPage() {
   b.appendChild(frag); b._ordered = true;
 }
 { const _o = openSpot; openSpot = function (id) { _o.apply(this, arguments); const b = $("#sheetBody"); if (!b) return;
-  const again = () => { b._ordered = false; orderSpotPage(); };
+  const again = () => { b._ordered = false; orderSpotPage(); tidySheetTop(b); };
   again();
   // sections that load a moment later get put in their place too (for the first few seconds)
   if (b._mo) b._mo.disconnect(); let tmr = null, busy = false;
@@ -75,8 +75,6 @@ function tidySheetTop(b) {
   const out = b.querySelector("#outcomeBtn"), cam = b.querySelector(".camb");
   if ((out || cam) && !minor) { minor = document.createElement("div"); minor.className = "minoracts"; act.after(minor); }
   if (minor) { if (out && out.parentElement !== minor) minor.appendChild(out); if (cam && cam.parentElement !== minor) minor.appendChild(cam); }
-  const ph = b.querySelector(".photosbox"), after = minor || act;
-  if (ph && after.nextElementSibling !== ph) after.after(ph);
   const v = b.querySelector(".votes"); if (v && v !== b.lastElementChild) { v.classList.add("votes-end"); b.appendChild(v); }
 }
 { const _oT = openSpot; openSpot = function (id) { _oT.apply(this, arguments); const b = $("#sheetBody"); if (b) { tidySheetTop(b); setTimeout(() => tidySheetTop(b), 1500); } }; }
