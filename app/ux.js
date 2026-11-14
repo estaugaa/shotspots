@@ -38,7 +38,8 @@ function orderSpotPage() {
   b.appendChild(frag); b._ordered = true;
 }
 { const _o = openSpot; openSpot = function (id) { _o.apply(this, arguments); const b = $("#sheetBody"); if (!b) return;
-  const again = () => { b._ordered = false; orderSpotPage(); tidySheetTop(b); };
+  const again = () => { const a = document.activeElement; if (a && b.contains(a) && /TEXTAREA|INPUT/.test(a.tagName)) return;   // don't move things while someone is typing
+    b._ordered = false; orderSpotPage(); tidySheetTop(b); };
   again();
   // sections that load a moment later get put in their place too (for the first few seconds)
   if (b._mo) b._mo.disconnect(); let tmr = null, busy = false;
