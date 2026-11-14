@@ -16,13 +16,14 @@ const phGet = k => { try { const v = JSON.parse(localStorage.getItem("ss2:ph:" +
 const phPut = (k, list) => { try { localStorage.setItem("ss2:ph:" + k, JSON.stringify({ at: Date.now(), list })); } catch (e) { } };
 const phRadius = s => s.cats.some(c => ["vista", "mountain"].includes(c)) ? 900 : 600;
 
+const PH_NOISE = /interior|inside|plaque|\bsigns?\b|museum|exhibit|menu|restroom|toilet|parking|brochure|panel|ceiling/i;   // not the view
 async function commonsNear(s) {
   const q = new URLSearchParams({ action: "query", format: "json", origin: "*", generator: "geosearch", ggscoord: `${s.lat}|${s.lon}`, ggsradius: phRadius(s), ggslimit: 50, ggsnamespace: 6,
     prop: "imageinfo|categories", iiprop: "url|extmetadata|mime|size", iiurlwidth: 480, iiextmetadatafilter: "Artist|LicenseShortName|ObjectName",
     clcategories: Object.keys(JURY).map(c => "Category:" + c).join("|"), cllimit: "max" });
   const j = await (await fetch(`${COMMONS}?${q}`)).json();
   return Object.values((j.query && j.query.pages) || {}).map(pg => {
-    const ii = (pg.imageinfo || [])[0]; if (!ii || ii.mime !== "image/jpeg" || ii.width < 1200) return null;
+    const ii = (pg.imageinfo || [])[0]; if (!ii || ii.mime !== "image/jpeg" || ii.width < 1200 || PH_NOISE.test(pg.title)) return null;
     const m = ii.extmetadata || {}, cats = (pg.categories || []).map(c => c.title.replace("Category:", ""));
     const jury = cats.map(c => JURY[c]).filter(Boolean).sort((a, b) => b[1] - a[1])[0] || null;
     return { src: "Wikimedia Commons", thumb: ii.thumburl, big: ii.thumburl.replace(/\/480px-/, "/1600px-"), page: ii.descriptionurl,
@@ -107,11 +108,11 @@ function reportsHtml(s) {
 }
 async function photosInto(s, box) {
   const head = `<h3>Best photos here</h3>`;
-  box.innerHTML = reportsHtml(s) + head + `<p class="muted" style="font-size:14px">Looking for photos taken here…</p>`; wire(box, s, []);
+  box.innerHTML = reportsHtml(s); wire(box, s, []);   // nothing until photos arrive: the box is near the top now
   const list = await bestPhotos(s); if (!box.isConnected) return;
   const srcs = [...new Set(list.map(p => p.src))];
   box.innerHTML = reportsHtml(s) + head + (list.length ? strip(list) + `<p class="muted" style="font-size:13px">${srcs.join(", ")}. <b>Featured</b> and <b>Quality</b> photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.</p>`
-    : `<p class="muted" style="font-size:14px">No openly licensed photos from this exact spot yet. Your conditions reports will show up here.</p>`);
+    : "");
   wire(box, s, list);
 }
 function wire(box, s, list) { const st = box.querySelectorAll(".photostrip"); const rep = box.querySelector("[data-rep]");
@@ -119,7 +120,8 @@ function wire(box, s, list) { const st = box.querySelectorAll(".photostrip"); co
 const _openP = openSpot;
 openSpot = function (id) {
   _openP(id); const s = byId[id], b = $("#sheetBody"); if (!s || !b || b.querySelector(".photosbox")) return;
-  const anchor = b.querySelector(".prose"); const box = document.createElement("div"); box.className = "photosbox";
+  // right under the action buttons: seeing the shot is the first thing people want (it used to sit below the long write-up, or at the very bottom)
+  const anchor = b.querySelector(".actions") || b.querySelector(".prose"); const box = document.createElement("div"); box.className = "photosbox";
   if (anchor) anchor.after(box); else b.appendChild(box);
   photosInto(s, box);
 };

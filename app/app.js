@@ -518,6 +518,8 @@ function fitFor(s, w) {
   n *= KCAP[w.kind] || 1;
   // starter spots all share the same sky, so let how notable a place is (Wikipedia links, photos) break ties
   if (s.seed) n += seedFame(s);
+  // flat light everywhere (thick overcast or rain at a golden hour): the well-known views are still the best bet, so fame counts double
+  if (s.seed && GOLDK.has(w.kind) && sk && sk.cc >= 85 && UI.group !== "life") n += Math.max(0, seedFame(s));
   // quality prior: researched spots are hand-picked; starter spots earn theirs from Wikipedia links, photos and eBird species
   if (!s.seed) n += 3;
   // big areas (parks, wildernesses): the pin is just the middle of them, not a place to stand

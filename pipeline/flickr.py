@@ -47,8 +47,8 @@ def window_kind(sun_alt):
 
 def run():
     key = secret("FLICKR_KEY")
-    if not key:
-        raise RuntimeError("FLICKR_KEY not set")
+    if not key:   # Flickr no longer issues free keys: skip cleanly, the app falls back to Commons/iNaturalist
+        return "skipped: no FLICKR_KEY (originality falls back to Commons counts)"
     ts, eph = ephem.load()
     out = {}
     for s in spots():
