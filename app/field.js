@@ -52,11 +52,12 @@ function sunMoonHtml(s) {
   let h = `<h3>Sun & moon</h3><p class="muted" style="font-size:14px;margin-top:-4px">${dayWord(e.sunrise || noon)}, ${fmtDate(e.sunrise || noon)}, at this spot (${TZ.replace(/_/g, " ").split("/").pop()} time).</p>`;
   if (polar) h += `<p><b>${polar}</b></p>`;
   if (!e.astroDusk && e.sunset) h += `<p class="muted">No full astronomical darkness tonight: the sun stays within 18° of the horizon.</p>`;
+  if (e.sunrise && !e.goldEndAM) h += `<p class="muted">The sun never climbs above 6° today: low, golden light all day.</p>`;
   h += `<div class="sm-grid"><table class="twl">${rows.map(([l, t, note, sun]) => `<tr${sun ? ' class="sunrow"' : ""}><th>${l}</th><td>${T(t)}${sun ? az(t) : ""}${note && t ? ` <small class="muted">${note}</small>` : ""}</td></tr>`).join("")}</table>`;
   // moon
   const mref = e.sunset || noon, mp = moonPos(mref, s.lat, s.lon), illum = Math.round(mp.illum * 100);
   const mAz = t => t ? fdeg(moonPos(t, s.lat, s.lon).az) : "";
-  let moon = `<p><b>Moon:</b> ${phaseName(mp.age)}, ${illum}% lit. Rises ${T(e.moonrise)}${e.moonrise ? ` (${mAz(e.moonrise)})` : ""}, sets ${T(e.moonset)}${e.moonset ? ` (${mAz(e.moonset)})` : ""}.`;
+  let moon = `<p><b>Moon:</b> ${phaseName(mp.age)}, ${illum}% lit. ${e.moonrise ? `Rises ${T(e.moonrise)} (${mAz(e.moonrise)})` : "No moonrise today"}, ${e.moonset ? `sets ${T(e.moonset)} (${mAz(e.moonset)})` : "no moonset today"}.`;
   moon += illum >= 60 ? " Bright enough to wash out faint stars while it's up; good for moonlit landscapes." : illum <= 15 ? " Dark-sky friendly." : "";
   moon += `</p>`;
   // Milky Way

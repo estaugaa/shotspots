@@ -15,7 +15,7 @@ async def main():
             O.append(f"{name}: {r}")
         await pg.evaluate("openSpot('vista-house')"); await pg.wait_for_timeout(5000)
         O.append("sections: " + json.dumps(await pg.evaluate("[...document.querySelectorAll('#sheetBody h3')].map(h=>h.textContent.trim().slice(0,28))")))
-        sm = await pg.evaluate("(()=>{const x=document.querySelector('.sunmoon');x&&x.scrollIntoView();return x?x.innerText.replace(/\\s+/g,' ').slice(0,900):'NO SUN&MOON'})()"); O.append("vista sun&moon: " + sm)
+        sm = await pg.evaluate("(()=>{const h=[...document.querySelectorAll('#sheetBody h3')].find(x=>/Sun & moon/.test(x.textContent));if(!h)return 'NO SUN&MOON';h.scrollIntoView();return 'parent='+h.parentElement.className})()"); O.append("vista sun&moon: " + sm)
         await pg.screenshot(path="ux/field_sunmoon.png")
         await pg.fill("#noteBox", "Park at the upper lot; gate opens 9 AM."); await pg.wait_for_timeout(900)
         O.append("note stored: " + await pg.evaluate("localStorage.getItem('ss2:notes')"))

@@ -74,9 +74,9 @@ window.addEventListener("hashchange", openSpotFromHash); setTimeout(openSpotFrom
 function tidySheetTop(b) {
   const act = b.querySelector(".actions"); if (!act) return;
   let minor = b.querySelector(".minoracts");
-  const out = b.querySelector("#outcomeBtn"), cam = b.querySelector(".camb");
-  if ((out || cam) && !minor) { minor = document.createElement("div"); minor.className = "minoracts"; act.after(minor); }
-  if (minor) { if (out && out.parentElement !== minor) minor.appendChild(out); if (cam && cam.parentElement !== minor) minor.appendChild(cam); }
+  const small = [b.querySelector("#outcomeBtn"), b.querySelector(".camb"), b.querySelector("[data-copyll]")].filter(Boolean);
+  if (small.length && !minor) { minor = document.createElement("div"); minor.className = "minoracts"; act.after(minor); }
+  if (minor) small.forEach(el => { if (el.parentElement !== minor) minor.appendChild(el); });
   const v = b.querySelector(".votes"); if (v && v !== b.lastElementChild) { v.classList.add("votes-end"); b.appendChild(v); }
 }
 { const _oT = openSpot; openSpot = function (id) { _oT.apply(this, arguments); const b = $("#sheetBody"); if (b) { tidySheetTop(b); setTimeout(() => tidySheetTop(b), 1500); } }; }
