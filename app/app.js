@@ -527,6 +527,7 @@ function fitFor(s, w) {
   // starter summits: often no trail (buttes inside canyons, remote peaks). Trust them only when people actually photograph from there
   if (s.seed && s.kind === "peak" && !(s.pop >= 12) && s.effort !== "road") n *= s.pop != null ? 0.65 : 0.8;
   // lookout towers: real fire lookouts are great; city observation towers are often rides or closed - trust them when people photograph from them
+  if (s.seed && s.kind === "cave" && (GOLDK.has(w.kind) || BLUEK.has(w.kind))) n *= 0.5;   // a cave mouth is no sunrise/sunset spot (starter data marks caves "both")
   if (s.seed && s.kind === "lookout" && !(s.pop >= 10) && /garden|park|fair|amusement|six flags|ride|plaza/i.test(s.name)) n *= 0.5;
   // an eBird hotspot named just for a town ("Jackson", "Moab") covers the whole town: no place to go
   if (s.kind === "hotspot" && !/[:(]|park|lake|pond|marsh|refuge|reserve|preserve|trail|river|creek|bay|beach|island|wetland|slough|sanctuary|garden|area|point|dam|canyon|meadow|lagoon|reservoir|springs?\b|woods|forest|ranch|farm|center|road|loop|overlook/i.test(s.name)) n *= 0.4;
