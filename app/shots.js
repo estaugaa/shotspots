@@ -20,8 +20,9 @@ function pCondClimo(c, s, t) {
 }
 function pSpecies(sh, s, t) {
   if (!sh.species) return { p: 1 }; const w = wildlifeFor(s.id); if (!w) return { p: null };
-  const x = w.species.find(z => z.sp.toLowerCase() === sh.species.toLowerCase()); if (!x) return { p: 0.02 };
-  let p = w.kind.startsWith("eBird") ? x.wk[weekIdx(t)] / 100 : (x.rel ? x.rel[weekIdx(t)] * 0.6 : x.wk[weekIdx(t)] / 100); if (x.hr) { const tot = x.hr.reduce((a, b) => a + b, 0); const hb = Math.floor(+t.toLocaleString("en-US", { timeZone: TZ, hour: "numeric", hourCycle: "h23" }) / 3); p *= Math.min(1.6, Math.max(0.3, x.hr[hb] / tot * 8)); }
+  if (!w.kind.startsWith("eBird")) return { p: null, kind: w.kind };   // presence-only shares are not encounter odds
+  const x = w.species.find(z => z.sp.toLowerCase() === sh.species.toLowerCase()); if (!x || x.wk[weekIdx(t)] == null) return { p: null, kind: w.kind };
+  let p = x.wk[weekIdx(t)] / 100; if (x.hr) { const tot = x.hr.reduce((a, b) => a + b, 0); const hb = Math.floor(+t.toLocaleString("en-US", { timeZone: TZ, hour: "numeric", hourCycle: "h23" }) / 3); p *= Math.min(1.6, Math.max(0.3, x.hr[hb] / tot * 8)); }
   return { p: Math.min(1, p), kind: w.kind };
 }
 function windowsForDate(s, ymd) {

@@ -3824,7 +3824,8 @@
    8,
    9,
    10
-  ]
+  ],
+  "wl": false
  },
  {
   "id": "willamette-falls-overlook",
@@ -3906,7 +3907,8 @@
   "months": [
    3,
    4
-  ]
+  ],
+  "wl": false
  },
  {
   "id": "jewell-meadows",

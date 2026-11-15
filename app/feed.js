@@ -57,7 +57,7 @@ function climoFor(s, t) {
   const v = best[1]; return { station: best[0], fog: v.fog[mo][hr], clear: v.clear12k[mo][hr], lowovc: v.lowovc[mo][hr] };
 }
 function weekIdx(t) { const d = new Date(laYMD(t) + "T12:00:00"); const start = new Date(d.getFullYear(), 0, 1); return Math.min(51, Math.floor((d - start) / 864e5 / 7)); }
-function wildlifeFor(id) { const w = fd("wildlife"); return w && w.spots ? w.spots[id] : null; }
+function wildlifeFor(id) { const w = fd("wildlife"); return w && w.v >= 2 && w.spots ? w.spots[id] : null; }   // v1 used a ~3 km box that mixed habitats
 function topSpecies(id, t, n) {
   const w = wildlifeFor(id); if (!w) return []; const wk = weekIdx(t), hb = Math.floor(+t.toLocaleString("en-US", { timeZone: TZ, hour: "numeric", hourCycle: "h23" }) / 3);
   return w.species.map(x => { const tot = x.hr ? x.hr.reduce((a, b) => a + b, 0) : 0; const hf = x.hr && tot ? x.hr[hb] / tot * 8 : 1;
@@ -143,10 +143,10 @@ async function sheetFeed(s) {
   if (sv && (sv.stage || sv.snow >= 10)) h += `<p><b>Satellite (${sv.date})</b> ${tag("sentinel")}: ${sv.stage ? `foliage ${sv.stage}` : ""}${sv.snow >= 10 ? `${sv.stage ? "; " : ""}${sv.snow}% snow cover` : ""}.</p>`;
   // wildlife
   const wl = wildlifeFor(s.id);
-  if (wl) { const ts = topSpecies(s.id, new Date(), 8); const wkind = wl.kind.startsWith("eBird") ? "eBird checklists within 2 km (effort-corrected)" : "share of GBIF/iNaturalist records (presence-only, not effort-corrected)";
+  if (wl) { const ts = topSpecies(s.id, new Date(), 8); const rkm = wl.r || 0.75, wkind = wl.kind.startsWith("eBird") ? `eBird checklists within ${rkm} km (effort-corrected)` : `share of GBIF/iNaturalist records within ${rkm} km over 10 years (presence-only: not the chance of seeing it, and a flock counts as one record)`;
     const sp = sunPos(new Date(), s.lat, s.lon); const w0 = allWindows(s, 40).find(x => GOLDK.has(x.kind) || x.kind === "morning"), spw = w0 ? sunPos(w0.peak, s.lat, s.lon) : sp;
     const hr = h0 => { const d = new Date(); d.setHours(h0, 0, 0, 0); return fmtT(d).replace(":00", ""); };
-    h += `<h3>Wildlife here this week ${tag("wildlife")}</h3>${ts.length ? `<p class="muted" style="font-size:14px;margin-bottom:4px">Most-reported species, as a share of all sightings here:</p><ul class="plain">${ts.map(x => `<li><b>${esc(spName(x.sp))}</b> ${x.p}%${x.best != null ? ` · mostly seen ${hr(x.best)}–${hr(x.best + 3)}` : ""}</li>`).join("")}</ul>` : `<p class="muted">Few sightings logged here for this time of year.</p>`}
+    h += `<h3>Wildlife here this week ${tag("wildlife")}</h3>${ts.length ? `<p class="muted" style="font-size:14px;margin-bottom:4px">Most-reported species, as a share of all records here:</p><ul class="plain">${ts.map(x => `<li><b>${esc(spName(x.sp))}</b> ${x.p}%${x.best != null ? ` · mostly seen ${hr(x.best)}–${hr(x.best + 3)}` : ""}</li>`).join("")}</ul>` : `<p class="muted">Not enough records logged right here for this time of year to say.</p>`}
       <p class="muted" style="font-size:13px">${wkind}.</p>
       ${w0 ? `<p><b>Where to stand:</b> ${esc(wTitle(w0))} the sun comes from the ${cmp(spw.az)}. Keep it at your back (shoot toward the ${cmp((spw.az + 180) % 360)}) for evenly lit animals, shoot toward it for glowing rim-lit silhouettes, or across it (toward the ${cmp((spw.az + 90) % 360)} or ${cmp((spw.az + 270) % 360)}) for side light that shows texture.</p>` : ""}
       <p class="muted" style="font-size:14px">${s.id === "maddax-heronry" ? FIELDCRAFT.heron : s.cats.includes("birds") ? FIELDCRAFT.birds : FIELDCRAFT.wildlife}</p>`; }
@@ -227,5 +227,5 @@ renderSettings = async function () {
 };
 
 /* ---------- boot ---------- */
-loadFeed().then(ok => { if (ok) { render(); Promise.all(["wildlife", "planner", "verify_obs"].map(feedGet)).then(render); } });
+loadFeed().then(ok => { if (ok) { render(); Promise.all(["wildlife", "planner", "verify_obs"].map(feedGet)).then(() => { render(); if (typeof WX !== "undefined" && WX && WX.at && Date.now() - WX.at < 36e5) bootReady(); }); } });
 document.addEventListener("visibilitychange", () => { if (!document.hidden && FEED.m && Date.now() - new Date(FEED.m.gen) > 20 * 60000) loadFeed().then(ok => ok && render()); });
