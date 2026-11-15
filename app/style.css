@@ -402,3 +402,8 @@ details>summary{padding-top:10px;padding-bottom:10px}
 .cp-key .sr{background:var(--gold)}.cp-key .ss{background:var(--warn)}.cp-key .mr{background:var(--muted)}.cp-key .gc{background:#8A6FD1}.cp-key .shot{background:var(--moss)}
 .mynotes textarea{width:100%;min-height:72px;font:inherit;font-size:15px;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card,transparent);color:var(--ink)}
 .exportbox{margin-top:18px}
+
+.conf{font-size:13px;color:var(--muted);margin:-4px 0 10px;display:flex;gap:8px;align-items:baseline;max-width:62ch}
+.conf-dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--moss);transform:translateY(-1px)}
+.conf-mixed .conf-dot{background:var(--gold)}.conf-disagree .conf-dot{background:var(--warn)}
+.conf-disagree{color:var(--ink)}
