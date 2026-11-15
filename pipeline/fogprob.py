@@ -103,7 +103,7 @@ def run():
         trained = f"retrained on {_train()} dawns; "; old = pickle.loads(MODEL.read_bytes())
     gb, clim = old["model"], old["clim"]
     today = dt.datetime.now(dt.timezone.utc).date()
-    dawn = today + dt.timedelta(days=1) if dt.datetime.now(dt.timezone.utc).hour >= 2 else today   # tomorrow's dawn (Pacific evening run)
+    dawn = today if dt.datetime.now(dt.timezone.utc).hour < 15 else today + dt.timedelta(days=1)   # next Pacific dawn (~15 UTC); the 7:15 PM run is 03 UTC of that same date
     out, logrows, scored = {}, [], []
     for st, (la, lo) in ST.items():
         try:
