@@ -156,5 +156,87 @@
   "confidence": "medium",
   "researched": "2026-11-06",
   "reviewed": false
+ },
+ {
+  "id": "r-coopey-falls-angel-s-rest-trail-overhead-view",
+  "name": "Coopey Falls (Angel's Rest Trail overhead view)",
+  "region": "Gorge \u00b7 Oregon",
+  "cats": [
+   "waterfall",
+   "fallcolor"
+  ],
+  "lat": 45.56229,
+  "lon": -122.16463,
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ],
+  "effort": "hike",
+  "light": "overcast",
+  "tip": "A 150 ft horsetail on Coopey Creek seen from above where the Angel's Rest Trail passes it, so this is a looking-down composition with the ribbon of water dropping into the mossy ravine, not a base shot (there is no safe route to the base). The falls face northwest: on overcast days the whole drop is evenly lit, and on clear days wait for late afternoon when sun has left the gully so the white water doesn't blow out. Flow is best from late November through spring after rain. A short detour adds the smaller Upper Coopey Falls, and you can keep climbing to Angel's Rest for the Gorge view on the same outing.",
+  "lens": "16-50 at 16-24 mm to take in the full drop from the trail; 27 mm for a tight vertical of the lower plunge; a circular polarizer cuts glare on wet rock and leaves; 70-300 is rarely needed here.",
+  "alert": "Angel's Rest trailhead parking fills early (before 8:30 a.m. on weekends). Trail is steep, slick when wet, no handrails at drop-offs; post-fire debris, loose rock and falling limbs are possible. Check Forest Service / Ready Set GOrge for closures before going.",
+  "park": [
+   45.560627,
+   -122.17233
+  ],
+  "sources": [
+   [
+    "WaterfallHikes: Coopey Falls",
+    "https://waterfallhikes.com/waterfalls/coopey-falls-near-washougal-in-or"
+   ],
+   [
+    "Oregon Hikers Field Guide: Angel's Rest Hike",
+    "https://www.oregonhikers.org/field_guide/Angel's_Rest_Hike"
+   ]
+  ],
+  "confidence": "high",
+  "researched": "2026-11-15",
+  "reviewed": false
+ },
+ {
+  "id": "r-upper-latourell-falls-latourell-falls-loop",
+  "name": "Upper Latourell Falls (Latourell Falls Loop)",
+  "region": "Gorge \u00b7 Oregon",
+  "cats": [
+   "waterfall",
+   "fallcolor"
+  ],
+  "lat": 45.53041,
+  "lon": -122.2212,
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   10,
+   11,
+   12
+  ],
+  "effort": "hike",
+  "light": "overcast",
+  "tip": "The quieter second falls on the 2.4 mi Latourell loop: the trail climbs about 600 ft above the famous lower plunge and crosses Latourell Creek right at the upper falls, so you shoot from the crossing, straight up the creek into a tight, ferny grotto. It is deeply shaded, which makes it a classic overcast or rain-day subject; even on sunny days it often stays in open shade, unlike the lower falls. Go clockwise and you get the spur view down onto Lower Latourell first, then the upper falls with far fewer people than the paved lower viewpoint.",
+  "lens": "16-50 at the wide end from the creek crossing for the whole falls and grotto; 27 mm for a natural-perspective vertical; tripod for 1/2\u20132 s exposures, and a polarizer to pull color out of wet moss.",
+  "alert": "No pass or permit needed. Leashed dogs only. Lot at the Latourell Falls trailhead is small; overflow at Lower Guy Talbot State Park. Check Forest Service / Ready Set GOrge for closures.",
+  "park": [
+   45.537,
+   -122.2178
+  ],
+  "sources": [
+   [
+    "Friends of the Columbia Gorge: Latourell Falls Loop",
+    "https://gorgefriends.org/find-a-hike/latourell-falls-loop/"
+   ]
+  ],
+  "confidence": "high",
+  "researched": "2026-11-15",
+  "reviewed": false
  }
 ]

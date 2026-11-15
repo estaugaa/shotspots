@@ -193,5 +193,48 @@
   "confidence": "high",
   "researched": "2026-11-05",
   "reviewed": false
+ },
+ {
+  "id": "r-1914-stark-street-bridge-from-dabney-state-recre",
+  "name": "1914 Stark Street Bridge from Dabney State Recreation Area (Sandy River)",
+  "region": "Troutdale \u00b7 Sandy River",
+  "cats": [
+   "historic",
+   "fallcolor",
+   "reflection"
+  ],
+  "lat": 45.51641,
+  "lon": -122.35216,
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   10,
+   11,
+   12
+  ],
+  "effort": "short",
+  "light": "overcast",
+  "tip": "Dabney sits on the Sandy River just upstream of the 1914 steel-truss Stark Street Bridge, and the beach below the bridge gives a river-level view of the green truss spanning the gorge, with the river as a leading line. Overcast or the first soft light keeps the shaded Sandy River gorge from going contrasty; in autumn and winter you'll also have the beach to yourself (it fills quickly in summer). The bridge is at the end of its service life and Multnomah County's draft plan is to keep it for walkers and cyclists and build a new bridge downstream, so the current scene will change in the 2030s.",
+  "lens": "16-50 from the beach at 16-24 mm for the truss and river; 27 mm for a straight-on bridge frame; 70-300 to isolate the truss geometry or riverside maples; ND or slow shutter on a tripod to smooth the current.",
+  "alert": "Oregon State Parks day-use parking permit required (booth or card machine). No pets in the park. Swift current and hidden obstructions in the river. Disc golf course closed Sat Nov 21, 2026 for a tournament. Bridge has load restrictions; check Multnomah County road closures.",
+  "sources": [
+   [
+    "Oregon State Parks: Dabney State Recreation Area",
+    "https://stateparks.oregon.gov/park_151.php"
+   ],
+   [
+    "Multnomah County: Stark Street Bridge Replacement",
+    "https://multco.us/info/stark-street-bridge-replacement"
+   ],
+   [
+    "Wikipedia: Dabney State Recreation Area",
+    "https://en.wikipedia.org/wiki/Dabney_State_Recreation_Area"
+   ]
+  ],
+  "confidence": "medium",
+  "researched": "2026-11-15",
+  "reviewed": false
  }
 ]

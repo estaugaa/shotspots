@@ -10,6 +10,10 @@
     {
      "date": "2026-11-05",
      "added": 2
+    },
+    {
+     "date": "2026-11-15",
+     "added": 1
     }
    ]
   },
@@ -19,6 +23,10 @@
     {
      "date": "2026-11-06",
      "added": 4
+    },
+    {
+     "date": "2026-11-15",
+     "added": 2
     }
    ]
   },
@@ -236,6 +244,15 @@
   "44.00_-120.75": {
    "status": "open",
    "runs": []
+  },
+  "45.75_-122.25": {
+   "status": "open",
+   "runs": [
+    {
+     "date": "2026-11-15",
+     "added": 1
+    }
+   ]
   }
  },
  "runs": [
@@ -281,6 +298,20 @@
    ],
    "rejected": [],
    "notes": "Heavily covered cell (60 known spots), so targeted gaps: a high-country 360 summit, a dam/bridge aerial viewpoint, a river-level Oregon-side vista, a historic tunnel and an under-shot waterfall. Rejected: Naked Falls (Washougal River) - public access closed by Weyerhaeuser since 2016 and now a private Hipcamp listing; St. Peter's Dome roadside view - no current source with a usable standing spot found; Doetsch day use - TomTom only returned Sams Walker (already known). Netlify connector needed a"
+  },
+  {
+   "at": "2026-11-15T09:30:05Z",
+   "target": "45.50_-122.50",
+   "searches": 27,
+   "minutes": 25,
+   "added": [
+    "r-coopey-falls-angel-s-rest-trail-overhead-view",
+    "r-upper-latourell-falls-latourell-falls-loop",
+    "r-ed-s-trail-rock-arch-silver-star-mountain",
+    "r-1914-stark-street-bridge-from-dabney-state-recre"
+   ],
+   "rejected": [],
+   "notes": "Frontier cell 45.50_-122.50 (run 3) is close to saturated: most remaining seed candidates were duplicates or had no public access. Fixed a KeyError in pipeline/seed.candidates (seed spots without 'osm'), which had made research_plan return no seed_candidates."
   }
  ]
 }
