@@ -26,7 +26,7 @@ PICK = """(([day, kind]) => { const all = allWindows(LOC, PLAN_HOURS); const t0 
   // tap the day button like a person would, then the window chip
   const db = [...document.querySelectorAll('[data-day]')].find(b => b.dataset.day === want); if (db) db.click();
   const i = all.findIndex(w => winDay(w) === want && w.kind === kind);
-  if (i >= 0) { UI.focus = i; UI.day = want; render(); } return i >= 0 ? wTitle(all[i]) + " " + fmtT(all[i].peak) : "no window " + kind; })"""
+  if (i >= 0) { UI.focus = i; UI.day = want; paint(); } return i >= 0 ? wTitle(all[i]) + " " + fmtT(all[i].peak) : "no window " + kind; })"""
 CHECKS = """(() => { const all = allWindows(LOC, PLAN_HOURS), w = all[UI.focus], ranked = rankFor(w), tops = windowTops(all);
   const chip = tops[UI.focus] ? tops[UI.focus].f.n : null, top = ranked[0] ? ranked[0].f.n : null;
   const far = ranked.slice(0, 10).filter(x => tooFar(x.s)).map(x => x.s.name);

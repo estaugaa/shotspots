@@ -1,13 +1,22 @@
 """Wildlife as probability.
 
 Best source (MEASURED, effort-corrected): the eBird Basic Dataset. If EBD_URL points at your downloaded
-EBD + sampling-event zip, we compute detection frequency = complete checklists within 2 km of a spot that
+EBD + sampling-event zip, we compute detection frequency = complete checklists within RADIUS_KM of a spot that
 reported the species / all complete checklists there, by week and by 3-hour time block. That is a true
 encounter rate for a birder standing there.
 
 Fallback (ESTIMATED, presence-only): GBIF occurrences (includes eBird EOD and iNaturalist research grade)
-within ~1.5 km, as the species' share of all records that week. Not effort-corrected: popular, easy-to-see
-species are over-represented.
+within RADIUS_KM, as the species' share of all records that month. Not effort-corrected: popular, easy-to-see
+species are over-represented, and a flock of thousands counts the same as one bird.
+
+Accuracy over coverage (Nov 2026 audit):
+* A tight circle (default 0.75 km, per-spot "wl_km" override) so a spot doesn't borrow birds from a
+  different habitat nearby. The old ~3 km box gave Hathaway Park the Columbia River's cormorants and scaup.
+* Every species is counted in every month (no per-month top-N cut), so a zero means no records, not
+  "fell out of that month's top 40".
+* Months with too few records are unknown (null), not zero; spots with too few records get no list.
+* "wl": false in a spot's config suppresses the list where records near the pin don't describe the
+  attraction (a crane-festival town centre, a swift roost on a residential street).
 
 Also: daily Bonneville fish-ladder counts (Columbia Basin Research DART).
 """
@@ -19,27 +28,18 @@ from .common import http, spots, write_json, read_json, CACHE, log, utcnow, iso,
 LA = ZoneInfo("America/Los_Angeles")
 GBIF = "https://api.gbif.org/v1/occurrence/search"
 LIFE = {"birds", "wildlife"}
+RADIUS_KM = 0.75      # default search radius around a spot
+MIN_TOTAL = 150       # records in 10 years before a spot gets a species list
+MIN_MONTH = 12        # records in a calendar month (all years) before that month's shares are shown
+MIN_SPECIES = 8       # records of a species before it's listed
 
 
-def gbif_spot(s, years=10, cap=3000):
-    d = 0.0135
-    dl = d / math.cos(math.radians(s["lat"]))
-    recs, off = [], 0
-    y1 = utcnow().year
-    while off < cap:
-        j = http(GBIF, params={"decimalLatitude": f'{s["lat"]-d},{s["lat"]+d}', "decimalLongitude": f'{s["lon"]-dl},{s["lon"]+dl}',
-                               "year": f"{y1-years},{y1}", "limit": 300, "offset": off, "hasCoordinate": "true",
-                               "classKey": [212, 359], "occurrenceStatus": "PRESENT"}).json()
-        for o in j.get("results", []):
-            sp = o.get("vernacularName") or o.get("species")
-            ed = o.get("eventDate") or ""
-            if not sp or len(ed) < 10:
-                continue
-            recs.append((sp, ed))
-        off += 300
-        if j.get("endOfRecords"):
-            break
-    return recs
+def radius(s):
+    return float(s.get("wl_km") or RADIUS_KM)
+
+
+def life_spots():
+    return [s for s in spots() if set(s["cats"]) & LIFE and s.get("wl", True) is not False]
 
 
 def week_of(date_str):
@@ -78,38 +78,44 @@ def gbif_profiles():
     """Monthly species shares from GBIF facets (no record cap, every year 10 years back), interpolated to weeks."""
     out = {}
     y1 = utcnow().year
-    for s in spots():
-        if not (set(s["cats"]) & LIFE):
-            continue
-        d = 0.0135
-        dl = d / math.cos(math.radians(s["lat"]))
-        base = {"decimalLatitude": f'{s["lat"]-d},{s["lat"]+d}', "decimalLongitude": f'{s["lon"]-dl},{s["lon"]+dl}', "year": f"{y1-10},{y1}",
-                "classKey": [212, 359], "occurrenceStatus": "PRESENT", "hasCoordinate": "true", "limit": 0}
+    for s in life_spots():
+        rk = radius(s)
+        base = {"geoDistance": f'{s["lat"]},{s["lon"]},{int(rk * 1000)}m', "year": f"{y1-10},{y1}",
+                "classKey": [212, 359], "occurrenceStatus": "PRESENT", "hasCoordinate": "true", "hasGeospatialIssue": "false", "limit": 0}
         try:
             tot = np.zeros(12)
             cnt = {}
             for m in range(1, 13):
-                j = http(GBIF, params={**base, "month": m, "facet": "speciesKey", "facetLimit": 40}).json()
+                j = http(GBIF, params={**base, "month": m, "facet": "speciesKey", "facetLimit": 1000}).json()
                 tot[m - 1] = j.get("count", 0)
                 for f in (j.get("facets") or [{}])[0].get("counts", []):
                     cnt.setdefault(int(f["name"]), np.zeros(12))[m - 1] = f["count"]
         except Exception as e:
             log.warning("gbif %s: %s", s["id"], e)
             continue
-        if tot.sum() < 50:
+        if tot.sum() < MIN_TOTAL:
             continue
-        top = sorted(cnt, key=lambda k: -cnt[k].sum())[:30]
+        ok = tot >= MIN_MONTH
+        top = [k for k in sorted(cnt, key=lambda k: -cnt[k].sum()) if cnt[k].sum() >= MIN_SPECIES][:30]
         wk_mid = (np.arange(52) + 0.5) * 7 / 30.44  # week centre in months (0-12)
+        xs = np.arange(-0.5, 13.0, 1.0)
+        okx = np.r_[ok[-1], ok, ok[0]]
         rows = []
         for k in top:
-            with np.errstate(invalid="ignore", divide="ignore"):
-                share = np.where(tot > 0, cnt[k] / tot, 0)
+            share = np.where(ok, cnt[k] / np.where(tot > 0, tot, 1), np.nan)
             ext = np.r_[share[-1], share, share[0]]
-            xs = np.arange(-0.5, 13.0, 1.0)
-            wk = np.interp(wk_mid, xs, ext)
-            peak = float(share.max()) or 1
-            rows.append({"sp": _name(k), "n": int(cnt[k].sum()), "wk": [int(round(x * 100)) for x in wk], "rel": [round(float(x) / peak, 2) for x in wk], "hr": None})
-        out[s["id"]] = {"n": int(tot.sum()), "kind": "presence-only share of records (GBIF: eBird EOD + iNaturalist)", "species": rows}
+            wk = np.interp(wk_mid, xs, np.nan_to_num(ext))
+            # a week is known only if both months it is interpolated between are known
+            lo = np.clip(np.floor(wk_mid + 0.5).astype(int), 0, 13)
+            hi = np.clip(lo + 1, 0, 13)
+            known = okx[lo] & okx[hi]
+            peak = float(np.nanmax(share)) if np.any(ok) else 0
+            if peak <= 0:
+                continue
+            rows.append({"sp": _name(k), "n": int(cnt[k].sum()),
+                         "wk": [int(round(x * 100)) if kn else None for x, kn in zip(wk, known)],
+                         "rel": [round(float(x) / peak, 2) if kn else None for x, kn in zip(wk, known)], "hr": None})
+        out[s["id"]] = {"n": int(tot.sum()), "r": rk, "kind": "presence-only share of records (GBIF: eBird EOD + iNaturalist)", "species": rows}
     return out
 
 
@@ -124,7 +130,8 @@ def ebd_profiles(url):
     z = zipfile.ZipFile(p)
     obs_name = next(n for n in z.namelist() if re.search(r"ebd_.*\.txt$", n) and "sampling" not in n)
     smp_name = next(n for n in z.namelist() if "sampling" in n and n.endswith(".txt"))
-    ss = [s for s in spots() if set(s["cats"]) & LIFE]
+    ss = life_spots()
+    rad = np.array([radius(s) for s in ss])
     lat = np.array([s["lat"] for s in ss]); lon = np.array([s["lon"] for s in ss])
     cols = ["SAMPLING EVENT IDENTIFIER", "LATITUDE", "LONGITUDE", "OBSERVATION DATE", "TIME OBSERVATIONS STARTED", "ALL SPECIES REPORTED", "PROTOCOL TYPE"]
     near = {}
@@ -133,7 +140,7 @@ def ebd_profiles(url):
         la = ch["LATITUDE"].astype(float).values; lo = ch["LONGITUDE"].astype(float).values
         for i, s in enumerate(ss):
             dkm = np.hypot((la - lat[i]) * 111.2, (lo - lon[i]) * 111.2 * math.cos(math.radians(lat[i])))
-            sel = ch[dkm <= 2.0]
+            sel = ch[dkm <= rad[i]]
             for _, row in sel.iterrows():
                 near.setdefault(row["SAMPLING EVENT IDENTIFIER"], []).append((s["id"], row["OBSERVATION DATE"], row["TIME OBSERVATIONS STARTED"]))
     chk = {}
@@ -172,7 +179,8 @@ def ebd_profiles(url):
                 f = np.where(nws > 0, sm(a[:, 8]) / nws, 0)
             hr = a[:, :8].sum(0)
             rows.append({"sp": name, "n": int(a[:, 8].sum()), "wk": [int(round(x * 100)) for x in f], "hr": hr.astype(int).tolist() if hr.sum() >= 10 else None})
-        out[spot_id] = {"n": int(nw.sum()), "kind": "eBird detection frequency (% of complete checklists within 2 km)", "species": rows}
+        rk = next(radius(s) for s in ss if s["id"] == spot_id)
+        out[spot_id] = {"n": int(nw.sum()), "r": rk, "kind": f"eBird detection frequency (% of complete checklists within {rk:g} km)", "species": rows}
     return out
 
 
@@ -208,6 +216,6 @@ def run():
         fishd = fish()
     except Exception as e:
         log.warning("DART fish counts failed: %s", e)
-    write_json("wildlife.json", {"gen": iso(utcnow()), "spots": prof, "fish": fishd,
+    write_json("wildlife.json", {"gen": iso(utcnow()), "v": 2, "spots": prof, "fish": fishd,
                                  "hawkwatch": "Bonney Butte HawkWatch monitoring is suspended for the 2026 season (hawkwatch.org); historical peak is mid-September to early October."})
     return f"{len(prof)} spots ({'eBird EBD' if kind == 'MEASURED' else 'GBIF presence-only'}); fish={'ok' if fishd else 'unavailable'}"

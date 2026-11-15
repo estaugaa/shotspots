@@ -75,7 +75,10 @@ def wildlife_picks(S, sat):
             rel = sp.get("rel")
             if not rel or sp.get("n", 0) < 40 or len(sp.get("sp", "")) < 6:   # skip short/garbled vernacular names
                 continue
-            seasonal = rel[wk] - sum(rel) / len(rel)
+            known = [x for x in rel if x is not None]
+            if rel[wk] is None or len(known) < 40:   # unknown this week, or too little of the year known to call a peak
+                continue
+            seasonal = rel[wk] - sum(known) / len(known)
             if rel[wk] >= 0.75 and seasonal >= 0.3:
                 best.append((seasonal * math.log(sp["n"]), sid, sp["sp"], rel[wk]))
     best.sort(reverse=True)
