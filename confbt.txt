@@ -1,0 +1,42 @@
+columns: ['time', 'cloud_cover_previous_day1_gfs_seamless', 'cloud_cover_previous_day1_ecmwf_ifs025', 'cloud_cover_previous_day1_icon_seamless', 'cloud_cover_previous_day1_gem_seamless'] -> {'gfs_seamless': 'cloud_cover_previous_day1_gfs_seamless', 'ecmwf_ifs025': 'cloud_cover_previous_day1_ecmwf_ifs025', 'icon_seamless': 'cloud_cover_previous_day1_icon_seamless', 'gem_seamless': 'cloud_cover_previous_day1_gem_seamless'}
+PDX: 2021 windows
+TTD: 2021 windows
+HIO: 2021 windows
+KLS: 2021 windows
+SLE: 2021 windows
+EUG: 2021 windows
+DLS: 2021 windows
+OLM: 2021 windows
+AST: 2021 windows
+ONP: 2021 windows
+RDM: 2021 windows
+YKM: 2021 windows
+BLI: 2021 windows
+HQM: 2021 windows
+MWH: 2021 windows
+
+rows 30315 | train 19170 | test 11145 (2025-11-01..2026-11-07)
+
+1) SPREAD vs ERROR (all data): model disagreement bins -> mean absolute error of the 4-model mean
+  spread (-0.001, 5.0]  n= 8115  MAE   3.4  share>30pts 0.03
+  spread (5.0, 10.0]    n= 2085  MAE  10.2  share>30pts 0.08
+  spread (10.0, 20.0]   n= 4042  MAE  16.8  share>30pts 0.14
+  spread (20.0, 30.0]   n= 4205  MAE  22.9  share>30pts 0.22
+  spread (30.0, 100.0]  n=11868  MAE  29.9  share>30pts 0.44
+  Spearman(spread, error) = 0.733
+
+2) BIAS CORRECTION (test MAE, cloud % points)
+  raw m_gfs           21.0
+  raw m_ecmwf         14.9
+  raw m_icon          18.9
+  raw m_gem           31.8
+  raw mean            17.7
+  4-model mean, bias-corrected by station x sunrise/sunset x month:  18.5
+
+3) PROBABILITIES (test): Brier score, lower is better
+  clear (<30%)                       base rate 0.30 | GFS alone 0.1641 | 4-model vote 0.1080 | blend+spread (fitted) 0.0881 | climatology 0.2137
+  overcast (>85%)                    base rate 0.51 | GFS alone 0.2083 | 4-model vote 0.1383 | blend+spread (fitted) 0.1256 | climatology 0.2510
+  partly (30-75%, best color odds)   base rate 0.14 | GFS alone 0.1549 | 4-model vote 0.1272 | blend+spread (fitted) 0.1162 | climatology 0.1237
+    reliability (fitted): predicted -> observed (n)
+      0.0-0.2: 0.11 (n=8608)
+      0.2-0.4: 0.27 (n=2529)
