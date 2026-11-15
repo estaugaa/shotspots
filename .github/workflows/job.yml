@@ -1,12 +1,14 @@
 name: Run a pipeline job
 on:
+  schedule:
+    - cron: "15 3 * * *"   # fogprob: valley-fog chance for tomorrow dawn, after the evening observations (7:15 PM Pacific)
   workflow_dispatch:
     inputs:
       job:
         description: "Job name (photostats, verifyobs, ...)"
         required: true
 concurrency:
-  group: long-${{ github.workflow }}-${{ inputs.job }}   # long jobs queue separately so the 30-minute updates aren't blocked or cancel them
+  group: long-${{ github.workflow }}-${{ inputs.job || 'fogprob' }}   # long jobs queue separately so the 30-minute updates aren't blocked or cancel them
   cancel-in-progress: false
 permissions:
   contents: write
@@ -45,7 +47,7 @@ jobs:
       - run: pip install -r requirements.txt
       - run: python -m pipeline $JOB
         env:
-          JOB: ${{ inputs.job }}
+          JOB: ${{ inputs.job || 'fogprob' }}
       - uses: actions/cache/save@v4
         if: always()
         with:
@@ -63,7 +65,7 @@ jobs:
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
-          JOB: ${{ inputs.job }}
+          JOB: ${{ inputs.job || 'fogprob' }}
         run: |
           if [ -f .more ]; then echo "work left: queueing another $JOB run"; gh workflow run job.yml --ref main -f job="$JOB"; fi
   publish:
