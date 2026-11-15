@@ -50,6 +50,7 @@ def asos(st):
 
 HV = ["temperature_2m", "dew_point_2m", "wind_speed_10m", "cloud_cover_low", "visibility", "precipitation", "temperature_925hPa", "temperature_850hPa"]
 USABLE = None
+CLOUD_MODEL = None
 def usable_vars(lat, lon):
     """Which hourly variables the day-ahead archive actually serves (it rejects unknown ones with a 400)."""
     ok = []
@@ -84,6 +85,31 @@ def fcst(lat, lon):
         y0 = y1 + dt.timedelta(days=1); time.sleep(1)
     f = pd.concat(parts); f["t"] = pd.to_datetime(f["time"], utc=True); f = f.set_index("t").drop(columns=["time"])
     f.columns = [c.replace("_previous_day1", "").replace("_gfs_seamless", "") for c in f.columns]
+    global CLOUD_MODEL
+    if CLOUD_MODEL is None:
+        CLOUD_MODEL = ""
+        for mdl in ("ecmwf_ifs025", "icon_seamless", "gem_seamless"):
+            try:
+                r = S.get("https://previous-runs-api.open-meteo.com/v1/forecast", params={"latitude": lat, "longitude": lon, "start_date": "2025-01-10", "end_date": "2025-01-11",
+                          "hourly": "cloud_cover_low_previous_day1,visibility_previous_day1", "models": mdl, "timezone": "UTC"}, timeout=60)
+                h = r.json().get("hourly", {}) if r.status_code == 200 else {}
+                got = [k for k, x in h.items() if k != "time" and any(v is not None for v in x)]
+                log(f"  cloud model {mdl}: HTTP {r.status_code}, non-empty {got}")
+                if got: CLOUD_MODEL = mdl; break
+            except Exception as e: log(f"  cloud model {mdl}: {str(e)[:100]}")
+    if CLOUD_MODEL:
+        cp = []; y0 = START
+        while y0 < END:
+            y1 = min(END, dt.date(y0.year, 12, 31))
+            r = get("https://previous-runs-api.open-meteo.com/v1/forecast", {"latitude": lat, "longitude": lon, "start_date": y0.isoformat(), "end_date": y1.isoformat(),
+                    "hourly": "cloud_cover_low_previous_day1,visibility_previous_day1", "models": CLOUD_MODEL, "timezone": "UTC"})
+            h = r.json().get("hourly") or {}
+            if h: cp.append(pd.DataFrame(h))
+            y0 = y1 + dt.timedelta(days=1); time.sleep(1)
+        if cp:
+            c = pd.concat(cp); c["t"] = pd.to_datetime(c["time"], utc=True); c = c.set_index("t").drop(columns=["time"])
+            c.columns = [k.replace("_previous_day1", "").replace("_" + CLOUD_MODEL, "") for k in c.columns]
+            for k in c.columns: f[k] = c[k].reindex(f.index)
     for v in HV:
         if v not in f.columns: f[v] = np.nan
     return f
@@ -152,8 +178,11 @@ def report(name, p, y):
 y = te.y.values
 log("\nTEST (unseen period)")
 report("climatology (station x month)", te.clim.values, y)
-base = (((te.f_vis < 1000) | ((te.f_low >= 90) & (te.f_spread <= 1.0))).astype(float) * 0.8 + 0.02).values
-report("raw forecast rule (baseline)", base, y)
+fv = te.f_vis.fillna(1e9); fl = te.f_low.fillna(0)
+base = (((fv < 1000) | ((fl >= 90) & (te.f_spread <= 1.0)) | ((te.f_spread <= 1.0) & (te.f_wind <= 6))).astype(float) * 0.8 + 0.02).values
+report("forecast fog rule (baseline)", base, y)
+FEAT = [f for f in FEAT if f in ("month_sin", "month_cos", "clim") or tr[f].notna().mean() > 0.2]
+log(f"features used: {FEAT}")
 lr = make_pipeline(SimpleImputer(), StandardScaler(), LogisticRegression(max_iter=2000, C=0.5)).fit(tr[FEAT], tr.y)
 p_lr = report("logistic regression", lr.predict_proba(te[FEAT])[:, 1], y)
 gb = HistGradientBoostingClassifier(max_iter=400, learning_rate=0.05, max_leaf_nodes=31, l2_regularization=1.0).fit(tr[FEAT], tr.y)
