@@ -1,0 +1,91 @@
+  var temperature_2m: HTTP 200 ok
+  var dew_point_2m: HTTP 200 ok
+  var wind_speed_10m: HTTP 200 ok
+  var cloud_cover_low: HTTP 200 all null
+  var visibility: HTTP 200 all null
+  var precipitation: HTTP 200 ok
+  var temperature_925hPa: HTTP 400 {"reason":"Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<Fo
+  var temperature_850hPa: HTTP 400 {"reason":"Invalid value: Cannot initialize SurfacePressureAndHeightVariable<VariableAndPreviousDay, VariableOrSpread<Fo
+usable day-ahead variables: ['temperature_2m', 'dew_point_2m', 'wind_speed_10m', 'precipitation']
+  cloud model ecmwf_ifs025: HTTP 200, non-empty []
+  cloud model icon_seamless: HTTP 200, non-empty []
+  cloud model gem_seamless: HTTP 200, non-empty []
+PDX: 1015 dawns, fog rate 0.056
+TTD: 972 dawns, fog rate 0.032
+VUO: 999 dawns, fog rate 0.058
+HIO: 958 dawns, fog rate 0.093
+SPB: 988 dawns, fog rate 0.093
+KLS: 996 dawns, fog rate 0.065
+UAO: 1015 dawns, fog rate 0.080
+MMV: 931 dawns, fog rate 0.134
+SLE: 1010 dawns, fog rate 0.101
+EUG: 1015 dawns, fog rate 0.138
+CVO: 966 dawns, fog rate 0.147
+DLS: 960 dawns, fog rate 0.037
+OLM: 1013 dawns, fog rate 0.219
+TIW: 1002 dawns, fog rate 0.086
+PWT: 990 dawns, fog rate 0.182
+AST: 955 dawns, fog rate 0.107
+ONP: 1010 dawns, fog rate 0.156
+RDM: 1013 dawns, fog rate 0.038
+YKM: 1011 dawns, fog rate 0.028
+BLI: 1014 dawns, fog rate 0.095
+forecast columns present: ['temperature_2m', 'dew_point_2m', 'wind_speed_10m', 'cloud_cover_low', 'visibility', 'precipitation', 'temperature_925hPa', 'temperature_850hPa']
+
+rows 19833, stations 20, fog dawns 1929 (0.097)
+train 10066 (2024-02-02..2025-06-30, fog 0.089) | test 9767 (2025-07-01..2026-11-12, fog 0.106)
+
+TEST (unseen period)
+climatology (station x month) Brier 0.0888  logloss 0.3147  AUC 0.745  PR-AUC 0.218  recall@precision50 0.00  recall@precision70 0.00
+forecast fog rule (baseline) Brier 0.1110  logloss 0.4263  AUC 0.575  PR-AUC 0.150  recall@precision50 0.00  recall@precision70 0.00
+features used: ['f_t', 'f_td', 'f_spread', 'f_wind', 'f_rain24', 'f_night_wind', 'o_spread', 'o_wind', 'o_clear', 'o_fog_today', 'clim', 'month_sin', 'month_cos']
+logistic regression          Brier 0.0810  logloss 0.2753  AUC 0.824  PR-AUC 0.349  recall@precision50 0.11  recall@precision70 0.00
+gradient boosting            Brier 0.0799  logloss 0.2788  AUC 0.830  PR-AUC 0.366  recall@precision50 0.19  recall@precision70 0.00
+
+RELIABILITY (gradient boosting, test): predicted bin -> observed fog rate (n)
+  0.00-0.05: 0.028 (n=6086)
+  0.05-0.10: 0.125 (n=1045)
+  0.10-0.20: 0.180 (n=1083)
+  0.20-0.30: 0.254 (n=611)
+  0.30-0.50: 0.354 (n=647)
+  0.50-0.70: 0.521 (n=242)
+  0.70-1.00: 0.528 (n=53)
+
+BY STATION (test): station fog-rate, AUC gb vs baseline
+  AST: rate 0.117  AUC gb 0.657  base 0.511
+  BLI: rate 0.116  AUC gb 0.839  base 0.527
+  CVO: rate 0.179  AUC gb 0.808  base 0.593
+  DLS: rate 0.033  AUC gb 0.870  base 0.515
+  EUG: rate 0.164  AUC gb 0.809  base 0.579
+  HIO: rate 0.082  AUC gb 0.881  base 0.638
+  KLS: rate 0.063  AUC gb 0.790  base 0.520
+  MMV: rate 0.130  AUC gb 0.843  base 0.592
+  OLM: rate 0.220  AUC gb 0.814  base 0.588
+  ONP: rate 0.191  AUC gb 0.688  base 0.563
+  PDX: rate 0.046  AUC gb 0.888  base 0.628
+  PWT: rate 0.204  AUC gb 0.789  base 0.570
+  RDM: rate 0.036  AUC gb 0.874  base 0.576
+  SLE: rate 0.115  AUC gb 0.787  base 0.600
+  SPB: rate 0.098  AUC gb 0.792  base 0.542
+  TIW: rate 0.100  AUC gb 0.852  base 0.526
+  TTD: rate 0.031  AUC gb 0.857  base 0.584
+  UAO: rate 0.090  AUC gb 0.894  base 0.628
+  VUO: rate 0.061  AUC gb 0.822  base 0.581
+  YKM: rate 0.032  AUC gb 0.908  base 0.483
+
+LOGISTIC COEFFICIENTS (standardized)
+  clim           +0.741
+  o_spread       -0.661
+  f_night_wind   -0.548
+  f_spread       -0.519
+  f_wind         -0.464
+  f_t            -0.356
+  month_cos      -0.353
+  o_clear        +0.232
+  month_sin      -0.170
+  o_wind         -0.158
+  o_fog_today    +0.073
+  f_td           -0.037
+  f_rain24       +0.017
+
+UNSEEN STATIONS [np.str_('OLM'), np.str_('AST'), np.str_('SLE'), np.str_('VUO'), np.str_('MMV')] (no station climatology): AUC 0.773, baseline 0.579
