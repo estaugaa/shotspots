@@ -9,7 +9,7 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-24.04   # Playwright can't install its browser deps on 26.04 yet
-    timeout-minutes: 30
+    timeout-minutes: 90
     env:
       FLICKR_KEY: ${{ secrets.FLICKR_KEY }}
       MAPILLARY_TOKEN: ${{ secrets.MAPILLARY_TOKEN }}
