@@ -2,7 +2,7 @@
 import asyncio, json, os, sys
 from playwright.async_api import async_playwright
 os.makedirs("ux", exist_ok=True)
-EXPR = " ".join(sys.argv[1:]) or "document.title"
+EXPR = open(sys.argv[1]).read() if len(sys.argv) > 1 else "document.title"
 async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch(); c = await b.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, timezone_id="America/Los_Angeles")

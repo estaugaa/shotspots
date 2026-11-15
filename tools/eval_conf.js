@@ -1,0 +1,1 @@
+(()=>{const all=allWindows(LOC,PLAN_HOURS);return all.filter(w=>['sunrise','sunset'].includes(w.kind)&&w.start>Date.now()+3*36e5).slice(0,8).map(w=>w.kind+' '+w.peak.toISOString().slice(5,16)+' :: '+(confHtml(w).replace(/<[^>]+>/g,'')||'none'))})()
