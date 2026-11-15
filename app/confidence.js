@@ -36,7 +36,7 @@ function confHtml(w) {
   const c = confAt(at); if (!c) return "";
   const txt = c.lvl === "agree" ? `Models agree on the sky (${c.lo}–${c.hi}% cloud): this forecast is usually within about ${c.err} points.`
     : c.lvl === "mixed" ? `Models partly disagree (${c.lo}–${c.hi}% cloud): typical miss about ${c.err} points. Check again closer to the time.`
-    : `Models disagree (${c.lo}–${c.hi}% cloud): the sky could go either way. Check again the evening before before you commit to a long drive.`;
+    : `Models disagree (${c.lo}–${c.hi}% cloud): the sky could go either way. Check again the evening before you commit to a long drive.`;
   return `<p class="conf conf-${c.lvl}" role="note"><span class="conf-dot"></span>${txt}</p>`;
 }
 { const _rC = renderNow; renderNow = function () { _rC.apply(this, arguments); loadConf();

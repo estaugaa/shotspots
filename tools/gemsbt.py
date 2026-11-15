@@ -14,8 +14,8 @@ from PIL import Image
 os.makedirs("ux", exist_ok=True); OUT = []
 def log(*a): OUT.append(" ".join(str(x) for x in a)); print(*a, flush=True)
 S = requests.Session(); S.headers["User-Agent"] = "ShotSpots research"
-Z = 11; TILE = {}
-LAT0, LAT1, LON0, LON1 = 43.5, 48.5, -124.5, -120.0
+Z = 10; TILE = {}
+LAT0, LAT1, LON0, LON1 = 36.0, 49.0, -124.8, -110.0
 KINDS = ["viewpoint", "lookout", "peak", "waterfall", "lake", "beach", "arch", "lighthouse", "bridge", "landmark", "cave", "hotspring", "refuge", "hotspot", "park", "garden", "tower"]
 
 
@@ -72,7 +72,12 @@ for f in glob.glob("feed/seed/*_*.json"):
         rows.append({"id": s["id"], "name": s["name"], "lat": s["lat"], "lon": s["lon"], "kind": s.get("kind") or "other", "tile": os.path.basename(f)[:-5],
                      "commons": (p[1] if isinstance(p, list) and len(p) > 1 else np.nan), "inat": (p[3] if isinstance(p, list) and len(p) > 3 else np.nan),
                      "stand_u": st.get("u", 0)})
-D = pd.DataFrame(rows); D = D[D.commons.notna()].reset_index(drop=True)
+D = pd.DataFrame(rows)
+A = D[["lat", "lon"]].values
+def dens(r, km):
+    d = np.hypot((A[:, 0] - r.lat) * 111, (A[:, 1] - r.lon) * 78); return int((d < km).sum())
+D["dens5"] = D.apply(lambda r: dens(r, 5), axis=1); D["dens20"] = D.apply(lambda r: dens(r, 20), axis=1)
+D = D[D.commons.notna()].reset_index(drop=True)
 log(f"spots with popularity data: {len(D)} in {D.tile.nunique()} tiles; kinds: {D.kind.value_counts().head(10).to_dict()}")
 # water features nearby (other starter spots of water kinds within 2 km)
 W = D[D.kind.isin(["lake", "waterfall", "beach"])][["lat", "lon"]].values
@@ -87,20 +92,25 @@ for i, r in D.iterrows():
 D = pd.concat([D, pd.DataFrame(F)], axis=1)
 D["target"] = np.log1p(D.commons) + 0.5 * np.log1p(D.stand_u)
 for k in KINDS: D["k_" + k] = (D.kind == k).astype(int)
-FEAT = ["z", "openness", "open_dirs", "open_dirs3", "max_hz", "prominence", "relief5", "big_rise20", "steep", "water2"] + ["k_" + k for k in KINDS]
+FEAT = ["dens5", "dens20", "z", "openness", "open_dirs", "open_dirs3", "max_hz", "prominence", "relief5", "big_rise20", "steep", "water2"] + ["k_" + k for k in KINDS]
 
 from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.model_selection import GroupKFold
 from scipy.stats import spearmanr
-oof = np.zeros(len(D)); kind_only = np.zeros(len(D))
+oof = np.zeros(len(D)); kind_only = np.zeros(len(D)); base2 = np.zeros(len(D))
+BF = ["dens5", "dens20"] + ["k_" + k for k in KINDS]
 for trn, tst in GroupKFold(n_splits=5).split(D, groups=D.tile):
     m = HistGradientBoostingRegressor(max_iter=300, learning_rate=0.05, max_leaf_nodes=31, l2_regularization=1.0).fit(D.iloc[trn][FEAT], D.iloc[trn].target)
     oof[tst] = m.predict(D.iloc[tst][FEAT])
+    base2[tst] = HistGradientBoostingRegressor(max_iter=300, learning_rate=0.05, max_leaf_nodes=31, l2_regularization=1.0).fit(D.iloc[trn][BF], D.iloc[trn].target).predict(D.iloc[tst][BF])
     kind_only[tst] = D.iloc[tst].kind.map(D.iloc[trn].groupby("kind").target.mean()).fillna(D.iloc[trn].target.mean()).values
 D["pred"] = oof
 log("\nVALIDATION (spatial CV, whole 1-degree tiles held out)")
 log(f"  Spearman terrain+kind model: {spearmanr(oof, D.target).correlation:.3f}")
 log(f"  Spearman kind-only baseline: {spearmanr(kind_only, D.target).correlation:.3f}")
+log(f"  Spearman kind + accessibility (no terrain): {spearmanr(base2, D.target).correlation:.3f}   <- terrain must beat this to mean anything")
+D["resid_access"] = D.target - base2   # popularity not explained by type + accessibility
+log(f"  terrain-only signal: Spearman(terrain-model gain, access-residual) = {spearmanr(oof - base2, D.resid_access).correlation:.3f}")
 for k in ["viewpoint", "peak", "waterfall", "lake"]:
     g = D[D.kind == k]
     if len(g) > 30: log(f"  within {k:<10} (n={len(g)}): Spearman {spearmanr(g.pred, g.target).correlation:.3f}  (terrain only matters here)")
@@ -109,7 +119,8 @@ from sklearn.inspection import permutation_importance
 pi = permutation_importance(m, D[FEAT], D.target, n_repeats=3, random_state=0)
 log("\nFEATURE IMPORTANCE (permutation)"); [log(f"  {f:<12} {v:.3f}") for f, v in sorted(zip(FEAT, pi.importances_mean), key=lambda x: -x[1])[:12]]
 # gems: high predicted scenic popularity, low actual
-D["potential_pct"] = D.pred.rank(pct=True); D["resid"] = D.pred - D.target
+CF = D[FEAT].copy(); CF["dens5"] = D.dens5.median(); CF["dens20"] = D.dens20.median()
+D["pred_cf"] = m.predict(CF); D["potential_pct"] = D.pred_cf.rank(pct=True); D["resid"] = D.pred_cf - D.target
 gems = D[(D.potential_pct >= 0.8) & (D.commons <= 3) & (D.stand_u == 0)].sort_values("resid", ascending=False)
 H = (45.582, -122.353); D["km_home"] = np.hypot((D.lat - H[0]) * 111, (D.lon - H[1]) * 78); gems = gems.join(D.km_home)
 log(f"\nGEMS: {len(gems)} of {len(D)} spots (top-20% potential, <=3 Commons photos, no photographer cluster)")
