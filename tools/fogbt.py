@@ -32,6 +32,7 @@ def get(url, params, tries=4):
         try:
             r = S.get(url, params=params, timeout=180)
             if r.status_code == 200: return r
+            if r.status_code == 400: raise RuntimeError(f"400 {r.text[:200]}")
             time.sleep(10 * (i + 1))
         except Exception:
             time.sleep(10 * (i + 1))
@@ -48,15 +49,36 @@ def asos(st):
 
 
 HV = ["temperature_2m", "dew_point_2m", "wind_speed_10m", "cloud_cover_low", "visibility", "precipitation", "temperature_925hPa", "temperature_850hPa"]
+USABLE = None
+def usable_vars(lat, lon):
+    """Which hourly variables the day-ahead archive actually serves (it rejects unknown ones with a 400)."""
+    ok = []
+    for v in HV:
+        try:
+            r = S.get("https://previous-runs-api.open-meteo.com/v1/forecast", params={"latitude": lat, "longitude": lon, "start_date": "2025-01-10", "end_date": "2025-01-11",
+                      "hourly": v + "_previous_day1", "models": "gfs_seamless", "timezone": "UTC"}, timeout=60)
+            h = r.json().get("hourly", {}) if r.status_code == 200 else {}
+            vals = next((x for k, x in h.items() if k != "time"), [])
+            good = r.status_code == 200 and any(x is not None for x in vals)
+            log(f"  var {v}: HTTP {r.status_code} {'ok' if good else (r.text[:120] if r.status_code != 200 else 'all null')}")
+            if good: ok.append(v)
+        except Exception as e:
+            log(f"  var {v}: {str(e)[:100]}")
+        time.sleep(0.5)
+    return ok
+
+
 def fcst(lat, lon):
     """Day-ahead forecasts only (issued ~24 h before the valid time): the previous-runs archive. The stitched
     historical-forecast archive leaks (its dawn values come from runs started around dawn)."""
+    global USABLE
+    if USABLE is None: USABLE = usable_vars(lat, lon); log(f"usable day-ahead variables: {USABLE}")
     parts = []
     y0 = START
     while y0 < END:
         y1 = min(END, dt.date(y0.year, 12, 31))
         r = get("https://previous-runs-api.open-meteo.com/v1/forecast", {"latitude": lat, "longitude": lon, "start_date": y0.isoformat(), "end_date": y1.isoformat(),
-                "hourly": ",".join(v + "_previous_day1" for v in HV), "models": "gfs_seamless", "timezone": "UTC", "wind_speed_unit": "kmh"})
+                "hourly": ",".join(v + "_previous_day1" for v in USABLE), "models": "gfs_seamless", "timezone": "UTC", "wind_speed_unit": "kmh"})
         h = r.json().get("hourly") or {}
         if h: parts.append(pd.DataFrame(h))
         y0 = y1 + dt.timedelta(days=1); time.sleep(1)
