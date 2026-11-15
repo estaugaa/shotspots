@@ -31,6 +31,7 @@ jobs:
         if: always()
         run: |
           [ -d ux ] || exit 0
-          cd ux && git init -q && git checkout -q -b diag-out && git add -A
+          B=diag-out; S="${{ inputs.script }}"; case "$S" in *diag.py*|*uxdiag*|"") ;; *) B="diag-$(basename "${S%% *}" .py)";; esac
+          cd ux && git init -q && git checkout -q -b "$B" && git add -A
           git -c user.name=diag -c user.email=diag@users.noreply.github.com commit -qm "diag output"
-          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" diag-out
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" "$B"
