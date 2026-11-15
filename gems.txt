@@ -1,0 +1,72 @@
+spots with popularity data: 4191 in 186 tiles; kinds: {'peak': 2150, 'landmark': 448, 'lake': 416, 'viewpoint': 323, 'waterfall': 230, 'bridge': 150, 'pass': 136, 'arch': 95, 'beach': 89, 'lookout': 47}
+  terrain 0/4191 (5 tiles, 1 s)
+  terrain 500/4191 (381 tiles, 41 s)
+  terrain 1000/4191 (704 tiles, 78 s)
+  terrain 1500/4191 (1007 tiles, 113 s)
+  terrain 2000/4191 (1220 tiles, 137 s)
+  terrain 2500/4191 (1444 tiles, 163 s)
+  terrain 3000/4191 (1649 tiles, 186 s)
+  terrain 3500/4191 (1825 tiles, 206 s)
+  terrain 4000/4191 (1934 tiles, 218 s)
+
+VALIDATION (spatial CV, whole 1-degree tiles held out)
+  Spearman terrain+kind model: 0.392
+  Spearman kind-only baseline: 0.330
+  Spearman kind + accessibility (no terrain): 0.330   <- terrain must beat this to mean anything
+  terrain-only signal: Spearman(terrain-model gain, access-residual) = 0.378
+  within viewpoint  (n=323): Spearman 0.255  (terrain only matters here)
+  within peak       (n=2150): Spearman 0.178  (terrain only matters here)
+  within waterfall  (n=230): Spearman 0.121  (terrain only matters here)
+  within lake       (n=416): Spearman 0.166  (terrain only matters here)
+
+FEATURE IMPORTANCE (permutation)
+  z            0.448
+  dens5        0.227
+  big_rise20   0.158
+  dens20       0.152
+  steep        0.141
+  relief5      0.104
+  openness     0.071
+  prominence   0.065
+  max_hz       0.064
+  k_landmark   0.050
+  k_peak       0.042
+  k_viewpoint  0.040
+
+GEMS: 482 of 4191 spots (top-20% potential, <=3 Commons photos, no photographer cluster)
+Nearest 25 to Washougal:
+  Ross Island Bridge                     bridge        26 km  potential pct 0.85  commons 3  open 0.35 relief 313 m  rise20 325 m  https://www.google.com/maps/@45.50082,-122.66787,15z
+  USS LCI(L)-713                         landmark      28 km  potential pct 0.96  commons 0  open 0.06 relief 282 m  rise20 345 m  https://www.google.com/maps/@45.56285,-122.71053,15z
+  Burlington Northern Railroad Bridge 5. bridge        31 km  potential pct 0.83  commons 1  open 0.06 relief 289 m  rise20 374 m  https://www.google.com/maps/@45.57697,-122.74721,15z
+  Boone Bridge                           bridge        46 km  potential pct 0.81  commons 0  open 0.06 relief 65 m  rise20 323 m  https://www.google.com/maps/@45.29153,-122.76941,15z
+  Main Street Bridge                     bridge        48 km  potential pct 0.93  commons 2  open 0.71 relief 26 m  rise20 370 m  https://www.google.com/maps/@45.52142,-122.96358,15z
+  Bald Peak                              peak          59 km  potential pct 0.87  commons 2  open 0.88 relief 422 m  rise20 -73 m  https://www.google.com/maps/@45.39595,-123.05622,15z
+  Goose Lake                             lake          61 km  potential pct 0.89  commons 2  open 0.00 relief 513 m  rise20 701 m  https://www.google.com/maps/@45.94119,-121.76342,15z
+  Gallon House Bridge                    bridge        70 km  potential pct 0.89  commons 1  open 0.71 relief 133 m  rise20 553 m  https://www.google.com/maps/@45.03211,-122.79829,15z
+  Gallon House Road Northeast            bridge        70 km  potential pct 0.89  commons 1  open 0.71 relief 135 m  rise20 553 m  https://www.google.com/maps/@45.03208,-122.79832,15z
+  Abbot Pass                             pass          71 km  potential pct 0.81  commons 0  open 0.12 relief 237 m  rise20 570 m  https://www.google.com/maps/@45.13107,-121.70511,15z
+  Upper Butte Creek Falls                waterfall     74 km  potential pct 0.84  commons 2  open 0.00 relief 592 m  rise20 665 m  https://www.google.com/maps/@44.92225,-122.51101,15z
+  Wings & Waves Water Park               landmark      75 km  potential pct 0.97  commons 0  open 0.71 relief 30 m  rise20 597 m  https://www.google.com/maps/@45.20417,-123.14963,15z
+  Lewis and Clark Bridge                 bridge        75 km  potential pct 0.80  commons 0  open 0.06 relief 259 m  rise20 467 m  https://www.google.com/maps/@46.10544,-122.96111,15z
+  Smith Creek Viewpoint                  viewpoint     77 km  potential pct 0.80  commons 0  open 0.41 relief 871 m  rise20 1191 m  https://www.google.com/maps/@46.25218,-122.11837,15z
+  Cheese Cave                            cave          77 km  potential pct 0.86  commons 0  open 0.06 relief 510 m  rise20 1349 m  https://www.google.com/maps/@45.98822,-121.55035,15z
+  North Falls Viewpoint                  viewpoint     80 km  potential pct 0.86  commons 0  open 0.12 relief 463 m  rise20 779 m  https://www.google.com/maps/@44.88372,-122.62685,15z
+  Spirit Lake Highway                    bridge        83 km  potential pct 0.83  commons 0  open 0.00 relief 572 m  rise20 957 m  https://www.google.com/maps/@46.32761,-122.43297,15z
+  Shellburg Falls                        viewpoint     88 km  potential pct 0.88  commons 0  open 0.18 relief 615 m  rise20 842 m  https://www.google.com/maps/@44.81168,-122.60791,15z
+  The Dalles Bridge                      bridge        95 km  potential pct 0.84  commons 1  open 0.00 relief 277 m  rise20 868 m  https://www.google.com/maps/@45.60985,-121.14057,15z
+  The Dalles Bridge                      bridge        95 km  potential pct 0.93  commons 1  open 0.00 relief 223 m  rise20 863 m  https://www.google.com/maps/@45.60882,-121.13845,15z
+  Bridge Creek Falls                     waterfall     96 km  potential pct 0.88  commons 0  open 0.00 relief 519 m  rise20 840 m  https://www.google.com/maps/@45.56132,-123.58421,15z
+  Baskett Slough National Wildlife Refug viewpoint    100 km  potential pct 0.90  commons 1  open 0.41 relief 106 m  rise20 764 m  https://www.google.com/maps/@44.95246,-123.26917,15z
+  Julia Butler Hansen Bridge             bridge       105 km  potential pct 0.86  commons 0  open 0.00 relief 632 m  rise20 708 m  https://www.google.com/maps/@46.1946,-123.38416,15z
+  Nehalem Falls                          waterfall    112 km  potential pct 0.92  commons 0  open 0.00 relief 448 m  rise20 1001 m  https://www.google.com/maps/@45.72655,-123.77239,15z
+  Lyon Street Bridge                     bridge       120 km  potential pct 0.93  commons 3  open 0.76 relief 75 m  rise20 457 m  https://www.google.com/maps/@44.63949,-123.10603,15z
+
+For contrast, most famous (highest actual) near Washougal:
+  Broadway Bridge                        bridge     commons 95  potential pct 0.95
+  Liberty Bell                           landmark   commons 100  potential pct 0.97
+  Lovejoy Columns                        landmark   commons 100  potential pct 0.98
+  Herschell–Spillman Noah's Ark Carousel landmark   commons 100  potential pct 0.99
+  Broadway Bridge                        bridge     commons 41  potential pct 0.95
+  Ned Flanders Crossing                  bridge     commons 59  potential pct 0.88
+  USS Blueback                           landmark   commons 36  potential pct 0.99
+  Oregon Iron Company Furnace            landmark   commons 12  potential pct 1.00
