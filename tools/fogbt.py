@@ -19,7 +19,7 @@ from pipeline.sunlite import sun_times
 os.makedirs("ux", exist_ok=True); OUT = []
 def log(*a): OUT.append(" ".join(str(x) for x in a)); print(*a, flush=True)
 S = requests.Session(); S.headers["User-Agent"] = "ShotSpots research (github.com/estaugaa/shotspots)"
-START, END = dt.date(2022, 1, 1), dt.date.today() - dt.timedelta(days=2)
+START, END = dt.date(2024, 2, 1), dt.date.today() - dt.timedelta(days=2)
 # airport stations: valley floor, Gorge, coast, east side
 ST = {"PDX": (45.5958, -122.6092), "TTD": (45.5512, -122.4092), "VUO": (45.6205, -122.6565), "HIO": (45.5404, -122.9498), "SPB": (45.7728, -122.8622),
       "KLS": (46.1180, -122.8986), "UAO": (45.2471, -122.7700), "MMV": (45.1944, -123.1361), "SLE": (44.9095, -123.0026), "EUG": (44.1246, -123.2119),
@@ -49,16 +49,22 @@ def asos(st):
 
 HV = ["temperature_2m", "dew_point_2m", "wind_speed_10m", "cloud_cover_low", "visibility", "precipitation", "temperature_925hPa", "temperature_850hPa"]
 def fcst(lat, lon):
+    """Day-ahead forecasts only (issued ~24 h before the valid time): the previous-runs archive. The stitched
+    historical-forecast archive leaks (its dawn values come from runs started around dawn)."""
     parts = []
     y0 = START
     while y0 < END:
         y1 = min(END, dt.date(y0.year, 12, 31))
-        r = get("https://historical-forecast-api.open-meteo.com/v1/forecast", {"latitude": lat, "longitude": lon, "start_date": y0.isoformat(), "end_date": y1.isoformat(),
-                "hourly": ",".join(HV), "timezone": "UTC", "wind_speed_unit": "kmh"})
+        r = get("https://previous-runs-api.open-meteo.com/v1/forecast", {"latitude": lat, "longitude": lon, "start_date": y0.isoformat(), "end_date": y1.isoformat(),
+                "hourly": ",".join(v + "_previous_day1" for v in HV), "models": "gfs_seamless", "timezone": "UTC", "wind_speed_unit": "kmh"})
         h = r.json().get("hourly") or {}
         if h: parts.append(pd.DataFrame(h))
         y0 = y1 + dt.timedelta(days=1); time.sleep(1)
-    f = pd.concat(parts); f["t"] = pd.to_datetime(f["time"], utc=True); return f.set_index("t").drop(columns=["time"])
+    f = pd.concat(parts); f["t"] = pd.to_datetime(f["time"], utc=True); f = f.set_index("t").drop(columns=["time"])
+    f.columns = [c.replace("_previous_day1", "").replace("_gfs_seamless", "") for c in f.columns]
+    for v in HV:
+        if v not in f.columns: f[v] = np.nan
+    return f
 
 
 def rows_for(st, lat, lon):
@@ -98,8 +104,8 @@ for st, (la, lo) in ST.items():
         r = rows_for(st, la, lo); rows += r; log(f"{st}: {len(r)} dawns, fog rate {np.mean([x['y'] for x in r]):.3f}")
     except Exception as e:
         log(f"{st}: FAILED {str(e)[:150]}")
-D = pd.DataFrame(rows); D.to_csv("ux/fogbt_data.csv.gz", index=False)
-log(f"\nrows {len(D)}, stations {D.st.nunique()}, fog dawns {int(D.y.sum())} ({D.y.mean():.3f})")
+D = pd.DataFrame(rows); D.to_csv("ux/fogbt2_data.csv.gz", index=False)
+log(f"forecast columns present: {[c for c in HV]}"); log(f"\nrows {len(D)}, stations {D.st.nunique()}, fog dawns {int(D.y.sum())} ({D.y.mean():.3f})")
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import HistGradientBoostingClassifier
@@ -147,4 +153,4 @@ rng = np.random.default_rng(1); sts = sorted(D.st.unique()); hold = list(rng.cho
 gb2 = HistGradientBoostingClassifier(max_iter=400, learning_rate=0.05, max_leaf_nodes=31, l2_regularization=1.0).fit(tr[~tr.st.isin(hold)][FEAT].drop(columns=["clim"]), tr[~tr.st.isin(hold)].y)
 th = te[te.st.isin(hold)]
 log(f"\nUNSEEN STATIONS {hold} (no station climatology): AUC {roc_auc_score(th.y, gb2.predict_proba(th[FEAT].drop(columns=['clim']))[:, 1]):.3f}, baseline {roc_auc_score(th.y, base[te.st.isin(hold).values]):.3f}")
-open("ux/fogbt.txt", "w").write("\n".join(OUT))
+open("ux/fogbt2.txt", "w").write("\n".join(OUT))
