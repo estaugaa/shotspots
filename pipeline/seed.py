@@ -425,5 +425,5 @@ def candidates(lat, lon, radius_km, limit=15):
         for lo in range(math.floor(lon - 1.5), math.floor(lon + 1.5) + 1):
             for s in read_json(sdir / f"{la}_{lo}.json", {"spots": []})["spots"]:
                 if km(lat, lon, s["lat"], s["lon"]) <= radius_km:
-                    out.append({k: s[k] for k in ("id", "name", "lat", "lon", "kind", "score", "osm", "wd")})
+                    out.append({k: s.get(k) for k in ("id", "name", "lat", "lon", "kind", "score", "osm", "wd")})
     return sorted(out, key=lambda x: -x["score"])[:limit]
