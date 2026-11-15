@@ -933,23 +933,43 @@ function whenOpts(all) { return all.map((w, i) => [w, i]).filter(([w, i]) => i =
 function focusKind(kind) { const all = allWindows(LOC, PLAN_HOURS), i = all.findIndex(w => w.kind === kind && w.end > new Date()); if (i < 0) return false; UI.focus = i; UI.day = winDay(all[i]); UI.more = false; return true; }
 function fbar() { const el = $("#fbar"); if (!el) return;
   el.innerHTML = `<button class="chip travelchip" id="travelChip" aria-label="How far you'll go">${PREFS.travel === "walk" ? "🚶" : "🚗"} ≤ ${fmtDur(maxTravel())}</button>` + GROUPS.map(([k, l]) => `<button class="chip" data-group="${k}" aria-pressed="${UI.group === k}">${l}</button>`).join(""); setStick(); }
+/* Rendering. A dozen loaders (forecast, feed files, drive times, extras, GPS) finish at different moments and
+   each one used to repaint the whole view on the spot, so the list reflowed and reordered several times in the
+   first seconds. Now: calls are merged into one paint per frame; while the core data is still arriving, repaints
+   wait (up to BOOT_MS) unless you just tapped something; and every repaint keeps the card you were looking at
+   in the same place on screen (Safari has no CSS scroll anchoring, so it's done by hand). */
+const BOOT_MS = 2500, BOOT = { t0: Date.now(), core: false, input: 0 };
+["pointerdown", "keydown"].forEach(ev => addEventListener(ev, () => { BOOT.input = Date.now(); }, true));
+let __rq = 0, __hold = 0;
+function bootReady() { if (BOOT.core) return; BOOT.core = true; clearTimeout(__hold); __hold = 0; render(); }
 function render() {
+  const left = BOOT_MS - (Date.now() - BOOT.t0), view = $("#v-" + UI.view);
+  if (!BOOT.core && left > 0 && view && view.childElementCount && Date.now() - BOOT.input > 1000) {
+    if (!__hold) __hold = setTimeout(() => { __hold = 0; BOOT.core = true; render(); }, left);
+    return; }
+  if (!__rq) __rq = requestAnimationFrame(() => { __rq = 0; paint(); });
+}
+function paint() {
+  window.__paints = (window.__paints || 0) + 1;
+  const view = $("#v-" + UI.view); let anc = null, top = 0;
+  if (view && scrollY > 40) for (const c of view.querySelectorAll("[data-spot]")) { const r = c.getBoundingClientRect(); if (r.bottom > 60) { anc = c.dataset.spot; top = r.top; break; } }
   updLoc(); fresh(); if ($("#fbar") && !$("#fbar").children.length) fbar();
   if (UI.view === "now") renderNow(); else if (UI.view === "spots") renderSpots(); else if (UI.view === "cal") renderCal(); else if (UI.view === "map") renderMap();
+  if (anc) { const c = view.querySelector(`[data-spot="${CSS.escape(anc)}"]`); if (c) { const d = c.getBoundingClientRect().top - top; if (Math.abs(d) > 1) scrollBy(0, d); } }
 }
 const PLAN_VIEWS = ["now", "sky", "cal"];   // Sky and Calendar live inside the Plan tab
 function show(v) { UI.view = v; document.querySelectorAll(".view").forEach(x => x.hidden = x.id !== "v-" + v);
   const tab = PLAN_VIEWS.includes(v) ? "now" : v;
   document.querySelectorAll(".tabs button").forEach(b => { if (b.dataset.v === tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
   window.scrollTo(0, 0); render(); }
-async function refresh(force) { await Promise.all([loadWx(force), loadKp(), loadNws()]); render(); }
+async function refresh(force) { await Promise.all([loadWx(force), loadKp(), loadNws()]); render(); if (typeof FEED !== "undefined" && FEED.m) bootReady(); }
 
 document.addEventListener("click", e => {
   const t = e.target.closest("[data-spot],[data-focus],[data-group],[data-hit],[data-v],#moreBtn,#moreSpots,#saveBtn,#shotBtn,#shareBtn,#nightBtn,#locBtn,#locClose,#sheetClose,#useGps,#fresh");
   if (!t) return;
   if (t.dataset.v) return show(t.dataset.v);
   if (t.dataset.spot) return openSpot(t.dataset.spot);
-  if (t.dataset.focus != null) { UI.focus = +t.dataset.focus; UI.more = false; render(); showDetail(); return; }
+  if (t.dataset.focus != null) { UI.focus = +t.dataset.focus; UI.more = false; paint(); showDetail(); return; }
   if (t.dataset.group) { UI.group = t.dataset.group === UI.group && UI.group !== "all" ? "all" : t.dataset.group; store.set("group", UI.group); UI.limit = 40; __topsKey = "";
     const cur = allWindows(LOC, PLAN_HOURS)[UI.focus]; if (UI.group === "night" && (!cur || cur.kind !== "night") && focusKind("night")) toast("Showing tonight's night-sky window");
     fbar(); return render(); }
@@ -1006,7 +1026,7 @@ document.addEventListener("click", e => {
   const all = allWindows(LOC, PLAN_HOURS), tops = windowTops(all); UI.day = t.dataset.day; UI.more = false;
   const idx = all.map((w, i) => i).filter(i => winDay(all[i]) === UI.day);
   UI.focus = idx.reduce((b, i) => (tops[i] ? tops[i].f.n : -1) > (tops[b] ? tops[b].f.n : -1) ? i : b, idx[0] ?? UI.focus);
-  render(); showDetail();
+  paint(); showDetail();
 });
 /* keep the pinned planner just under the header (phone); on desktop the column scrolls on its own */
 function setStick() { const t = document.querySelector(".top"); document.documentElement.style.setProperty("--stick", matchMedia("(min-width:1100px)").matches || !t ? "0px" : t.offsetHeight + "px"); }
