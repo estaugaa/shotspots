@@ -40,44 +40,65 @@ def _sparql(q):
     return []
 
 
+# Curated: classic US photo locations (names resolved to Wikidata coordinates; unresolved names are logged, not guessed)
+NAMES = [("Smith Rock State Park", "viewpoint"), ("Clingmans Dome", "viewpoint"), ("Otter Cliff", "viewpoint"), ("Anhinga Trail", "viewpoint"),
+ ("Sand Beach (Maine)", "beach"), ("Jordan Pond", "lake"), ("Bass Harbor Head Light", "lighthouse"), ("Thunder Hole", "viewpoint"),
+ ("Morton Overlook", "viewpoint"), ("Cades Cove", "viewpoint"), ("Roaring Fork Motor Nature Trail", "viewpoint"), ("Linn Cove Viaduct", "bridge"), ("Grandfather Mountain", "viewpoint"),
+ ("Horseshoe Bend (Arizona)", "viewpoint"), ("Antelope Canyon", "viewpoint"), ("Monument Valley", "viewpoint"), ("Toroweap Overlook", "viewpoint"), ("Hopi Point", "viewpoint"),
+ ("Delicate Arch", "arch"), ("Landscape Arch", "arch"), ("Turret Arch", "arch"), ("Dead Horse Point State Park", "viewpoint"), ("Grand View Point Overlook", "viewpoint"),
+ ("Sunset Point (Bryce Canyon)", "viewpoint"), ("Inspiration Point (Bryce Canyon)", "viewpoint"), ("Angels Landing", "viewpoint"), ("The Watchman", "viewpoint"), ("Canyon Overlook Trail", "viewpoint"),
+ ("Goblin Valley State Park", "viewpoint"), ("Valley of Fire State Park", "viewpoint"), ("Zabriskie Point", "viewpoint"), ("Badwater Basin", "viewpoint"), ("Mesquite Flat Sand Dunes", "viewpoint"), ("Racetrack Playa", "viewpoint"),
+ ("Glacier Point", "viewpoint"), ("Tunnel View", "viewpoint"), ("Mono Lake", "lake"), ("Alabama Hills", "viewpoint"), ("Bixby Creek Bridge", "bridge"), ("McWay Falls", "waterfall"),
+ ("Point Reyes Lighthouse", "lighthouse"), ("Pigeon Point Light Station", "lighthouse"), ("Moro Rock", "viewpoint"), ("Joshua Tree National Park", "viewpoint"), ("Keys View", "viewpoint"),
+ ("Ruby Beach", "beach"), ("Rialto Beach", "beach"), ("Hurricane Ridge", "viewpoint"), ("Palouse Falls", "waterfall"), ("Steptoe Butte", "viewpoint"), ("Diablo Lake", "lake"),
+ ("Reflection Lakes", "lake"), ("Sunrise (Mount Rainier)", "viewpoint"), ("Crater Lake", "lake"), ("Thor's Well", "viewpoint"), ("Heceta Head Light", "lighthouse"), ("Proxy Falls", "waterfall"),
+ ("Trillium Lake", "lake"), ("Painted Hills", "viewpoint"), ("Shoshone Falls", "waterfall"), ("Mesa Falls", "waterfall"),
+ ("Oxbow Bend", "viewpoint"), ("Schwabacher Landing", "viewpoint"), ("Mormon Row Historic District", "viewpoint"), ("Snake River Overlook", "viewpoint"), ("Grand Prismatic Spring", "viewpoint"),
+ ("Lower Falls (Yellowstone River)", "waterfall"), ("Artist Point (Yellowstone)", "viewpoint"), ("Lamar Valley", "viewpoint"), ("Maroon Bells", "viewpoint"), ("Dream Lake (Colorado)", "lake"),
+ ("Garden of the Gods", "viewpoint"), ("Great Sand Dunes National Park and Preserve", "viewpoint"), ("White Sands National Park", "viewpoint"), ("Shiprock", "viewpoint"),
+ ("Devils Tower", "viewpoint"), ("Needles Highway", "viewpoint"), ("Badlands Loop Road", "viewpoint"), ("Big Bend National Park", "viewpoint"),
+ ("Cathedral Rock (Arizona)", "viewpoint"), ("Bell Rock", "viewpoint"), ("Havasu Falls", "waterfall"), ("Hanging Lake", "lake"),
+ ("Niagara Falls", "waterfall"), ("Watkins Glen State Park", "waterfall"), ("Portland Head Light", "lighthouse"), ("Pemaquid Point Light", "lighthouse"), ("Mount Washington (New Hampshire)", "viewpoint"),
+ ("Kancamagus Highway", "viewpoint"), ("Ricketts Glen State Park", "waterfall"), ("Bridal Veil Falls (Utah)", "waterfall"), ("Mesa Arch", "arch"), ("Pictured Rocks National Lakeshore", "viewpoint"),
+ ("Split Rock Lighthouse", "lighthouse"), ("Cape Hatteras Light", "lighthouse"), ("Bodie Island Light", "lighthouse"), ("Jennette's Pier", "viewpoint"), ("Sunset Cliffs", "viewpoint"),
+ ("La Jolla Cove", "beach"), ("Ellen Browning Scripps Memorial Pier", "viewpoint"), ("Torrey Pines State Natural Reserve", "viewpoint"), ("Laguna Beach, California", "beach")]
+KCATS = {"viewpoint": ["vista"], "beach": ["coast"], "lake": ["water", "reflection"], "lighthouse": ["coast", "historic"], "arch": ["geology", "vista"], "waterfall": ["waterfall"], "bridge": ["historic", "vista"]}
+
+
+def _resolve(name):
+    """Wikipedia title -> Wikidata id + coordinates (via the article, so the right item is used)."""
+    j = _get("https://en.wikipedia.org/w/api.php", {"action": "query", "titles": name, "redirects": 1, "prop": "coordinates|pageprops", "ppprop": "wikibase_item", "format": "json"}) or {}
+    for p in (j.get("query", {}).get("pages") or {}).values():
+        co = (p.get("coordinates") or [None])[0]; q = (p.get("pageprops") or {}).get("wikibase_item")
+        if co and q: return {"wd": q, "title": p["title"], "lat": round(co["lat"], 5), "lon": round(co["lon"], 5)}
+    return None
+
+
 def run():
     have_q, near = set(), {}
     for f in glob.glob(str(FEED / "seed" / "*_*.json")):
-        for s in (read_json(f, {}) or {}).get("spots", []):
-            if s.get("wd"): have_q.add(s["wd"])
-            near.setdefault((round(s["lat"], 1), round(s["lon"], 1)), []).append(s)
-    cand = {}; used = []
-    for label, kind in CLASSES.items():
-        j = _get("https://www.wikidata.org/w/api.php", {"action": "wbsearchentities", "search": label, "language": "en", "type": "item", "limit": 5, "format": "json"}) or {}
-        hit = next((e for e in j.get("search", []) if (e.get("label") or "").lower() == label), None)
-        if not hit: log.info(f"icons: no class for '{label}'"); continue
-        cls = hit["id"]; used.append(f"{label}={cls} ({hit.get('description', '')[:40]})")
-        rows = _sparql((Q_DIRECT if kind == "peak" else Q).format(cls=cls)); log.info(f"icons {label} {cls}: {len(rows)}")
-        for b in rows:
-            q = b["item"]["value"].rsplit("/", 1)[1]
-            m = re.match(r"Point\(([-\d.]+) ([-\d.]+)\)", b["coord"]["value"])
-            if not m or q in have_q or q in cand: continue
-            lon, lat = float(m.group(1)), float(m.group(2))
-            if not (18 < lat < 72 and -180 < lon < -60): continue
-            cand[q] = {"wd": q, "name": b["title"]["value"], "lat": round(lat, 5), "lon": round(lon, 5), "kind0": kind, "sl": int(b["sl"]["value"])}
-        time.sleep(2)
-    # drop ones a starter spot already covers under another id (within 600 m, sharing a name word)
+        for x in (read_json(f, {}) or {}).get("spots", []):
+            if x.get("wd"): have_q.add(x["wd"])
+            near.setdefault((round(x["lat"], 1), round(x["lon"], 1)), []).append(x)
     def covered(c):
-        words = {w for w in re.findall(r"[a-z]{4,}", c["name"].lower()) if w not in {"mount", "state", "park", "national", "falls", "lake", "beach", "lighthouse"}}
+        words = {w for w in re.findall(r"[a-z]{4,}", c["title"].lower()) if w not in {"mount", "state", "park", "national", "falls", "lake", "beach", "lighthouse", "light", "point", "trail", "overlook"}}
         for dlat in (-0.1, 0, 0.1):
             for dlon in (-0.1, 0, 0.1):
-                for s in near.get((round(c["lat"] + dlat, 1), round(c["lon"] + dlon, 1)), []):
-                    if abs(s["lat"] - c["lat"]) < 0.0055 and abs(s["lon"] - c["lon"]) < 0.0075 and (words & set(re.findall(r"[a-z]{4,}", s["name"].lower())) or not words):
-                        return True
-        return False
-    cand = {q: c for q, c in cand.items() if not covered(c)}
+                for x in near.get((round(c["lat"] + dlat, 1), round(c["lon"] + dlon, 1)), []):
+                    if abs(x["lat"] - c["lat"]) < 0.006 and abs(x["lon"] - c["lon"]) < 0.008 and words & set(re.findall(r"[a-z]{4,}", x["name"].lower())):
+                        return x["name"]
+        return None
     today = dt.date.today().replace(day=1); end = today - dt.timedelta(days=1); start = (end.replace(day=1) - dt.timedelta(days=330)).replace(day=1)
-    out = []
-    for c in sorted(cand.values(), key=lambda c: -c["sl"]):
-        v = _views(c["name"], start.strftime("%Y%m%d00"), end.strftime("%Y%m%d00")); time.sleep(0.12)
-        if v < 30000: continue
-        k = c["kind0"]
-        out.append({"id": f"icon-{c['wd']}", "name": c["name"], "lat": c["lat"], "lon": c["lon"], "kind": KIND.get(k, k), "cats": CATS.get(k, ["vista"]), "views": v, "wd": c["wd"],
-                    "light": "both", "effort": "short", "tip": f"A well-known {k.replace('rock', 'rock formation')} (about {round(v / 1000)}k Wikipedia views a year). The pin is the mapped centre: check where the classic view is."})
-    write_json("icons.json", {"gen": iso(utcnow()), "classes": used, "spots": sorted(out, key=lambda x: -x["views"])})
-    return f"{len(cand)} uncovered candidates, {len(out)} with >=30k views/yr added"
+    out, unresolved, cov = [], [], []
+    for name, kind in NAMES:
+        c = _resolve(name); time.sleep(0.2)
+        if not c: unresolved.append(name); continue
+        if c["wd"] in have_q: cov.append(f"{name} (same id)"); continue
+        hit = covered(c)
+        if hit: cov.append(f"{name} ~ {hit}"); continue
+        v = _views(c["title"], start.strftime("%Y%m%d00"), end.strftime("%Y%m%d00")); time.sleep(0.12)
+        out.append({"id": f"icon-{c['wd']}", "name": c["title"], "lat": c["lat"], "lon": c["lon"], "kind": kind, "cats": KCATS.get(kind, ["vista"]), "views": v, "wd": c["wd"],
+                    "light": "both", "effort": "short", "tip": f"A classic photo location (about {round(v / 1000)}k Wikipedia views a year). The pin is the mapped centre; check where the classic view is."})
+    log.info(f"icons unresolved: {unresolved}"); log.info(f"icons already covered: {cov}")
+    write_json("icons.json", {"gen": iso(utcnow()), "unresolved": unresolved, "covered": len(cov), "spots": sorted(out, key=lambda x: -x["views"])})
+    return f"{len(NAMES)} curated: {len(cov)} already in the data, {len(out)} added, {len(unresolved)} unresolved"
