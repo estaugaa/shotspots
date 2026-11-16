@@ -41,7 +41,7 @@ def _sparql(q):
 
 
 # Curated: classic US photo locations (names resolved to Wikidata coordinates; unresolved names are logged, not guessed)
-NAMES = [("Smith Rock State Park", "viewpoint"), ("Clingmans Dome", "viewpoint"), ("Otter Cliff", "viewpoint"), ("Anhinga Trail", "viewpoint"),
+NAMES = [("Smith Rock State Park", "viewpoint"), ("Kuwohi", "viewpoint"), ("Otter Cliff", "viewpoint"), ("Anhinga Trail", "viewpoint"),
  ("Sand Beach (Maine)", "beach"), ("Jordan Pond", "lake"), ("Bass Harbor Head Light", "lighthouse"), ("Thunder Hole", "viewpoint"),
  ("Morton Overlook", "viewpoint"), ("Cades Cove", "viewpoint"), ("Roaring Fork Motor Nature Trail", "viewpoint"), ("Linn Cove Viaduct", "bridge"), ("Grandfather Mountain", "viewpoint"),
  ("Horseshoe Bend (Arizona)", "viewpoint"), ("Antelope Canyon", "viewpoint"), ("Monument Valley", "viewpoint"), ("Toroweap Overlook", "viewpoint"), ("Hopi Point", "viewpoint"),
@@ -52,16 +52,16 @@ NAMES = [("Smith Rock State Park", "viewpoint"), ("Clingmans Dome", "viewpoint")
  ("Point Reyes Lighthouse", "lighthouse"), ("Pigeon Point Light Station", "lighthouse"), ("Moro Rock", "viewpoint"), ("Joshua Tree National Park", "viewpoint"), ("Keys View", "viewpoint"),
  ("Ruby Beach", "beach"), ("Rialto Beach", "beach"), ("Hurricane Ridge", "viewpoint"), ("Palouse Falls", "waterfall"), ("Steptoe Butte", "viewpoint"), ("Diablo Lake", "lake"),
  ("Reflection Lakes", "lake"), ("Sunrise (Mount Rainier)", "viewpoint"), ("Crater Lake", "lake"), ("Thor's Well", "viewpoint"), ("Heceta Head Light", "lighthouse"), ("Proxy Falls", "waterfall"),
- ("Trillium Lake", "lake"), ("Painted Hills", "viewpoint"), ("Shoshone Falls", "waterfall"), ("Mesa Falls", "waterfall"),
+ ("Trillium Lake", "lake"), ("Painted Hills", "viewpoint"), ("Shoshone Falls", "waterfall"), ("Upper Mesa Falls", "waterfall"),
  ("Oxbow Bend", "viewpoint"), ("Schwabacher Landing", "viewpoint"), ("Mormon Row Historic District", "viewpoint"), ("Snake River Overlook", "viewpoint"), ("Grand Prismatic Spring", "viewpoint"),
- ("Lower Falls (Yellowstone River)", "waterfall"), ("Artist Point (Yellowstone)", "viewpoint"), ("Lamar Valley", "viewpoint"), ("Maroon Bells", "viewpoint"), ("Dream Lake (Colorado)", "lake"),
+ ("Lower Falls (Yellowstone River)", "waterfall"), ("Artist Point (Yellowstone)", "viewpoint"), ("Maroon Bells", "viewpoint"), ("Dream Lake (Colorado)", "lake"),
  ("Garden of the Gods", "viewpoint"), ("Great Sand Dunes National Park and Preserve", "viewpoint"), ("White Sands National Park", "viewpoint"), ("Shiprock", "viewpoint"),
  ("Devils Tower", "viewpoint"), ("Needles Highway", "viewpoint"), ("Badlands Loop Road", "viewpoint"), ("Big Bend National Park", "viewpoint"),
  ("Cathedral Rock (Arizona)", "viewpoint"), ("Bell Rock", "viewpoint"), ("Havasu Falls", "waterfall"), ("Hanging Lake", "lake"),
  ("Niagara Falls", "waterfall"), ("Watkins Glen State Park", "waterfall"), ("Portland Head Light", "lighthouse"), ("Pemaquid Point Light", "lighthouse"), ("Mount Washington (New Hampshire)", "viewpoint"),
  ("Kancamagus Highway", "viewpoint"), ("Ricketts Glen State Park", "waterfall"), ("Bridal Veil Falls (Utah)", "waterfall"), ("Mesa Arch", "arch"), ("Pictured Rocks National Lakeshore", "viewpoint"),
  ("Split Rock Lighthouse", "lighthouse"), ("Cape Hatteras Light", "lighthouse"), ("Bodie Island Light", "lighthouse"), ("Jennette's Pier", "viewpoint"), ("Sunset Cliffs", "viewpoint"),
- ("La Jolla Cove", "beach"), ("Ellen Browning Scripps Memorial Pier", "viewpoint"), ("Torrey Pines State Natural Reserve", "viewpoint"), ("Laguna Beach, California", "beach")]
+ ("La Jolla Cove", "beach"), ("Ellen Browning Scripps Memorial Pier", "viewpoint"), ("Torrey Pines State Natural Reserve", "viewpoint")]
 KCATS = {"viewpoint": ["vista"], "beach": ["coast"], "lake": ["water", "reflection"], "lighthouse": ["coast", "historic"], "arch": ["geology", "vista"], "waterfall": ["waterfall"], "bridge": ["historic", "vista"]}
 
 
