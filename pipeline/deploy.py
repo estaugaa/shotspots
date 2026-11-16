@@ -11,6 +11,9 @@ def build_site(out=None):
     if out.exists():
         shutil.rmtree(out)
     shutil.copytree(ROOT / "app", out)
+    # config/ is the source of truth for pins, alignment targets and road dates (pipeline/spotsync.py)
+    from . import spotsync
+    synced = spotsync.write_overlaid(ROOT / "app" / "data.js", out / "data.js", ROOT)
     shutil.copytree(FEED, out / "feed", ignore=shutil.ignore_patterns("*.tmp"))
     ep = ROOT / "config" / "endpoints.json"
     if ep.exists():
@@ -18,4 +21,4 @@ def build_site(out=None):
     (out / ".nojekyll").write_text("")
     n = sum(1 for p in out.rglob("*") if p.is_file())
     size = sum(p.stat().st_size for p in out.rglob("*") if p.is_file())
-    return f"site built: {n} files, {size / 1e6:.1f} MB in {out}"
+    return f"site built: {n} files, {size / 1e6:.1f} MB in {out}; {len(synced)} field(s) taken from config/"
