@@ -58,9 +58,9 @@
  {
   "id": "t-angels",
   "name": "Angel's Rest",
-  "lat": 45.5749,
-  "lon": -122.152,
-  "elev": 481,
+  "lat": 45.564,
+  "lon": -122.1532,
+  "elev": 483,
   "kind": "landmark"
  },
  {
@@ -98,8 +98,8 @@
  {
   "id": "t-prune",
   "name": "Prune Hill",
-  "lat": 45.598,
-  "lon": -122.445,
+  "lat": 45.5943,
+  "lon": -122.4376,
   "elev": 233,
   "kind": "landmark"
  },

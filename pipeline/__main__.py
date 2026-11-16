@@ -77,7 +77,7 @@ def job_weekly():
     run_module("planner", light.plan_year, "MODELED", "365-day landmark alignments")
     run_module("climatology", obs.climatology, "MEASURED", "10-year ASOS climatology")
     run_module("phenology", obs.phenology, "MEASURED", "USA-NPN observations")
-    run_module("wildlife", wildlife.run, "ESTIMATED", "encounter rates")
+    run_module("wildlife", wildlife.run, "ESTIMATED", "species share of GBIF records within 0.75 km (eBird encounter rates when EBD_URL is set)")
     run_module("darksky", viirs.run, "MODELED", "VIIRS Black Marble sky brightness")
     run_module("darkgrid", viirs.national, "MODELED", "VIIRS national sky-brightness grid (annual)")
     run_module("originality", flickr.run, "MEASURED", "Flickr geotagged photos")

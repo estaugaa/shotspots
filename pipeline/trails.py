@@ -5,7 +5,7 @@ to the nearest-by-walking parking area or trailhead, and measure the route's len
 climb from the Copernicus 90 m DEM (Open-Meteo elevation API). Resumable with a time budget; results kept in
 data/trails.json and published as feed/trails.json. Refreshed every ~120 days.
 """
-import heapq, json, math, time
+import heapq, json, math, re, time
 from .common import spots, write_json, read_json, http, log, utcnow, iso, DATA
 
 OVERPASS = "https://overpass-api.de/api/interpreter"
@@ -163,11 +163,13 @@ FIXABLE = {"waterfall": {"waterfall"}, "peak": {"vista", "mountain"}, "viewpoint
 
 
 def apply_pins(store):
-    """Move pins to the matching OSM feature when the evidence is strong; the old pin becomes the parking point.
-    Every change is logged in data/pin_fixes.json (with the old position) so it can be reviewed or undone."""
+    """Move researched-spot pins to the matching OSM feature when the evidence is strong; the old pin becomes the
+    parking point. Every change is logged in data/pin_fixes.json (with the old position) so it can be reviewed or
+    undone. Curated spots (config/spots.json) are only suggested, in data/pin_suggestions.json."""
     from .common import CONFIG
     log_ = read_json(DATA / "pin_fixes.json", [])
     done = {x["id"] for x in log_}
+    sug = {x["id"]: x for x in read_json(DATA / "pin_suggestions.json", [])}
     files = [CONFIG / "spots.json"] + sorted((DATA / "research" / "spots").glob("*.json"))
     n = 0
     for f in files:
@@ -180,7 +182,20 @@ def apply_pins(store):
                 continue
             if not (FIXABLE.get(ps["kind"], set()) & set(sp["cats"])):
                 continue
+            # Nov 2026 audit: a roadside/short-walk viewpoint is photographed from near the parking, not the summit
+            # (Smith Rock, Neahkahnie, Elk Rock were moved to peaks), and "Lower X Falls" is not "X Falls".
+            if ps["kind"] in ("peak", "viewpoint", "cliff", "rock") and sp.get("effort") in ("road", "short"):
+                continue
+            words = lambda x: set(re.findall(r"[a-z]+", x.lower()))
+            if (words(ps["name"]) & {"lower", "upper", "middle", "north", "south", "east", "west"}) - words(sp["name"]):
+                continue
             old = [sp["lat"], sp["lon"]]
+            if f.name == "spots.json":
+                # Curated spots are drawn by the app from app/data.js, which this job can't update; moving the pin
+                # here only would put forecasts and map in different places. Suggest it for review instead.
+                sug.setdefault(sp["id"], {"id": sp["id"], "name": sp["name"], "pin": old, "osm": ps["name"], "kind": ps["kind"],
+                                          "osm_pin": [ps["lat"], ps["lon"]], "off_m": ps["off_m"], "at": iso(utcnow())})
+                continue
             sp["lat"], sp["lon"] = ps["lat"], ps["lon"]
             if not sp.get("park"):
                 sp["park"] = old
@@ -191,6 +206,7 @@ def apply_pins(store):
         if changed:
             json.dump(arr, open(f, "w"), indent=1 if f.name == "spots.json" else None, ensure_ascii=False)
     json.dump(log_, open(DATA / "pin_fixes.json", "w"), indent=1)
+    json.dump(sorted(sug.values(), key=lambda x: x["id"]), open(DATA / "pin_suggestions.json", "w"), indent=1)
     return n
 
 
