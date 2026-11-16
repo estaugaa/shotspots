@@ -323,7 +323,7 @@ function verdict(sk) {
   }
   if (sk.fog) return { cls: "fog", txt: "Fog likely in the lowlands: go above it" };
   if (sk.mode === "snow") return { cls: "good", txt: "Snow: fresh snow on forests and falls" };
-  if (sk.mode === "rain") return sk.kind === "day" ? { cls: "mid", txt: "Rain: waterfalls, wet forest, moody mist" } : { cls: "poor", txt: `Rain at ${sk.kind}: little color. ` + (SPOTS.filter(s => s.cats.includes("city") && !tooFar(s)).length >= 6 ? "Wet city lights at blue hour are the best bet" : "Try storm surf, waterfalls or moody forest instead") };
+  if (sk.mode === "rain") return sk.kind === "day" ? { cls: "mid", txt: "Rain: waterfalls, wet forest, moody mist" } : { cls: "poor", txt: `Rain at ${sk.kind}: little color. ` + ((() => { const near = SPOTS.filter(s => !tooFar(s)), c = near.filter(s => s.cats.includes("city")).length; return c >= 6 && c >= near.length * 0.25; })() ? "Wet city lights at blue hour are the best bet" : "Try storm surf, waterfalls or moody forest instead") };
   if (sk.mode === "clearing") return { cls: "good", txt: "Storm clearing: dramatic light odds" };
   if (sk.rainbow) return { cls: "good", txt: `Showers and low sun: rainbow odds, look ${sk.rbDir}` };
   if (sk.mode === "wind") return { cls: "mid", txt: `Windy (${fmtWind(sk.wind)}): skip reflections, try streaking clouds` };
@@ -538,6 +538,8 @@ function fitFor(s, w) {
   if (s.seed && s.kind === "lookout" && !(s.pop >= 10) && /garden|park|fair|amusement|six flags|ride|plaza/i.test(s.name)) n *= 0.5;
   // an eBird hotspot named just for a town ("Jackson", "Moab") covers the whole town: no place to go
   if (s.kind === "hotspot" && !/[:(]|park|lake|pond|marsh|refuge|reserve|preserve|trail|river|creek|bay|beach|island|wetland|slough|sanctuary|garden|area|point|dam|canyon|meadow|lagoon|reservoir|springs?\b|woods|forest|ranch|farm|center|road|loop|overlook/i.test(s.name)) n *= 0.4;
+  // refuges and wildlife areas are for animals, not sunrise/sunset views (outside Wildlife, unless a season event is on)
+  if (s.kind === "refuge" && UI.group !== "life" && GOLDK.has(w.kind) && !why.some(x => /at peak|staging|migration|\brut\b|run in season|in bloom now/.test(x))) n *= 0.6;
   if (s.kind === "hotspot" && UI.group !== "life" && !why.some(x => /at peak|staging|migration|\brut\b|run in season|in bloom now/.test(x))) n *= GOLDK.has(w.kind) ? 0.55 : 0.65;   // a season event, not just routine sightings
   if (road) { n -= 10; why.push(road.short || road.title); }
   return { n: Math.round(clamp(n, 0, 100)), why, sk };
