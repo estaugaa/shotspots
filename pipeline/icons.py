@@ -8,15 +8,20 @@ import json, re, time, glob, datetime as dt, urllib.parse
 from .common import FEED, log, utcnow, iso, write_json, read_json
 from .wikiviews import S, _get, _views
 
-CLASSES = {  # Wikidata class -> starter kind
-    "Q34038": "waterfall", "Q8502": "peak", "Q40080": "beach", "Q39715": "lighthouse", "Q150784": "canyon", "Q107679": "cliff",
-    "Q133056": "pass", "Q6017969": "viewpoint", "Q2143825": "trail", "Q35666": "glacier", "Q41575": "butte", "Q207524": "mesa",
-    "Q1365179": "park", "Q19817101": "arch", "Q2465017": "rock"
+CLASSES = {  # English class label on Wikidata -> starter kind (ids are looked up by label at run time and logged)
+    "waterfall": "waterfall", "mountain": "peak", "beach": "beach", "lighthouse": "lighthouse", "canyon": "canyon", "cliff": "cliff",
+    "mountain pass": "pass", "scenic viewpoint": "viewpoint", "natural arch": "arch", "rock formation": "rock", "butte": "butte",
+    "mesa": "mesa", "glacier": "glacier", "sea stack": "rock", "hoodoo": "rock", "geyser": "rock", "hot spring": "rock",
 }
 CATS = {"waterfall": ["waterfall"], "peak": ["mountain", "vista"], "beach": ["coast"], "lighthouse": ["coast", "historic"], "canyon": ["geology", "vista"],
         "cliff": ["geology", "vista"], "pass": ["mountain", "vista"], "viewpoint": ["vista"], "trail": ["vista"], "glacier": ["mountain"], "butte": ["geology", "vista"],
         "mesa": ["geology", "vista"], "park": ["vista"], "arch": ["geology"], "rock": ["geology", "vista"], "lake": ["water", "reflection"], "range": ["mountain", "vista"]}
 KIND = {"canyon": "viewpoint", "cliff": "viewpoint", "trail": "viewpoint", "glacier": "viewpoint", "butte": "viewpoint", "mesa": "viewpoint", "park": "viewpoint", "rock": "viewpoint", "range": "peak"}
+Q_DIRECT = """SELECT ?item ?title ?coord ?sl WHERE {{
+  ?item wdt:P31 wd:{cls} ; wdt:P17 wd:Q30 ; wdt:P625 ?coord ; wikibase:sitelinks ?sl .
+  FILTER(?sl >= 8)
+  ?art schema:about ?item ; schema:isPartOf <https://en.wikipedia.org/> ; schema:name ?title .
+}}"""
 Q = """SELECT ?item ?title ?coord ?sl WHERE {{
   ?item wdt:P31/wdt:P279* wd:{cls} ; wdt:P17 wd:Q30 ; wdt:P625 ?coord ; wikibase:sitelinks ?sl .
   FILTER(?sl >= 6)
@@ -41,9 +46,13 @@ def run():
         for s in (read_json(f, {}) or {}).get("spots", []):
             if s.get("wd"): have_q.add(s["wd"])
             near.setdefault((round(s["lat"], 1), round(s["lon"], 1)), []).append(s)
-    cand = {}
-    for cls, kind in CLASSES.items():
-        rows = _sparql(Q.format(cls=cls)); log.info(f"icons {cls} {kind}: {len(rows)}")
+    cand = {}; used = []
+    for label, kind in CLASSES.items():
+        j = _get("https://www.wikidata.org/w/api.php", {"action": "wbsearchentities", "search": label, "language": "en", "type": "item", "limit": 5, "format": "json"}) or {}
+        hit = next((e for e in j.get("search", []) if (e.get("label") or "").lower() == label), None)
+        if not hit: log.info(f"icons: no class for '{label}'"); continue
+        cls = hit["id"]; used.append(f"{label}={cls} ({hit.get('description', '')[:40]})")
+        rows = _sparql((Q_DIRECT if kind == "peak" else Q).format(cls=cls)); log.info(f"icons {label} {cls}: {len(rows)}")
         for b in rows:
             q = b["item"]["value"].rsplit("/", 1)[1]
             m = re.match(r"Point\(([-\d.]+) ([-\d.]+)\)", b["coord"]["value"])
@@ -70,5 +79,5 @@ def run():
         k = c["kind0"]
         out.append({"id": f"icon-{c['wd']}", "name": c["name"], "lat": c["lat"], "lon": c["lon"], "kind": KIND.get(k, k), "cats": CATS.get(k, ["vista"]), "views": v, "wd": c["wd"],
                     "light": "both", "effort": "short", "tip": f"A well-known {k.replace('rock', 'rock formation')} (about {round(v / 1000)}k Wikipedia views a year). The pin is the mapped centre: check where the classic view is."})
-    write_json("icons.json", {"gen": iso(utcnow()), "spots": sorted(out, key=lambda x: -x["views"])})
+    write_json("icons.json", {"gen": iso(utcnow()), "classes": used, "spots": sorted(out, key=lambda x: -x["views"])})
     return f"{len(cand)} uncovered candidates, {len(out)} with >=30k views/yr added"
