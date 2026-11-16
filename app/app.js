@@ -126,7 +126,9 @@ async function omFetch(url) {
 function seedFame(s) {
   // pop: 3 = median mapped place, 10 = top 3% (a well-known landmark), 12.6 = top 1%. Icons need to clear ordinary spots
   const wiki = s.score != null ? (Math.log2(Math.max(1, s.score)) - 2.3) * 1.2 : 0, pop = s.pop != null ? (s.pop >= 4 ? (s.pop - 4) * 0.8 : (s.pop - 4) * 0.4) : 0;
-  return Math.max(-2, Math.min(10, wiki + pop + (s.standFame || 0)));
+  // Wikipedia page views a year: ~2k adds nothing, ~20k +2, ~200k +4, ~2M +6
+  const views = s.views ? Math.max(0, Math.min(6, (Math.log10(s.views) - 3.3) * 2.2)) : 0;
+  return Math.max(-2, Math.min(10, wiki + pop + views + (s.standFame || 0)));
 }
 function wxMiss() { return !WX ? (navigator.onLine === false ? "offline: no forecast" : "forecast loading") : "no forecast point near here yet"; }
 function nearestPt(p, maxKm, exclude) {
@@ -512,10 +514,13 @@ function fitFor(s, w) {
   let n = Math.max(...parts);
   if (s.months && !s.months.includes(month)) { n *= 0.45; why.push("out of season"); }
   const side = AMK.has(w.kind) ? "sunrise" : PMK.has(w.kind) ? "sunset" : null;
-  if (side && !s.cats.some(c => LIFE.includes(c)) && (GOLDK.has(w.kind) || BLUEK.has(w.kind)) && (s.light === "sunrise" || s.light === "sunset") && s.light !== side) { n = GOLDK.has(w.kind) ? n * 0.55 : n - 6; why.push(`faces ${s.light === "sunrise" ? "east: a sunrise spot" : "west: a sunset spot"}`); }
+  // a famous view whose terrain "faces away" is usually shot with the sun behind you: warm light on the subject (Tunnel View at sunset)
+  const famous = s.seed && ((s.score || 0) >= 12 || (s.views || 0) >= 40000 || (s._stand && s._stand.u >= 4));
+  if (famous && side && GOLDK.has(w.kind) && (s.light === "blocked" || ((s.light === "sunrise" || s.light === "sunset") && s.light !== side))) why.push("sun behind you: warm light on the view");
+  else if (side && !s.cats.some(c => LIFE.includes(c)) && (GOLDK.has(w.kind) || BLUEK.has(w.kind)) && (s.light === "sunrise" || s.light === "sunset") && s.light !== side) { n = GOLDK.has(w.kind) ? n * 0.55 : n - 6; why.push(`faces ${s.light === "sunrise" ? "east: a sunrise spot" : "west: a sunset spot"}`); }
   // starter spots: terrain says which way they open up (pipeline/seedlight.py)
   if (s.seed && side && GOLDK.has(w.kind)) {
-    if (s.light === "blocked") { n *= 0.7; why.push("hills block the low sun here"); }
+    if (s.light === "blocked") { if (!famous) { n *= 0.7; why.push("hills block the low sun here"); } }
     else if (s.hz && (s.light === side || s.light === "both")) { n += 4; why.push(`open view toward the ${side === "sunrise" ? "east" : "west"}`); }
     const KW = /bridge|landmark/.test(s.kind) ? 0.85 : s.kind === "waterfall" ? 0.85 : s.kind === "refuge" ? 0.85 : 1; n *= KW;
    // big areas: the pin is just the middle of them   // bridges, landmarks and falls are better at blue hour or in soft light
