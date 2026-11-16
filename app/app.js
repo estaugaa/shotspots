@@ -479,6 +479,7 @@ function fitFor(s, w) {
         if (m === "snow" && (s.cats.includes("mountain") || s.cats.includes("vista"))) { v = Math.max(v, 58); why.push("fresh snow on the trees"); }
       } else {
         if (s.cats.includes("mountain")) { if (sk.cc <= 40) { v += 12; why.push("peaks likely out"); } else if (sk.low + sk.mid >= 120) { v -= 18; why.push("peaks may be in cloud"); } }
+        if (!s.cats.includes("coast") && s.cats.some(c => ["vista", "mountain", "geology"].includes(c)) && !wet && (sk.cc >= 85 || (sk.block != null && sk.block >= 80)) && v < 25) { v = 25; why.push("flat light: moody, even light on the view"); }
         if (s.cats.includes("coast") && (sk.cc >= 85 || (sk.block != null && sk.block >= 80)) && v < 30) { v = 30; why.push("flat light: long exposures of the surf and rocks"); }
         if (s.cats.includes("reflection")) { if (sk.wind <= 3) { v += 8; why.push(`calm (${fmtWind(sk.wind)}): reflections`); } else if (sk.wind >= 15) { v -= s.cats.includes("coast") ? 5 : 15; why.push(s.cats.includes("coast") ? "windy: no glassy wet-sand reflections" : "too windy for reflections"); } }
         if (sk.rainbow && s.cats.some(c => ["vista", "mountain", "coast", "reflection"].includes(c))) { v += 12; why.push(`rainbow odds: look ${sk.rbDir}`); }
