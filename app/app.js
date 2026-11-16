@@ -563,7 +563,7 @@ function rankFor(w, filter) {
     const d = driveMin(s), walk = WALK[s.effort] || 15, leave = new Date((w.kind === "night" ? (w.dark ? w.dark.s : w.start) : w.peak).getTime() - (d + walk) * 60000);
     const reachable = now + (d + walk * 0.5) * 60000 < w.end.getTime();
     if (!reachable) continue;
-    list.push({ s, f, d, leave, r: (typeof SCORE_V !== "undefined" && SCORE_V === 2 && w.kind !== "night" && UI.group !== "life" ? f.n * (1 - Math.min(0.4, d * 0.005)) : f.n - d * 0.28) + (UI.group === "water" && s.cats[0] === "waterfall" ? 8 : 0) });   // Waterfalls filter: the falls themselves first
+    list.push({ s, f, d, leave, r: (typeof SCORE_V !== "undefined" && SCORE_V === 2 && w.kind !== "night" && UI.group !== "life" ? f.n * (1 - 0.1 * Math.min(1, d / Math.max(1, maxTravel())))   /* inside the chosen range distance is only a tie-breaker: at most -10% at the edge */ : f.n - d * 0.28) + (UI.group === "water" && s.cats[0] === "waterfall" ? 8 : 0) });   // Waterfalls filter: the falls themselves first
   }
   return list.sort((a, b) => b.r - a.r);
 }

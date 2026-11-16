@@ -3,7 +3,7 @@
    Quality (0-1): fame for starter spots (Wikipedia links and views, photo counts, photographer stands); hand-researched spots 0.8.
    Multiplier 0.5 + 0.625q: an unknown spot keeps half its light score, a curated spot 100%, the most famous 112%.
    So an unknown spot in great light (90 -> 45) beats a famous one in poor light (30 -> 34) but not in fair light (50 -> 56).
-   Access: rankFor orders by score x (1 - 0.005 x minutes away), at most -40%.
+   Access: inside the chosen travel range distance is only a tie-breaker: rankFor orders by score x (1 - 0.1 x share of the range used).
    Night and the Wildlife filter keep v1: darkness and animals decide those. Settings key ss2:scorev = "1" switches back. */
 let SCORE_V = 2;
 try { if (localStorage.getItem("ss2:scorev") === "1") SCORE_V = 1; } catch (e) { }
