@@ -11,6 +11,14 @@ def build_site(out=None):
     if out.exists():
         shutil.rmtree(out)
     shutil.copytree(ROOT / "app", out)
+    # service-worker version = hash of the app files, so phones always pick up a changed app (no manual bump)
+    import hashlib, re as _re
+    h = hashlib.sha1()
+    for p in sorted((ROOT / "app").rglob("*")):
+        if p.is_file() and p.name != "sw.js":
+            h.update(p.name.encode()); h.update(p.read_bytes())
+    sw = out / "sw.js"
+    sw.write_text(_re.sub(r'const V="ss2-v[^"]*"', f'const V="ss2-v{h.hexdigest()[:10]}"', sw.read_text(), count=1))
     shutil.copytree(FEED, out / "feed", ignore=shutil.ignore_patterns("*.tmp"))
     ep = ROOT / "config" / "endpoints.json"
     if ep.exists():

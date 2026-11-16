@@ -1,8 +1,9 @@
 # ShotSpots
 
-Personal landscape / wildlife / night-sky planner for the Washougal, Columbia Gorge and Portland area.
+Free landscape / wildlife / night-sky planner: started around the Columbia Gorge, built to work anywhere in the US.
+Live: https://estaugaa.github.io/shotspots/ . Working notes: CLAUDE.md and docs/.
 
-* `app/` – the phone web app (installed from Safari, published at shotspots-eric.netlify.app)
+* `app/` – the phone web app (installed from Safari, published on GitHub Pages)
 * `pipeline/` – scheduled data jobs (GitHub Actions) that build `feed/`, which the app reads
 * `config/` – spots, landmarks, gauges; `data/` – rolling histories and outing logs
 * `inbox/frames/` – drop night photos here (GitHub web or mobile upload) to plate-solve them

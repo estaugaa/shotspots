@@ -23,3 +23,12 @@ def test_alignment_targets_match_landmarks():
         if lm and (abs(lm["lat"] - t["lat"]) > 2e-3 or abs(lm["lon"] - t["lon"]) > 2e-3):
             bad.append(k)
     assert not bad, f"alignment targets differ from config/landmarks.json: {bad}"
+
+
+def test_every_app_script_is_cached_for_offline():
+    """A script added to index.html but not to the service worker's SHELL list breaks the app offline."""
+    import re
+    html = (ROOT / "app" / "index.html").read_text(); sw = (ROOT / "app" / "sw.js").read_text()
+    scripts = [s for s in re.findall(r'<script[^>]*src="([^"]+)"', html) if not s.startswith("http")]
+    missing = [s for s in scripts if f'"{s}"' not in sw and f"'{s}'" not in sw]
+    assert not missing, f"scripts not in sw.js SHELL: {missing}"
