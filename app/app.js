@@ -323,7 +323,7 @@ function verdict(sk) {
   }
   if (sk.fog) return { cls: "fog", txt: "Fog likely in the lowlands: go above it" };
   if (sk.mode === "snow") return { cls: "good", txt: "Snow: fresh snow on forests and falls" };
-  if (sk.mode === "rain") return sk.kind === "day" ? { cls: "mid", txt: "Rain: waterfalls, wet forest, moody mist" } : { cls: "poor", txt: `Rain at ${sk.kind}: little color. ` + (SPOTS.some(s => s.cats.includes("city") && !tooFar(s)) ? "Wet city lights at blue hour are the best bet" : "Try storm surf, waterfalls or moody forest instead") };
+  if (sk.mode === "rain") return sk.kind === "day" ? { cls: "mid", txt: "Rain: waterfalls, wet forest, moody mist" } : { cls: "poor", txt: `Rain at ${sk.kind}: little color. ` + (SPOTS.filter(s => s.cats.includes("city") && !tooFar(s)).length >= 6 ? "Wet city lights at blue hour are the best bet" : "Try storm surf, waterfalls or moody forest instead") };
   if (sk.mode === "clearing") return { cls: "good", txt: "Storm clearing: dramatic light odds" };
   if (sk.rainbow) return { cls: "good", txt: `Showers and low sun: rainbow odds, look ${sk.rbDir}` };
   if (sk.mode === "wind") return { cls: "mid", txt: `Windy (${fmtWind(sk.wind)}): skip reflections, try streaking clouds` };
@@ -499,7 +499,7 @@ function fitFor(s, w) {
       if (wl.length) { const pk = wl.find(x => x.peak), ses = wl[0].ev.session;
         const fits = ses === "both" || ses === "owl" && w.kind === "sunset" || (ses === "dawn" || ses === "morning") && w.kind === "sunrise" || ses === "dusk" && w.kind === "sunset";
         v += (pk ? 24 : 12) * (fits ? 1 : 0.3); why.unshift(`${wl[0].ev.icon || ""} ${wl[0].ev.name}${pk ? " at peak" : " in season"}${fits ? "" : " (better at another time of day)"}`.trim()); }
-      if (w.kind === "sunrise" && s.cats.includes("birds") && sk.tf <= 38 && sk.wind <= 4) { v += 6; why.push(`${fmtTemp(sk.tf)} and calm: breath plumes on singing birds`); }
+      if (w.kind === "sunrise" && s.cats.includes("birds") && sk.tf <= 38 && sk.wind <= 4 && UI.group === "life") { v += 6; why.push(`${fmtTemp(sk.tf)} and calm: breath plumes on singing birds`); }
       parts.push(v); }
     if (FOG_ABOVE.includes(s.id) && sk.pop < 50 && lowlandFog(w)) { parts.push(93); why.unshift("should be above the fog"); }
     else { const fa = (((typeof fd === "function" && fd("fogabove")) || {}).spots || {})[s.id], hit = fa && fa.find(x => Math.abs(new Date(x.t) - w.peak) < 100 * 6e4);
@@ -526,7 +526,7 @@ function fitFor(s, w) {
   // starter spots all share the same sky, so let how notable a place is (Wikipedia links, photos) break ties
   if (s.seed) n += seedFame(s);
   // flat light everywhere (thick overcast or rain at a golden hour): the well-known views are still the best bet, so fame counts double
-  if (s.seed && GOLDK.has(w.kind) && sk && sk.cc >= 85 && UI.group !== "life") n += Math.max(0, seedFame(s));
+  if (s.seed && GOLDK.has(w.kind) && sk && (sk.cc >= 85 || sk.block >= 80) && UI.group !== "life") n += Math.max(0, seedFame(s));   // also when distant cloud blocks the sun
   // quality prior: researched spots are hand-picked; starter spots earn theirs from Wikipedia links, photos and eBird species
   if (!s.seed) n += 3;
   // big areas (parks, wildernesses): the pin is just the middle of them, not a place to stand
