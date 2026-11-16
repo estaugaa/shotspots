@@ -359,7 +359,14 @@ function alignEvents() {
 }
 function alignOn(s, w) { if (DAYK.has(w.kind)) return null; const d0 = w.start.getTime() - 40 * 60000, d1 = w.end.getTime() + 40 * 60000; return alignEvents().find(e => e.spot === s.id && e.t >= d0 && e.t <= d1); }
 function roadStatus(s, t) {
-  const md = mmdd(t || new Date()); const r = (D.SEASONAL_ROADS || []).find(x => x.spots.includes(s.id) && inRange(md, x.from, x.to)); return r || null;
+  const d = t || new Date(), md = mmdd(d), mine = (D.SEASONAL_ROADS || []).filter(x => x.spots.includes(s.id));
+  // The researched, sourced rules (config/access_rules.json) decide the dates when they cover this spot.
+  if (typeof closedRule === "function" && fd("access_rules")) {
+    const src = accessRules(s.id).filter(r => r.type === "closed" || r.type === "open_only");
+    if (src.length) { const r = closedRule(s.id, d); if (!r) return null;
+      return mine[0] ? { ...mine[0], text: r.text } : { id: "rule", spots: [s.id], level: "closed", short: reopenText(r), title: "Seasonal closure", text: r.text }; }
+  }
+  return mine.find(x => inRange(md, x.from, x.to)) || null;
 }
 function showersSoon(days) {
   const now = new Date(), out = [];

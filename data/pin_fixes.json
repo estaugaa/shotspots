@@ -125,7 +125,8 @@
   "osm": "Smith Rock",
   "kind": "peak",
   "off_m": 846,
-  "at": "2026-11-06T02:06:17Z"
+  "at": "2026-11-06T02:06:17Z",
+  "reverted": "2026-11-15: photo spot is the rim/pullout/main falls, not the OSM feature"
  },
  {
   "id": "angels-rest",
@@ -221,7 +222,8 @@
   "osm": "Lower White River Falls",
   "kind": "waterfall",
   "off_m": 302,
-  "at": "2026-11-07T06:12:59Z"
+  "at": "2026-11-07T06:12:59Z",
+  "reverted": "2026-11-15: photo spot is the rim/pullout/main falls, not the OSM feature"
  },
  {
   "id": "stacker-butte",
@@ -285,6 +287,7 @@
   "osm": "Neahkahnie Mountain",
   "kind": "peak",
   "off_m": 599,
-  "at": "2026-11-07T21:45:33Z"
+  "at": "2026-11-07T21:45:33Z",
+  "reverted": "2026-11-15: photo spot is the rim/pullout/main falls, not the OSM feature"
  }
 ]
