@@ -532,10 +532,11 @@ function fitFor(s, w) {
   n *= KCAP[w.kind] || 1;
   // starter spots all share the same sky, so let how notable a place is (Wikipedia links, photos) break ties
   // fame: at golden and blue hour the known natural views should rise (Cadillac Mountain over an unnamed lookout); not for landmarks, birding hotspots or refuges
-  if (s.seed) { const fm = seedFame(s); n += fm * ((GOLDK.has(w.kind) || BLUEK.has(w.kind)) && UI.group !== "life" && !/landmark|hotspot|refuge|bridge/.test(s.kind) ? 2 : 1); }
+  const v2 = typeof SCORE_V !== "undefined" && SCORE_V === 2 && w.kind !== "night" && UI.group !== "life";   // v2 applies fame as a multiplier (score2.js)
+  if (s.seed && !v2) { const fm = seedFame(s); n += fm * ((GOLDK.has(w.kind) || BLUEK.has(w.kind)) && UI.group !== "life" && !/landmark|hotspot|refuge|bridge/.test(s.kind) ? 2 : 1); }
   if (s.seed && GENERIC_NAME.test(s.name) && (GOLDK.has(w.kind) || BLUEK.has(w.kind))) n *= 0.8;
   // flat light everywhere (thick overcast or rain at a golden hour): the well-known views are still the best bet, so fame counts double
-  if (s.seed && GOLDK.has(w.kind) && sk && (sk.cc >= 85 || sk.block >= 80) && UI.group !== "life" && !/landmark|hotspot|refuge|bridge/.test(s.kind)) n += Math.max(0, seedFame(s));   // also when distant cloud blocks the sun
+  if (!v2 && s.seed && GOLDK.has(w.kind) && sk && (sk.cc >= 85 || sk.block >= 80) && UI.group !== "life" && !/landmark|hotspot|refuge|bridge/.test(s.kind)) n += Math.max(0, seedFame(s));   // also when distant cloud blocks the sun
   // quality prior: researched spots are hand-picked; starter spots earn theirs from Wikipedia links, photos and eBird species
   if (!s.seed) n += 3;
   // big areas (parks, wildernesses): the pin is just the middle of them, not a place to stand
