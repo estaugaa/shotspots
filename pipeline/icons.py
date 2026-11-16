@@ -61,7 +61,7 @@ NAMES = [("Smith Rock State Park", "viewpoint"), ("Kuwohi", "viewpoint"), ("Otte
  ("Niagara Falls", "waterfall"), ("Watkins Glen State Park", "waterfall"), ("Portland Head Light", "lighthouse"), ("Pemaquid Point Light", "lighthouse"), ("Mount Washington (New Hampshire)", "viewpoint"),
  ("Kancamagus Highway", "viewpoint"), ("Ricketts Glen State Park", "waterfall"), ("Bridal Veil Falls (Utah)", "waterfall"), ("Mesa Arch", "arch"), ("Pictured Rocks National Lakeshore", "viewpoint"),
  ("Split Rock Lighthouse", "lighthouse"), ("Cape Hatteras Light", "lighthouse"), ("Bodie Island Light", "lighthouse"), ("Jennette's Pier", "viewpoint"), ("Sunset Cliffs", "viewpoint"),
- ("La Jolla Cove", "beach"), ("Ellen Browning Scripps Memorial Pier", "viewpoint"), ("Torrey Pines State Natural Reserve", "viewpoint")]
+ ("La Jolla Cove", "beach"), ("Kerry Park (Seattle)", "viewpoint"), ("Gas Works Park", "viewpoint"), ("Pilot Butte State Scenic Viewpoint", "viewpoint"), ("Ecola State Park", "viewpoint"), ("Ruby Beach", "beach"), ("Ellen Browning Scripps Memorial Pier", "viewpoint"), ("Torrey Pines State Natural Reserve", "viewpoint")]
 KCATS = {"viewpoint": ["vista"], "beach": ["coast"], "lake": ["water", "reflection"], "lighthouse": ["coast", "historic"], "arch": ["geology", "vista"], "waterfall": ["waterfall"], "bridge": ["historic", "vista"]}
 
 
@@ -85,6 +85,7 @@ def run():
         for dlat in (-0.1, 0, 0.1):
             for dlon in (-0.1, 0, 0.1):
                 for x in near.get((round(c["lat"] + dlat, 1), round(c["lon"] + dlon, 1)), []):
+                    if x.get("kind") == "hotspot": continue
                     if abs(x["lat"] - c["lat"]) < 0.006 and abs(x["lon"] - c["lon"]) < 0.008 and words & set(re.findall(r"[a-z]{4,}", x["name"].lower())):
                         return x["name"]
         return None

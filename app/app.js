@@ -123,6 +123,7 @@ async function omFetch(url) {
 }
 // how well-known a starter spot is: Wikipedia/Wikidata links and eBird species (seed score), plus geotagged photos on
 // Commons and Flickr and iNaturalist sightings (pop). About -2 for an obscure pin, up to +6 for a famous one.
+const GENERIC_NAME = /^(control tower|(port area |wildlife |fire )?(viewing platform|observation (tower|deck|platform)|lookout( tower)?)|wildlife (viewing|lookout|platform)[a-z ]*|viewpoint|overlook|scenic (view|overlook|viewpoint)|vista point|hawk watch)$/i;
 function seedFame(s) {
   // pop: 3 = median mapped place, 10 = top 3% (a well-known landmark), 12.6 = top 1%. Icons need to clear ordinary spots
   const wiki = s.score != null ? (Math.log2(Math.max(1, s.score)) - 2.3) * 1.2 : 0, pop = s.pop != null ? (s.pop >= 4 ? (s.pop - 4) * 0.8 : (s.pop - 4) * 0.4) : 0;
@@ -478,7 +479,7 @@ function fitFor(s, w) {
         if (m === "snow" && (s.cats.includes("mountain") || s.cats.includes("vista"))) { v = Math.max(v, 58); why.push("fresh snow on the trees"); }
       } else {
         if (s.cats.includes("mountain")) { if (sk.cc <= 40) { v += 12; why.push("peaks likely out"); } else if (sk.low + sk.mid >= 120) { v -= 18; why.push("peaks may be in cloud"); } }
-        if (s.cats.includes("reflection")) { if (sk.wind <= 3) { v += 8; why.push(`calm (${fmtWind(sk.wind)}): reflections`); } else if (sk.wind >= 15) { v -= 15; why.push("too windy for reflections"); } }
+        if (s.cats.includes("reflection")) { if (sk.wind <= 3) { v += 8; why.push(`calm (${fmtWind(sk.wind)}): reflections`); } else if (sk.wind >= 15) { v -= s.cats.includes("coast") ? 5 : 15; why.push(s.cats.includes("coast") ? "windy: no glassy wet-sand reflections" : "too windy for reflections"); } }
         if (sk.rainbow && s.cats.some(c => ["vista", "mountain", "coast", "reflection"].includes(c))) { v += 12; why.push(`rainbow odds: look ${sk.rbDir}`); }
       }
       if (dayW && m !== "clearing") v = Math.min(v, 30);
@@ -529,7 +530,9 @@ function fitFor(s, w) {
   if (w.kind !== "night" && !BLUEK.has(w.kind) && s.light === "night") n -= 25;
   n *= KCAP[w.kind] || 1;
   // starter spots all share the same sky, so let how notable a place is (Wikipedia links, photos) break ties
-  if (s.seed) n += seedFame(s);
+  // fame: at golden and blue hour the known natural views should rise (Cadillac Mountain over an unnamed lookout); not for landmarks, birding hotspots or refuges
+  if (s.seed) { const fm = seedFame(s); n += fm * ((GOLDK.has(w.kind) || BLUEK.has(w.kind)) && UI.group !== "life" && !/landmark|hotspot|refuge|bridge/.test(s.kind) ? 2 : 1); }
+  if (s.seed && GENERIC_NAME.test(s.name) && (GOLDK.has(w.kind) || BLUEK.has(w.kind))) n *= 0.8;
   // flat light everywhere (thick overcast or rain at a golden hour): the well-known views are still the best bet, so fame counts double
   if (s.seed && GOLDK.has(w.kind) && sk && (sk.cc >= 85 || sk.block >= 80) && UI.group !== "life") n += Math.max(0, seedFame(s));   // also when distant cloud blocks the sun
   // quality prior: researched spots are hand-picked; starter spots earn theirs from Wikipedia links, photos and eBird species

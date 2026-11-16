@@ -36,6 +36,7 @@ async function loadSeed() {
     for (const x of t.spots) { if (byId[x.id] || real.some(s => Math.abs(s.lat - x.lat) < 0.004 && Math.abs(s.lon - x.lon) < 0.006)) continue;
       const ps = ((fd("photostats") || {}).spots || {})[x.id];   // learned from when people photograph it
       if (/bridge|landmark/.test(x.kind) && x.cats) x.cats = x.cats.map(c => c === "historic" ? "landmark" : c);
+      if ((x.kind === "peak" || x.kind === "lookout") && (x.light === "sunrise" || x.light === "sunset")) x.light = "both";   // summits see both ways; coarse terrain often says otherwise (Cadillac Mountain)
       const pp = pops[i] && pops[i][x.id]; if (pp) { x.pop = pp[0]; x.refs = { commons: pp[1], flickr: pp[2], inat: pp[3] }; }
       const s = { ...x, region: `${SEED_KIND[x.kind] || "Place"} · starter spot`, months: ps && ps.months || null, light: ps && ps.light || x.light, osm: true, seed: true, src: [], osmUrl: `https://www.openstreetmap.org/${x.osm}`, ps };
       SPOTS.push(s); byId[s.id] = s; added++; } });
@@ -97,7 +98,10 @@ function standHtml(s) {
 /* ---- famous places the starter data misses (pipeline/icons.py): added once as starter spots ---- */
 fetch("feed/icons.json").then(r => r.ok ? r.json() : null).then(j => {
   if (!j || !j.spots) return; let c = 0;
+  const words = n => new Set((n.toLowerCase().match(/[a-z]{4,}/g) || []).filter(w => !/^(state|park|national|scenic|viewpoint|point|area)$/.test(w)));
   for (const x of j.spots) { if (byId[x.id]) continue;
+    const xw = words(x.name);   // a hand-researched spot of the same place wins (Smith Rock)
+    if (SPOTS.some(s => !s.seed && Math.abs(s.lat - x.lat) < 0.03 && Math.abs(s.lon - x.lon) < 0.04 && [...words(s.name)].some(w => xw.has(w)))) continue;
     const s = { ...x, seed: true, icon: true, region: x.state || "", hz: false };
     SPOTS.push(s); byId[s.id] = s; c++; }
   if (c && typeof render === "function") { clearTimeout(SEED._it); SEED._it = setTimeout(render, 600); }
