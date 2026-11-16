@@ -2,6 +2,9 @@
 
 One line each: what was decided, and why. Add a line when a choice is made; edit a line when it is reversed.
 
+- 2026-11-16 Scoring is data driven, not coverage driven: hand-researched spots get quality from the same measures as every spot (photo and sighting counts, Wikipedia, photographer stands), not a fixed bonus. Outside Wildlife, any spot that is mainly about animals competes on its view. (Eric)
+- 2026-11-16 Starter-spot horizons use the highest ground within 30 m and ignore terrain closer than 40 m: rough pins below a rim saw a false 25-degree wall.
+
 - 2026-11-16 Organise context as these docs in the repo, not raw chat logs: the repo is public and logs are noisy; work in one chat per workstream.
 - 2026-11-16 Pass/fail expectations (tools/expect.py) run nightly; add a case for every fixed bug.
 - 2026-11-16 App publishes on push; service-worker version comes from a hash of the app files (a forgotten manual bump once left phones on old code).

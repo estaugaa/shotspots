@@ -4,7 +4,8 @@ top 3") so weather alone doesn't fail them. Exits non-zero on any failure (GitHu
 Results are appended to data/test_history.jsonl (one line per run) so quality can be charted over time.
 
     python tools/expect.py            (nightly, in the "Nightly check" workflow)
-Add a case whenever a bug is fixed, so it can't come back.
+Add a case whenever a bug is fixed, so it can't come back. Cases test outcomes (views lead), never coverage
+(e.g. "a hand-researched spot leads"): ranking must be data driven.
 """
 import asyncio, json, os, sys, datetime as dt
 from playwright.async_api import async_playwright
@@ -12,7 +13,7 @@ URL = "https://estaugaa.github.io/shotspots/"
 
 # name, (lat, lon), prefs, group, window kind (tomorrow), rule, arg
 #   any_top: [n, [name substrings]]  - one of these is in the top n
-#   own_top: n                       - a hand-researched spot is in the top n
+#   max_life: [n, k]                 - at most k of the top n are wildlife-led (birding hotspot/refuge, or first category wildlife/birds)
 #   max_kind: [n, kinds, k]          - at most k of the top n are of these kinds
 CASES = [
  ("Grand Canyon sunrise: a rim point leads", (36.0, -112.12), {"maxDrive": 45}, "all", "sunrise", "any_top", [3, ["Mather", "Hopi", "Yaki", "Lipan", "Grandview", "Powell", "Yavapai", "Moran", "Desert View"]]),
@@ -22,8 +23,8 @@ CASES = [
  ("La Jolla sunset: coast leads, not museums", (32.847, -117.273), {"maxDrive": 30}, "all", "sunset", "any_top", [3, ["Beach", "Cove", "Cliffs", "Point Loma", "Windansea", "Torrey", "Scripps"]]),
  ("Seattle sunrise: a known view in the top 5", (47.61, -122.33), {"maxDrive": 60}, "all", "sunrise", "any_top", [5, ["Gas Works", "Kerry Park", "Snoqualmie", "West Point", "Alki", "Volunteer Park", "Discovery Park", "Space Needle"]]),
  ("Bend sunrise: a known spot in the top 5", (44.058, -121.315), {"maxDrive": 60}, "all", "sunrise", "any_top", [5, ["Mirror Pond", "Pilot Butte", "Smith Rock", "Benham", "Tumalo", "Sparks Lake", "Dillon"]]),
- ("Washougal sunrise: one of Eric's researched spots leads", (45.582, -122.353), {"maxDrive": 60}, "all", "sunrise", "own_top", 3),
- ("Washougal sunset: not taken over by birding spots", (45.582, -122.353), {"maxDrive": 60}, "all", "sunset", "max_kind", [3, ["hotspot", "refuge"], 1]),
+ ("Washougal sunrise: views lead, not wildlife spots", (45.582, -122.353), {"maxDrive": 60}, "all", "sunrise", "max_life", [3, 1]),
+ ("Washougal sunset: views lead, not wildlife spots", (45.582, -122.353), {"maxDrive": 60}, "all", "sunset", "max_life", [3, 1]),
  ("Zion sunset: not taken over by birding spots", (37.189, -112.999), {"maxDrive": 30}, "all", "sunset", "max_kind", [3, ["hotspot", "refuge"], 1]),
  ("Yosemite sunset: Yosemite Valley icons in the top 5", (37.745, -119.59), {"maxDrive": 45}, "all", "sunset", "any_top", [5, ["Yosemite Fall", "El Capitan", "Tunnel View", "Glacier Point", "Half Dome", "Vernal", "Bridalveil", "Valley View", "Sentinel"]]),
  ("Grand Canyon sunrise: nothing beyond the travel limit", (36.0, -112.12), {"maxDrive": 45}, "all", "sunrise", "none_far", 10),
@@ -33,15 +34,15 @@ RANK = """(async ([kind]) => {
   const t0 = Date.now(); while (!WX && Date.now() - t0 < 30000) await new Promise(r => setTimeout(r, 500));
   const all = allWindows(LOC, PLAN_HOURS), want = laYMD(new Date(Date.now() + 864e5));
   const w = all.find(x => winDay(x) === want && x.kind === kind); if (!w) return { err: "no " + kind + " window" };
-  return { wx: !!WX, top: rankFor(w).slice(0, 10).map(x => ({ n: x.s.name, k: x.s.kind || "", own: !x.s.seed && !x.s.osm, far: tooFar(x.s), sc: x.f.n })) }; })"""
+  return { wx: !!WX, top: rankFor(w).slice(0, 10).map(x => ({ n: x.s.name, k: x.s.kind || "", life: lifeLed(x.s), far: tooFar(x.s), sc: x.f.n })) }; })"""
 
 
 def judge(rule, arg, top):
     if rule == "any_top":
         n, names = arg; hit = [t["n"] for t in top[:n] if any(k.lower() in t["n"].lower() for k in names)]
         return bool(hit), hit
-    if rule == "own_top":
-        hit = [t["n"] for t in top[:arg] if t["own"]]; return bool(hit), hit
+    if rule == "max_life":
+        n, k = arg; hit = [t["n"] for t in top[:n] if t["life"]]; return len(hit) <= k, hit
     if rule == "max_kind":
         n, kinds, k = arg; hit = [t["n"] for t in top[:n] if t["k"] in kinds]; return len(hit) <= k, hit
     if rule == "none_far":

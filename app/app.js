@@ -124,6 +124,8 @@ async function omFetch(url) {
 // how well-known a starter spot is: Wikipedia/Wikidata links and eBird species (seed score), plus geotagged photos on
 // Commons and Flickr and iNaturalist sightings (pop). About -2 for an obscure pin, up to +6 for a famous one.
 const GENERIC_NAME = /^((former |old )?[a-z ]*airport control tower|control tower|(port area |wildlife |fire )?(viewing platform|observation (tower|deck|platform)|lookout( tower)?)|wildlife (viewing|lookout|platform)[a-z ]*|viewpoint|overlook|scenic (view|overlook|viewpoint)|vista point|hawk watch)$/i;
+/* a spot that is mainly about animals: birding hotspots and refuges, or any spot whose first category is wildlife/birds */
+function lifeLed(s) { return /hotspot|refuge/.test(s.kind || "") || LIFE.includes((s.cats || [])[0]); }
 function seedFame(s) {
   // pop: 3 = median mapped place, 10 = top 3% (a well-known landmark), 12.6 = top 1%. Icons need to clear ordinary spots
   const wiki = s.score != null ? (Math.log2(Math.max(1, s.score)) - 2.3) * 1.2 : 0, pop = s.pop != null ? (s.pop >= 4 ? (s.pop - 4) * 0.8 : (s.pop - 4) * 0.4) : 0;
@@ -504,7 +506,7 @@ function fitFor(s, w) {
       if (wl.length) { const pk = wl.find(x => x.peak), ses = wl[0].ev.session;
         const fits = ses === "both" || ses === "owl" && w.kind === "sunset" || (ses === "dawn" || ses === "morning") && w.kind === "sunrise" || ses === "dusk" && w.kind === "sunset";
         v += (pk ? 24 : 12) * (fits ? 1 : 0.3); why.unshift(`${wl[0].ev.icon || ""} ${wl[0].ev.name}${pk ? " at peak" : " in season"}${fits ? "" : " (better at another time of day)"}`.trim()); }
-      if (typeof SCORE_V !== "undefined" && SCORE_V === 2 && UI.group !== "life" && /hotspot|refuge/.test(s.kind || "")) v *= 0.6;   // v2: animals are not the light; outside Wildlife a birding spot competes on its view
+      if (typeof SCORE_V !== "undefined" && SCORE_V === 2 && UI.group !== "life" && lifeLed(s)) v *= 0.6;   // v2: animals are not the light; outside Wildlife a wildlife spot competes on its view (any spot, researched or not)
       if (w.kind === "sunrise" && s.cats.includes("birds") && sk.tf <= 38 && sk.wind <= 4 && UI.group === "life") { v += 6; why.push(`${fmtTemp(sk.tf)} and calm: breath plumes on singing birds`); }
       parts.push(v); }
     if (FOG_ABOVE.includes(s.id) && sk.pop < 50 && lowlandFog(w)) { parts.push(93); why.unshift("should be above the fog"); }

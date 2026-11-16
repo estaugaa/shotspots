@@ -157,7 +157,7 @@ fitFor = function (s, w) {
   // lists only carry park notices that plainly concern this spot; every notice is on the spot page
   const np = npsAt(s); if (np) { const cl = (np.al || []).find(a => a.cat === "Park Closure" && nameShare(s.name, a.t)); if (cl) why.unshift(`closure notice: ${cl.t.slice(0, 70)}`); if (np.te) why.push("park may need a timed-entry reservation"); }
   const eb = LIVE.ebird && LIVE.ebird.rows.filter(o => km(s, o) <= 3); if (eb && eb.length) { n += 12; why.unshift(`rare bird: ${eb[0].n} reported ${eb[0].t.slice(5, 10)}`); }
-  if (s.kind === "hotspot" && UI.group !== "life" && n > f.n && !why.some(x => /in bloom now|rare bird/.test(x))) n = f.n + (n - f.n) * 0.35;   // sightings don't make a birding spot a sunrise spot
+  if (lifeLed(s) && UI.group !== "life" && n > f.n && !why.some(x => /in bloom now|rare bird/.test(x))) n = f.n + (n - f.n) * 0.35;   // sightings don't make a birding spot a sunrise spot
   return { ...f, n: Math.round(clamp(n, 0, 100)), why };
 };
 

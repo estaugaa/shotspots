@@ -13,7 +13,8 @@ Live at https://estaugaa.github.io/shotspots/ (GitHub Pages). It must work as we
 - Do heavy work on GitHub Actions, not in the Claude session (minimise tokens).
 - Accuracy over coverage: never state something the data doesn't support; label MEASURED / MODELED / ESTIMATED.
 - Eric likes unique, not overdone shots, but famous spots must still rank high when they are the best option.
-- Starter (generic) spots don't have to score lower than hand-researched ones; the best spot should win.
+- Scoring is data driven, not coverage driven: no bonus for being hand-researched; the best spot by the data wins.
+- Outside the Wildlife filter, lists lead with views, not birding/wildlife spots.
 - Include links when recommending products.
 
 ## How it is built
@@ -30,8 +31,8 @@ Live at https://estaugaa.github.io/shotspots/ (GitHub Pages). It must work as we
   `diag-<script name>` (`diag-out` for diag.py).
 
 ## Scoring (v2, app/score2.js)
-score = conditions (0-100, light/weather fit for what the spot is for) x quality (0.5-1.12 from fame; hand spots 1.0;
-landmarks x0.75) ; ranking then x (1 - 0.1 x share of the travel range used). Night and the Wildlife filter keep v1.
+score = conditions (0-100, light/weather fit for what the spot is for) x quality (0.5-1.12 from measured fame, same for every
+spot; landmarks x0.75) ; ranking then x (1 - 0.1 x share of the travel range used). Night and the Wildlife filter keep v1.
 `localStorage ss2:scorev = "1"` switches back to v1 for comparison.
 
 ## Before saying something works
