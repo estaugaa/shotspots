@@ -7,7 +7,7 @@
    Night and the Wildlife filter keep v1: darkness and animals decide those. Settings key ss2:scorev = "1" switches back. */
 let SCORE_V = 2;
 try { if (localStorage.getItem("ss2:scorev") === "1") SCORE_V = 1; } catch (e) { }
-function spotQuality(s) { return s.seed ? clamp((seedFame(s) + 2) / 12, 0, 1) : 0.8; }
+function spotQuality(s) { if (!s.seed) return 0.8; const q = clamp((seedFame(s) + 2) / 12, 0, 1); return /landmark|bridge/.test(s.kind || "") ? q * 0.75 : q; }   // Wikipedia-famous buildings are not automatically photo spots
 const _fitV1 = fitFor;
 fitFor = function (s, w) {
   const f = _fitV1(s, w);
