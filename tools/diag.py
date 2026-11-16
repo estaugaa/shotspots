@@ -29,6 +29,12 @@ S = [
  ("22 Big Bend stargazer (Terlingua), tonight, drive 90", {"lat": 29.321, "lon": -103.616, "label": "Terlingua"}, {"maxDrive": 90}, "night", ("today", "night"), []),
  ("23 Washougal waterfalls in the rain, tomorrow morning, drive 60", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 60}, "all", ("tomorrow", "morning"), []),
  ("24 Bend OR, tomorrow sunrise, drive 60", {"lat": 44.058, "lon": -121.315, "label": "Bend"}, {"maxDrive": 60}, "all", ("tomorrow", "sunrise"), []),
+ ("25 Zion (Springdale), tomorrow sunset, drive 30", {"lat": 37.189, "lon": -112.999, "label": "Springdale"}, {"maxDrive": 30}, "all", ("tomorrow", "sunset"), []),
+ ("26 Badlands (Interior SD), tomorrow sunrise, drive 45", {"lat": 43.727, "lon": -101.983, "label": "Interior"}, {"maxDrive": 45}, "all", ("tomorrow", "sunrise"), []),
+ ("27 Outer Banks (Nags Head), tomorrow sunrise, drive 30", {"lat": 35.957, "lon": -75.624, "label": "Nags Head"}, {"maxDrive": 30}, "all", ("tomorrow", "sunrise"), []),
+ ("28 Yellowstone wildlife (Gardiner), tomorrow morning, drive 60", {"lat": 45.032, "lon": -110.706, "label": "Gardiner"}, {"maxDrive": 60}, "life", ("tomorrow", "morning"), []),
+ ("29 Washougal stargazer, tonight, drive 90", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 90}, "night", ("today", "night"), []),
+ ("30 La Jolla (San Diego), tomorrow sunset, drive 30", {"lat": 32.847, "lon": -117.273, "label": "La Jolla"}, {"maxDrive": 30}, "all", ("tomorrow", "sunset"), []),
 ]
 PICK = """(([day, kind]) => { const all = allWindows(LOC, PLAN_HOURS); const t0 = Date.now();
   const WD = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
