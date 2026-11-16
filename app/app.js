@@ -503,6 +503,7 @@ function fitFor(s, w) {
       if (wl.length) { const pk = wl.find(x => x.peak), ses = wl[0].ev.session;
         const fits = ses === "both" || ses === "owl" && w.kind === "sunset" || (ses === "dawn" || ses === "morning") && w.kind === "sunrise" || ses === "dusk" && w.kind === "sunset";
         v += (pk ? 24 : 12) * (fits ? 1 : 0.3); why.unshift(`${wl[0].ev.icon || ""} ${wl[0].ev.name}${pk ? " at peak" : " in season"}${fits ? "" : " (better at another time of day)"}`.trim()); }
+      if (typeof SCORE_V !== "undefined" && SCORE_V === 2 && UI.group !== "life" && /hotspot|refuge/.test(s.kind || "")) v *= 0.6;   // v2: animals are not the light; outside Wildlife a birding spot competes on its view
       if (w.kind === "sunrise" && s.cats.includes("birds") && sk.tf <= 38 && sk.wind <= 4 && UI.group === "life") { v += 6; why.push(`${fmtTemp(sk.tf)} and calm: breath plumes on singing birds`); }
       parts.push(v); }
     if (FOG_ABOVE.includes(s.id) && sk.pop < 50 && lowlandFog(w)) { parts.push(93); why.unshift("should be above the fog"); }
