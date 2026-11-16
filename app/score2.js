@@ -10,10 +10,18 @@ try { if (localStorage.getItem("ss2:scorev") === "1") SCORE_V = 1; } catch (e) {
 // Quality is measured the same way for every spot, hand-researched or not (photo and sighting counts, Wikipedia, photographer
 // stands): how much research a spot has had must not decide its rank. Hand spots get their counts from feed/handpop.json.
 let HANDPOP = null;
-fetch("feed/handpop.json").then(r => r.ok ? r.json() : null).then(j => { HANDPOP = j || {}; for (const s of SPOTS) { const p = HANDPOP[s.id]; if (p && !s.seed && s.pop == null) s.pop = p[0]; } if (typeof render === "function") render(); }).catch(() => { HANDPOP = {}; });
+fetch("feed/handpop.json").then(r => r.ok ? r.json() : null).then(j => { HANDPOP = j || {}; for (const s of SPOTS) setHandPop(s); if (typeof render === "function") render(); }).catch(() => { HANDPOP = {}; });
+function setHandPop(s) { const p = HANDPOP && HANDPOP[s.id]; if (p && !s.seed && s.pop == null) { s.pop = p[0]; s.refs = { commons: p[1], flickr: p[2], inat: p[3] }; } }
+// Photo quality counts photos only: iNaturalist sightings measure naturalist activity, not how photogenic a view is
+// (a rhododendron garden with 2,878 sightings and 6 photos looked as famous as Multnomah Falls). The Wildlife filter keeps v1.
+function viewFame(s) {
+  if (!s.refs) return seedFame(s);
+  const pop = 1.5 * Math.log2(1 + (s.refs.commons || 0)) + 1.2 * Math.log2(1 + (s.refs.flickr || 0));
+  const save = s.pop; s.pop = pop; const f = seedFame(s); s.pop = save; return f;
+}
 function spotQuality(s) {
-  if (!s.seed && s.pop == null && HANDPOP && HANDPOP[s.id]) s.pop = HANDPOP[s.id][0];
-  const q = clamp((seedFame(s) + 2) / 12, 0, 1);
+  if (!s.seed && s.pop == null) setHandPop(s);
+  const q = clamp((viewFame(s) + 2) / 12, 0, 1);
   return /landmark|bridge/.test(s.kind || "") ? q * 0.75 : q;   // Wikipedia-famous buildings are not automatically photo spots
 }
 const _fitV1 = fitFor;
