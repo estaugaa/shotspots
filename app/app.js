@@ -511,7 +511,7 @@ function fitFor(s, w) {
     const al = alignOn(s, w);
     if (al) { if (wet || m === "overcast" || (sk.block != null && sk.block > 60)) why.push(`${al.what} ${fmtT(al.t)}, likely hidden by cloud`);
       else { parts.push(Math.max(...parts, 60) + 18); why.unshift(`${al.what} ${fmtT(al.t)}`); } }
-    if (!parts.length) parts.push(40);
+    if (!parts.length) parts.push(GOLDK.has(w.kind) && sk ? Math.round(25 + 0.4 * sk.q) : 40);   // landmarks etc.: golden light still depends on the sky
   }
   let n = Math.max(...parts);
   if (s.months && !s.months.includes(month)) { n *= 0.45; why.push("out of season"); }
@@ -561,7 +561,7 @@ function rankFor(w, filter) {
     const d = driveMin(s), walk = WALK[s.effort] || 15, leave = new Date((w.kind === "night" ? (w.dark ? w.dark.s : w.start) : w.peak).getTime() - (d + walk) * 60000);
     const reachable = now + (d + walk * 0.5) * 60000 < w.end.getTime();
     if (!reachable) continue;
-    list.push({ s, f, d, leave, r: f.n - d * 0.28 + (UI.group === "water" && s.cats[0] === "waterfall" ? 8 : 0) });   // Waterfalls filter: the falls themselves first
+    list.push({ s, f, d, leave, r: (typeof SCORE_V !== "undefined" && SCORE_V === 2 && w.kind !== "night" && UI.group !== "life" ? f.n * (1 - Math.min(0.4, d * 0.005)) : f.n - d * 0.28) + (UI.group === "water" && s.cats[0] === "waterfall" ? 8 : 0) });   // Waterfalls filter: the falls themselves first
   }
   return list.sort((a, b) => b.r - a.r);
 }
