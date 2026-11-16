@@ -1,1 +1,1 @@
-{"ok":false,"kind":"MEASURED","note":"RuntimeError: FLICKR_KEY not set","at":"2026-11-09T13:16:01Z","secs":0.0}
+{"ok":true,"kind":"MEASURED","note":"skipped: no FLICKR_KEY (originality falls back to Commons counts)","at":"2026-11-16T02:07:43Z","secs":0.0}
