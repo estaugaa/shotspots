@@ -1,0 +1,485 @@
+[
+ {
+  "s": "1 Owner in Washougal, tomorrow sunrise, drive 60 (7 > 8)",
+  "kind": "sunrise",
+  "v1": [
+   "90 Ridgefield National Wildlife Refug [curated] q- 45m",
+   "73 Laurelhurst Park (fall tupelos & p [curated] q- 27m",
+   "72 Wiesendanger Falls [waterfall] q- 26m",
+   "73 Eastmoreland elm streets (SE 29th  [curated] q- 35m",
+   "70 Hamilton Creek & Ives Island chum  [curated] q- 30m",
+   "71 Dougan Falls & Dougan Creek Falls [curated] q- 35m"
+  ],
+  "v2": [
+   "48 Willamette Falls overlook (Hwy 99E [curated] q0.42 40m",
+   "44 Laurelhurst Park (fall tupelos & p [curated] q0.17 27m",
+   "44 Eastmoreland elm streets (SE 29th  [curated] q0.17 35m",
+   "44 Multnomah Falls [curated] q0.77 40m",
+   "42 Downtown ginkgo gold (SW Salmon &  [curated] q0.36 35m",
+   "40 Ladd's Addition elms & rose circle [curated] q0.17 30m"
+  ],
+  "win": "Tomorrow sunrise 7:11 AM"
+ },
+ {
+  "s": "2 Portland walker, sunset, walk 30 (6 > 5 > ~6)",
+  "kind": "sunset",
+  "v1": [
+   "37 Downtown ginkgo gold (SW Salmon &  [curated] q- 5m",
+   "30 Portland Center Stage at The Armor [landmark] q- 10m",
+   "30 Lovejoy Columns [landmark] q- 12m",
+   "32 Memorial Fountain [lake] q- 28m",
+   "25 Crystal Ballroom [landmark] q- 10m",
+   "23 Poet's Beach [beach] q- 24m"
+  ],
+  "v2": [
+   "27 Downtown ginkgo gold (SW Salmon &  [curated] q0.36 5m",
+   "19 Portland Center Stage at The Armor [landmark] q0.34 10m",
+   "19 Lovejoy Columns [landmark] q0.54 12m",
+   "18 Memorial Fountain [lake] q0.37 28m",
+   "16 Crystal Ballroom [landmark] q0.28 10m",
+   "14 Poet's Beach [beach] q0.04 24m"
+  ],
+  "win": "Today sunset 4:39 PM"
+ },
+ {
+  "s": "3 Cannon Beach, tomorrow sunset, drive 30 (4 > 7)",
+  "kind": "sunset",
+  "v1": [
+   "35 Blumenthal Falls [waterfall] q- 16m",
+   "29 Hug Point [curated] q- 8m",
+   "28 Silver Point Interpretive Overlook [viewpoint] q- 5m",
+   "31 Seaside Beach [beach] q- 19m",
+   "31 Necanicum Estuary Natural History  [hotspot] q- 20m",
+   "31 Necanicum River Estuary [hotspot] q- 23m"
+  ],
+  "v2": [
+   "21 Blumenthal Falls [waterfall] q0.14 16m",
+   "18 Seaside Beach [beach] q0.04 19m",
+   "17 Silver Point Interpretive Overlook [viewpoint] q0.14 5m",
+   "17 Short Sand Beach (Oswald West Stat [curated] q0.13 16m",
+   "16 Hug Point [curated] q0.08 8m",
+   "15 Arch Cape View [viewpoint] q0.00 22m"
+  ],
+  "win": "Tomorrow sunset 4:42 PM"
+ },
+ {
+  "s": "4 Seattle, tomorrow sunrise, drive 60 (3 > 5)",
+  "kind": "sunrise",
+  "v1": [
+   "74 Snoqualmie Falls [waterfall] q- 45m",
+   "68 Twin Falls (Upper) [waterfall] q- 47m",
+   "51 Weeks Falls [waterfall] q- 52m",
+   "39 Gas Works Park [viewpoint] q- 12m",
+   "36 Kerry Park [viewpoint] q- 10m",
+   "39 Carkeek Park [hotspot] q- 23m"
+  ],
+  "v2": [
+   "41 Snoqualmie Falls [waterfall] q1.00 45m",
+   "26 USS Parche Sail [landmark] q0.65 29m",
+   "26 Twin Falls (Upper) [waterfall] q0.37 47m",
+   "24 Gas Works Park [viewpoint] q0.84 12m",
+   "26 Little River Summit [pass] q0.04 58m",
+   "25 Wildlife Viewing Platform [lookout] q0.14 44m"
+  ],
+  "win": "Tomorrow sunrise 7:17 AM"
+ },
+ {
+  "s": "5 Denver, tomorrow sunset, drive 90 (5 > 6)",
+  "kind": "sunset",
+  "v1": [
+   "74 Lake Rhoda [lake] q- 18m",
+   "88 Rock Formation Overlook [viewpoint] q- 70m",
+   "71 Rocky Mountain Lake [lake] q- 14m",
+   "71 Berkeley Lake [lake] q- 16m",
+   "75 Walk through Time [viewpoint] q- 31m",
+   "76 Marfell Lakes [lake] q- 36m"
+  ],
+  "v2": [
+   "54 Paint Mine Overlook [viewpoint] q0.22 86m",
+   "52 Rock Formation Overlook [viewpoint] q0.14 70m",
+   "48 Former Stapleton Airport Control T [lookout] q0.69 18m",
+   "47 Lake Rhoda [lake] q0.25 18m",
+   "46 Union Station Pedestrian Bridge [bridge] q0.62 5m",
+   "46 Lookout Mountain [peak] q0.47 28m"
+  ],
+  "win": "Tomorrow sunset 4:42 PM"
+ },
+ {
+  "s": "6 Moab, tomorrow sunrise, drive 60 (6 > 5)",
+  "kind": "sunrise",
+  "v1": [
+   "55 Landscape Arch [arch] q- 30m",
+   "51 Double Arch [arch] q- 35m",
+   "35 Mille Creek Falls (Left Hand) [waterfall] q- 14m",
+   "32 Matheson Wetlands Preserve: Main P [hotspot] q- 5m",
+   "31 Moab: Mill Creek Parkway West of U [hotspot] q- 2m",
+   "31 Matheson Wetlands Preserve: Hwy 19 [hotspot] q- 7m"
+  ],
+  "v2": [
+   "28 Landscape Arch [arch] q1.00 30m",
+   "27 Double Arch [arch] q0.90 35m",
+   "23 Balanced Rock [landmark] q0.60 30m",
+   "22 Navajo Arch [arch] q0.40 30m",
+   "21 Mille Creek Falls (Left Hand) [waterfall] q0.14 14m",
+   "21 Medieval Chamber [waterfall] q0.14 23m"
+  ],
+  "win": "Tomorrow sunrise 7:02 AM"
+ },
+ {
+  "s": "7 Hood River, tomorrow sunrise, drive 45 (7 > 7)",
+  "kind": "sunrise",
+  "v1": [
+   "72 Wiesendanger Falls [waterfall] q- 45m",
+   "70 Hamilton Creek & Ives Island chum  [curated] q- 41m",
+   "67 Bonneville Fish Hatchery [curated] q- 33m",
+   "51 Husum Falls (White Salmon River) [curated] q- 21m",
+   "50 Klickitat River Narrows (Lyle) [curated] q- 24m",
+   "45 Dry Creek Falls (PCT from Bridge o [curated] q- 27m"
+  ],
+  "v2": [
+   "29 Bonneville Fish Hatchery [curated] q0.32 33m",
+   "29 Wiesendanger Falls [waterfall] q0.37 45m",
+   "27 Husum Falls (White Salmon River) [curated] q0.03 21m",
+   "26 Klickitat River Narrows (Lyle) [curated] q0.03 24m",
+   "27 Elowah Falls [curated] q0.17 42m",
+   "27 Wahclella Falls [curated] q0.17 42m"
+  ],
+  "win": "Tomorrow sunrise 7:08 AM"
+ },
+ {
+  "s": "10 Grand Canyon (Tusayan), tomorrow sunrise, drive 30 (5 > 6)",
+  "kind": "sunrise",
+  "v1": [
+   "58 Mather Point [viewpoint] q- 17m",
+   "39 Hopi Point [viewpoint] q- 19m",
+   "38 Powell Point [viewpoint] q- 19m",
+   "39 Yaki Point [viewpoint] q- 24m",
+   "36 Grand Canyon NP: Mather CG [hotspot] q- 15m",
+   "36 Grand Canyon NP: South Rim Trail [hotspot] q- 15m"
+  ],
+  "v2": [
+   "32 Mather Point [viewpoint] q0.98 17m",
+   "23 Yaki Point [viewpoint] q0.44 24m",
+   "22 Powell Point [viewpoint] q0.41 19m",
+   "22 Hopi Point [viewpoint] q0.43 19m",
+   "21 Yavapai Point [viewpoint] q0.36 17m",
+   "20 Mather Point Amphitheatre [viewpoint] q0.33 16m"
+  ],
+  "win": "Tomorrow sunrise 7:07 AM"
+ },
+ {
+  "s": "11 San Francisco walker, tomorrow sunset, walk 30 (was 2)",
+  "kind": "sunset",
+  "v1": [
+   "60 Coit Tower [viewpoint] q- 13m",
+   "39 Transamerica Pyramid [landmark] q- 3m",
+   "39 Telegraph Hill [peak] q- 14m",
+   "43 Fisherman's Wharf [landmark] q- 29m",
+   "36 City Lights Booksellers [landmark] q- 5m",
+   "40 Lombard Street [landmark] q- 23m"
+  ],
+  "v2": [
+   "34 Coit Tower [viewpoint] q0.99 13m",
+   "32 Fisherman's Wharf [landmark] q0.75 29m",
+   "29 Transamerica Pyramid [landmark] q0.72 3m",
+   "29 Lombard Street [landmark] q0.75 23m",
+   "27 San Francisco Ferry Building [landmark] q0.62 17m",
+   "25 City Lights Booksellers [landmark] q0.54 5m"
+  ],
+  "win": "Tomorrow sunset 4:56 PM"
+ },
+ {
+  "s": "13 Austin TX sunset, drive 45 (new)",
+  "kind": "sunset",
+  "v1": [
+   "52 Littlefield Fountain [lake] q- 5m",
+   "48 UT Tower [lookout] q- 8m",
+   "39 Doug Sahm Hill [viewpoint] q- 6m",
+   "41 Sculpture Falls [waterfall] q- 14m",
+   "44 Pflugerville High School Marching  [lookout] q- 25m",
+   "48 Wonder World Observation Tower [lookout] q- 43m"
+  ],
+  "v2": [
+   "30 UT Tower [lookout] q0.19 8m",
+   "29 Wonder World Observation Tower [lookout] q0.17 43m",
+   "26 Littlefield Fountain [lake] q0.35 5m",
+   "26 Barton Springs Pool [landmark] q0.49 8m",
+   "25 Doug Sahm Hill [viewpoint] q0.29 6m",
+   "24 Ann W. Richards Congress Avenue Br [bridge] q0.60 2m"
+  ],
+  "win": "Tomorrow sunset 5:33 PM"
+ },
+ {
+  "s": "14 Miami sunrise, drive 45 (new)",
+  "kind": "sunrise",
+  "v1": [
+   "100 Sandy's Beach [beach] q- 12m",
+   "100 Miami Beach [beach] q- 13m",
+   "87 Cape Florida Light [lighthouse] q- 25m",
+   "85 Ocean Terrace Public Beach [beach] q- 25m",
+   "82 Haulover Nude Beach [beach] q- 32m",
+   "77 Miami Beach [beach] q- 17m"
+  ],
+  "v2": [
+   "61 Miami Beach [beach] q0.58 13m",
+   "61 Cape Florida Light [lighthouse] q0.50 25m",
+   "55 Sandy's Beach [beach] q0.38 12m",
+   "51 Haulover Beach [beach] q0.28 32m",
+   "45 14th Street Beach [beach] q0.20 15m",
+   "44 Haulover Nude Beach [beach] q0.15 32m"
+  ],
+  "win": "Tomorrow sunrise 6:40 AM"
+ },
+ {
+  "s": "15 Yosemite Valley, tomorrow sunset, drive 45",
+  "kind": "sunset",
+  "v1": [
+   "66 Lower Yosemite Fall [waterfall] q- 3m",
+   "62 Upper Yosemite Fall [waterfall] q- 3m",
+   "66 Vernal Fall [waterfall] q- 27m",
+   "66 Nevada Fall [waterfall] q- 27m",
+   "57 Middle Cascades [waterfall] q- 3m",
+   "47 Horsetail Fall [waterfall] q- 8m"
+  ],
+  "v2": [
+   "41 Lower Yosemite Fall [waterfall] q1.00 3m",
+   "41 Vernal Fall [waterfall] q1.00 27m",
+   "39 Nevada Fall [waterfall] q0.94 27m",
+   "32 Upper Yosemite Fall [waterfall] q0.80 3m",
+   "30 El Capitan [peak] q0.82 9m",
+   "31 Half Dome [peak] q0.74 28m"
+  ],
+  "win": "Tomorrow sunset 4:45 PM"
+ },
+ {
+  "s": "16 Acadia (Bar Harbor), tomorrow sunrise, drive 30",
+  "kind": "sunrise",
+  "v1": [
+   "42 Cadillac Mountain [peak] q- 17m",
+   "35 Brewer Mountain [peak] q- 5m",
+   "35 Cranberry Hill [peak] q- 7m",
+   "37 Jordan Pond [lake] q- 15m",
+   "36 Sand Beach [beach] q- 12m",
+   "35 Conners Nubble [peak] q- 10m"
+  ],
+  "v2": [
+   "33 Cadillac Mountain [peak] q0.99 17m",
+   "23 Sand Beach [beach] q0.35 12m",
+   "23 Jordan Pond [lake] q0.36 15m",
+   "21 Brewer Mountain [peak] q0.17 5m",
+   "21 Cranberry Hill [peak] q0.17 7m",
+   "21 Conners Nubble [peak] q0.17 10m"
+  ],
+  "win": "Tomorrow sunrise 6:31 AM"
+ },
+ {
+  "s": "17 Smoky Mountains (Gatlinburg), tomorrow sunrise, drive 45",
+  "kind": "sunrise",
+  "v1": [
+   "55 Mount Le Conte [peak] q- 25m",
+   "56 Newfound Gap [pass] q- 37m",
+   "48 Chimney Tops [peak] q- 23m",
+   "42 Gatlinburg Space Needle [lookout] q- 2m",
+   "50 Mount Kephart [peak] q- 33m",
+   "49 Mount Guyot [peak] q- 31m"
+  ],
+  "v2": [
+   "40 Mount Le Conte [peak] q0.55 25m",
+   "39 Newfound Gap [pass] q0.44 37m",
+   "34 Mount Guyot [peak] q0.42 31m",
+   "33 Mount Kephart [peak] q0.31 33m",
+   "32 Chimney Tops [peak] q0.37 23m",
+   "29 Bears [landmark] q0.64 11m"
+  ],
+  "win": "Tomorrow sunrise 7:12 AM"
+ },
+ {
+  "s": "18 Chicago walker, tomorrow sunset, walk 30",
+  "kind": "sunset",
+  "v1": [
+   "100 Fountain of the Great Lakes [lake] q- 8m",
+   "100 Buckingham Fountain [lake] q- 17m",
+   "100 Rosenberg Fountain (Hebe) [lake] q- 25m",
+   "96 CTA Tower 18 [lookout] q- 11m",
+   "87 CTA Tower 12 [lookout] q- 9m",
+   "83 Adams Street Bridge [bridge] q- 14m"
+  ],
+  "v2": [
+   "100 Fountain of the Great Lakes [lake] q1.00 8m",
+   "100 Buckingham Fountain [lake] q1.00 17m",
+   "69 Chicago & Northwestern Railway Bri [bridge] q0.73 19m",
+   "70 Rosenberg Fountain (Hebe) [lake] q0.46 25m",
+   "66 Adams Street Bridge [bridge] q0.58 14m",
+   "65 BP Bridge [bridge] q0.65 10m"
+  ],
+  "win": "Tomorrow sunset 4:27 PM"
+ },
+ {
+  "s": "19 Sedona, tomorrow sunset, drive 30",
+  "kind": "sunset",
+  "v1": [
+   "40 Canyon Overlook [viewpoint] q- 14m",
+   "33 Oak Creek Vista [viewpoint] q- 4m",
+   "32 Airport Mesa Viewpoint [viewpoint] q- 5m",
+   "28 Marg's Draw Trail [hotspot] q- 4m",
+   "28 Oak Creek Canyon: low elevation [hotspot] q- 5m",
+   "33 Cathedral Rock [peak] q- 23m"
+  ],
+  "v2": [
+   "23 Canyon Overlook [viewpoint] q0.48 14m",
+   "19 Airport Mesa Viewpoint [viewpoint] q0.26 5m",
+   "18 Oak Creek Vista [viewpoint] q0.38 4m",
+   "19 Cathedral Rock [peak] q0.51 23m",
+   "17 Sedona Airport Overlook [viewpoint] q0.13 7m",
+   "17 Cathedral Rock Viewpoint [viewpoint] q0.14 12m"
+  ],
+  "win": "Tomorrow sunset 5:20 PM"
+ },
+ {
+  "s": "20 Forks WA coast, tomorrow sunset, drive 45",
+  "kind": "sunset",
+  "v1": [
+   "37 Rialto Beach [beach] q- 29m",
+   "33 Second Beach [beach] q- 25m",
+   "31 Richwine Gravel Bar [beach] q- 22m",
+   "35 Destruction Island Lighthouse [lighthouse] q- 43m",
+   "30 Natural Arch [arch] q- 26m",
+   "29 Olympic NP: Rialto Beach [hotspot] q- 29m"
+  ],
+  "v2": [
+   "21 Destruction Island Lighthouse [lighthouse] q0.19 43m",
+   "18 Natural Arch [arch] q0.20 26m",
+   "18 Hole-in-the-Wall [landmark] q0.37 29m",
+   "17 Richwine Gravel Bar [beach] q0.00 22m",
+   "17 Rialto Beach [beach] q0.33 29m",
+   "17 Ruby Beach [beach] q0.30 40m"
+  ],
+  "win": "Tomorrow sunset 4:37 PM"
+ },
+ {
+  "s": "23 Washougal waterfalls in the rain, tomorrow morning, drive 60",
+  "kind": "morning",
+  "v1": [
+   "72 Upper Latourell Falls (Latourell F [curated] q- 21m",
+   "72 Sams Walker Day Use Area (oaks & r [curated] q- 22m",
+   "77 Ridgefield National Wildlife Refug [curated] q- 45m",
+   "72 Rodney & Hardy Falls (Hamilton Mou [curated] q- 28m",
+   "78 Yocum Falls [waterfall] q- 51m",
+   "72 Hamilton Creek & Ives Island chum  [curated] q- 30m"
+  ],
+  "v2": [
+   "45 Mount Tabor Park [curated] q0.33 25m",
+   "45 Horseshoe Creek Falls [waterfall] q0.17 45m",
+   "45 Siouxon Falls [waterfall] q0.17 45m",
+   "45 Upper Siouxon Falls [waterfall] q0.17 45m",
+   "45 Chinook Falls [waterfall] q0.17 46m",
+   "45 Wildcat Falls [waterfall] q0.17 46m"
+  ],
+  "win": "Tomorrow morning 9:28 AM"
+ },
+ {
+  "s": "24 Bend OR, tomorrow sunrise, drive 60",
+  "kind": "sunrise",
+  "v1": [
+   "65 Mirror Pond [lake] q- 1m",
+   "47 Pilot Butte (Oregon) [viewpoint] q- 10m",
+   "51 Benham Falls [waterfall] q- 33m",
+   "38 Drake Park [hotspot] q- 1m",
+   "38 Riverbend Park [hotspot] q- 5m",
+   "38 Deschutes River Trail: Old Mill [hotspot] q- 6m"
+  ],
+  "v2": [
+   "28 Mirror Pond [lake] q0.44 1m",
+   "26 Pilot Butte (Oregon) [viewpoint] q0.71 10m",
+   "24 Three Sisters Viewpoint [viewpoint] q0.08 23m",
+   "23 Ben Newkirk Overlook [viewpoint] q0.14 15m",
+   "23 Sage Flat Overlook [viewpoint] q0.14 16m",
+   "23 Black Butte Lookout [lookout] q0.14 46m"
+  ],
+  "win": "Tomorrow sunrise 7:03 AM"
+ },
+ {
+  "s": "25 Zion (Springdale), tomorrow sunset, drive 30",
+  "kind": "sunset",
+  "v1": [
+   "35 Lower Pine Creek Waterfall [waterfall] q- 11m",
+   "36 Angels Landing [peak] q- 18m",
+   "31 Zion NP: Visitor Center & Campgrou [hotspot] q- 4m",
+   "33 Zion NP: Court of the Patriarchs [hotspot] q- 12m",
+   "36 Mystery Canyon Falls [waterfall] q- 23m",
+   "30 Springdale Pond [hotspot] q- 2m"
+  ],
+  "v2": [
+   "22 Mystery Canyon Falls [waterfall] q0.17 23m",
+   "21 Lower Pine Creek Waterfall [waterfall] q0.14 11m",
+   "21 Menu Falls [waterfall] q0.14 22m",
+   "21 Barrier Falls [waterfall] q0.14 23m",
+   "20 Grafton [landmark] q0.45 19m",
+   "18 Angels Landing [peak] q1.00 18m"
+  ],
+  "win": "Tomorrow sunset 5:20 PM"
+ },
+ {
+  "s": "26 Badlands (Interior SD), tomorrow sunrise, drive 45",
+  "kind": "sunrise",
+  "v1": [
+   "48 Window [viewpoint] q- 12m",
+   "45 White River Valley Overlook [viewpoint] q- 19m",
+   "42 Big Badlands Overlook [viewpoint] q- 17m",
+   "41 Panorama Point [viewpoint] q- 24m",
+   "36 Door [viewpoint] q- 13m",
+   "33 Badlands NP: Ben Reifel Visitor Ce [hotspot] q- 7m"
+  ],
+  "v2": [
+   "29 Window [viewpoint] q0.51 12m",
+   "27 White River Valley Overlook [viewpoint] q0.42 19m",
+   "25 Big Badlands Overlook [viewpoint] q0.32 17m",
+   "24 Panorama Point [viewpoint] q0.41 24m",
+   "23 Prairie Wind Overlook [viewpoint] q0.20 26m",
+   "21 Door [viewpoint] q0.15 13m"
+  ],
+  "win": "Tomorrow sunrise 7:44 AM"
+ },
+ {
+  "s": "27 Outer Banks (Nags Head), tomorrow sunrise, drive 30",
+  "kind": "sunrise",
+  "v1": [
+   "46 Bodie Island Lighthouse [lighthouse] q- 20m",
+   "31 Kill Devil Hills Beach [hotspot] q- 11m",
+   "31 Run Hill State Natural Area [hotspot] q- 12m",
+   "33 Cape Hatteras NS: Oregon Inlet Bea [hotspot] q- 20m",
+   "33 Oregon Inlet Fishing Center [hotspot] q- 21m",
+   "31 Bodie Island: Coquina Beach [hotspot] q- 16m"
+  ],
+  "v2": [
+   "29 Bodie Island Lighthouse [lighthouse] q1.00 20m",
+   "14 Coquina Beach [beach] q0.04 18m",
+   "13 Cape Hatteras NS: Oregon Inlet Bea [hotspot] q0.25 20m",
+   "13 Oregon Inlet Fishing Center [hotspot] q0.25 21m",
+   "13 Pea Island NWR: North Pond [hotspot] q0.27 30m",
+   "13 Alligator River NWR [hotspot] q0.27 30m"
+  ],
+  "win": "Tomorrow sunrise 6:40 AM"
+ },
+ {
+  "s": "30 La Jolla (San Diego), tomorrow sunset, drive 30",
+  "kind": "sunset",
+  "v1": [
+   "52 Wipeout Beach [beach] q- 2m",
+   "51 Marine Street Beach [beach] q- 3m",
+   "56 Lake Miramar [lake] q- 27m",
+   "56 Old Point Loma Lighthouse [lighthouse] q- 28m",
+   "49 La Jolla Shores Beach [beach] q- 6m",
+   "47 La Jolla Cove [beach] q- 6m"
+  ],
+  "v2": [
+   "41 Old Point Loma Lighthouse [lighthouse] q1.00 28m",
+   "32 Wipeout Beach [beach] q0.78 2m",
+   "34 Torrey Pines State Natural Reserve [viewpoint] q0.74 21m",
+   "32 La Jolla Cove [beach] q0.80 6m",
+   "33 Sunset Cliffs, San Diego [viewpoint] q0.72 21m",
+   "31 USS Midway Museum [landmark] q0.75 21m"
+  ],
+  "win": "Tomorrow sunset 4:46 PM"
+ }
+]
