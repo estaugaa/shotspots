@@ -123,7 +123,7 @@ async function omFetch(url) {
 }
 // how well-known a starter spot is: Wikipedia/Wikidata links and eBird species (seed score), plus geotagged photos on
 // Commons and Flickr and iNaturalist sightings (pop). About -2 for an obscure pin, up to +6 for a famous one.
-const GENERIC_NAME = /^(control tower|(port area |wildlife |fire )?(viewing platform|observation (tower|deck|platform)|lookout( tower)?)|wildlife (viewing|lookout|platform)[a-z ]*|viewpoint|overlook|scenic (view|overlook|viewpoint)|vista point|hawk watch)$/i;
+const GENERIC_NAME = /^((former |old )?[a-z ]*airport control tower|control tower|(port area |wildlife |fire )?(viewing platform|observation (tower|deck|platform)|lookout( tower)?)|wildlife (viewing|lookout|platform)[a-z ]*|viewpoint|overlook|scenic (view|overlook|viewpoint)|vista point|hawk watch)$/i;
 function seedFame(s) {
   // pop: 3 = median mapped place, 10 = top 3% (a well-known landmark), 12.6 = top 1%. Icons need to clear ordinary spots
   const wiki = s.score != null ? (Math.log2(Math.max(1, s.score)) - 2.3) * 1.2 : 0, pop = s.pop != null ? (s.pop >= 4 ? (s.pop - 4) * 0.8 : (s.pop - 4) * 0.4) : 0;
