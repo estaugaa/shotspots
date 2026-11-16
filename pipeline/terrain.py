@@ -158,10 +158,19 @@ def apparent_alt(h_obs, h_tgt, d):
     return np.degrees(np.arctan2(h_tgt - h_obs, d) - d * (1 - K_REFR) / (2 * R_EARTH))
 
 
-def horizon(lat, lon, grids, h_extra=1.7, dist=DIST):
-    """Return (alt[az], dist_of_blocker[az], obs_elev). grids = [near, mid, far] (finest first)."""
+def horizon(lat, lon, grids, h_extra=1.7, dist=DIST, edge=False):
+    """Return (alt[az], dist_of_blocker[az], obs_elev). grids = [near, mid, far] (finest first).
+    edge=True (starter-spot pins, which land roughly on an overlook, not exactly where you stand): the observer is at
+    the highest ground within 30 m and terrain closer than 40 m is ignored, so a pin a few metres below a rim edge
+    doesn't see a 25-degree wall in front of it (Hopi Point, Nov 2026)."""
     near = grids[0]
     h0 = float(near.sample(np.array([lat]), np.array([lon]))[0]) + h_extra
+    if edge:
+        ring = [destination(lat, lon, a, d) for a in range(0, 360, 30) for d in (10, 20, 30)]
+        zs = near.sample(np.array([p[0] for p in ring]), np.array([p[1] for p in ring]))
+        zs = zs[np.isfinite(zs)]
+        if len(zs): h0 = max(h0, float(np.max(zs)) + h_extra)
+        dist = dist[dist >= 40]
     out = np.full(AZ.shape, -5.0, dtype=np.float32)
     bd = np.zeros(AZ.shape, dtype=np.float32)
     for i, az in enumerate(AZ):
@@ -193,7 +202,7 @@ def run(only=None, budget_min=40):
     for s in spots(deep=True):
         if only and s["id"] not in only:
             continue
-        key = f'{s["lat"]:.5f},{s["lon"]:.5f}'
+        key = f'{s["lat"]:.5f},{s["lon"]:.5f}' + ("|edge" if s.get("deep") else "")
         if s["id"] in old and old[s["id"]].get("key") == key:
             continue
         todo.append((s, key))
@@ -208,7 +217,7 @@ def run(only=None, budget_min=40):
             if grids is None:
                 continue
             near, mid, fg = grids
-            alt, bd, h0 = horizon(s["lat"], s["lon"], [near, mid, fg])
+            alt, bd, h0 = horizon(s["lat"], s["lon"], [near, mid, fg], edge=bool(s.get("deep")))
             old[s["id"]] = {"key": key, "elev": round(h0 - 1.7, 1), "alt": [round(float(x), 2) for x in alt], "bkm": [round(float(x) / 1000, 2) for x in bd]}
             n += 1
             if n % 20 == 0:

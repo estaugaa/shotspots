@@ -110,7 +110,7 @@ def run():
     from . import terrain, trails, light
     ids = {s["id"] for s in sel}
     a = terrain.run(only=ids, budget_min=150)
-    b = trails.run(budget_min=120)
+    b = trails.run(budget_min=60)
     c = light.daily()
     cs = cards()
     return f"{len(sel)} spots selected in {len(REGIONS)} regions; terrain: {a}; trails: {b}; light: {c}; {len(cs)} research cards"
