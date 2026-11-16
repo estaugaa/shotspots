@@ -214,7 +214,7 @@ def run(budget_min=75):
     t0 = time.time()
     store = read_json(DATA / "trails.json", {})
     todo = []
-    for s in spots():
+    for s in spots(deep=True):
         old = store.get(s["id"])
         if old and old.get("key") == f"{s['lat']:.5f},{s['lon']:.5f}" and (utcnow().timestamp() - old.get("ts", 0)) < 120 * 86400:
             continue

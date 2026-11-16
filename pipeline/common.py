@@ -34,9 +34,16 @@ def iso(t):
     return t.astimezone(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def spots(cats=None):
-    """Curated Gorge spots plus every spot added by nightly research (data/research/spots/*.json)."""
+def spots(cats=None, deep=False):
+    """Curated Gorge spots plus every spot added by nightly research (data/research/spots/*.json).
+    deep=True also includes the starter spots chosen for full research (data/deep_spots.json, pipeline/deepspots.py):
+    the terrain, light and trails jobs use that so the best starter spots nationally get what hand spots get."""
     s = json.load(open(CONFIG / "spots.json"))
+    if deep and (DATA / "deep_spots.json").exists():
+        try:
+            s = s + json.load(open(DATA / "deep_spots.json"))
+        except Exception:
+            pass
     rdir = DATA / "research" / "spots"
     if rdir.exists():
         for p in sorted(rdir.glob("*.json")):

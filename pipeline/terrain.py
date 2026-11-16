@@ -190,7 +190,7 @@ def run(only=None, budget_min=40):
     t0 = time.time()
     far = far_grid()
     todo = []
-    for s in spots():
+    for s in spots(deep=True):
         if only and s["id"] not in only:
             continue
         key = f'{s["lat"]:.5f},{s["lon"]:.5f}'

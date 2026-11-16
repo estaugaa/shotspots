@@ -38,6 +38,8 @@ async function loadSeed() {
       if (/bridge|landmark/.test(x.kind) && x.cats) x.cats = x.cats.map(c => c === "historic" ? "landmark" : c);
       if ((x.kind === "peak" || x.kind === "lookout") && (x.light === "sunrise" || x.light === "sunset")) x.light = "both";   // summits see both ways; coarse terrain often says otherwise (Cadillac Mountain)
       const pp = pops[i] && pops[i][x.id]; if (pp) { x.pop = pp[0]; x.refs = { commons: pp[1], flickr: pp[2], inat: pp[3] }; }
+      const dp = ((fd("deep") || {}).spots || {})[x.id];   // full research card (pipeline/deepspots.py): fine terrain facing, walk, tip
+      if (dp) { if (dp.light && !(ps && ps.light && ps.n >= 8)) x.light = dp.light; if (dp.eff) x.effort = dp.eff; if (dp.tip) x.tip = dp.tip; if (dp.months && !(ps && ps.months)) x.months = dp.months; x.deep = true; }
       const s = { ...x, region: `${SEED_KIND[x.kind] || "Place"} · starter spot`, months: ps && ps.months || null, light: ps && ps.light || x.light, osm: true, seed: true, src: [], osmUrl: `https://www.openstreetmap.org/${x.osm}`, ps };
       SPOTS.push(s); byId[s.id] = s; added++; } });
   SEED.n += added;
@@ -102,7 +104,8 @@ fetch("feed/icons.json").then(r => r.ok ? r.json() : null).then(j => {
   for (const x of j.spots) { if (byId[x.id]) continue;
     const xw = words(x.name);   // a hand-researched spot of the same place wins (Smith Rock)
     if (SPOTS.some(s => !s.seed && Math.abs(s.lat - x.lat) < 0.03 && Math.abs(s.lon - x.lon) < 0.04 && [...words(s.name)].some(w => xw.has(w)))) continue;
-    const s = { ...x, seed: true, icon: true, region: x.state || "", hz: false, score: 20, standFame: 3 };   // curated classics: famous by definition
+    const s = { ...x, seed: true, icon: true, region: x.state || "", hz: false, score: 20, standFame: 3 };
+    const dp = ((fd("deep") || {}).spots || {})[x.id]; if (dp) { if (dp.light) s.light = dp.light; if (dp.eff) s.effort = dp.eff; if (dp.tip) s.tip = dp.tip; if (dp.months) s.months = dp.months; s.deep = true; }   // curated classics: famous by definition
     SPOTS.push(s); byId[s.id] = s; c++; }
   if (c && typeof render === "function") { clearTimeout(SEED._it); SEED._it = setTimeout(render, 600); }
 }).catch(() => { });

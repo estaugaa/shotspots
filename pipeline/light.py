@@ -69,7 +69,7 @@ def daily(days=14):
             rows.append([int(u[am[0][0]] // 60) if am else None, int(u[am[0][1]] // 60) if am else None,
                          int(u[pm[-1][0]] // 60) if pm else None, int(u[pm[-1][1]] // 60) if pm else None])
         out["alpen"][lm["name"]] = rows
-    for s in spots():
+    for s in spots(deep=True):
         h = H.get(s["id"])
         if not h:
             continue
