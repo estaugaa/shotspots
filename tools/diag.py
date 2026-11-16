@@ -19,6 +19,16 @@ S = [
  ("12 New York birder, tomorrow morning, drive 60 (was 2)", {"lat": 40.713, "lon": -74.006, "label": "New York"}, {"maxDrive": 60}, "life", ("tomorrow", "morning"), []),
  ("13 Austin TX sunset, drive 45 (new)", {"lat": 30.267, "lon": -97.743, "label": "Austin"}, {"maxDrive": 45}, "all", ("tomorrow", "sunset"), []),
  ("14 Miami sunrise, drive 45 (new)", {"lat": 25.774, "lon": -80.19, "label": "Miami"}, {"maxDrive": 45}, "all", ("tomorrow", "sunrise"), []),
+ ("15 Yosemite Valley, tomorrow sunset, drive 45", {"lat": 37.746, "lon": -119.587, "label": "Yosemite Valley"}, {"maxDrive": 45}, "all", ("tomorrow", "sunset"), []),
+ ("16 Acadia (Bar Harbor), tomorrow sunrise, drive 30", {"lat": 44.388, "lon": -68.204, "label": "Bar Harbor"}, {"maxDrive": 30}, "all", ("tomorrow", "sunrise"), []),
+ ("17 Smoky Mountains (Gatlinburg), tomorrow sunrise, drive 45", {"lat": 35.714, "lon": -83.511, "label": "Gatlinburg"}, {"maxDrive": 45}, "all", ("tomorrow", "sunrise"), []),
+ ("18 Chicago walker, tomorrow sunset, walk 30", {"lat": 41.882, "lon": -87.628, "label": "Chicago Loop"}, {"travel": "walk", "maxWalk": 30}, "all", ("tomorrow", "sunset"), []),
+ ("19 Sedona, tomorrow sunset, drive 30", {"lat": 34.870, "lon": -111.761, "label": "Sedona"}, {"maxDrive": 30}, "all", ("tomorrow", "sunset"), []),
+ ("20 Forks WA coast, tomorrow sunset, drive 45", {"lat": 47.950, "lon": -124.385, "label": "Forks"}, {"maxDrive": 45}, "all", ("tomorrow", "sunset"), []),
+ ("21 Everglades birder (Homestead), tomorrow morning, drive 60", {"lat": 25.468, "lon": -80.477, "label": "Homestead"}, {"maxDrive": 60}, "life", ("tomorrow", "morning"), []),
+ ("22 Big Bend stargazer (Terlingua), tonight, drive 90", {"lat": 29.321, "lon": -103.616, "label": "Terlingua"}, {"maxDrive": 90}, "night", ("today", "night"), []),
+ ("23 Washougal waterfalls in the rain, tomorrow morning, drive 60", {"lat": 45.582, "lon": -122.353, "label": "Washougal"}, {"maxDrive": 60}, "all", ("tomorrow", "morning"), []),
+ ("24 Bend OR, tomorrow sunrise, drive 60", {"lat": 44.058, "lon": -121.315, "label": "Bend"}, {"maxDrive": 60}, "all", ("tomorrow", "sunrise"), []),
 ]
 PICK = """(([day, kind]) => { const all = allWindows(LOC, PLAN_HOURS); const t0 = Date.now();
   const WD = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
