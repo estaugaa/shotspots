@@ -71,3 +71,25 @@ def run(budget_min=300):
 def _days_ago(d):
     import datetime as dt
     return (utcnow() - dt.timedelta(days=d)).strftime("%Y-%m-%d")
+
+
+HAND_WILD = {"wildlife", "birds", "waterfall", "coast", "reflection", "water"}
+
+
+def run_hand():
+    """The same popularity counts for the hand-researched spots, so quality is measured the same way for every spot
+    (feed/handpop.json {id: [pop, commons, flickr, inat]}). iNaturalist is counted where a starter spot of the same
+    sort would be counted (wildlife, water, waterfalls, coast)."""
+    from .common import spots
+    out = {"_at": iso(utcnow())[:10]}
+    for s in spots():
+        try:
+            c = _commons(s["lat"], s["lon"]); time.sleep(0.2)
+            wild = bool(set(s.get("cats") or []) & HAND_WILD)
+            i = _inat(s["lat"], s["lon"]) if wild else 0
+            if wild: time.sleep(1.0)
+        except Exception as e:
+            log.warning("handpop %s: %s", s["id"], e); continue
+        out[s["id"]] = [round(1.5 * math.log2(1 + c) + 0.8 * math.log2(1 + i), 1), c, 0, i]
+    write_json("handpop.json", out)
+    return f"{len(out) - 1} hand-researched spots counted"
