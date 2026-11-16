@@ -1,0 +1,1 @@
+new Promise(r=>{openSpot('ridgefield');setTimeout(()=>{const b=document.querySelector('#sheetBody');r({liveBoxes:b.querySelectorAll('#liveBox').length,seen:[...b.querySelectorAll('h3')].filter(h=>/Seen here/.test(h.textContent)).length,h3:[...b.querySelectorAll('h3')].map(h=>h.textContent.slice(0,24))})},9000)})
