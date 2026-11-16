@@ -6,8 +6,8 @@ os.makedirs("ux", exist_ok=True)
 CASES = [
  ("Moab", 38.573, -109.55, 60, "sunrise", ["Mesa Arch", "Delicate Arch", "Dead Horse Point", "Mars Hotel", "Portal Overlook", "Balanced Rock", "Turret Arch"]),
  ("Cannon Beach", 45.892, -123.961, 30, "sunset", ["Haystack Rock", "Ecola", "Hug Point", "Blumenthal Falls", "Necanicum"]),
- ("Bend", 44.058, -121.315, 60, "sunrise", ["Smith Rock", "Pilot Butte", "Benham Falls", "Drake Park", "Mirror Pond", "Tumalo"]),
- ("La Jolla", 32.847, -117.273, 30, "sunset", ["La Jolla Cove", "Sunset Cliffs", "Scripps", "USS Midway", "Plaza de las Armas", "Windansea", "Torrey Pines"]),
+ ("Bend", 44.058, -121.315, 60, "sunrise", ["Smith Rock", "Pilot Butte", "Mount Waas", "Benham Falls", "Drake Park", "Mirror Pond", "Tumalo"]),
+ ("La Jolla", 32.847, -117.273, 30, "sunset", ["La Jolla Cove", "Sunset Cliffs", "Windansea", "Scripps", "USS Midway", "Plaza de las Armas", "Windansea", "Torrey Pines"]),
  ("Springdale", 37.189, -112.999, 30, "sunset", ["Watchman", "Canyon Overlook", "Court of the Patriarchs", "Grafton", "Johnson Mountain", "Observation Point", "Towers of the Virgin"]),
  ("Seattle", 47.606, -122.332, 60, "sunrise", ["Kerry Park", "Gas Works", "Gratias Agimus", "Control Tower", "Space Needle", "Alki", "Discovery Park"]),
  ("Acadia", 44.388, -68.204, 30, "sunrise", ["Cadillac", "Otter", "Sand Beach", "Jordan Pond", "Beech Mountain", "Bass Harbor"]),

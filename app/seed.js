@@ -102,7 +102,7 @@ fetch("feed/icons.json").then(r => r.ok ? r.json() : null).then(j => {
   for (const x of j.spots) { if (byId[x.id]) continue;
     const xw = words(x.name);   // a hand-researched spot of the same place wins (Smith Rock)
     if (SPOTS.some(s => !s.seed && Math.abs(s.lat - x.lat) < 0.03 && Math.abs(s.lon - x.lon) < 0.04 && [...words(s.name)].some(w => xw.has(w)))) continue;
-    const s = { ...x, seed: true, icon: true, region: x.state || "", hz: false };
+    const s = { ...x, seed: true, icon: true, region: x.state || "", hz: false, score: 20, standFame: 3 };   // curated classics: famous by definition
     SPOTS.push(s); byId[s.id] = s; c++; }
   if (c && typeof render === "function") { clearTimeout(SEED._it); SEED._it = setTimeout(render, 600); }
 }).catch(() => { });
