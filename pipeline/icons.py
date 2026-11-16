@@ -93,6 +93,9 @@ def run():
     for name, kind in NAMES:
         c = _resolve(name); time.sleep(0.2)
         if not c: unresolved.append(name); continue
+        core = re.sub(r"\s*\(.*\)", "", name).lower(); key = [w for w in re.findall(r"[a-z']{4,}", core) if w not in {"state", "park", "national", "trail"}][:1]
+        if (key and key[0] not in c["title"].lower()) or re.search(r"National (Park|Lakeshore|Monument)|^Historical", c["title"]) or kind == "lake" and c["title"].lower().startswith(core.split()[0]) and "lake" in core and name not in ("Trillium Lake", "Jordan Pond"):
+            unresolved.append(f"{name} -> {c['title']} (rejected: area/mismatch)"); continue
         if c["wd"] in have_q: cov.append(f"{name} (same id)"); continue
         hit = covered(c)
         if hit: cov.append(f"{name} ~ {hit}"); continue
