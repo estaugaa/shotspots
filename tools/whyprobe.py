@@ -17,10 +17,10 @@ JS = """(([kind, names]) => { const t0 = Date.now(), tom = laYMD(new Date(t0 + 8
   const list = rankFor(w); const out = { top: list.slice(0, 6).map(x => `${Math.round(x.f.n)} r${Math.round(x.r)} ${x.s.name} [${x.s.kind}/${x.s.light}] d${Math.round(x.d)}`) };
   for (const nm of names) { const ss = SPOTS.filter(s => s.name.toLowerCase().includes(nm.toLowerCase())).slice(0, 3);
     out[nm] = ss.length ? ss.map(s => { const f = fitFor(s, w), i = list.findIndex(x => x.s === s);
-      return `${s.id} [${s.kind}/${s.light}${s.hz ? '/hz' : ''}] score=${s.score} views=${s.views || 0} fame=${typeof seedFame === 'function' && s.seed ? seedFame(s).toFixed(1) : '-'} d=${Math.round(driveMin(s))} far=${tooFar(s)} grp=${inGroup(s)} fit=${f ? Math.round(f.n) : null} sky=${(()=>{const k=skyAt(s,w);return k?`q${Math.round(k.q)} blk${k.block} cc${k.cc} can${k.canvas} ${k.mode} pt${nearestPt(s,60)&&nearestPt(s,60).n}`:'-'})()} cats=${s.cats.join('/')} rank=${i} :: ${f ? f.why.join('; ').slice(0, 220) : ''}`; }) : "not in SPOTS"; }
+      return `${s.id} [${s.kind}/${s.light}${s.hz ? '/hz' : ''}] score=${s.score} views=${s.views || 0} fame=${typeof seedFame === 'function' && s.seed ? seedFame(s).toFixed(1) : '-'} d=${Math.round(driveMin(s))} far=${tooFar(s)} grp=${inGroup(s)} fit=${f ? Math.round(f.n) : null} sky=${(()=>{const k=skyAt(s,w);return k?`q${Math.round(k.q)} blk${k.block} cc${k.cc} can${k.canvas} ${k.mode} pt${nearestPt(s,60)&&nearestPt(s,60).n}`:'-'})()} cats=${s.cats.join('/')} chain=${[['app',_fitFor],['live',_fitSky],['sky',_fitFeed],['feed',_fitAl],['alerts',_fitAc],['access',_fitExtras],['extras',_fitHours],['hours',fitFor]].map(([k,fn])=>{try{const r=fn(s,w);return k+':'+(r?Math.round(r.n):'x')}catch(e){return k+':E'}}).join(',')} rank=${i} :: ${f ? f.why.join('; ').slice(0, 220) : ''}`; }) : "not in SPOTS"; }
   return out; })"""
 import sys
-if len(sys.argv) > 1: CASES = [c for c in CASES if c[0] in sys.argv[1:]]
+if len(sys.argv) > 1: CASES = [c for c in CASES if any(a in c[0] for a in sys.argv[1:])]
 async def main():
     res = []
     async with async_playwright() as p:
