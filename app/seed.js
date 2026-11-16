@@ -93,3 +93,12 @@ function standHtml(s) {
   if (st.ex && st.ex.length) h += `<p class="muted" style="font-size:13px">Examples: ${st.ex.map(e => `<a href="${esc(e[1])}" target="_blank" rel="noopener">${esc(e[0])}</a>`).join(", ")} (Wikimedia Commons)</p>`;
   return h;
 }
+
+/* ---- famous places the starter data misses (pipeline/icons.py): added once as starter spots ---- */
+fetch("feed/icons.json").then(r => r.ok ? r.json() : null).then(j => {
+  if (!j || !j.spots) return; let c = 0;
+  for (const x of j.spots) { if (byId[x.id]) continue;
+    const s = { ...x, seed: true, icon: true, region: x.state || "", hz: false };
+    SPOTS.push(s); byId[s.id] = s; c++; }
+  if (c && typeof render === "function") { clearTimeout(SEED._it); SEED._it = setTimeout(render, 600); }
+}).catch(() => { });
