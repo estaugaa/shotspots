@@ -21,11 +21,13 @@ function viewFame(s) {
 }
 // A spot with no photo or Wikipedia record at all is unknown, not bad: it gets the median quality of recorded spots near you.
 function hasRecord(s) { return !!(s.score || s.views || (s.refs && (s.refs.commons || s.refs.flickr)) || (s.pop != null && s.seed) || (s._stand && s._stand.u)); }
-let __qMed = { k: "", v: 0.3 };
+// frozen per place once 200 recorded spots are loaded: recomputing as each tile of spots arrived made near-ties flip and
+// the top card swap back and forth while the page loaded (smoke test, Nov 17)
+let __qMed = { k: "", v: 0.3, n: 0 };
 function medianQuality() {
-  const k = SPOTS.length + "|" + (LOC ? LOC.lat.toFixed(1) + LOC.lon.toFixed(1) : ""); if (__qMed.k === k) return __qMed.v;
+  const k = LOC ? LOC.lat.toFixed(1) + "," + LOC.lon.toFixed(1) : ""; if (__qMed.k === k && __qMed.n >= 200) return __qMed.v;
   const qs = SPOTS.filter(s => hasRecord(s) && !tooFar(s)).map(s => clamp((viewFame(s) + 2) / 12, 0, 1)).sort((a, b) => a - b);
-  __qMed = { k, v: qs.length >= 20 ? qs[qs.length >> 1] : 0.3 }; return __qMed.v;
+  __qMed = { k, v: qs.length >= 20 ? Math.round(qs[qs.length >> 1] * 100) / 100 : 0.3, n: qs.length }; return __qMed.v;
 }
 function spotQuality(s) {
   if (!s.seed && s.pop == null) setHandPop(s);

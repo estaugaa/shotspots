@@ -29,7 +29,7 @@ async function loadSeed() {
     if (!j || !j.spots) return; let c = 0;
     for (const [id, d] of Object.entries(j.spots)) { const s = byId[id]; if (!s) continue;
       if (d.light && !s._psLight) s.light = d.light; /* people's photos showing the light win */ if (d.eff) s.effort = d.eff; if (d.tip) s.tip = d.tip; if (d.hz) s.hzp = d.hz; s.deep = true; c++; }
-    if (c && typeof render === "function") { clearTimeout(SEED._dt); SEED._dt = setTimeout(render, 400); } }).catch(() => { }));
+    if (c && typeof render === "function" && typeof BOOT !== "undefined" && !BOOT.core) { clearTimeout(SEED._dt); SEED._dt = setTimeout(render, 400); } }).catch(() => { }));   // after the first screen: next redraw
   // Wikipedia page views: how famous (pipeline/wikiviews.py)
   want.filter(k => SEED.has.seedviews && seedHas("seedviews", k)).forEach(k => fetch(`feed/seedviews/${k}.json`).then(r => r.ok ? r.json() : null).then(j => {
     if (!j) return; let c = 0; for (const [id, v] of Object.entries(j)) { const s = byId[id]; if (s && typeof v === "number") { s.views = v; c++; } }
