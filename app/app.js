@@ -134,6 +134,12 @@ async function omFetch(url) {
 const GENERIC_NAME = /^((former |old )?[a-z ]*airport control tower|control tower|(port area |wildlife |fire )?(viewing platform|observation (tower|deck|platform)|lookout( tower)?)|wildlife (viewing|lookout|platform)[a-z ]*|viewpoint|overlook|scenic (view|overlook|viewpoint)|vista point|hawk watch)$/i;
 /* a spot that is mainly about animals: birding hotspots and refuges, or any spot whose first category is wildlife/birds */
 function lifeLed(s) { return /hotspot|refuge/.test(s.kind || "") || LIFE.includes((s.cats || [])[0]); }
+/* what a spot is, for every spot: starter spots carry a map "kind"; hand-researched ones are described by categories */
+function kindOf(s) {
+  if (s.kind) return s.kind; const c = s.cats || [];
+  if (c.includes("landmark")) return "landmark"; if (c[0] === "waterfall") return "waterfall"; if (c.includes("cave")) return "cave";
+  if (LIFE.includes(c[0])) return "refuge"; return "";
+}
 function seedFame(s) {
   // pop: 3 = median mapped place, 10 = top 3% (a well-known landmark), 12.6 = top 1%. Icons need to clear ordinary spots
   const wiki = s.score != null ? (Math.log2(Math.max(1, s.score)) - 2.3) * 1.2 : 0, pop = s.pop != null ? (s.pop >= 4 ? (s.pop - 4) * 0.8 : (s.pop - 4) * 0.4) : 0;
@@ -535,38 +541,38 @@ function fitFor(s, w) {
   if (s.months && !s.months.includes(month)) { n *= 0.45; why.push("out of season"); }
   const side = AMK.has(w.kind) ? "sunrise" : PMK.has(w.kind) ? "sunset" : null;
   // a famous view whose terrain "faces away" is usually shot with the sun behind you: warm light on the subject (Tunnel View at sunset)
-  const famous = s.seed && ((s.score || 0) >= 12 || (s.views || 0) >= 40000 || (s._stand && s._stand.u >= 4));
+  const famous = (s.score || 0) >= 12 || (s.views || 0) >= 40000 || (s._stand && s._stand.u >= 4) || seedFame(s) >= 7;   // any spot, by the data
   if (famous && side && GOLDK.has(w.kind) && (s.light === "blocked" || ((s.light === "sunrise" || s.light === "sunset") && s.light !== side))) why.push("sun behind you: warm light on the view");
   else if (side && !s.cats.some(c => LIFE.includes(c)) && (GOLDK.has(w.kind) || BLUEK.has(w.kind)) && (s.light === "sunrise" || s.light === "sunset") && s.light !== side) { n = GOLDK.has(w.kind) ? n * 0.55 : n - 6; why.push(`faces ${s.light === "sunrise" ? "east: a sunrise spot" : "west: a sunset spot"}`); }
   // starter spots: terrain says which way they open up (pipeline/seedlight.py)
-  if (s.seed && side && GOLDK.has(w.kind)) {
+  if (side && GOLDK.has(w.kind)) {   // every spot (hand-researched ones too): data, not origin
     if (s.light === "blocked") { if (!famous) { n *= 0.7; why.push("hills block the low sun here"); } }
-    else if (s.hz && (s.light === side || s.light === "both")) { n += 4; why.push(`open view toward the ${side === "sunrise" ? "east" : "west"}`); }
-    const KW = /bridge|landmark/.test(s.kind) ? 0.85 : s.kind === "waterfall" ? 0.85 : s.kind === "refuge" ? 0.85 : 1; n *= KW;
+    else if ((s.hz || !s.seed) && (s.light === side || s.light === "both")) { n += 4; why.push(`open view toward the ${side === "sunrise" ? "east" : "west"}`); }
+    const K = kindOf(s), KW = /bridge|landmark/.test(K) ? 0.85 : K === "waterfall" ? 0.85 : K === "refuge" ? 0.85 : 1; n *= KW;
    // big areas: the pin is just the middle of them   // bridges, landmarks and falls are better at blue hour or in soft light
   }
-  if (s.seed && BLUEK.has(w.kind) && /bridge|landmark|lighthouse/.test(s.kind)) n += 5;
+  if (BLUEK.has(w.kind) && /bridge|landmark|lighthouse/.test(kindOf(s))) n += 5;
   if (w.kind !== "night" && !BLUEK.has(w.kind) && s.light === "night") n -= 25;
   n *= KCAP[w.kind] || 1;
   // starter spots all share the same sky, so let how notable a place is (Wikipedia links, photos) break ties
   // fame: at golden and blue hour the known natural views should rise (Cadillac Mountain over an unnamed lookout); not for landmarks, birding hotspots or refuges
   const v2 = typeof SCORE_V !== "undefined" && SCORE_V === 2 && w.kind !== "night" && UI.group !== "life";   // v2 applies fame as a multiplier (score2.js)
-  if (s.seed && !v2) { const fm = seedFame(s); n += fm * ((GOLDK.has(w.kind) || BLUEK.has(w.kind)) && UI.group !== "life" && !/landmark|hotspot|refuge|bridge/.test(s.kind) ? 2 : 1); }
-  if (s.seed && GENERIC_NAME.test(s.name) && (GOLDK.has(w.kind) || BLUEK.has(w.kind))) n *= 0.8;
+  if (!v2) { const fm = seedFame(s); n += fm * ((GOLDK.has(w.kind) || BLUEK.has(w.kind)) && UI.group !== "life" && !/landmark|hotspot|refuge|bridge/.test(s.kind) ? 2 : 1); }
+  if (GENERIC_NAME.test(s.name) && (GOLDK.has(w.kind) || BLUEK.has(w.kind))) n *= 0.8;
   // flat light everywhere (thick overcast or rain at a golden hour): the well-known views are still the best bet, so fame counts double
-  if (!v2 && s.seed && GOLDK.has(w.kind) && sk && (sk.cc >= 85 || sk.block >= 80) && UI.group !== "life" && !/landmark|hotspot|refuge|bridge/.test(s.kind)) n += Math.max(0, seedFame(s));   // also when distant cloud blocks the sun
+  if (!v2 && GOLDK.has(w.kind) && sk && (sk.cc >= 85 || sk.block >= 80) && UI.group !== "life" && !/landmark|hotspot|refuge|bridge/.test(s.kind)) n += Math.max(0, seedFame(s));   // also when distant cloud blocks the sun
   // (no bonus for being hand-researched: scoring is data driven, Eric Nov 16)
   // big areas (parks, wildernesses): the pin is just the middle of them, not a place to stand
-  if (s.seed && (/^seed-r/.test(s.id) || /^(grand canyon|.* (wilderness|national forest|national park|national monument|recreation area|preserve))$/i.test(s.name)) && UI.group !== "life") n *= 0.7;
+  if ((/^seed-r/.test(s.id) || /^(grand canyon|.* (wilderness|national forest|national park|national monument|recreation area|preserve))$/i.test(s.name)) && UI.group !== "life") n *= 0.7;
   // starter summits: often no trail (buttes inside canyons, remote peaks). Trust them only when people actually photograph from there
-  if (s.seed && s.kind === "peak" && !(s.pop >= 12) && s.effort !== "road") n *= s.pop != null ? 0.65 : 0.8;
+  if (s.kind === "peak" && !(s.pop >= 12) && s.effort !== "road") n *= s.pop != null ? 0.65 : 0.8;
   // lookout towers: real fire lookouts are great; city observation towers are often rides or closed - trust them when people photograph from them
-  if (s.seed && s.kind === "cave" && (GOLDK.has(w.kind) || BLUEK.has(w.kind))) n *= 0.5;   // a cave mouth is no sunrise/sunset spot (starter data marks caves "both")
-  if (s.seed && s.kind === "lookout" && !(s.pop >= 10) && /garden|park|fair|amusement|six flags|ride|plaza/i.test(s.name)) n *= 0.5;
+  if (kindOf(s) === "cave" && (GOLDK.has(w.kind) || BLUEK.has(w.kind))) n *= 0.5;   // a cave mouth is no sunrise/sunset spot (starter data marks caves "both")
+  if (s.kind === "lookout" && !(s.pop >= 10) && /garden|park|fair|amusement|six flags|ride|plaza/i.test(s.name)) n *= 0.5;
   // an eBird hotspot named just for a town ("Jackson", "Moab") covers the whole town: no place to go
   if (s.kind === "hotspot" && !/[:(]|park|lake|pond|marsh|refuge|reserve|preserve|trail|river|creek|bay|beach|island|wetland|slough|sanctuary|garden|area|point|dam|canyon|meadow|lagoon|reservoir|springs?\b|woods|forest|ranch|farm|center|road|loop|overlook/i.test(s.name)) n *= 0.4;
   // refuges and wildlife areas are for animals, not sunrise/sunset views (outside Wildlife, unless a season event is on)
-  if (s.kind === "refuge" && UI.group !== "life" && GOLDK.has(w.kind) && !why.some(x => /at peak|staging|migration|\brut\b|run in season|in bloom now/.test(x))) n *= 0.6;
+  if (kindOf(s) === "refuge" && UI.group !== "life" && GOLDK.has(w.kind) && !why.some(x => /at peak|staging|migration|\brut\b|run in season|in bloom now/.test(x))) n *= 0.6;
   if (s.kind === "hotspot" && UI.group !== "life" && !why.some(x => /at peak|staging|migration|\brut\b|run in season|in bloom now/.test(x))) n *= GOLDK.has(w.kind) ? 0.55 : 0.65;   // a season event, not just routine sightings
   if (road) { n -= 10; why.push(road.short || road.title); }
   return { n: Math.round(clamp(n, 0, 100)), why, sk };

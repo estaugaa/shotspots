@@ -2,6 +2,7 @@
 
 One line each: what was decided, and why. Add a line when a choice is made; edit a line when it is reversed.
 
+- 2026-11-17 Every scoring adjustment applies to every spot by what it is (kindOf: map kind, or categories for hand-researched spots); the +3 hand-research bonus is gone. (Eric)
 - 2026-11-17 Daily jobs are started by tools/scheduler.py after every GOES run (~30 min), not GitHub cron alone: cron dropped the nightly check and ran job.yml's schedules hours late.
 - 2026-11-17 Outside the Wildlife filter wildlife-led spots get x0.85 overall (their sunset sky still counts).
 - 2026-11-17 Speed: wildlife-layer facts once per spot per redraw, nearest forecast point memoised (full redraw 7.7 s -> 2.1 s). Forecast requests race Open-Meteo against the forwarder after 2 s. Header no longer wraps while loading.

@@ -161,7 +161,7 @@ fitFor = function (s, w) {
     const sev = sevenAt(w.peak.getTime()); if (sev && sev.tr <= 3 && clearF >= 0.8) { n += 4; why.push("good transparency"); }
   }
   if (road) { n -= 10; why.push(road.short || road.title); }
-  if (s.seed) n = n + seedFame(s) + (q - 21) * 6 * clearF;   // starter spots: notability and every bit of darkness count
+  n = n + seedFame(s) + (q - 21) * 6 * clearF;   // every spot: notability and every bit of darkness count
   n *= KCAP.night || 0.95;
   return { n: Math.round(clamp(n, 0, 100)), why, sk: null, sqm: q };
 };
