@@ -1,7 +1,7 @@
 # Status (update at the end of every work session)
 
 ## Running
-- National research (job.yml job=deepnat), self-chaining in its own queue until every tile is done (days). Progress: feed/status/deepnat.json, feed/deep/index.json.
+- National research (job.yml job=deepnat): terrain/facing for the top 15 spots in each of 1,038 tiles, ~8 min a tile, self-chaining (several days). Walking routes added separately (job=deeproutes, daily 2:40 AM PT, chains). Progress: feed/status/deepnat.json.
 - Forecast check (job=skill) daily 12:20 PM PT; feed/calib.json fills over the first week (needs ~200 pairs per region and model before anything is applied).
 - Deep research done for 300 starter spots in 10 test regions (terrain horizons, sun times, cards); walking routes fill in
   over the next trails runs (242 left). Next: widen REGIONS in pipeline/deepspots.py nationally.

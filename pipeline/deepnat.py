@@ -61,6 +61,48 @@ def _card(s, h_alt, h0, trail):
     return c
 
 
+def _with_route(c, tr):
+    """Add the walk from parking to a finished card and rebuild its tip."""
+    c = dict(c); c["rt"] = 1
+    face = {"sunrise": "Open to the east: a sunrise spot.", "sunset": "Open to the west: a sunset spot.", "both": "Open to both sunrise and sunset.",
+            "blocked": "Terrain hides the low sun: best for warm light on the scene, or in soft light."}.get(c.get("light"), "")
+    walk = ""
+    if tr and tr.get("kind") == "walk" and tr.get("m") is not None:
+        mi = tr["m"] / 1609; up = tr.get("up_m") or 0
+        c["eff"] = "short" if mi < 0.5 and up < 60 else "moderate" if mi < 2 and up < 250 else "hike"
+        c["mi"], c["up"] = round(mi, 1), round(up * 3.281)
+        park = (tr.get("park") or {}).get("name") or "the nearest parking"
+        walk = ("A short walk" if c["eff"] == "short" else f"{c['mi']} mi") + f" from {park}" + (f", {c['up']} ft of climb" if c["up"] >= 100 else "") + "."
+    elif tr and tr.get("kind") == "drive":
+        c["eff"] = "short"; walk = "You can shoot from the car or right beside it."
+    c["tip"] = " ".join(x for x in (walk, face) if x)
+    return c
+
+
+def routes(budget_min=120):
+    """Walking routes from the nearest parking for researched cards that don't have one yet (patient: full retries)."""
+    from . import trails
+    t0 = time.time(); n = tried = 0
+    for k in read_json(OD / "index.json", []) or []:
+        path = OD / f"{k}.json"; j = read_json(path, {}) or {}; cards = j.get("spots") or {}
+        todo = [i for i, c in cards.items() if not c.get("rt")]
+        if not todo: continue
+        byid = {x["id"]: x for x in (read_json(FEED / "seed" / f"{k}.json", {}) or {}).get("spots", [])}
+        for i in todo:
+            if time.time() - t0 > budget_min * 60:
+                path.write_text(json.dumps(j, separators=(",", ":"))); open(".more", "w").write("1")
+                return f"{n} routes added ({tried} tried); time budget reached"
+            s_ = byid.get(i); tried += 1
+            if not s_: cards[i] = dict(cards[i], rt=1); continue
+            try:
+                tr = trails.route(s_, trails.fetch(s_["lat"], s_["lon"])); time.sleep(1.5)
+            except Exception as e:
+                log.info("deeproutes %s: %s", i, e); continue   # retried next run
+            cards[i] = _with_route(cards[i], tr); n += 1 if tr else 0
+        j["spots"] = cards; path.write_text(json.dumps(j, separators=(",", ":")))
+    return f"{n} routes added ({tried} tried); all researched spots have been tried"
+
+
 def _quick_overpass(lat, lon):
     """One try, short timeout, first two mirrors (trails.fetch defaults allow minutes per spot)."""
     from . import trails
@@ -95,13 +137,7 @@ def run(budget_min=120):
                 alt, bd, h0 = terrain.horizon(s["lat"], s["lon"], [g for g in (near, mid, far) if g is not None], edge=True)
             except Exception as e:
                 log.warning("deepnat terrain %s: %s", s["id"], e); continue
-            tr = None
-            if trail_fails < 4:   # the map service is slow or down: skip walking routes for the rest of this run
-                try:
-                    els = _quick_overpass(s["lat"], s["lon"]); time.sleep(1.5)
-                    tr = trails.route(s, els); trail_fails = 0
-                except Exception as e:
-                    trail_fails += 1; log.info("deepnat trail %s: %s", s["id"], e)
+            tr = None   # walking routes are added by routes() (job deeproutes): the map service is too slow to wait on here
             if time.time() - t0 > budget_min * 60: over = True; break
             cards[s["id"]] = _card(s, [float(x) for x in alt], h0, tr); ns += 1
         if over:   # a half-done tile is redone next run
