@@ -21,6 +21,7 @@
 - A "view shadows" link to ShadeMap on spot pages (confirm the link format first).
 
 ## Known weak spots
+- Scoring test (tools/scoretest.py): once, Washougal sunset ranked spots below the top 10 differently in two runs on the same data (load-order dependence); not reproduced in 78 later runs. If it shows again, the failure lists the spots that differed.
 - Hood River sunrise: Bonneville Fish Hatchery leads (salmon season event); Cannon Beach: Haystack Rock outside the top 4.
 - Denver sunset: an old airport control tower ranks first.
 - Displayed scores are lower under v2 (unknown spots show about half their light score).
