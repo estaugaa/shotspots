@@ -1,6 +1,8 @@
 # Status (update at the end of every work session)
 
 ## Running
+- National research (job.yml job=deepnat), self-chaining in its own queue until every tile is done (days). Progress: feed/status/deepnat.json, feed/deep/index.json.
+- Forecast check (job=skill) daily 12:20 PM PT; feed/calib.json fills over the first week (needs ~200 pairs per region and model before anything is applied).
 - Deep research done for 300 starter spots in 10 test regions (terrain horizons, sun times, cards); walking routes fill in
   over the next trails runs (242 left). Next: widen REGIONS in pipeline/deepspots.py nationally.
 - Fog chance model in shadow mode (job.yml nightly 7:15 PM PT) until about 2026-12-07; then decide whether to show it.

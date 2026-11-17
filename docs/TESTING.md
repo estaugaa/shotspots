@@ -11,7 +11,8 @@ All of these run on GitHub Actions against the live site. Run one with
 | 30 situation walkthroughs (full list text) | diag.yml `tools/diag.py [numbers]` -> branch `diag-out`, `scenarios.txt` | after ranking changes |
 | Old vs new scoring, same forecast | diag.yml `tools/scorecmp.py` -> branch `diag-scorecmp` | after scoring changes |
 | Why a spot ranks where it does | diag.yml `tools/whyprobe.py <place words>` -> branch `diag-whyprobe` | debugging |
-| Smoke (site up) | smoke.yml | every 30 min |
+| Smoke (site up, page doesn't jump while loading) | smoke.yml | every 30 min |
+| Forecast vs reality (cloud at sunrise/sunset, nationwide) | job=skill -> feed/calib.json `skill` | daily |
 
 Score math: open the app with `#math` at the end of the URL to show the breakdown on every card (again to hide it).
 Each spot page has a "Why this score" section.

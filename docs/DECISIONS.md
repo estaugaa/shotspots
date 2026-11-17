@@ -2,6 +2,12 @@
 
 One line each: what was decided, and why. Add a line when a choice is made; edit a line when it is reversed.
 
+- 2026-11-17 Forecast check (pipeline/skill.py, daily 12:20 PM PT): day-ahead forecast low cloud vs airport reports at every US sunrise/sunset; calibration applied only where a held-out test shows it lowers the error. HRRR replaces the default forecast for the next 18 h only where it measured more accurate. Data decides, not my judgment.
+- 2026-11-17 Unknown is not bad: a spot with no photo/Wikipedia record gets the median quality of recorded spots nearby. Settings has "Lesser-known" (fame lowers the score instead).
+- 2026-11-17 Mapillary not used for quality: its image counts measure dashcam road coverage, not how photogenic a spot is.
+- 2026-11-17 National research (pipeline/deepnat.py): top 15 starter spots per 1-degree tile, most-photographed tiles first, cards in feed/deep/<tile>.json; the app computes terrain sun times from the stored horizon profile (app/terrainsun.js).
+- 2026-11-17 Forecast forwarder keeps a 6-hour copy and serves it when Open-Meteo refuses or fails.
+- 2026-11-17 Late data (airport reports, HRRR, calibration) applies on the next redraw rather than forcing one, so the list doesn't shift while loading.
 - 2026-11-16 Nowcast: for windows in the next 3 hours, nearby airport cloud reports replace the forecast's low/mid cloud (full weight now, 30% at +3 h). The forecast said 100% overcast at Washougal while airports and Eric saw partly cloudy.
 - 2026-11-16 Spot quality outside Wildlife counts photos only (Commons, Flickr); iNaturalist sightings measure naturalist activity, not views.
 - 2026-11-16 Scoring is data driven, not coverage driven: hand-researched spots get quality from the same measures as every spot (photo and sighting counts, Wikipedia, photographer stands), not a fixed bonus. Outside Wildlife, any spot that is mainly about animals competes on its view. (Eric)
