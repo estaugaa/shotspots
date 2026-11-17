@@ -23,7 +23,7 @@ Also: daily Bonneville fish-ladder counts (Columbia Basin Research DART).
 import csv, io, json, zipfile, datetime as dt, math, re
 import numpy as np
 from zoneinfo import ZoneInfo
-from .common import http, spots, write_json, read_json, CACHE, log, utcnow, iso, r, km, secret
+from .common import soft_fail, http, spots, write_json, read_json, CACHE, log, utcnow, iso, r, km, secret
 
 LA = ZoneInfo("America/Los_Angeles")
 GBIF = "https://api.gbif.org/v1/occurrence/search"
@@ -45,7 +45,8 @@ def life_spots():
 def week_of(date_str):
     try:
         d = dt.date.fromisoformat(date_str[:10])
-    except Exception:
+    except Exception as e:
+        soft_fail("wildlife: bad date", e)
         return None
     return min(51, (d.timetuple().tm_yday - 1) // 7)
 

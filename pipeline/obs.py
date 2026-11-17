@@ -7,7 +7,7 @@ truly clear skies; the app says so. Used by the shot list beyond the 48-hour HRR
 import csv, io, datetime as dt, json, math
 import numpy as np
 from zoneinfo import ZoneInfo
-from .common import http, write_json, read_json, links, spots, CACHE, FEED, log, utcnow, iso, r, km
+from .common import soft_fail, http, write_json, read_json, links, spots, CACHE, FEED, log, utcnow, iso, r, km
 
 LA = ZoneInfo("America/Los_Angeles")
 STATIONS = {"PDX": (45.588, -122.597), "TTD": (45.549, -122.401), "VUO": (45.621, -122.656), "DLS": (45.619, -121.166),
@@ -55,7 +55,8 @@ def climatology():
         for row in rows:
             try:
                 t = dt.datetime.strptime(row["valid"], "%Y-%m-%d %H:%M").replace(tzinfo=dt.timezone.utc).astimezone(LA)
-            except Exception:
+            except Exception as e:
+                soft_fail("obs: airport report row: bad time", e)
                 continue
             fog, clear, low = classify(row)
             n[t.month - 1, t.hour] += 1
@@ -76,7 +77,8 @@ def asos_recent(st, t0, t1):
     for row in rows:
         try:
             t = dt.datetime.strptime(row["valid"], "%Y-%m-%d %H:%M").replace(tzinfo=dt.timezone.utc)
-        except Exception:
+        except Exception as e:
+            soft_fail("obs: airport report row: bad time", e)
             continue
         if t0 <= t <= t1:
             fog, clear, low = classify(row)

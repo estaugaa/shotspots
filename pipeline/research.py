@@ -13,7 +13,7 @@ How it fits together
 """
 import json, math, re, sys, datetime as dt
 from pathlib import Path
-from .common import DATA, CONFIG, FEED, spots, write_json, read_json, km, utcnow, iso, log, secret, http
+from .common import soft_fail, DATA, CONFIG, FEED, spots, write_json, read_json, km, utcnow, iso, log, secret, http
 
 R = DATA / "research"
 R.mkdir(parents=True, exist_ok=True)
@@ -89,7 +89,8 @@ def ingest(subs):
             if k in ("regions_per_night", "max_new_spots_per_night", "max_web_searches_per_night", "max_minutes_per_night", "max_km_from_home", "saturation_min_new"):
                 try:
                     out[k] = int(float(v))
-                except Exception:
+                except Exception as e:
+                    soft_fail("research: research setting: non-numeric value", e)
                     pass
             elif k in ("enabled", "auto_expand"):
                 out[k] = str(v).lower() in ("1", "true", "on", "yes")

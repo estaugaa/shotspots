@@ -1,3 +1,4 @@
+# Allowed ranges. Jobs install the exact versions in requirements.lock (see .github/workflows/tests.yml to upgrade).
 numpy>=1.26
 scipy>=1.11
 pandas>=2.1

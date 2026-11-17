@@ -11,7 +11,7 @@ Needs FLICKR_KEY.
 import datetime as dt, math, json
 import numpy as np
 from zoneinfo import ZoneInfo
-from .common import http, spots, landmarks, write_json, CACHE, log, utcnow, iso, r, secret, km, bearing
+from .common import soft_fail, http, spots, landmarks, write_json, CACHE, log, utcnow, iso, r, secret, km, bearing
 from . import ephem
 
 LA = ZoneInfo("America/Los_Angeles")
@@ -64,7 +64,8 @@ def run():
         for p in ph:
             try:
                 t = dt.datetime.strptime(p["datetaken"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=LA)
-            except Exception:
+            except Exception as e:
+                soft_fail("flickr: photo with bad date", e)
                 continue
             t_local.append(t); lat.append(float(p["latitude"])); lon.append(float(p["longitude"]))
         u = np.array([t.timestamp() for t in t_local])
@@ -113,7 +114,8 @@ def top_photos(per_spot=8):
             j = http("https://api.flickr.com/services/rest/", params={"method": "flickr.photos.search", "api_key": key, "lat": s["lat"], "lon": s["lon"],
                      "radius": 0.5, "radius_units": "km", "sort": "interestingness-desc", "content_type": 1, "media": "photos", "safe_search": 1,
                      "extras": "owner_name,url_m,url_b,license", "per_page": per_spot, "format": "json", "nojsoncallback": 1}, timeout=30).json()
-        except Exception:
+        except Exception as e:
+            soft_fail("flickr: Flickr request failed", e)
             continue
         ph = [p for p in j.get("photos", {}).get("photo", []) if p.get("url_m")]
         if ph:

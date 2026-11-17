@@ -34,7 +34,7 @@ jobs:
         run: |
           python -m venv /tmp/v && /tmp/v/bin/pip install -q -r requirements.txt
           mkdir -p out && /tmp/v/bin/pip freeze > out/requirements.lock
-          [ -f requirements.lock ] && { diff requirements.lock out/requirements.lock && echo "lock is current" || true; }
+          if [ -f requirements.lock ]; then diff requirements.lock out/requirements.lock && echo "lock is current" || echo "newer versions available (above)"; fi
       - name: Tests on the newest versions
         run: /tmp/v/bin/pip install -q pytest && /tmp/v/bin/python -m pytest -q tests/
       - name: Publish the freeze to the diag-freeze branch

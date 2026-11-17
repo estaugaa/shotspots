@@ -35,7 +35,7 @@ jobs:
           restore-keys: |
             ss-cache-conditions-
             ss-cache-
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements.lock
       - run: python -m pipeline conditions research_sync
       - uses: actions/cache/save@v4
         if: always()

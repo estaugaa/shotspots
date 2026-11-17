@@ -6,7 +6,7 @@ feed/reports.json and feed/cond/<id>.jpg, and drops older photos. Verification h
 forecasts (verify.py), unverified ones only when they're the owner's.
 """
 import base64, datetime as dt, json
-from .common import write_json, utcnow, iso, FEED, log
+from .common import soft_fail, write_json, utcnow, iso, FEED, log
 from .forms import submissions
 
 KEEP_H = 48
@@ -22,7 +22,8 @@ def run():
         d = s.get("data", {})
         try:
             t = dt.datetime.fromtimestamp(int(d.get("t", "0")) / 1000, dt.timezone.utc)
-        except Exception:
+        except Exception as e:
+            soft_fail("reports: report with bad time", e)
             continue
         if t < cut or d.get("share") != "1" or not str(d.get("img", "")).startswith("data:image/jpeg;base64,"):
             continue

@@ -12,7 +12,7 @@ astrometry(): plate-solve night frames dropped in inbox/frames/ with nova.astrom
 import json, math, subprocess, datetime as dt, time, re, os
 from pathlib import Path
 import numpy as np
-from .common import http, spots, write_json, read_json, ROOT, FEED, DATA, CONFIG, CACHE, log, utcnow, iso, r, secret, km
+from .common import soft_fail, http, spots, write_json, read_json, ROOT, FEED, DATA, CONFIG, CACHE, log, utcnow, iso, r, secret, km
 from . import ephem, obs
 
 HOME = (45.582, -122.353)
@@ -162,7 +162,8 @@ def _scan(lines, k, t, best):
         ts, code = l.split(" ", 1)
         try:
             tt = dt.datetime.fromisoformat(ts.replace("Z", "+00:00").split(".")[0] + ("+00:00" if "+" not in ts else ""))
-        except Exception:
+        except Exception as e:
+            soft_fail("verify: observation: bad timestamp", e)
             continue
         dtm = abs((tt - t).total_seconds())
         if dtm <= 3600 and (best is None or dtm < best[0]):
@@ -229,7 +230,8 @@ def outcomes():
         spot = by_id.get(d.get("spot"))
         try:
             t = dt.datetime.fromtimestamp(int(d.get("t", "0")) / 1000, dt.timezone.utc)
-        except Exception:
+        except Exception as e:
+            soft_fail("verify: outcome: bad timestamp", e)
             continue
         rec = {"spot": d.get("spot"), "t": iso(t), "kind": d.get("kind"), "rating": _num(d.get("rating")), "keepers": _num(d.get("keepers")),
                "sky": d.get("sky"), "fog": d.get("fog"), "color": d.get("color"), "species": d.get("species"), "sqm": _num(d.get("sqm")), "pred": pred}

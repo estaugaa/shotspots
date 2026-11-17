@@ -47,7 +47,7 @@ jobs:
           restore-keys: |
             ss-cache-seed-
             ss-cache-
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements.lock
       - id: st
         env:
           GH_TOKEN: ${{ github.token }}

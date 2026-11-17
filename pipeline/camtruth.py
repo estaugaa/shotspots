@@ -14,7 +14,7 @@ Caveats: cameras point along roads, not always toward the sun; overlays and head
 import io, json, math, time, csv, colorsys, datetime as dt
 from concurrent.futures import ThreadPoolExecutor
 import requests
-from .common import DATA, FEED, log, write_json, iso, utcnow, read_json
+from .common import soft_fail, DATA, FEED, log, write_json, iso, utcnow, read_json
 from .sunlite import sun_times
 
 D = DATA / "camtruth"; INV = DATA / "cams_inventory.json"
@@ -117,7 +117,8 @@ def capture(max_n=400):
             r = requests.get(c["url"], headers=H, timeout=25)
             if not r.ok or not r.headers.get("content-type", "").startswith("image"): return None
             return item, metrics(r.content)
-        except Exception:
+        except Exception as e:
+            soft_fail("camtruth: webcam fetch or metrics failed", e)
             return None
     with ThreadPoolExecutor(12) as ex: got = [g for g in ex.map(grab, due) if g]
     got = [(it, mt) for it, mt in got if mt[4] >= 0.12]   # too dark to judge
@@ -176,7 +177,8 @@ def fit():
                     v = {k: (float(r[k]) if r[k] not in ("", "None") else None) for k in FIELDS[6:]}
                     if None in (v["low"], v["mid"], v["high"]): continue
                     v["event"] = r["event"]; rows.append(v)
-                except Exception:
+                except Exception as e:
+                    soft_fail("camtruth: webcam row skipped", e)
                     pass
     out = {"gen": iso(utcnow()), "n": len(rows)}
     if len(rows) < 30:

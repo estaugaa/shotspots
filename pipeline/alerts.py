@@ -13,7 +13,7 @@ written to the (public) repo; only a hash of dead endpoints is kept.
 """
 import datetime as dt, hashlib, json
 from zoneinfo import ZoneInfo
-from .common import spots, write_json, read_json, FEED, DATA, ROOT, http, secret, log, utcnow, iso
+from .common import soft_fail, spots, write_json, read_json, FEED, DATA, ROOT, http, secret, log, utcnow, iso
 
 LA = ZoneInfo("America/Los_Angeles")
 ADIR = DATA / "alerts"
@@ -452,7 +452,8 @@ def settings():
         for k in ("min_prob", "quiet_start", "quiet_end", "max_per_day", "max_km", "max_km_dark", "aurora_kp"):
             try:
                 st[k] = int(float(d[k]))
-            except Exception:
+            except Exception as e:
+                soft_fail("alerts: alert settings: non-numeric value", e)
                 pass
         if "enabled" in d:
             st["enabled"] = str(d["enabled"]).lower() in ("1", "true", "on", "yes")
@@ -476,7 +477,8 @@ def subscriptions():
         d = s.get("data", {})
         try:
             sub = json.loads(d.get("sub") or "{}")
-        except Exception:
+        except Exception as e:
+            soft_fail("alerts: push subscription: bad JSON", e)
             continue
         ep = sub.get("endpoint")
         if not ep:
@@ -618,7 +620,8 @@ def widget(F, S, shown, now):
         try:
             from . import ephem
             moon = round(100 * float(ephem.moon_illum(ephem.ts_unix(dt.datetime.now(dt.timezone.utc).timestamp()))))
-        except Exception:
+        except Exception as e:
+            soft_fail("alerts: moon illumination failed", e)
             pass
         if cc:
             m = sum(cc) / len(cc)

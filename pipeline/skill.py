@@ -13,7 +13,7 @@ MEASURED (observations) against MODELED (forecasts).
 """
 import csv, io, math, time, datetime as dt, glob, os
 import requests
-from .common import DATA, log, write_json, iso, utcnow
+from .common import soft_fail, DATA, log, write_json, iso, utcnow
 from .sunlite import sun_times
 
 STATES = ("AL AZ AR CA CO CT DE FL GA ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY").split()
@@ -50,7 +50,7 @@ def _layers(r):
         any_ = True
         if cov == 0: low = low or 0; mid = mid or 0; continue
         try: base = float(h)
-        except Exception: continue
+        except Exception as e: soft_fail("skill: forecast hour: non-numeric", e); continue
         if base < 6500: low = max(low or 0, cov)
         elif base < 12000: mid = max(mid or 0, cov)
     if not any_: return None
@@ -105,7 +105,7 @@ def _stored():
     out = {}
     for p_ in sorted(SKD.glob("fc_*.json")):
         try: out.update(json.loads(p_.read_text()))
-        except Exception: pass
+        except Exception as e: soft_fail("skill: stored forecast file unreadable", e)
     return out
 
 
@@ -118,7 +118,8 @@ def collect():
         try:
             t = dt.datetime.strptime(r["valid"], "%Y-%m-%d %H:%M").replace(tzinfo=dt.timezone.utc)
             lat, lon = float(r["lat"]), float(r["lon"])
-        except Exception:
+        except Exception as e:
+            soft_fail("skill: station with bad coordinates", e)
             continue
         lay = _layers(r)
         if lay is None: continue

@@ -42,15 +42,15 @@ def spots(cats=None, deep=False):
     if deep and (DATA / "deep_spots.json").exists():
         try:
             s = s + json.load(open(DATA / "deep_spots.json"))
-        except Exception:
-            pass
+        except Exception as e:
+            soft_fail("spots: data/deep_spots.json unreadable", e)
     rdir = DATA / "research" / "spots"
     if rdir.exists():
         for p in sorted(rdir.glob("*.json")):
             try:
                 s += [x for x in json.load(open(p)) if not x.get("removed")]
-            except Exception:
-                pass
+            except Exception as e:
+                soft_fail(f"spots: {p.name} unreadable", e)
     if cats:
         s = [x for x in s if set(x["cats"]) & set(cats)]
     return s
@@ -165,16 +165,31 @@ def all_status():
     return out
 
 
+# Errors a module recovers from (a bad row, one failed source among several) are skipped, not fatal, but must not be
+# invisible: soft_fail logs the first of each kind and counts the rest, and run_module records the counts in the
+# module's status file (feed/status/<name>.json "soft"), so a job that "succeeded" while dropping data shows it.
+SOFT = {}
+
+
+def soft_fail(where, err=None):
+    n, first = SOFT.get(where, (0, None))
+    if n == 0:
+        log.warning("%s: %s (further ones counted, not logged)", where, f"{type(err).__name__}: {str(err)[:200]}" if err else "skipped")
+        first = f"{type(err).__name__}: {str(err)[:160]}" if err else None
+    SOFT[where] = (n + 1, first)
+
+
 def run_module(name, fn, kind, note=""):
     """Run one module; never let one failing source break the rest of the pipeline."""
-    t0 = time.time()
+    t0 = time.time(); SOFT.clear()
+    soft = lambda: {"soft": {k: {"n": n, "first": f} for k, (n, f) in SOFT.items()}} if SOFT else {}
     try:
         out = fn()
-        status(name, True, kind, out if isinstance(out, str) else note, secs=round(time.time() - t0, 1))
+        status(name, True, kind, out if isinstance(out, str) else note, secs=round(time.time() - t0, 1), **soft())
         return True
     except Exception as e:
         log.error("%s failed: %s\n%s", name, e, traceback.format_exc())
-        status(name, False, kind, f"{type(e).__name__}: {str(e)[:300]}", secs=round(time.time() - t0, 1))
+        status(name, False, kind, f"{type(e).__name__}: {str(e)[:300]}", secs=round(time.time() - t0, 1), **soft())
         return False
 
 

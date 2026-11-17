@@ -12,7 +12,7 @@ Prototype and checks: tools/standprobe.py (Gorge spots, Nov 2026).
 """
 import json, math, os, re, time
 import requests
-from .common import FEED, log, utcnow, iso, read_json
+from .common import soft_fail, FEED, log, utcnow, iso, read_json
 
 API = "https://commons.wikimedia.org/w/api.php"
 S = requests.Session(); S.headers["User-Agent"] = "ShotSpots/1.0 (https://estaugaa.github.io/shotspots/; photo-planning research)"
@@ -78,7 +78,8 @@ def osm_viewpoints(spots):
     for url in ("https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"):
         try:
             return [(e["lat"], e["lon"]) for e in S.post(url, data={"data": q}, timeout=150).json().get("elements", [])]
-        except Exception:
+        except Exception as e:
+            soft_fail("stands: Overpass mirror failed", e)
             continue
     return []
 
