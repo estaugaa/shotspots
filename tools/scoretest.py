@@ -62,12 +62,14 @@ def serve():
     return f"http://127.0.0.1:{s.server_address[1]}/"
 
 
-async def settle(pg, inflight, quiet=2.5, limit=60):
-    """Wait until no request has been open for `quiet` seconds (real time; the page clock is frozen)."""
+async def settle(pg, inflight, quiet=4.0, least=6.0, limit=60):
+    """Wait until no request has been open for `quiet` seconds and at least `least` seconds have passed (real time; the
+    page clock is frozen). Both must exceed the app's deferred loads: seed.js fetches stands and opening hours 2.5 s
+    after the spot tiles, and a 2.5 s quiet window sometimes ranked before they arrived (Washougal, Nov 17)."""
     loop = asyncio.get_running_loop(); t0 = last = loop.time()
     while loop.time() - t0 < limit:
         if inflight[0] > 0: last = loop.time()
-        elif loop.time() - last >= quiet: return
+        elif loop.time() - last >= quiet and loop.time() - t0 >= least: return
         await asyncio.sleep(0.25)
 
 
