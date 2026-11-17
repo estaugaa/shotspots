@@ -1,0 +1,626 @@
+{
+ "Washougal sunrise": {
+  "top": [
+   {
+    "name": "Willamette Falls overlook (Hwy 99E, Oregon City)",
+    "score": 37,
+    "layers": [
+     48,
+     48,
+     48,
+     48,
+     48,
+     48,
+     48,
+     48,
+     48,
+     37
+    ]
+   },
+   {
+    "name": "Owl Point",
+    "score": 36,
+    "layers": [
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     36
+    ]
+   },
+   {
+    "name": "The Rockpile",
+    "score": 36,
+    "layers": [
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     36
+    ]
+   },
+   {
+    "name": "Katsuk Point",
+    "score": 36,
+    "layers": [
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     36
+    ]
+   },
+   {
+    "name": "Devil's Peak Lookout",
+    "score": 36,
+    "layers": [
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     62,
+     36
+    ]
+   },
+   {
+    "name": "Inspiration Point",
+    "score": 36
+   },
+   {
+    "name": "Multnomah Falls",
+    "score": 35
+   },
+   {
+    "name": "Crystal Springs Rhododendron Garden",
+    "score": 34
+   },
+   {
+    "name": "Lewisville Regional Park (East Fork Lewis River)",
+    "score": 34
+   },
+   {
+    "name": "Zigzag Mountain",
+    "score": 34
+   }
+  ]
+ },
+ "Washougal sunset": {
+  "top": [
+   {
+    "name": "Lewisville Regional Park (East Fork Lewis River)",
+    "score": 39,
+    "layers": [
+     55,
+     55,
+     55,
+     65,
+     65,
+     65,
+     65,
+     65,
+     65,
+     39
+    ]
+   },
+   {
+    "name": "Willamette Falls overlook (Hwy 99E, Oregon City)",
+    "score": 36,
+    "layers": [
+     47,
+     47,
+     47,
+     47,
+     47,
+     47,
+     47,
+     47,
+     47,
+     36
+    ]
+   },
+   {
+    "name": "Hathaway & Schmid Family Parks (Washougal River bend)",
+    "score": 33,
+    "layers": [
+     51,
+     51,
+     51,
+     55,
+     55,
+     55,
+     55,
+     55,
+     55,
+     33
+    ]
+   },
+   {
+    "name": "Multnomah Falls",
+    "score": 35,
+    "layers": [
+     36,
+     36,
+     36,
+     36,
+     36,
+     36,
+     36,
+     36,
+     36,
+     35
+    ]
+   },
+   {
+    "name": "Crystal Springs Rhododendron Garden",
+    "score": 33,
+    "layers": [
+     55,
+     64,
+     64,
+     74,
+     74,
+     74,
+     54,
+     54,
+     54,
+     33
+    ]
+   },
+   {
+    "name": "Mount Tabor Park",
+    "score": 32
+   },
+   {
+    "name": "Ridgefield National Wildlife Refuge",
+    "score": 30
+   },
+   {
+    "name": "Sister Rocks",
+    "score": 30
+   },
+   {
+    "name": "Green Mountain",
+    "score": 30
+   },
+   {
+    "name": "Cinnamon Peak",
+    "score": 30
+   }
+  ]
+ },
+ "Washougal night": {
+  "top": [
+   {
+    "name": "East Portal",
+    "score": 79,
+    "layers": [
+     null,
+     null,
+     79,
+     79,
+     79,
+     79,
+     79,
+     79,
+     79,
+     79
+    ]
+   },
+   {
+    "name": "West Portal",
+    "score": 79,
+    "layers": [
+     null,
+     null,
+     79,
+     79,
+     79,
+     79,
+     79,
+     79,
+     79,
+     79
+    ]
+   },
+   {
+    "name": "Steamboat Landing Park dock (Washougal)",
+    "score": 48,
+    "layers": [
+     null,
+     null,
+     48,
+     48,
+     48,
+     48,
+     48,
+     48,
+     48,
+     48
+    ]
+   },
+   {
+    "name": "Fort Vancouver (reconstructed stockade)",
+    "score": 52,
+    "layers": [
+     null,
+     null,
+     52,
+     52,
+     52,
+     52,
+     52,
+     52,
+     52,
+     52
+    ]
+   },
+   {
+    "name": "Moonset down NE 4th Ave into the Camas mill (lunar standstill)",
+    "score": 48,
+    "layers": [
+     5,
+     5,
+     48,
+     48,
+     48,
+     48,
+     48,
+     48,
+     48,
+     48
+    ]
+   },
+   {
+    "name": "Washougal riverfront sunset calendar (Marina Park, Cottonwood Beach, Steigerwald)",
+    "score": 47
+   },
+   {
+    "name": "Camas Slough & Lady Island by kayak or boat",
+    "score": 46
+   },
+   {
+    "name": "Grant Street Pier (Vancouver Waterfront)",
+    "score": 50
+   },
+   {
+    "name": "Wintler Community Park beach (Vancouver)",
+    "score": 50
+   },
+   {
+    "name": "Camas paper mill skyline (photograph it while it lasts)",
+    "score": 47
+   }
+  ]
+ },
+ "Washougal wildlife morning": {
+  "top": [
+   {
+    "name": "Ridgefield National Wildlife Refuge",
+    "score": 91,
+    "layers": [
+     63,
+     81,
+     81,
+     91,
+     91,
+     91,
+     91,
+     91,
+     91,
+     91
+    ]
+   },
+   {
+    "name": "Oaks Bottom Wildlife Refuge",
+    "score": 75,
+    "layers": [
+     57,
+     75,
+     75,
+     75,
+     75,
+     75,
+     75,
+     75,
+     75,
+     75
+    ]
+   },
+   {
+    "name": "Whitaker Ponds Nature Park",
+    "score": 65,
+    "layers": [
+     57,
+     65,
+     65,
+     65,
+     65,
+     65,
+     65,
+     65,
+     65,
+     65
+    ]
+   },
+   {
+    "name": "Jackson Bottom Wetlands Preserve",
+    "score": 71,
+    "layers": [
+     57,
+     71,
+     71,
+     71,
+     71,
+     71,
+     71,
+     71,
+     71,
+     71
+    ]
+   },
+   {
+    "name": "Dawson Creek Corporate Park",
+    "score": 67,
+    "layers": [
+     57,
+     67,
+     67,
+     67,
+     67,
+     67,
+     67,
+     67,
+     67,
+     67
+    ]
+   },
+   {
+    "name": "Crystal Springs Rhododendron Garden",
+    "score": 63
+   },
+   {
+    "name": "NE Sundial Rd.: Company Lake",
+    "score": 57
+   },
+   {
+    "name": "Ridgefield NWR: Carty Unit",
+    "score": 65
+   },
+   {
+    "name": "Fernhill Wetlands",
+    "score": 67
+   },
+   {
+    "name": "Fernhill Wetlands: Natural Treatment System",
+    "score": 67
+   }
+  ]
+ },
+ "Grand Canyon sunrise": {
+  "top": [
+   {
+    "name": "Mather Point",
+    "score": 99,
+    "layers": [
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     99
+    ]
+   },
+   {
+    "name": "Grandview Point",
+    "score": 77,
+    "layers": [
+     85,
+     85,
+     85,
+     85,
+     85,
+     85,
+     85,
+     85,
+     85,
+     77
+    ]
+   },
+   {
+    "name": "Yaki Point",
+    "score": 69,
+    "layers": [
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     69
+    ]
+   },
+   {
+    "name": "Hopi Point",
+    "score": 68,
+    "layers": [
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     68
+    ]
+   },
+   {
+    "name": "Powell Point",
+    "score": 67,
+    "layers": [
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     89,
+     67
+    ]
+   },
+   {
+    "name": "Bright Angel Trailhead",
+    "score": 66
+   },
+   {
+    "name": "Yavapai Point",
+    "score": 64
+   },
+   {
+    "name": "Mather Point Amphitheatre",
+    "score": 63
+   },
+   {
+    "name": "Mohave Point",
+    "score": 63
+   },
+   {
+    "name": "Lookout Terrace",
+    "score": 58
+   }
+  ]
+ },
+ "Yosemite sunset": {
+  "top": [
+   {
+    "name": "Lower Yosemite Fall",
+    "score": 48,
+    "layers": [
+     39,
+     39,
+     39,
+     39,
+     39,
+     39,
+     43,
+     43,
+     43,
+     48
+    ]
+   },
+   {
+    "name": "Vernal Fall",
+    "score": 48,
+    "layers": [
+     39,
+     39,
+     39,
+     39,
+     39,
+     39,
+     43,
+     43,
+     43,
+     48
+    ]
+   },
+   {
+    "name": "Nevada Fall",
+    "score": 47,
+    "layers": [
+     39,
+     39,
+     39,
+     39,
+     39,
+     39,
+     43,
+     43,
+     43,
+     47
+    ]
+   },
+   {
+    "name": "Upper Yosemite Fall",
+    "score": 40,
+    "layers": [
+     36,
+     36,
+     36,
+     36,
+     36,
+     36,
+     40,
+     40,
+     40,
+     40
+    ]
+   },
+   {
+    "name": "Horsetail Fall",
+    "score": 34,
+    "layers": [
+     36,
+     36,
+     36,
+     36,
+     36,
+     36,
+     40,
+     40,
+     40,
+     34
+    ]
+   },
+   {
+    "name": "Sentinel Fall",
+    "score": 33
+   },
+   {
+    "name": "Middle Cascades",
+    "score": 32
+   },
+   {
+    "name": "Bridalveil Fall",
+    "score": 32
+   },
+   {
+    "name": "Royal Arch Cascade",
+    "score": 29
+   },
+   {
+    "name": "Ribbon Fall",
+    "score": 26
+   }
+  ]
+ }
+}
