@@ -1,0 +1,2 @@
+None: 200 keys=['time', 'cloud_cover_low_previous_day1', 'cloud_cover_mid_previous_day1'] n=48 first=['2026-11-16T00:00', '2026-11-16T01:00'] nonnull_low=0 sample=[None, None, None, None, None, None, None, None] err=None
+gfs_hrrr: 200 keys=['time', 'cloud_cover_low_previous_day1', 'cloud_cover_mid_previous_day1'] n=48 first=['2026-11-16T00:00', '2026-11-16T01:00'] nonnull_low=0 sample=[None, None, None, None, None, None, None, None] err=None
