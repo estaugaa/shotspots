@@ -21,7 +21,14 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -r "$( [ -f requirements.lock ] && echo requirements.lock || echo requirements.txt )" pytest
-      - run: python -m pytest -q tests/
+      - run: python -m pytest -q tests/ 2>&1 | tee pytest.txt; exit ${PIPESTATUS[0]}
+        shell: bash
+      - name: Output to the diag-tests branch (readable without logging in)
+        if: always()
+        run: |
+          mkdir -p out && cp pytest.txt out/ && cd out && git init -q && git checkout -q -b diag-tests && git add -A
+          git -c user.name=diag -c user.email=diag@users.noreply.github.com commit -qm "pytest ${{ github.sha }}"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" diag-tests
   newest:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
