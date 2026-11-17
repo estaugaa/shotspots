@@ -1,0 +1,146 @@
+{
+ "now": "Tue Nov 17 2026 13:19",
+ "windows": [
+  {
+   "kind": "midday",
+   "at": "13:34",
+   "sky": {
+    "q": 32,
+    "cc": 33,
+    "low": 33,
+    "mid": 0,
+    "high": 0,
+    "block": 22,
+    "canvas": 0,
+    "mode": "color"
+   },
+   "top": [
+    "49 (light 69, spot \u00d70.71) Loowit Falls | overcast: no harsh highlights on the water",
+    "45 (light 46, spot \u00d70.98) Vista House at Crown Point | cloud shadows sweep the ridges",
+    "42 (light 42, spot \u00d70.99) Lan Su Chinese Garden | flat overhead light on the leaves; satellite: turning (10-23)",
+    "42 (light 46, spot \u00d70.91) Pittock Mansion viewpoint | cloud shadows sweep the ridges"
+   ]
+  },
+  {
+   "kind": "afternoon",
+   "at": "15:25",
+   "sky": {
+    "q": 32,
+    "cc": 4,
+    "low": 4,
+    "mid": 0,
+    "high": 0,
+    "block": 2,
+    "canvas": 0,
+    "mode": "clear"
+   },
+   "top": [
+    "71 (light 80, spot \u00d70.89) Narada Falls | overcast: no harsh highlights on the water",
+    "64 (light 65, spot \u00d70.99) Lan Su Chinese Garden | side light through the leaves; satellite: turning (10-23)",
+    "64 (light 80, spot \u00d70.80) Comet Falls | overcast: no harsh highlights on the water",
+    "63 (light 80, spot \u00d70.79) Christine Falls | overcast: no harsh highlights on the water"
+   ]
+  },
+  {
+   "kind": "sunset",
+   "at": "16:36",
+   "sky": {
+    "q": 23,
+    "cc": 0,
+    "low": 0,
+    "mid": 0,
+    "high": 0,
+    "block": 60,
+    "canvas": 0,
+    "mode": "clear"
+   },
+   "top": [
+    "72 (light 89, spot \u00d70.81) Tillamook Rock Light | open view toward the west",
+    "61 (light 84, spot \u00d70.72) Santiam Pass | peaks likely out; clear: alpenglow on the peaks after sunset; open view toward the west",
+    "55 (light 66, spot \u00d70.83) Beacon Rock | clear: warm, low light across the land; open view toward the west; the hour-by-hour model sees little colour here",
+    "52 (light 57, spot \u00d70.92) Fort Vancouver (reconstructed st | clear: warm, low light across the land; open view toward the west; the hour-by-hour model sees little colour here"
+   ]
+  },
+  {
+   "kind": "bluePM",
+   "at": "17:09",
+   "sky": {
+    "q": 23,
+    "cc": 0,
+    "low": 0,
+    "mid": 0,
+    "high": 0,
+    "block": 48,
+    "canvas": 0,
+    "mode": "clear"
+   },
+   "top": [
+    "70 (light 72, spot \u00d70.98) Multnomah Falls | floodlights balance with the sky now",
+    "66 (light 67, spot \u00d70.98) Vista House at Crown Point | floodlights balance with the sky now; Belt of Venus and earth shadow opposite the sunset; faces east: a sunrise spot",
+    "65 (light 71, spot \u00d70.92) Fort Vancouver (reconstructed st | deep blue sky behind the lights",
+    "64 (light 71, spot \u00d70.89) Hawthorne Bridge & Waterfront Pa | deep blue sky behind the lights; car light trails against the blue"
+   ]
+  },
+  {
+   "kind": "night",
+   "at": "02:54",
+   "sky": {
+    "q": 22,
+    "cc": 99,
+    "low": 14,
+    "mid": 96,
+    "high": 99,
+    "block": 60,
+    "canvas": 96,
+    "mode": "overcast"
+   },
+   "top": [
+    "53 (light -, spot \u00d7-) Grant Street Pier (Vancouver Wat | city lights at night",
+    "48 (light -, spot \u00d7-) Steamboat Landing Park dock (Was | city lights at night",
+    "52 (light -, spot \u00d7-) Fort Vancouver (reconstructed st | city lights at night",
+    "53 (light -, spot \u00d7-) Sunrise behind Mt. Hood from Gra | city lights at night; \u26a0\ufe0f Current fire closures on Mt. Hood National Forest"
+   ]
+  },
+  {
+   "kind": "blueAM",
+   "at": "06:40",
+   "sky": {
+    "q": 3,
+    "cc": 100,
+    "low": 100,
+    "mid": 100,
+    "high": 100,
+    "block": 100,
+    "canvas": 100,
+    "mode": "showers"
+   },
+   "top": [
+    "70 (light 72, spot \u00d70.98) Vista House at Crown Point | floodlights balance with the sky now",
+    "70 (light 72, spot \u00d70.98) Multnomah Falls | floodlights balance with the sky now",
+    "63 (light 71, spot \u00d70.89) Broadway Bridge | ",
+    "62 (light 67, spot \u00d70.92) Fort Vancouver (reconstructed st | "
+   ]
+  },
+  {
+   "kind": "sunrise",
+   "at": "07:13",
+   "sky": {
+    "q": 3,
+    "cc": 100,
+    "low": 100,
+    "mid": 100,
+    "high": 100,
+    "block": 100,
+    "canvas": 100,
+    "mode": "showers"
+   },
+   "top": [
+    "37 (light 48, spot \u00d70.76) Willamette Falls overlook (Hwy 9 | soft overcast light; sun clears the ridge at 8:44 AM",
+    "36 (light 62, spot \u00d70.58) Owl Point | fresh snow on the trees; open view toward the east",
+    "36 (light 62, spot \u00d70.58) The Rockpile | fresh snow on the trees; open view toward the east",
+    "36 (light 62, spot \u00d70.58) Katsuk Point | fresh snow on the trees; open view toward the east"
+   ]
+  }
+ ]
+}
+errors: []
