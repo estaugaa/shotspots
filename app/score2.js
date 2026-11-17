@@ -39,8 +39,8 @@ fitFor = function (s, w) {
   const f = _fitV1(s, w);
   if (!f || SCORE_V !== 2 || w.kind === "night" || UI.group === "life") return f;
   const q = spotQuality(s);
-  const m = PREFS.fame === "lesser" ? 1.05 - 0.35 * q : 0.5 + 0.625 * q;   // lesser-known: unknown 1.05, most photographed 0.70
-  const life = lifeLed(s) ? 0.85 : 1;   // outside the Wildlife filter, lists lead with views: a refuge's sunset sky counts, a bit less (Eric, Nov 16)
+  const m = PREFS.fame === "lesser" ? 1.05 - 0.35 * q : TUNE.qMin + (TUNE.qMax - TUNE.qMin) * q;   // lesser-known: unknown 1.05, most photographed 0.70
+  const life = lifeLed(s) ? TUNE.wildlifeOutside : 1;   // outside the Wildlife filter, lists lead with views: a refuge's sunset sky counts, a bit less (Eric, Nov 16)
   return { ...f, n: Math.round(clamp(f.n * m * life, 0, 100)), q, light: f.n, qm: m * life };
 };
 
@@ -56,7 +56,7 @@ function qualityText(s) {
   if (/landmark|bridge/.test(s.kind || "")) bits.push("buildings count 25% less");
   return bits.length ? bits.join(", ") + (PREFS.fame === "lesser" ? " (you favor lesser-known spots, so this counts against it)" : "") : "no photo or Wikipedia record: counted as a typical spot nearby";
 }
-function distFactor(s) { const d = driveMin(s); return 1 - 0.1 * Math.min(1, d / Math.max(1, maxTravel())); }
+function distFactor(s) { const d = driveMin(s); return 1 - TUNE.distance * Math.min(1, d / Math.max(1, maxTravel())); }
 function mathLine(f, s) {
   if (f.light == null) return "";
   return `Light ${Math.round(f.light)} × spot ${f.qm.toFixed(2)} = ${f.n}; list order × ${distFactor(s).toFixed(2)} for distance`;

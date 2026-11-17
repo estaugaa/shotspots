@@ -32,6 +32,11 @@ const WETCITY = new Set(["cathedral-park", "eastbank-esplanade", "hawthorne-brid
 const SKY = ["vista", "mountain", "reflection", "coast", "city", "alignment", "geology", "historic"];
 const SOFT = ["waterfall", "fallcolor", "garden", "wildflowers"];
 const LIFE = ["birds", "wildlife"];
+/* Scoring weights in one place. Defaults are the best current settings (webcam checks: pipeline/camtruth.py); the hidden
+   tuning panel (#tune in the URL) overrides them on this device for testing. */
+const TUNE_DEFAULT = { lowBroken: 0.85, lowDeck: 0.4, clearLight: 64, alpenglow: 8, qMin: 0.5, qMax: 1.12, wildlifeOutside: 0.85,
+  capMorning: 0.8, capMidday: 0.62, capAfternoon: 0.74, distance: 0.1, canvasFloor: 0.32 };
+let TUNE = { ...TUNE_DEFAULT }; try { Object.assign(TUNE, JSON.parse(localStorage.getItem("ss2:tune") || "{}")); } catch (e) { }
 const NIGHT = ["night", "aurora"];
 const WALK = { road: 5, short: 15, hike: 45, hard: 90 };
 const GROUPS = [["all", "All"], ["saved", "Saved"], ["land", "Landscape"], ["water", "Waterfalls"], ["life", "Birds & wildlife"], ["night", "Night sky"], ["city", "City"], ["align", "Alignments"]];
@@ -197,7 +202,7 @@ function nightWindow(p) {
 
 const KNAME = { blueAM: "Morning blue hour", sunrise: "Sunrise", morning: "Morning", midday: "Midday", afternoon: "Afternoon", sunset: "Sunset", bluePM: "Evening blue hour", night: "Night sky" };
 const KSHORT = { blueAM: "AM blue", sunrise: "Sunrise", morning: "Morning", midday: "Midday", afternoon: "Afternoon", sunset: "Sunset", bluePM: "PM blue", night: "Night" };
-const KCAP = { blueAM: 0.95, sunrise: 1, morning: 0.8, midday: 0.62, afternoon: 0.74, sunset: 1, bluePM: 0.95, night: 0.95 };
+const KCAP = { blueAM: 0.95, sunrise: 1, sunset: 1, bluePM: 0.95, night: 0.95, get morning() { return TUNE.capMorning; }, get midday() { return TUNE.capMidday; }, get afternoon() { return TUNE.capAfternoon; } };
 const DAYK = new Set(["morning", "midday", "afternoon"]), BLUEK = new Set(["blueAM", "bluePM"]), GOLDK = new Set(["sunrise", "sunset"]);
 const AMK = new Set(["blueAM", "sunrise", "morning"]), PMK = new Set(["afternoon", "sunset", "bluePM"]);
 const mid = (a, b) => new Date((a.getTime() + b.getTime()) / 2);
@@ -302,8 +307,10 @@ function skyCalc(p, w, pt, sp, probePt) {
   const c = hourAt(pt, w.peak); if (!c) return null; const pc = hourAt(probePt, w.peak);
   const canvas = Math.round(Math.max(c.mid, c.high * 0.9)), cirrus = c.mid < 30 && c.high >= 70;
   // a sheet of thin high cloud with little mid cloud still lights up if the light can get under it
-  let f = canvas < 10 ? 0.32 : canvas <= 70 ? 0.32 + 0.68 * Math.min(1, (canvas - 10) / 40) : cirrus ? 0.85 : Math.max(0.2, 1 - (canvas - 70) / 30 * 0.8);
-  const lowF = c.low >= 75 ? 0.3 : c.low >= 45 ? 0.7 : 1;
+  const fl = TUNE.canvasFloor;
+  let f = canvas < 10 ? fl : canvas <= 70 ? fl + (1 - fl) * Math.min(1, (canvas - 10) / 40) : cirrus ? 0.85 : Math.max(0.2, 1 - (canvas - 70) / 30 * 0.8);
+  // broken low cloud (fair-weather cumulus) often lights up from below; only a solid low deck shuts the light out
+  const lowF = c.low >= 75 ? TUNE.lowDeck : c.low >= 45 ? TUNE.lowBroken : 1;
   const hz = hzBlock(p, w);
   const block = hz ? hz.block : pc ? Math.max(pc.low, pc.mid * 0.6) : null, g = block == null ? 1 : block <= 30 ? 1 : block <= 60 ? 0.72 : 0.38;
   let q = Math.round(100 * f * lowF * g); if (c.pop >= 60) q = 8;
@@ -508,6 +515,14 @@ function fitFor(s, w) {
       }
       if (dayW && m !== "clearing") v = Math.min(v, 30);
       parts.push(v); }
+    // clear or nearly clear golden hour: the sky itself is plain, but warm low light rakes across the land (cliffs, forest,
+    // fields) and peaks glow. Credited when the sun's path is open and no low deck is in the way.
+    const LAND = ["vista", "mountain", "geology", "reflection", "coast", "fallcolor", "forest", "historic"];
+    if ((w.kind === "sunrise" || w.kind === "sunset") && !wet && s.cats.some(c => LAND.includes(c)) && sk.low < 45 && sk.cc <= 60 && (sk.block == null || sk.block <= 60)) {
+      let v = TUNE.clearLight * (sk.cc <= 30 ? 1 : 0.85);
+      if (s.cats.includes("mountain")) { v += TUNE.alpenglow; why.push(w.kind === "sunrise" ? "clear: first light and alpenglow on the peaks" : "clear: alpenglow on the peaks after sunset"); }
+      else why.push("clear: warm, low light across the land");
+      parts.push(v); }
     if (has(SOFT)) { const wf = s.cats.includes("waterfall"), fc = s.cats.includes("fallcolor"), gd = s.cats.includes("garden"); let v;
       if (m === "rain") { v = wf ? 88 : fc ? 76 : gd ? 60 : 42; why.push(wf ? "rain: no glare, saturated moss (bring a lens cloth)" : fc ? "wet leaves glow under overcast" : "rain"); }
       else if (m === "snow") { v = wf ? 76 : fc ? 62 : 40; why.push(wf ? "snow on the rocks around the falls" : "snow"); }
@@ -584,7 +599,7 @@ function rankFor(w, filter) {
     const d = driveMin(s), walk = WALK[s.effort] || 15, leave = new Date((w.kind === "night" ? (w.dark ? w.dark.s : w.start) : w.peak).getTime() - (d + walk) * 60000);
     const reachable = now + (d + walk * 0.5) * 60000 < w.end.getTime();
     if (!reachable) continue;
-    list.push({ s, f, d, leave, r: (typeof SCORE_V !== "undefined" && SCORE_V === 2 && w.kind !== "night" && UI.group !== "life" ? f.n * (1 - 0.1 * Math.min(1, d / Math.max(1, maxTravel())))   /* inside the chosen range distance is only a tie-breaker: at most -10% at the edge */ : f.n - d * 0.28) + (UI.group === "water" && s.cats[0] === "waterfall" ? 8 : 0) });   // Waterfalls filter: the falls themselves first
+    list.push({ s, f, d, leave, r: (typeof SCORE_V !== "undefined" && SCORE_V === 2 && w.kind !== "night" && UI.group !== "life" ? f.n * (1 - TUNE.distance * Math.min(1, d / Math.max(1, maxTravel())))   /* inside the chosen range distance is only a tie-breaker: at most -10% at the edge */ : f.n - d * 0.28) + (UI.group === "water" && s.cats[0] === "waterfall" ? 8 : 0) });   // Waterfalls filter: the falls themselves first
   }
   return list.sort((a, b) => (b.r - a.r) || (a.s.id < b.s.id ? -1 : a.s.id > b.s.id ? 1 : 0));   // ties keep a stable order
 }
