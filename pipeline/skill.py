@@ -61,30 +61,32 @@ def _forecast(pts, day0, day1):
     out = {}
     import zlib
     ids = sorted(pts, key=lambda x: zlib.crc32(x.encode()))[:MAX_ST]   # a stable sample: the free API allows ~600 location-calls a minute
-    for m in MODELS:   # one model per request: best_match together with gfs_hrrr made the server hang (Nov 17)
-        for i in range(0, len(ids), 20):
-            chunk = ids[i:i + 20]
-            p = {"latitude": ",".join(str(pts[s][0]) for s in chunk), "longitude": ",".join(str(pts[s][1]) for s in chunk),
-                 "hourly": "cloud_cover_low_previous_day1,cloud_cover_mid_previous_day1", "start_date": day0.isoformat(), "end_date": day1.isoformat(), "timezone": "UTC"}
+    # One location and one model per request: they answer in well under a second, while multi-location requests hung
+    # for minutes (Nov 17). ~1,400 requests stay under the free tier's 600 a minute with the pause below.
+    sess = requests.Session(); fails = 0
+    for m in MODELS:
+        for sid in ids:
+            lat, lon = pts[sid]
+            p = {"latitude": lat, "longitude": lon, "hourly": "cloud_cover_low_previous_day1,cloud_cover_mid_previous_day1",
+                 "start_date": day0.isoformat(), "end_date": day1.isoformat(), "timezone": "UTC"}
             if m != "best_match": p["models"] = m
-            j = None; r = None
-            for k in range(4):
+            j = None
+            for k in range(2):
                 try:
-                    r = requests.get("https://previous-runs-api.open-meteo.com/v1/forecast", params=p, timeout=90)
+                    r = sess.get("https://previous-runs-api.open-meteo.com/v1/forecast", params=p, timeout=20)
                     if r.ok: j = r.json(); break
-                    log.warning("skill forecast %s %s: %s", m, r.status_code, r.text[:200])
-                except Exception as e:
-                    log.warning("skill forecast %s: %s", m, e)
-                time.sleep(65 if (r is not None and getattr(r, "status_code", 0) == 429) else 10 * (k + 1))
-            if not j: continue
-            if isinstance(j, dict): j = [j]
-            for sid, loc in zip(chunk, j):
-                h = loc.get("hourly") or {}
-                lo, mi = h.get("cloud_cover_low_previous_day1"), h.get("cloud_cover_mid_previous_day1")
-                if not lo: continue
-                for t, a_, b_ in zip(h.get("time", []), lo, mi or [None] * len(lo)):
-                    if a_ is not None: out.setdefault((sid, t[:13]), {})[m] = (a_, b_)
-            time.sleep(3)
+                    if r.status_code == 429: time.sleep(61)
+                    elif r.status_code == 400: break
+                except Exception:
+                    time.sleep(2)
+            if not j: fails += 1; continue
+            h = j.get("hourly") or {}
+            lo, mi = h.get("cloud_cover_low_previous_day1"), h.get("cloud_cover_mid_previous_day1")
+            if not lo: continue
+            for t, a_, b_ in zip(h.get("time", []), lo, mi or [None] * len(lo)):
+                if a_ is not None: out.setdefault((sid, t[:13]), {})[m] = (a_, b_)
+            time.sleep(0.15)
+    log.info("skill forecasts: %d requests failed", fails)
     return out
 
 
