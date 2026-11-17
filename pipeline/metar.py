@@ -87,8 +87,14 @@ def _tiles():
     only loads stations near the user. Used for windows in the next 3 hours (app/nowcast.js)."""
     import math, json as _j
     from .common import FEED
-    j = http("https://aviationweather.gov/api/data/metar", params={"bbox": "18,-170,72,-60", "format": "json", "hours": 1.5},
-             headers={"User-Agent": "ShotSpots/1.0 (https://github.com/estaugaa/shotspots)"}, timeout=90).json()
+    j = []
+    boxes = [(24, -125, 50, -110), (24, -110, 50, -97), (24, -97, 50, -85), (24, -85, 50, -66), (51, -170, 72, -130), (18, -161, 23, -154)]
+    for b in boxes:   # one big box is refused (HTTP 400)
+        try:
+            j += http("https://aviationweather.gov/api/data/metar", params={"bbox": ",".join(map(str, b)), "format": "json", "hours": 2},
+                      headers={"User-Agent": "ShotSpots/1.0 (https://github.com/estaugaa/shotspots)"}, timeout=90).json()
+        except Exception as e:
+            log.warning("METAR box %s: %s", b, e)
     latest = {}
     for m in j:
         sid = m.get("icaoId")
