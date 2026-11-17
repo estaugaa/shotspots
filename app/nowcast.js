@@ -7,7 +7,7 @@
 let OBSNOW = null;
 /* Data that arrives after the first screen is drawn is applied on the next redraw instead of forcing one, so the list
    doesn't shift under your thumb while the page settles (smoke test: layout shift). */
-function lateRender() { if (typeof render !== "function") return; const boot = typeof BOOT !== "undefined" && !BOOT.core; if (boot || Date.now() - (typeof BOOT !== "undefined" ? BOOT.t0 : 0) < 2000) render(); }
+function lateRender() { if (typeof render === "function" && typeof BOOT !== "undefined" && !BOOT.core) render(); }   // only while the first screen is still being held back
 function obsTileKey(lat, lon) { return `${5 * Math.floor(lat / 5)}_${5 * Math.floor(lon / 5)}`; }
 async function loadObsNow() {
   if (typeof LOC === "undefined" || !LOC) return;
