@@ -27,6 +27,8 @@ Live at https://estaugaa.github.io/shotspots/ (GitHub Pages). It must work as we
   Data jobs publish at the end of their own workflow.
 - Workflows share a "pipeline" concurrency queue that holds ONE waiting run: a newer queued run replaces an older one.
 - `job.yml` runs one long job by name (`inputs.job`); a job that writes `.more` queues its own next run.
+- Daily jobs (nightly check, fog chance, walking routes, forecast check) are started by `tools/scheduler.py` (scheduler.yml,
+  after every GOES run) when due; add new daily jobs there, not as cron entries.
 - `diag.yml` runs any script under `tools/` (`inputs.script`) on Actions with a browser; output goes to branch
   `diag-<script name>` (`diag-out` for diag.py).
 

@@ -1,0 +1,23 @@
+name: Scheduler (daily jobs)
+# GitHub's cron drops and delays runs; this runs after every "GOES fog now" run (~30 min) and starts daily jobs that are
+# due (tools/scheduler.py). Cheap: a checkout and a few API calls.
+on:
+  workflow_run:
+    workflows: ["GOES fog now"]
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: scheduler
+  cancel-in-progress: false
+jobs:
+  due:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python tools/scheduler.py
+        env:
+          GH_TOKEN: ${{ github.token }}

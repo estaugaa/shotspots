@@ -2,6 +2,7 @@
 
 One line each: what was decided, and why. Add a line when a choice is made; edit a line when it is reversed.
 
+- 2026-11-17 Daily jobs are started by tools/scheduler.py after every GOES run (~30 min), not GitHub cron alone: cron dropped the nightly check and ran job.yml's schedules hours late.
 - 2026-11-17 Outside the Wildlife filter wildlife-led spots get x0.85 overall (their sunset sky still counts).
 - 2026-11-17 Speed: wildlife-layer facts once per spot per redraw, nearest forecast point memoised (full redraw 7.7 s -> 2.1 s). Forecast requests race Open-Meteo against the forwarder after 2 s. Header no longer wraps while loading.
 - 2026-11-17 Forecast check stores its own day-ahead forecasts (Open-Meteo's previous-runs archive has no low/mid cloud); first comparisons Nov 18.

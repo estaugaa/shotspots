@@ -1,4 +1,5 @@
 name: Run a pipeline job
+run-name: "job: ${{ inputs.job || 'scheduled' }}"
 on:
   schedule:
     - cron: "15 3 * * *"   # fogprob: valley-fog chance for tomorrow dawn, after the evening observations (7:15 PM Pacific)
