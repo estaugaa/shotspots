@@ -1,0 +1,39 @@
+name: Scoring test
+# Repeatable scoring test (tools/scoretest.py). check: compare with tests/score/expected.json (also runs in app-publish).
+# update: accept the current ranking after an intended scoring change, then publish the app.
+# capture: record fresh fixtures from the live site (new data, new time), then update and publish.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [check, update, capture]
+        default: check
+  push:
+    branches: [main]
+    paths: ["tools/scoretest.py", "tests/score/**"]
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+jobs:
+  run:
+    runs-on: ubuntu-24.04   # Playwright can't install its browser deps on 26.04 yet
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install playwright && python -m playwright install --with-deps chromium
+      - run: python tools/scoretest.py ${{ (inputs.mode == 'update' && '--update') || (inputs.mode == 'capture' && '--capture') || '' }}
+      - name: Save the expected ranking
+        if: inputs.mode == 'update' || inputs.mode == 'capture'
+        run: |
+          git config user.name "shotspots-bot"; git config user.email "actions@users.noreply.github.com"
+          git add tests/score && git commit -qm "Scoring test: ${{ inputs.mode }}" || exit 0
+          for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 5; done
+  publish:
+    needs: run
+    if: inputs.mode == 'update' || inputs.mode == 'capture'
+    uses: ./.github/workflows/publish.yml

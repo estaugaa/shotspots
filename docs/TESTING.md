@@ -6,6 +6,7 @@ All of these run on GitHub Actions against the live site. Run one with
 | What | How | When |
 |---|---|---|
 | Consistency (pins, offline cache list) | `pytest tests/test_consistency.py` | every app push, nightly |
+| Scoring, repeatable: app/ code ranks 6 situations on frozen feeds + forecast at a fixed clock, must match `tests/score/expected.json` | `tools/scoretest.py` (scoretest.yml: mode check / update / capture) | every app push, blocks publishing |
 | Regression checks (forecast loads, nothing past the travel limit, no Washougal text elsewhere) | `tools/regress.py` | nightly (regress.yml) |
 | Expectations: pass/fail on real situations | `tools/expect.py` | nightly; history in `data/test_history.jsonl` |
 | 30 situation walkthroughs (full list text) | diag.yml `tools/diag.py [numbers]` -> branch `diag-out`, `scenarios.txt` | after ranking changes |
@@ -22,6 +23,7 @@ Each spot page has a "Why this score" section.
 Rules
 - When a bug is fixed, add an expectation for it in `tools/expect.py`.
 - Expectations are deliberately loose ("one of these in the top 3") so weather alone doesn't fail them.
+- After an intended scoring change the scoring test fails and shows what moved: run scoretest.yml mode=update to accept (it publishes too); mode=capture refreshes the frozen data.
 - Judge ranking changes on the same forecast (scorecmp), not on runs from different days.
 
 ## Latest results
