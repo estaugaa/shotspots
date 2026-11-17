@@ -57,10 +57,18 @@ export default {
     if (req.method === "GET" && url.pathname === "/om") {
       let u; try { u = new URL(url.searchParams.get("u") || ""); } catch (e) { return json(req, { ok: false, error: "bad url" }, 400); }
       if (u.protocol !== "https:" || !/^(api|air-quality-api|marine-api)\.open-meteo\.com$/.test(u.hostname)) return json(req, { ok: false, error: "not allowed" }, 400);
-      const cache = caches.default, key = new Request(u.toString()); let res = await cache.match(key);
-      if (!res) { const up = await fetch(u.toString(), { headers: { "User-Agent": "ShotSpots/1.0" } }); if (!up.ok) return json(req, { ok: false, error: "open-meteo " + up.status }, up.status);
-        res = new Response(await up.text(), { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=900" } }); await cache.put(key, res.clone()); }
-      return new Response(res.body, { headers: { "Content-Type": "application/json", ...cors(req), "Access-Control-Allow-Methods": "GET, POST, OPTIONS" } });
+      // fresh copy for 15 min; a 6-hour copy is served (marked stale) when Open-Meteo refuses or fails, so the app keeps working
+      const cache = caches.default, key = new Request(u.toString()), skey = new Request(u.toString() + (u.search ? "&" : "?") + "_stale=1");
+      let res = await cache.match(key), stale = false;
+      if (!res) {
+        let up = null; try { up = await fetch(u.toString(), { headers: { "User-Agent": "ShotSpots/1.0" } }); } catch (e) { }
+        if (up && up.ok) { const body = await up.text();
+          res = new Response(body, { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=900" } }); await cache.put(key, res.clone());
+          await cache.put(skey, new Response(body, { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=21600" } }));
+        } else { res = await cache.match(skey); stale = true;
+          if (!res) return json(req, { ok: false, error: "open-meteo " + (up ? up.status : "unreachable") }, up ? up.status : 502); }
+      }
+      return new Response(res.body, { headers: { "Content-Type": "application/json", ...cors(req), "Access-Control-Allow-Methods": "GET, POST, OPTIONS", ...(stale ? { "X-Stale": "1" } : {}) } });
     }
     if (req.method === "GET" && url.pathname === "/seeing") {
       const r4 = v => (Math.round(parseFloat(v) * 4) / 4).toFixed(2), lat = r4(url.searchParams.get("lat")), lon = r4(url.searchParams.get("lon"));
