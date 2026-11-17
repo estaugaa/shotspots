@@ -19,6 +19,7 @@ STATES = ("AL AZ AR CA CO CT DE FL GA ID IL IN IA KS KY LA ME MD MA MI MN MS MO 
 COVER = {"FEW": 19, "SCT": 44, "BKN": 75, "OVC": 100, "VV": 100, "CLR": 0, "SKC": 0, "NSC": 0}
 SKD = DATA / "skill"
 MODELS = ("best_match", "gfs_hrrr")
+MAX_ST = 700
 
 
 def _obs(sts, ets):
@@ -58,22 +59,23 @@ def _layers(r):
 def _forecast(pts, day0, day1):
     """{(sid, hour_iso): {model: (low, mid)}} day-ahead forecasts for the stations."""
     out = {}
-    ids = list(pts)
-    for i in range(0, len(ids), 80):
-        chunk = ids[i:i + 80]
+    import zlib
+    ids = sorted(pts, key=lambda x: zlib.crc32(x.encode()))[:MAX_ST]   # a stable sample: the free API allows ~600 location-calls a minute
+    for i in range(0, len(ids), 20):
+        chunk = ids[i:i + 20]
         p = {"latitude": ",".join(str(pts[s][0]) for s in chunk), "longitude": ",".join(str(pts[s][1]) for s in chunk),
              "hourly": "cloud_cover_low_previous_day1,cloud_cover_mid_previous_day1", "models": ",".join(MODELS),
              "start_date": day0.isoformat(), "end_date": day1.isoformat(), "timezone": "UTC"}
-        j = None
-        for k in range(3):
+        j = None; r = None
+        for k in range(4):
             try:
-                r = requests.get("https://previous-runs-api.open-meteo.com/v1/forecast", params=p, timeout=120)
+                r = requests.get("https://previous-runs-api.open-meteo.com/v1/forecast", params=p, timeout=180)
                 if r.ok: j = r.json(); break
                 log.warning("skill forecast %s: %s", r.status_code, r.text[:200])
                 if r.status_code == 400 and "," in p["models"]: p["models"] = "best_match"   # HRRR may be unavailable here
             except Exception as e:
                 log.warning("skill forecast: %s", e)
-            time.sleep(10 * (k + 1))
+            time.sleep(65 if (r is not None and getattr(r, "status_code", 0) == 429) else 10 * (k + 1))
         if not j: continue
         if isinstance(j, dict): j = [j]
         for sid, loc in zip(chunk, j):
@@ -84,7 +86,7 @@ def _forecast(pts, day0, day1):
                 if not lo: continue
                 for t, a, b in zip(h.get("time", []), lo, mi or [None] * len(lo)):
                     if a is not None: out.setdefault((sid, t[:13]), {})[m] = (a, b)
-        time.sleep(1.5)
+        time.sleep(4)
     return out
 
 
