@@ -6,6 +6,7 @@ from pipeline import common
 
 def test_soft_errors_are_counted_in_status(tmp_path, monkeypatch):
     monkeypatch.setattr(common, "FEED", tmp_path)
+    monkeypatch.setattr(common, "ROOT", tmp_path)   # write_json logs paths relative to ROOT
     (tmp_path / "status").mkdir()
 
     def job():

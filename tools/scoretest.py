@@ -139,10 +139,17 @@ async def main(mode):
             cf.write_text(json.dumps({"at": at.isoformat(), "cases": [c[0] for c in CASES]}, indent=1) + "\n")
             print(f"{len(store)} responses, {fx.stat().st_size / 1e6:.1f} MB", flush=True)
         base = serve(); got = {}
+        runs = int(os.environ.get("SCORETEST_RUNS") or 2)
         for case in CASES:
-            a = await run_case(br, case, at, base, store, "replay", missing)
-            b = await run_case(br, case, at, base, store, "replay", missing)
-            got[case[0]] = a if a == b else {"err": "unstable: two runs on the same data ranked differently", "runs": [a, b]}
+            rs = [await run_case(br, case, at, base, store, "replay", missing) for _ in range(runs)]
+            a = rs[0]; b = next((x for x in rs if x != a), a)
+            if a != b:
+                A = dict(x.rsplit(" = ", 1) for x in a.get("all") or []); B = dict(x.rsplit(" = ", 1) for x in b.get("all") or [])
+                d = [f"{k}: {A.get(k, '-')} | {B.get(k, '-')}" for k in {**A, **B} if A.get(k) != B.get(k)][:15]
+                if not d:   # same scores, different order or layers
+                    d = [f"#{i + 1}: {x} | {y}" for i, (x, y) in enumerate(zip(a.get("top", []), b.get("top", []))) if x != y][:5] or [f"{a.get('err')} | {b.get('err')}"]
+                a = {"err": f"unstable: runs on the same data ranked differently ({sum(x != rs[0] for x in rs)} of {runs} differ from run 1; run 1 | other):\n    " + "\n    ".join(d)}
+            got[case[0]] = a
         await br.close()
 
     if missing: print(f"{len(missing)} requests had no fixture (404):", *sorted(missing)[:15], sep="\n  ")
