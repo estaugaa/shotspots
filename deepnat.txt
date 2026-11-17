@@ -1,0 +1,3 @@
+11 tiles (165 spots) researched this run in 8 min (0.7 min a tile); 37 of 1038 tiles done, 1001 left
+feed/deep/20_-157.json: 15 spots; e.g. seed-w261307989: light=sunset eff=None mi=None tip=Open to the west: a sunset spot. hz[90]=84 hz[270]=-1
+feed/deep/21_-158.json: 15 spots; e.g. seed-w61956192: light=sunset eff=None mi=None tip=Open to the west: a sunset spot. hz[90]=27 hz[270]=-1
