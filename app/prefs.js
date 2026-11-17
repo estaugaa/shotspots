@@ -23,7 +23,10 @@ function setupHtml() {
     <div class="chips"><button class="chip" data-start="gps" aria-pressed="${PREFS.start !== "home"}">Where I am</button><button class="chip" data-start="home" aria-pressed="${PREFS.start === "home"}">Home</button></div>
     ${travelHtml()}
     <p class="label">Units</p>
-    <div class="chips"><button class="chip" data-units="us" aria-pressed="${!METRIC()}">Miles, °F</button><button class="chip" data-units="metric" aria-pressed="${METRIC()}">Kilometres, °C</button></div></div>`;
+    <div class="chips"><button class="chip" data-units="us" aria-pressed="${!METRIC()}">Miles, °F</button><button class="chip" data-units="metric" aria-pressed="${METRIC()}">Kilometres, °C</button></div>
+    <p class="label">Which spots to favor</p>
+    <div class="chips"><button class="chip" data-fame="balanced" aria-pressed="${PREFS.fame !== "lesser"}">Best by the data</button><button class="chip" data-fame="lesser" aria-pressed="${PREFS.fame === "lesser"}">Lesser-known</button></div>
+    <p class="muted" style="font-size:13px;margin-top:4px">${PREFS.fame === "lesser" ? "Well-photographed spots are marked down and little-known ones up, so good light at an unfamiliar spot wins." : "Well-photographed spots get a lift; spots with no record count as typical."}</p></div>`;
 }
 function prefsChanged(msg) { savePrefs(); __topsKey = ""; fbar(); render(); if ($("#setSheet") && !$("#setSheet").hidden) renderSettings();
   const ts = $("#travelSheet"); if (ts && !ts.hidden) ts.querySelector(".sheetbody").innerHTML = travelHtml(); if (msg) toast(msg); }
@@ -59,3 +62,6 @@ document.addEventListener("click", e => { const h = e.target.closest("[data-hit]
   SETHOME = false; setHome({ lat: x.lat, lon: x.lon, label: x.label }); setTimeout(() => toast(`Home set to ${x.label}`), 600); }, true);
 document.addEventListener("click", e => { if (e.target.closest("#locClose")) SETHOME = false; }, true);
 document.addEventListener("change", e => { if (e.target.id === "maxTravel") { PREFS[PREFS.travel === "walk" ? "maxWalk" : "maxDrive"] = +e.target.value; prefsChanged(); } });
+
+document.addEventListener("click", e => { const b = e.target.closest("[data-fame]"); if (!b) return; PREFS.fame = b.dataset.fame === "lesser" ? "lesser" : "balanced";
+  prefsChanged(PREFS.fame === "lesser" ? "Favoring lesser-known spots" : "Favoring the best spots by the data"); });

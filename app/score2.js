@@ -19,9 +19,17 @@ function viewFame(s) {
   const pop = 1.5 * Math.log2(1 + (s.refs.commons || 0)) + 1.2 * Math.log2(1 + (s.refs.flickr || 0));
   const save = s.pop; s.pop = pop; const f = seedFame(s); s.pop = save; return f;
 }
+// A spot with no photo or Wikipedia record at all is unknown, not bad: it gets the median quality of recorded spots near you.
+function hasRecord(s) { return !!(s.score || s.views || (s.refs && (s.refs.commons || s.refs.flickr)) || (s.pop != null && s.seed) || (s._stand && s._stand.u)); }
+let __qMed = { k: "", v: 0.3 };
+function medianQuality() {
+  const k = SPOTS.length + "|" + (LOC ? LOC.lat.toFixed(1) + LOC.lon.toFixed(1) : ""); if (__qMed.k === k) return __qMed.v;
+  const qs = SPOTS.filter(s => hasRecord(s) && !tooFar(s)).map(s => clamp((viewFame(s) + 2) / 12, 0, 1)).sort((a, b) => a - b);
+  __qMed = { k, v: qs.length >= 20 ? qs[qs.length >> 1] : 0.3 }; return __qMed.v;
+}
 function spotQuality(s) {
   if (!s.seed && s.pop == null) setHandPop(s);
-  const q = clamp((viewFame(s) + 2) / 12, 0, 1);
+  const q = hasRecord(s) ? clamp((viewFame(s) + 2) / 12, 0, 1) : medianQuality();
   return /landmark|bridge/.test(s.kind || "") ? q * 0.75 : q;   // Wikipedia-famous buildings are not automatically photo spots
 }
 const _fitV1 = fitFor;
@@ -29,7 +37,7 @@ fitFor = function (s, w) {
   const f = _fitV1(s, w);
   if (!f || SCORE_V !== 2 || w.kind === "night" || UI.group === "life") return f;
   const q = spotQuality(s);
-  const m = 0.5 + 0.625 * q;
+  const m = PREFS.fame === "lesser" ? 1.05 - 0.35 * q : 0.5 + 0.625 * q;   // lesser-known: unknown 1.05, most photographed 0.70
   return { ...f, n: Math.round(clamp(f.n * m, 0, 100)), q, light: f.n, qm: m };
 };
 
@@ -43,7 +51,7 @@ function qualityText(s) {
   if (s.views) bits.push(`${s.views >= 1000 ? Math.round(s.views / 1000) + "k" : s.views} Wikipedia views a year`);
   if (s.score) bits.push("Wikipedia/Wikidata links"); if (s._stand && s._stand.u) bits.push(`${s._stand.u} photographers' positions`);
   if (/landmark|bridge/.test(s.kind || "")) bits.push("buildings count 25% less");
-  return bits.length ? bits.join(", ") : "no photo or Wikipedia record found (an unknown spot)";
+  return bits.length ? bits.join(", ") + (PREFS.fame === "lesser" ? " (you favor lesser-known spots, so this counts against it)" : "") : "no photo or Wikipedia record: counted as a typical spot nearby";
 }
 function distFactor(s) { const d = driveMin(s); return 1 - 0.1 * Math.min(1, d / Math.max(1, maxTravel())); }
 function mathLine(f, s) {
@@ -64,7 +72,7 @@ openSpot = function (id) {
   const wl = (w.label || w.kind).replace(/^\w/, c => c.toUpperCase());
   const parts = f.light == null ? `<p>${f.n} for ${esc(wl)}. Night and the Wildlife filter score on conditions alone.</p>`
     : `<p><b>${f.n}</b> for ${esc(wl)} = light and weather <b>${Math.round(f.light)}</b> × spot <b>${f.qm.toFixed(2)}</b></p>
-       <p class="muted">Spot ${f.qm.toFixed(2)} (0.50 unknown to 1.12 most photographed): ${esc(qualityText(s))}. In the list, distance trims up to 10% (× ${distFactor(s).toFixed(2)} here).</p>`;
+       <p class="muted">Spot ${f.qm.toFixed(2)} (${PREFS.fame === "lesser" ? "1.05 little-known to 0.70 most photographed" : "0.50 least to 1.12 most photographed"}): ${esc(qualityText(s))}. In the list, distance trims up to 10% (× ${distFactor(s).toFixed(2)} here).</p>`;
   const L = scoreLayers(s, w).filter((x, i) => i === 0 || (x.delta != null && (x.delta !== 0 || x.add.length)));
   const steps = L.map((x, i) => `<li><b>${x.n == null ? "-" : x.n}</b> ${esc(x.label)}${i && x.delta ? ` <span class="${x.delta > 0 ? "up" : "dn"}">(${x.delta > 0 ? "+" : ""}${x.delta}${x.mult ? `, ×${x.mult.toFixed(2)}` : ""})</span>` : ""}${x.add.length ? `<br><small>${x.add.map(esc).join("; ")}</small>` : ""}</li>`).join("");
   b.insertAdjacentHTML("beforeend", `<div class="scoremath"><h3>Why this score</h3>${parts}<ol class="layers">${steps}</ol></div>`);
