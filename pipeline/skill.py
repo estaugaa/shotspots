@@ -61,32 +61,30 @@ def _forecast(pts, day0, day1):
     out = {}
     import zlib
     ids = sorted(pts, key=lambda x: zlib.crc32(x.encode()))[:MAX_ST]   # a stable sample: the free API allows ~600 location-calls a minute
-    for i in range(0, len(ids), 20):
-        chunk = ids[i:i + 20]
-        p = {"latitude": ",".join(str(pts[s][0]) for s in chunk), "longitude": ",".join(str(pts[s][1]) for s in chunk),
-             "hourly": "cloud_cover_low_previous_day1,cloud_cover_mid_previous_day1", "models": ",".join(MODELS),
-             "start_date": day0.isoformat(), "end_date": day1.isoformat(), "timezone": "UTC"}
-        j = None; r = None
-        for k in range(4):
-            try:
-                r = requests.get("https://previous-runs-api.open-meteo.com/v1/forecast", params=p, timeout=180)
-                if r.ok: j = r.json(); break
-                log.warning("skill forecast %s: %s", r.status_code, r.text[:200])
-                if r.status_code == 400 and "," in p["models"]: p["models"] = "best_match"   # HRRR may be unavailable here
-            except Exception as e:
-                log.warning("skill forecast: %s", e)
-            time.sleep(65 if (r is not None and getattr(r, "status_code", 0) == 429) else 10 * (k + 1))
-        if not j: continue
-        if isinstance(j, dict): j = [j]
-        for sid, loc in zip(chunk, j):
-            h = loc.get("hourly") or {}
-            for m in MODELS:
-                suf = "" if len(p["models"].split(",")) == 1 else f"_{m}"
-                lo, mi = h.get(f"cloud_cover_low_previous_day1{suf}"), h.get(f"cloud_cover_mid_previous_day1{suf}")
+    for m in MODELS:   # one model per request: best_match together with gfs_hrrr made the server hang (Nov 17)
+        for i in range(0, len(ids), 20):
+            chunk = ids[i:i + 20]
+            p = {"latitude": ",".join(str(pts[s][0]) for s in chunk), "longitude": ",".join(str(pts[s][1]) for s in chunk),
+                 "hourly": "cloud_cover_low_previous_day1,cloud_cover_mid_previous_day1", "start_date": day0.isoformat(), "end_date": day1.isoformat(), "timezone": "UTC"}
+            if m != "best_match": p["models"] = m
+            j = None; r = None
+            for k in range(4):
+                try:
+                    r = requests.get("https://previous-runs-api.open-meteo.com/v1/forecast", params=p, timeout=90)
+                    if r.ok: j = r.json(); break
+                    log.warning("skill forecast %s %s: %s", m, r.status_code, r.text[:200])
+                except Exception as e:
+                    log.warning("skill forecast %s: %s", m, e)
+                time.sleep(65 if (r is not None and getattr(r, "status_code", 0) == 429) else 10 * (k + 1))
+            if not j: continue
+            if isinstance(j, dict): j = [j]
+            for sid, loc in zip(chunk, j):
+                h = loc.get("hourly") or {}
+                lo, mi = h.get("cloud_cover_low_previous_day1"), h.get("cloud_cover_mid_previous_day1")
                 if not lo: continue
-                for t, a, b in zip(h.get("time", []), lo, mi or [None] * len(lo)):
-                    if a is not None: out.setdefault((sid, t[:13]), {})[m] = (a, b)
-        time.sleep(4)
+                for t, a_, b_ in zip(h.get("time", []), lo, mi or [None] * len(lo)):
+                    if a_ is not None: out.setdefault((sid, t[:13]), {})[m] = (a_, b_)
+            time.sleep(3)
     return out
 
 
