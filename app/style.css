@@ -416,7 +416,7 @@ details>summary{padding-top:10px;padding-bottom:10px}
 
 /* header: the location name truncates instead of pushing the buttons onto a second line, and the filter bar keeps its
    height while it fills, so the page doesn't shift while loading (smoke test, Nov 17) */
-.top .loc{flex:1 1 auto;min-width:0;overflow:hidden}
+.top .loc{flex:1 1 0;min-width:0;overflow:hidden}   /* zero base width: line breaks are decided before shrinking */
 .top .loc #locName{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .top .topr{flex:none}
 .top .fresh{max-width:34vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
