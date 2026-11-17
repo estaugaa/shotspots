@@ -36,6 +36,7 @@ jobs:
           # on a branch push, a commit message with [scoretest:update] or [scoretest:capture] does that and saves it to the branch
           [ -n "$M" ] || M=$(printf '%s' "$MSG" | grep -o 'scoretest:\(update\|capture\)' | head -1 | cut -d: -f2); [ -n "$M" ] || M=check
           echo "mode=$M" >> "$GITHUB_OUTPUT"
+          N=$(printf '%s' "$MSG" | grep -o 'scoretest:runs=[0-9]*' | head -1 | cut -d= -f2); echo "SCORETEST_RUNS=${N:-2}" >> "$GITHUB_ENV"
       - run: python tools/scoretest.py --${{ steps.mode.outputs.mode }} 2>&1 | tee scoretest.txt; exit ${PIPESTATUS[0]}
         shell: bash
       - name: Result to the diag-scoretest branch (readable without logging in)
