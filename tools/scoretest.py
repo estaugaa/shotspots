@@ -171,4 +171,4 @@ async def main(mode):
 
 if __name__ == "__main__":
     a = sys.argv[1:]
-    sys.exit(asyncio.run(main("capture" if "--capture" in a else "update" if "--update" in a else "check")))
+    sys.exit(asyncio.run(main("capture" if "--capture" in a else "update" if "--update" in a else "check")))  # --check = default

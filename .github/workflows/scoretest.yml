@@ -20,20 +20,26 @@ jobs:
   run:
     runs-on: ubuntu-24.04   # Playwright can't install its browser deps on 26.04 yet
     timeout-minutes: 20
+    outputs:
+      mode: ${{ steps.mode.outputs.mode }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: pip install playwright && python -m playwright install --with-deps chromium
-      - run: python tools/scoretest.py ${{ (inputs.mode == 'update' && '--update') || (inputs.mode == 'capture' && '--capture') || '' }}
+      - id: mode   # a push before any fixtures exist captures them
+        run: |
+          M="${{ inputs.mode }}"; [ -n "$M" ] || { [ -f tests/score/responses.json.gz ] && M=check || M=capture; }
+          echo "mode=$M" >> "$GITHUB_OUTPUT"
+      - run: python tools/scoretest.py --${{ steps.mode.outputs.mode }}
       - name: Save the expected ranking
-        if: inputs.mode == 'update' || inputs.mode == 'capture'
+        if: steps.mode.outputs.mode != 'check'
         run: |
           git config user.name "shotspots-bot"; git config user.email "actions@users.noreply.github.com"
-          git add tests/score && git commit -qm "Scoring test: ${{ inputs.mode }}" || exit 0
+          git add tests/score && git commit -qm "Scoring test: ${{ steps.mode.outputs.mode }}" || exit 0
           for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 5; done
   publish:
     needs: run
-    if: inputs.mode == 'update' || inputs.mode == 'capture'
+    if: needs.run.outputs.mode != 'check'
     uses: ./.github/workflows/publish.yml
