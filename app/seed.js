@@ -33,7 +33,7 @@ async function loadSeed() {
   // Wikipedia page views: how famous (pipeline/wikiviews.py)
   want.filter(k => SEED.has.seedviews && seedHas("seedviews", k)).forEach(k => fetch(`feed/seedviews/${k}.json`).then(r => r.ok ? r.json() : null).then(j => {
     if (!j) return; let c = 0; for (const [id, v] of Object.entries(j)) { const s = byId[id]; if (s && typeof v === "number") { s.views = v; c++; } }
-    if (c && typeof render === "function") { clearTimeout(SEED._vt); SEED._vt = setTimeout(render, 400); } }).catch(() => { }));
+    if (c && typeof render === "function" && typeof BOOT !== "undefined" && !BOOT.core) { clearTimeout(SEED._vt); SEED._vt = setTimeout(render, 400); } }).catch(() => { }));   // after the first screen: next redraw
   // where photographers stand + classic direction (pipeline/stands.py)
   setTimeout(() => want.filter(k => seedHas("stands", k) && SEED.has.stands).forEach(k => fetch(`feed/stands/${k}.json`).then(r => r.ok ? r.json() : null).then(j => { if (j) { Object.assign(STANDS, j); applyStands(); } }).catch(() => { })), 2500);   // not needed for the first list: let the spots load first
   setTimeout(() => want.filter(k => seedHas("seedhours", k)).forEach(k => fetch(`feed/seedhours/${k}.json`).then(r => r.ok ? r.json() : null).then(j => { if (j && typeof SEEDHOURS !== "undefined") Object.assign(SEEDHOURS, j); }).catch(() => { })), 2500);   // photos & sightings per spot (pipeline/seedpop.py)
@@ -113,5 +113,5 @@ fetch("feed/icons.json").then(r => r.ok ? r.json() : null).then(j => {
     const s = { ...x, seed: true, icon: true, region: x.state || "", hz: false, score: 20, standFame: 3 };
     const dp = ((fd("deep") || {}).spots || {})[x.id]; if (dp) { if (dp.light) s.light = dp.light; if (dp.eff) s.effort = dp.eff; if (dp.tip) s.tip = dp.tip; if (dp.months) s.months = dp.months; s.deep = true; }   // curated classics: famous by definition
     SPOTS.push(s); byId[s.id] = s; c++; }
-  if (c && typeof render === "function") { clearTimeout(SEED._it); SEED._it = setTimeout(render, 600); }
+  if (c && typeof render === "function" && typeof BOOT !== "undefined" && !BOOT.core) { clearTimeout(SEED._it); SEED._it = setTimeout(render, 600); }   // after the first screen: next redraw
 }).catch(() => { });
