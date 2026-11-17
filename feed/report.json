@@ -1,10 +1,43 @@
 {
- "gen": "2026-11-15T14:08:58Z",
- "outings": 0,
+ "gen": "2026-11-17T01:06:38Z",
+ "outings": 1,
  "events": {
-  "clear": null,
-  "fog": null,
-  "color": null,
+  "clear": {
+   "n": 1,
+   "brier": 0.137,
+   "skill_vs_climatology": -136899999.0,
+   "reliability": [
+    {
+     "p": 0.37,
+     "obs": 0.0,
+     "n": 1
+    }
+   ]
+  },
+  "fog": {
+   "n": 1,
+   "brier": 0.0,
+   "skill_vs_climatology": 1.0,
+   "reliability": [
+    {
+     "p": 0.0,
+     "obs": 0.0,
+     "n": 1
+    }
+   ]
+  },
+  "color": {
+   "n": 1,
+   "brier": 0.0,
+   "skill_vs_climatology": 1.0,
+   "reliability": [
+    {
+     "p": 0.0,
+     "obs": 0.0,
+     "n": 1
+    }
+   ]
+  },
   "keeper": null,
   "species": null
  },

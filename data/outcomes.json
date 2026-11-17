@@ -1,1 +1,47 @@
-{}
+{
+"cf-5": {
+"spot": "steamboat-landing",
+"t": "2026-11-17T00:39:39Z",
+"kind": "",
+"rating": null,
+"keepers": null,
+"sky": "partly",
+"fog": "no",
+"color": "none",
+"species": null,
+"sqm": null,
+"pred": {
+"p_clear": 37,
+"p_fog": 0,
+"p_color": 0,
+"hrrr_run": "2026-11-16T19:00:00Z",
+"lead_h": 6
+},
+"goes": {
+"cloud_pct": 99,
+"lowcloud_pct": 22,
+"dt_min": 6
+},
+"asos": {
+"station": "TTD",
+"obs": [
+{
+"t": "2026-11-16T23:53:00Z",
+"fog": false,
+"clear12k": false,
+"lowovc": false,
+"vsby": "10.00",
+"sky": "BKN"
+},
+{
+"t": "2026-11-17T00:53:00Z",
+"fog": false,
+"clear12k": false,
+"lowovc": false,
+"vsby": "10.00",
+"sky": "SCT"
+}
+]
+}
+}
+}
