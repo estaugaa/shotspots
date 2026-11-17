@@ -2,7 +2,8 @@
 
 For every US airport (ASOS, Iowa Environmental Mesonet archive) and each sunrise/sunset in the last day:
   observed  = low cloud (< 6,500 ft) and mid cloud (6,500-12,000 ft) from the report nearest the event (within 30 min)
-  forecast  = the same hour's cloud cover as forecast the DAY BEFORE (Open-Meteo previous-runs, best_match and HRRR)
+  forecast  = the same hour's cloud cover as forecast the DAY BEFORE (saved by this job a day earlier, best_match and HRRR;
+              Open-Meteo's previous-runs archive keeps no low/mid cloud)
 Pairs are kept for 60 days (data/skill/<date>.csv). From them:
   * skill: mean absolute error and bias of low cloud, raw vs calibrated (calibration fitted on even days, scored on odd)
   * calibration: forecast low cloud in 10%-bins -> what was actually observed on average, by region (west/east of -100)
@@ -56,37 +57,55 @@ def _layers(r):
     return (low or 0, mid or 0)
 
 
-def _forecast(pts, day0, day1):
-    """{(sid, hour_iso): {model: (low, mid)}} day-ahead forecasts for the stations."""
-    out = {}
-    import zlib
-    ids = sorted(pts, key=lambda x: zlib.crc32(x.encode()))[:MAX_ST]   # a stable sample: the free API allows ~600 location-calls a minute
-    # One location and one model per request: they answer in well under a second, while multi-location requests hung
-    # for minutes (Nov 17). ~1,400 requests stay under the free tier's 600 a minute with the pause below.
-    sess = requests.Session(); fails = 0
+def _capture(stations):
+    """Save today's forecast for the next sunrises/sunsets (18-42 h ahead) at a stable sample of stations:
+    data/skill/fc_<date>.json {sid|hourISO: {model: [low, mid]}}. The previous-runs archive has no low/mid cloud, so the
+    day-ahead forecasts are kept here and checked against the airport reports the next day."""
+    import zlib, json
+    now = utcnow(); ids = sorted(stations, key=lambda x: zlib.crc32(x.encode()))[:MAX_ST]
+    want = {}
+    for sid in ids:
+        lat, lon = stations[sid]
+        for d in (now.date() + dt.timedelta(days=1), now.date() + dt.timedelta(days=2)):
+            st = sun_times(lat, lon, d)
+            for ev in (st or []):
+                if ev and 18 <= (ev - now).total_seconds() / 3600 <= 42:
+                    hr = ev.replace(minute=0, second=0, microsecond=0) + (dt.timedelta(hours=1) if ev.minute >= 30 else dt.timedelta(0))
+                    want.setdefault(sid, set()).add(hr.strftime("%Y-%m-%dT%H"))
+    out = {}; sids = list(want)
     for m in MODELS:
-        for sid in ids:
-            lat, lon = pts[sid]
-            p = {"latitude": lat, "longitude": lon, "hourly": "cloud_cover_low_previous_day1,cloud_cover_mid_previous_day1",
-                 "start_date": day0.isoformat(), "end_date": day1.isoformat(), "timezone": "UTC"}
+        for i in range(0, len(sids), 50):
+            chunk = sids[i:i + 50]
+            p = {"latitude": ",".join(str(stations[x][0]) for x in chunk), "longitude": ",".join(str(stations[x][1]) for x in chunk),
+                 "hourly": "cloud_cover_low,cloud_cover_mid", "forecast_days": 3, "timezone": "UTC"}
             if m != "best_match": p["models"] = m
             j = None
-            for k in range(2):
+            for k in range(3):
                 try:
-                    r = sess.get("https://previous-runs-api.open-meteo.com/v1/forecast", params=p, timeout=20)
+                    r = requests.get("https://api.open-meteo.com/v1/forecast", params=p, timeout=60)
                     if r.ok: j = r.json(); break
                     if r.status_code == 429: time.sleep(61)
-                    elif r.status_code == 400: break
-                except Exception:
-                    time.sleep(2)
-            if not j: fails += 1; continue
-            h = j.get("hourly") or {}
-            lo, mi = h.get("cloud_cover_low_previous_day1"), h.get("cloud_cover_mid_previous_day1")
-            if not lo: continue
-            for t, a_, b_ in zip(h.get("time", []), lo, mi or [None] * len(lo)):
-                if a_ is not None: out.setdefault((sid, t[:13]), {})[m] = (a_, b_)
-            time.sleep(0.15)
-    log.info("skill forecasts: %d requests failed", fails)
+                except Exception as e:
+                    log.warning("skill capture %s: %s", m, e); time.sleep(5)
+            if not j: continue
+            if isinstance(j, dict): j = [j]
+            for sid, loc in zip(chunk, j):
+                h = loc.get("hourly") or {}
+                for t, lo, mi in zip(h.get("time", []), h.get("cloud_cover_low", []), h.get("cloud_cover_mid", [])):
+                    if t[:13] in want[sid] and lo is not None: out.setdefault(f"{sid}|{t[:13]}", {})[m] = [lo, mi]
+            time.sleep(2)
+    SKD.mkdir(parents=True, exist_ok=True)
+    (SKD / f"fc_{now.date().isoformat()}.json").write_text(json.dumps(out, separators=(",", ":")))
+    for p_ in sorted(SKD.glob("fc_*.json"))[:-4]: p_.unlink()
+    return len(out)
+
+
+def _stored():
+    import json
+    out = {}
+    for p_ in sorted(SKD.glob("fc_*.json")):
+        try: out.update(json.loads(p_.read_text()))
+        except Exception: pass
     return out
 
 
@@ -115,7 +134,10 @@ def collect():
                 best = min(d["obs"], key=lambda o: abs((o[0] - ev).total_seconds()))
                 if abs((best[0] - ev).total_seconds()) <= 1800: events.append((sid, kind, ev, best[1]))
     pts = {sid: by[sid]["pos"] for sid, _, _, _ in events}
-    fc = _forecast(pts, sts.date(), ets.date())
+    stored = _stored()
+    fc = {(k.split("|")[0], k.split("|")[1]): v for k, v in stored.items()}
+    n_cap = _capture({sid: d["pos"] for sid, d in by.items()})
+    log.info("skill: %d stored day-ahead forecasts, %d captured for tomorrow", len(stored), n_cap)
     SKD.mkdir(parents=True, exist_ok=True)
     rows = []
     for sid, kind, ev, (ol, om) in events:
@@ -126,6 +148,7 @@ def collect():
         for m, (fl, fm) in f.items():
             rows.append([ev.date().isoformat(), sid, lat, lon, kind, m, fl, fm if fm is not None else "", ol, om])
     path = SKD / f"{now.date().isoformat()}.csv"
+    if not rows: return len(by), len(events), 0
     with open(path, "w", newline="") as fh:
         w = csv.writer(fh); w.writerow(["date", "sid", "lat", "lon", "kind", "model", "f_low", "f_mid", "o_low", "o_mid"]); w.writerows(rows)
     for p in sorted(SKD.glob("*.csv"))[:-60]: p.unlink()
