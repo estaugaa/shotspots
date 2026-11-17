@@ -116,11 +116,19 @@ async function loadWx(force) {
 // Open-Meteo, with a fallback through our Cloudflare Worker when the direct request is refused (rate limits, outages)
 const WORKER_URL = "https://shotspots-forms.shotspots-eric.workers.dev"; let WXERR = null;
 async function omFetch(url) {
-  // a busy server sometimes holds the request open instead of refusing it: give up after 9 s and use the proxy
-  try { const ac = new AbortController(), t = setTimeout(() => ac.abort(), 9000); const r = await fetch(url, { signal: ac.signal }); clearTimeout(t);
-    if (r.ok) return r; WXERR = "HTTP " + r.status; } catch (e) { WXERR = e.name === "AbortError" ? "timed out after 9 s" : String(e.message || e); }
-  const r2 = await fetch(WORKER_URL + "/om?u=" + encodeURIComponent(url)); if (!r2.ok) throw new Error(WXERR + "; via proxy HTTP " + r2.status); return r2;
+  // Direct first; if it hasn't answered in 2 s (busy or rate-limited), the forwarder (which keeps a cached copy) is asked
+  // too and whichever answers first wins. Before: up to 9 s of waiting, and the first screen drew without a forecast.
+  const viaProxy = () => fetch(WORKER_URL + "/om?u=" + encodeURIComponent(url)).then(r => { if (!r.ok) throw new Error("via proxy HTTP " + r.status); return r; });
+  const ac = new AbortController(), kill = setTimeout(() => ac.abort(), 12000);
+  let settled = false;
+  const direct = fetch(url, { signal: ac.signal }).then(r => { if (!r.ok) { WXERR = "HTTP " + r.status; throw new Error(WXERR); } settled = true; return r; })
+    .catch(e => { WXERR = e.name === "AbortError" ? "timed out" : String(e.message || e); throw e; });
+  const late = new Promise(res => setTimeout(res, 2000)).then(() => { if (settled) throw new Error("not needed"); return viaProxy(); });
+  const tryAll = ps => new Promise((res, rej) => { let n = ps.length, last; ps.forEach(p => p.then(res, e => { last = e; if (--n === 0) rej(last); })); });
+  try { const r = await tryAll([direct, late, direct.catch(() => viaProxy())]); clearTimeout(kill); return r; }
+  catch (e) { clearTimeout(kill); throw new Error((WXERR || "") + "; " + String(e.message || e)); }
 }
+
 // how well-known a starter spot is: Wikipedia/Wikidata links and eBird species (seed score), plus geotagged photos on
 // Commons and Flickr and iNaturalist sightings (pop). About -2 for an obscure pin, up to +6 for a famous one.
 const GENERIC_NAME = /^((former |old )?[a-z ]*airport control tower|control tower|(port area |wildlife |fire )?(viewing platform|observation (tower|deck|platform)|lookout( tower)?)|wildlife (viewing|lookout|platform)[a-z ]*|viewpoint|overlook|scenic (view|overlook|viewpoint)|vista point|hawk watch)$/i;
