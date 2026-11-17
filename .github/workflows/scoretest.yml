@@ -9,9 +9,9 @@ on:
         type: choice
         options: [check, update, capture]
         default: check
-  push:
-    branches: [main]
-    paths: ["tools/scoretest.py", "tests/score/**"]
+  push:   # branches other than main check before merging (main is checked by app-publish)
+    branches-ignore: [main]
+    paths: ["app/**", "tools/scoretest.py", "tests/score/**"]
 permissions:
   contents: write
   pages: write
@@ -28,11 +28,18 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install playwright && python -m playwright install --with-deps chromium
-      - id: mode   # a push before any fixtures exist captures them
+      - id: mode
         run: |
-          M="${{ inputs.mode }}"; [ -n "$M" ] || { [ -f tests/score/responses.json.gz ] && M=check || M=capture; }
+          M="${{ inputs.mode }}"; [ -n "$M" ] || M=check
           echo "mode=$M" >> "$GITHUB_OUTPUT"
-      - run: python tools/scoretest.py --${{ steps.mode.outputs.mode }}
+      - run: python tools/scoretest.py --${{ steps.mode.outputs.mode }} 2>&1 | tee scoretest.txt; exit ${PIPESTATUS[0]}
+        shell: bash
+      - name: Result to the diag-scoretest branch (readable without logging in)
+        if: always()
+        run: |
+          mkdir -p out && cp scoretest.txt out/ && cd out && git init -q && git checkout -q -b diag-scoretest && git add -A
+          git -c user.name=diag -c user.email=diag@users.noreply.github.com commit -qm "scoretest ${{ github.ref_name }} ${{ github.sha }}"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" diag-scoretest
       - name: Save the expected ranking
         if: steps.mode.outputs.mode != 'check'
         run: |
