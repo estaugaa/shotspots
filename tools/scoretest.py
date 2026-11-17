@@ -126,7 +126,7 @@ async def main(mode):
         store = {}
     else:
         if not fx.exists(): print("no fixtures yet (run with --capture): skipped"); return 0
-        at = dt.datetime.fromisoformat(json.loads(cf.read_text())["at"])
+        at = dt.datetime.fromisoformat(json.loads(cf.read_text(encoding="utf-8"))["at"])
         store = json.loads(gzip.decompress(fx.read_bytes()))
     missing = set()
     async with async_playwright() as p:
@@ -150,9 +150,9 @@ async def main(mode):
     if mode in ("capture", "update"):
         bad = [k for k, v in got.items() if v.get("err")]
         if bad: print("not saved, cases failed:", bad, json.dumps({k: got[k] for k in bad})[:1500]); return 1
-        ef.write_text(json.dumps(got, indent=1, ensure_ascii=False) + "\n"); print(f"expected.json updated ({len(got)} cases)")
+        ef.write_text(json.dumps(got, indent=1, ensure_ascii=False) + "\n", encoding="utf-8"); print(f"expected.json updated ({len(got)} cases)")
         return 0
-    want = json.loads(ef.read_text()); lines, fails = [], 0
+    want = json.loads(ef.read_text(encoding="utf-8")); lines, fails = [], 0
     for name, r in got.items():
         w = want.get(name)
         if r.get("err") or r != w:
@@ -163,14 +163,13 @@ async def main(mode):
                     if o != n:
                         lines.append(f"  #{i + 1}: was {o.get('score')} {o.get('name')} {o.get('layers', '')}"
                                      f" -> now {n.get('score')} {n.get('name')} {n.get('layers', '')}")
-            elif w and r.get("all") != w.get("all"):   # top 10 the same, but some spot further down changed
-                a, b = w.get("all") or [], r.get("all") or []
-                gone, new = [x for x in a if x not in b], [x for x in b if x not in a]
-                lines.append(f"  top 10 unchanged; {len(new)} of {len(b)} ranked spots changed, e.g. "
-                             + "; ".join(f"{o} -> {n.rsplit(' = ', 1)[1]}" for o, n in zip(gone[:6], new[:6])))
+                was = dict(x.rsplit(" = ", 1) for x in w.get("all") or []); now = dict(x.rsplit(" = ", 1) for x in r.get("all") or [])
+                ch = [f"{k} {was.get(k, '-')}->{now.get(k, '-')}" for k in {**was, **now} if was.get(k) != now.get(k)]
+                if ch: lines.append(f"  {len(ch)} of {len(now)} spots changed score: " + "; ".join(ch[:10]))
         else: lines.append(f"PASS {name} | " + "; ".join(f"{t['score']} {t['name']}" for t in r["top"][:3]))
     print("\n".join(lines))
-    print(f"{len(got) - fails}/{len(got)} match. If the change is intended: run scoretest.yml with mode=update.")
+    print(f"{len(got) - fails}/{len(got)} match. If the change is intended: run scoretest.yml with mode=update"
+          " (or on a branch, push a commit whose message contains [scoretest:update]).")
     s = os.environ.get("GITHUB_STEP_SUMMARY")
     if s:
         with open(s, "a") as f: f.write(f"## Scoring test: {len(got) - fails}/{len(got)} match\n\n```\n" + "\n".join(lines) + "\n```\n")
