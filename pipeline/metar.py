@@ -28,6 +28,10 @@ def run():
                     "t": m.get("reportTime") or m.get("obsTime"), "vis_mi": vis, "wx": wx, "base_ft": base,
                     "fog": bool(vis is not None and vis <= 1) or "FG" in wx, "mist": "BR" in wx or bool(vis is not None and 1 < vis <= 4 and not any(x in wx for x in ("RA", "SN", "DZ", "HZ", "FU")))})
     write_json("obs.json", {"gen": iso(utcnow()), "stations": out})
+    try:
+        _tiles()
+    except Exception as e:
+        log.warning("METAR tiles: %s", e)
     _keep_for_scoring(out)
     log.info("METAR: %d stations", len(out))
     return f"{len(out)} stations, {sum(o['fog'] for o in out)} with fog"
@@ -61,3 +65,42 @@ def _keep_for_scoring(out):
     p.parent.mkdir(parents=True, exist_ok=True)
     import json
     p.write_text(json.dumps(h, separators=(",", ":")))
+
+
+COVER = {"FEW": 19, "SCT": 44, "BKN": 75, "OVC": 100, "VV": 100, "OVX": 100}
+
+
+def _layers(m):
+    """Low (< 6,500 ft) and mid (6,500-20,000 ft) cloud amount in %, from the reported layers. Automated stations only
+    see to 12,000 ft, so 'clear' means clear below that; high cloud stays the forecast's."""
+    low = mid = 0
+    for c in m.get("clouds") or []:
+        cov, base = COVER.get(c.get("cover")), c.get("base")
+        if cov is None or base is None: continue
+        if base < 6500: low = max(low, cov)
+        elif base < 20000: mid = max(mid, cov)
+    return low, mid
+
+
+def _tiles():
+    """Nowcast: cloud layers from every US airport report, in 5-degree tiles (feed/obsnow/<lat>_<lon>.json) so the app
+    only loads stations near the user. Used for windows in the next 3 hours (app/nowcast.js)."""
+    import math, json as _j
+    from .common import FEED
+    j = http("https://aviationweather.gov/api/data/metar", params={"bbox": "18,-170,72,-60", "format": "json", "hours": 1.5},
+             headers={"User-Agent": "ShotSpots/1.0 (https://github.com/estaugaa/shotspots)"}, timeout=90).json()
+    latest = {}
+    for m in j:
+        sid = m.get("icaoId")
+        if sid and m.get("lat") is not None and (sid not in latest or m.get("obsTime", 0) > latest[sid].get("obsTime", 0)):
+            latest[sid] = m
+    tiles = {}
+    for sid, m in latest.items():
+        if not m.get("clouds") and m.get("cover") not in ("CLR", "SKC", "CAVOK"): continue
+        low, mid = _layers(m)
+        k = f"{5 * math.floor(m['lat'] / 5)}_{5 * math.floor(m['lon'] / 5)}"
+        tiles.setdefault(k, []).append([sid, round(m["lat"], 3), round(m["lon"], 3), m.get("obsTime"), low, mid, m.get("cover") or ""])
+    od = FEED / "obsnow"; od.mkdir(exist_ok=True)
+    for k, rows in tiles.items():
+        (od / f"{k}.json").write_text(_j.dumps({"gen": iso(utcnow()), "s": rows}, separators=(",", ":")))
+    log.info("METAR nowcast tiles: %d stations in %d tiles", sum(map(len, tiles.values())), len(tiles))

@@ -2,6 +2,7 @@
 
 One line each: what was decided, and why. Add a line when a choice is made; edit a line when it is reversed.
 
+- 2026-11-16 Nowcast: for windows in the next 3 hours, nearby airport cloud reports replace the forecast's low/mid cloud (full weight now, 30% at +3 h). The forecast said 100% overcast at Washougal while airports and Eric saw partly cloudy.
 - 2026-11-16 Spot quality outside Wildlife counts photos only (Commons, Flickr); iNaturalist sightings measure naturalist activity, not views.
 - 2026-11-16 Scoring is data driven, not coverage driven: hand-researched spots get quality from the same measures as every spot (photo and sighting counts, Wikipedia, photographer stands), not a fixed bonus. Outside Wildlife, any spot that is mainly about animals competes on its view. (Eric)
 - 2026-11-16 Starter-spot horizons use the highest ground within 30 m and ignore terrain closer than 40 m: rough pins below a rim saw a false 25-degree wall.
