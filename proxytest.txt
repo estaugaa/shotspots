@@ -1,0 +1,3 @@
+direct: 200 0.2s acao=* stale=None [{"latitude":45.593452,"longitude":-122.364815,"generationtime_ms":0.041365623474121094,"utc_offset_seconds":0,"timezone":"GMT","timezone_abbreviation
+proxy: 200 0.2s acao=https://estaugaa.github.io stale=None [{"latitude":45.593452,"longitude":-122.364815,"generationtime_ms":0.048041343688964844,"utc_offset_seconds":0,"timezone":"GMT","timezone_abbreviation
+proxy again (cached): 200 0.1s acao=https://estaugaa.github.io stale=None [{"latitude":45.593452,"longitude":-122.364815,"generationtime_ms":0.048041343688964844,"utc_offset_seconds":0,"timezone":"GMT","timezone_abbreviation
