@@ -2,6 +2,9 @@
 
 One line each: what was decided, and why. Add a line when a choice is made; edit a line when it is reversed.
 
+- 2026-11-17 Data jobs install exact versions from requirements.lock (an upstream release can't break a scheduled run); tests.yml also tests the newest allowed versions and publishes their freeze to branch diag-freeze for upgrading.
+- 2026-11-17 Recovered errors are counted, not silent: pipeline soft_fail() -> "soft" in feed/status/<module>.json; app noteErr() -> problem reports. Links from data go through safeUrl() (no javascript:/data: links).
+- 2026-11-17 Forms rate limit fixed: the 60-per-hour check compared ISO times with SQLite's space format and was really ~60 per UTC day.
 - 2026-11-17 Scoring test on frozen data (tools/scoretest.py) blocks publishing when a ranking changes: the live checks only ran nightly on changing weather, so a regression was seen after it shipped. Fixtures are recorded from the live site and replayed against the working copy's app code.
 - 2026-11-17 Daytime windows scaled by sun height (below 12° 0.95, 12-25° 0.82, 25-40° 0.72, above 40° 0.62) instead of clock time: winter afternoons have low raking light all day.
 - 2026-11-17 Webcam truth (pipeline/camtruth.py, after every satellite run): public road cameras (Oregon, California) photographed at every sunrise/sunset; real sky/land colour vs the sky formula with the forecast of the moment; Spearman and a weight search in feed/camtruth.json. Hundreds of checks a day instead of waiting for outing logs.

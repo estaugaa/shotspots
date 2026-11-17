@@ -95,10 +95,11 @@ export default {
     if (OWNER_ONLY.has(form) && !owner) return json(req, { ok: false, error: "owner only" }, 403);
     data._owner = owner ? 1 : 0;
     const dev = (data._dev || "").slice(0, 24); delete data._dev; if (dev) data._dev = dev;
-    // light abuse guard: at most 60 submissions per IP per hour
+    // light abuse guard: at most 60 submissions per IP per hour. The cutoff must use created_at's own format: compared with
+    // datetime('now', ...) ("YYYY-MM-DD HH:MM:SS") every row of the same UTC day sorted after it, making this ~60 a day.
     const ip = req.headers.get("CF-Connecting-IP") || "";
     const ipHash = [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(ip + (env.SALT || "ss"))))].slice(0, 8).map(b => b.toString(16).padStart(2, "0")).join("");
-    const n = await env.DB.prepare("SELECT COUNT(*) AS n FROM submissions WHERE ip = ? AND created_at > datetime('now','-1 hour')").bind(ipHash).first("n");
+    const n = await env.DB.prepare("SELECT COUNT(*) AS n FROM submissions WHERE ip = ? AND created_at > strftime('%Y-%m-%dT%H:%M:%fZ','now','-1 hour')").bind(ipHash).first("n");
     if (n >= 60) return json(req, { ok: false, error: "slow down" }, 429);
     await env.DB.prepare("INSERT INTO submissions (form, created_at, data, ip) VALUES (?, strftime('%Y-%m-%dT%H:%M:%fZ','now'), ?, ?)").bind(form, JSON.stringify(data), ipHash).run();
     return json(req, { ok: true });

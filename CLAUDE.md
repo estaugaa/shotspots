@@ -19,9 +19,10 @@ Live at https://estaugaa.github.io/shotspots/ (GitHub Pages). It must work as we
 
 ## How it is built
 - `app/`: plain classic scripts loaded with `defer`. Behaviour is extended by reassignable wrappers:
-  `fitFor` (scoring), `openSpot`, `renderNow`, `render`. Load order is in `app/index.html`; a new script must also be
+  `fitFor` (scoring), `openSpot`, `renderNow`, `render`. Links built from data use `safeUrl()`; recovered errors `noteErr()`. Load order is in `app/index.html`; a new script must also be
   listed in `SHELL` in `app/sw.js` (a test checks this).
 - `pipeline/`: data jobs (`python -m pipeline <job>`), writing `feed/` (read by the app) and `data/` (state).
+  A skipped/recovered error calls `soft_fail(where, e)` (never a bare `except: pass`); jobs install `requirements.lock`.
 - Publishing: pushing a change under `app/` publishes automatically (`.github/workflows/app-publish.yml`); the
   service-worker version is a hash of the app files set at build time. No manual bump or dispatch needed.
   Data jobs publish at the end of their own workflow.
