@@ -1,0 +1,74 @@
+first [
+{
+"t": 270,
+"v": 0.0008,
+"src": [
+"DIV.topr# \"Loading weather\u2026 \u2699 \u25d0\" 8->8 h36->36"
+]
+},
+{
+"t": 417,
+"v": 0.2522,
+"src": [
+"MAIN.#main \"Light Night sky Calendar Mon 50 Today 50 Tomorrow 50 Thu 50 \" 92->132 h28->712",
+"DIV.fbar chips#fbar \"\ud83d\ude97 \u2264 2 h All Saved Landscape Waterfalls Birds & wildlife Nig\" 49->89 h35->35",
+"DIV.topr# \"Loading weather\u2026 \u2699 \u25d0\" 8->49 h36->36"
+]
+},
+{
+"t": 432,
+"v": 0.1391,
+"src": [
+"MAIN.#main \"Light Night sky Calendar Mon 50 Today 50 Tomorrow 50 Thu 50 \" 132->92 h712->752",
+"DIV.fbar chips#fbar \"\ud83d\ude97 \u2264 2 h All Saved Landscape Waterfalls Birds & wildlife Nig\" 89->49 h35->35",
+"DIV.topr# \"Loading weather\u2026 \u2699 \u25d0\" 49->8 h36->36",
+"SMALL.lt# \" \" 0->803 h0->13"
+]
+},
+{
+"t": 1559,
+"v": 0.0009,
+"src": [
+"DIV.topr# \"Updated now \u2699 \u25d0\" 8->8 h36->36"
+]
+}
+]
+reload [
+{
+"t": 903,
+"v": 0.2997,
+"src": [
+"MAIN.#main \"Mon 98 Today 78 Tomorrow 79 Thu 84 Fri 78 Sat 83 Sun 95 Mon \" 92->132 h28->712",
+"DIV.fbar chips#fbar \"\ud83d\ude97 \u2264 2 h All Saved Landscape Waterfalls Birds & wildlife Nig\" 49->89 h35->35",
+"DIV.topr# \"Updated now \u2699 \u25d0\" 8->49 h36->36"
+]
+},
+{
+"t": 921,
+"v": 0.023,
+"src": [
+"LI.# \"98 Hood River Fruit Loop orchards Mountain views clear; Bort\" 579->558 h106->106",
+"LI.# \"98 Klickitat River Narrows (Lyle) Fall color clear; Bortle 3\" 685->664 h106->86",
+"P.muted scorenote# \"Scores compare across windows: a midday 50 is a decent midda\" 0->809 h0->35",
+"BUTTON.more#moreBtn \"7 more options\" 790->750 h43->43",
+"SMALL.# \"clear; Bortle 3 sky\" 546->525 h20->20"
+]
+},
+{
+"t": 928,
+"v": 0.0407,
+"src": [
+"DIV.window#winDetail \"Tonight (now) until 5:28 AM 11:21 PM\u20135:28 AM moon-free Cloud\" 264->318 h539->526",
+"P.muted scorenote# \"Scores compare across windows: a midday 50 is a decent midda\" 809->0 h35->0"
+]
+},
+{
+"t": 4724,
+"v": 0.1716,
+"src": [
+"MAIN.#main \"Light Night sky Calendar Sea of fog today 7:08am 67% +1 \u203a \u2605 \" 132->92 h712->752",
+"DIV.fbar chips#fbar \"\ud83d\ude97 \u2264 2 h All Saved Landscape Waterfalls Birds & wildlife Nig\" 89->49 h35->35",
+"DIV.topr# \"Updated now \u2699 \u25d0\" 49->8 h36->36"
+]
+}
+]
