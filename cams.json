@@ -1,0 +1,261 @@
+{
+ "at": "2026-11-17 21:02 UTC",
+ "n_inventory": 1181,
+ "near": [
+  {
+   "name": "I-84 at 257th",
+   "lat": 45.54487,
+   "lon": -122.39041,
+   "file": "i84@257th_pid1583.JPG",
+   "raw": {
+    "cameraId": 379,
+    "publishedImageId": 1583,
+    "filename": "i84@257th_pid1583.JPG",
+    "iconType": 1,
+    "latitude": 45.54487,
+    "longitude": -122.39041,
+    "route": "I-84  ",
+    "title": "I-84 at 257th",
+    "videoId": 0
+   },
+   "img": "ux/cams/I_84_at_257th.jpg"
+  },
+  {
+   "name": "I-84 at Marine Dr",
+   "lat": 45.54446,
+   "lon": -122.40131,
+   "file": "I-84 at Marine Dr_pid4785.jpg",
+   "raw": {
+    "cameraId": 1206,
+    "publishedImageId": 4785,
+    "filename": "I-84 at Marine Dr_pid4785.jpg",
+    "iconType": 1,
+    "latitude": 45.54446,
+    "longitude": -122.40131,
+    "route": "I-84  ",
+    "title": "I-84 at Marine Dr",
+    "videoId": 0
+   },
+   "img": "ux/cams/I_84_at_Marine_Dr.jpg"
+  },
+  {
+   "name": "I-84 at 238th Dr",
+   "lat": 45.53952,
+   "lon": -122.41853,
+   "file": "I-84 at 238th Dr_pid4787.jpg",
+   "raw": {
+    "cameraId": 1207,
+    "publishedImageId": 4787,
+    "filename": "I-84 at 238th Dr_pid4787.jpg",
+    "iconType": 1,
+    "latitude": 45.53952,
+    "longitude": -122.41853,
+    "route": "I-84  ",
+    "title": "I-84 at 238th Dr",
+    "videoId": 0
+   },
+   "img": "ux/cams/I_84_at_238th_Dr.jpg"
+  },
+  {
+   "name": "I-84 at 223rd",
+   "lat": 45.54189,
+   "lon": -122.43399,
+   "file": "i84@223rd_pid1582.jpg",
+   "raw": {
+    "cameraId": 378,
+    "publishedImageId": 1582,
+    "filename": "i84@223rd_pid1582.jpg",
+    "iconType": 1,
+    "latitude": 45.54189,
+    "longitude": -122.43399,
+    "route": "I-84  ",
+    "title": "I-84 at 223rd",
+    "videoId": 0
+   },
+   "img": "ux/cams/I_84_at_223rd.jpg"
+  },
+  {
+   "name": "I-84 at Fairview",
+   "lat": 45.53891,
+   "lon": -122.44903,
+   "file": "i84@207th_pid1581.jpg",
+   "raw": {
+    "cameraId": 377,
+    "publishedImageId": 1581,
+    "filename": "i84@207th_pid1581.jpg",
+    "iconType": 1,
+    "latitude": 45.53891,
+    "longitude": -122.44903,
+    "route": "I-84  ",
+    "title": "I-84 at Fairview",
+    "videoId": 0
+   },
+   "img": "ux/cams/I_84_at_Fairview.jpg"
+  },
+  {
+   "name": "I-84 at 181st",
+   "lat": 45.54129,
+   "lon": -122.47686,
+   "file": "i84@181st_pid1580.jpg",
+   "raw": {
+    "cameraId": 376,
+    "publishedImageId": 1580,
+    "filename": "i84@181st_pid1580.jpg",
+    "iconType": 1,
+    "latitude": 45.54129,
+    "longitude": -122.47686,
+    "route": "I-84  ",
+    "title": "I-84 at 181st",
+    "videoId": 0
+   },
+   "img": "ux/cams/I_84_at_181st.jpg"
+  },
+  {
+   "name": "Portland - NE Airport Way at 158th",
+   "lat": 45.55759,
+   "lon": -122.50021,
+   "file": "NE Airport Way @ 158th_pid4773.jpg",
+   "raw": {
+    "cameraId": 1201,
+    "publishedImageId": 4773,
+    "filename": "NE Airport Way @ 158th_pid4773.jpg",
+    "iconType": 1,
+    "latitude": 45.55759,
+    "longitude": -122.50021,
+    "route": "CITY  ",
+    "title": "Portland - NE Airport Way at 158th",
+    "videoId": 0
+   },
+   "img": "ux/cams/Portland_NE_Airport_Way_at_158th.jpg"
+  },
+  {
+   "name": "I-84 at 162nd",
+   "lat": 45.54217,
+   "lon": -122.49509,
+   "file": "I-84 EB at 162nd_pid4789.jpg",
+   "raw": {
+    "cameraId": 1208,
+    "publishedImageId": 4789,
+    "filename": "I-84 EB at 162nd_pid4789.jpg",
+    "iconType": 1,
+    "latitude": 45.54217,
+    "longitude": -122.49509,
+    "route": "I-84  ",
+    "title": "I-84 at 162nd",
+    "videoId": 0
+   },
+   "img": "ux/cams/I_84_at_162nd.jpg"
+  },
+  {
+   "name": "Portland - NE Airport Way at 148th",
+   "lat": 45.55957,
+   "lon": -122.51028,
+   "file": "NE Airport Way @ 148th_pid4775.jpg",
+   "raw": {
+    "cameraId": 1200,
+    "publishedImageId": 4775,
+    "filename": "NE Airport Way @ 148th_pid4775.jpg",
+    "iconType": 1,
+    "latitude": 45.55957,
+    "longitude": -122.51028,
+    "route": "CITY  ",
+    "title": "Portland - NE Airport Way at 148th",
+    "videoId": 0
+   },
+   "img": "ux/cams/Portland_NE_Airport_Way_at_148th.jpg"
+  },
+  {
+   "name": "I-84 at 148th",
+   "lat": 45.54242,
+   "lon": -122.50928,
+   "file": "i84@148th_pid1579.jpg",
+   "raw": {
+    "cameraId": 375,
+    "publishedImageId": 1579,
+    "filename": "i84@148th_pid1579.jpg",
+    "iconType": 1,
+    "latitude": 45.54242,
+    "longitude": -122.50928,
+    "route": "I-84  ",
+    "title": "I-84 at 148th",
+    "videoId": 0
+   },
+   "img": "ux/cams/I_84_at_148th.jpg"
+  },
+  {
+   "name": "US26 at 267th",
+   "lat": 45.46549,
+   "lon": -122.38743,
+   "file": "US26 EB at 267th_pid4791.jpg",
+   "raw": {
+    "cameraId": 1209,
+    "publishedImageId": 4791,
+    "filename": "US26 EB at 267th_pid4791.jpg",
+    "iconType": 1,
+    "latitude": 45.46549,
+    "longitude": -122.38743,
+    "route": "US26  ",
+    "title": "US26 at 267th",
+    "videoId": 0
+   },
+   "img": "ux/cams/US26_at_267th.jpg"
+  },
+  {
+   "name": "US26 at 267th",
+   "lat": 45.46549,
+   "lon": -122.38743,
+   "file": "US26 WB at 267th_pid4793.jpg",
+   "raw": {
+    "cameraId": 1210,
+    "publishedImageId": 4793,
+    "filename": "US26 WB at 267th_pid4793.jpg",
+    "iconType": 1,
+    "latitude": 45.46549,
+    "longitude": -122.38743,
+    "route": "US26  ",
+    "title": "US26 at 267th",
+    "videoId": 0
+   },
+   "img": "ux/cams/US26_at_267th.jpg"
+  },
+  {
+   "name": "Portland - NE Airport Way at 138th",
+   "lat": 45.56195,
+   "lon": -122.52112,
+   "file": "NE Airport Way @ 138th_pid4777.jpg",
+   "raw": {
+    "cameraId": 1199,
+    "publishedImageId": 4777,
+    "filename": "NE Airport Way @ 138th_pid4777.jpg",
+    "iconType": 1,
+    "latitude": 45.56195,
+    "longitude": -122.52112,
+    "route": "CITY  ",
+    "title": "Portland - NE Airport Way at 138th",
+    "videoId": 0
+   },
+   "img": "ux/cams/Portland_NE_Airport_Way_at_138th.jpg"
+  },
+  {
+   "name": "Portland - Division at 174th ",
+   "lat": 45.50465,
+   "lon": -122.48467,
+   "file": "SE Division at 174th_pid4869.jpg",
+   "raw": {
+    "cameraId": 1249,
+    "publishedImageId": 4869,
+    "filename": "SE Division at 174th_pid4869.jpg",
+    "iconType": 1,
+    "latitude": 45.50465,
+    "longitude": -122.48467,
+    "route": "City  ",
+    "title": "Portland - Division at 174th ",
+    "videoId": 0
+   },
+   "img": "ux/cams/Portland_Division_at_174th_.jpg"
+  }
+ ],
+ "log": [
+  "https://tripcheck.com/Scripts/map/data/cctvinventory.js: 200 339043 '{\"fields\":[{\"name\":\"cameraId\",\"alias\":\"Camera ID\",\"type\":\"esriFieldTypeInteger\"},{\"name\":\"publishedImageId\",\"alias\":\"Published Image ID\",\"type\":\"esriFieldTypeInteger\"},{\"name\":\"filename\",\"alias\":\"Filename\",\"type\":\"esriFieldTypeString\",\"length\":255},{\"name\":\"iconType\",\"alias\":\"Icon Type\",\"type\":\"esri'"
+ ]
+}
