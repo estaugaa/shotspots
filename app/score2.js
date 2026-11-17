@@ -38,7 +38,8 @@ fitFor = function (s, w) {
   if (!f || SCORE_V !== 2 || w.kind === "night" || UI.group === "life") return f;
   const q = spotQuality(s);
   const m = PREFS.fame === "lesser" ? 1.05 - 0.35 * q : 0.5 + 0.625 * q;   // lesser-known: unknown 1.05, most photographed 0.70
-  return { ...f, n: Math.round(clamp(f.n * m, 0, 100)), q, light: f.n, qm: m };
+  const life = lifeLed(s) ? 0.85 : 1;   // outside the Wildlife filter, lists lead with views: a refuge's sunset sky counts, a bit less (Eric, Nov 16)
+  return { ...f, n: Math.round(clamp(f.n * m * life, 0, 100)), q, light: f.n, qm: m * life };
 };
 
 /* ---- "Why this score": the arithmetic, on the spot page, and on every card in test mode (#math in the URL) ---- */
