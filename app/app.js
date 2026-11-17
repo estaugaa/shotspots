@@ -142,10 +142,16 @@ function seedFame(s) {
   return Math.max(-2, Math.min(10, wiki + pop + views + (s.standFame || 0)));
 }
 function wxMiss() { return !WX ? (navigator.onLine === false ? "offline: no forecast" : "forecast loading") : "no forecast point near here yet"; }
+// memoised per place and forecast (it ran ~370k times a redraw); keyed by rounded position, so probe points work too
+let __npMemo = new Map(), __npAt = 0;
 function nearestPt(p, maxKm, exclude) {
-  if (!WX) return null; let best = null, bd = 1e9;
+  if (!WX) return null;
+  if (__npAt !== WX.at) { __npMemo = new Map(); __npAt = WX.at; }
+  const key = p.lat.toFixed(4) + "," + p.lon.toFixed(4) + "|" + (maxKm || 60) + "|" + (exclude || "");
+  const hit = __npMemo.get(key); if (hit !== undefined) return hit;
+  let best = null, bd = 1e9;
   for (const q of WX.pts) { if (exclude && q.id === exclude) continue; const d = km(p, q); if (d < bd) { bd = d; best = q; } }
-  return bd <= (maxKm || 60) ? best : null;
+  const r = bd <= (maxKm || 60) ? best : null; if (__npMemo.size > 50000) __npMemo.clear(); __npMemo.set(key, r); return r;
 }
 function hourAt(pt, t) {
   if (!pt) return null; const h = pt.h, ts = t.getTime() / 1000; let bi = -1, bd = 1e12;

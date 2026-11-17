@@ -144,19 +144,32 @@ function rain48(s) { const pt = nearestPt(s, 60); if (!pt || !pt.h.precipitation
   let mm = 0; pt.h.time.forEach((t, i) => { if (t <= now && t > now - 48 * 3600) mm += pt.h.precipitation[i] || 0; }); return mm / 25.4; }
 
 /* ---- scoring hooks ---- */
+/* The facts below don't depend on the time window, but fitFor runs for every spot in every window (57 of them): they are
+   worked out once per spot per redraw. This layer was 2/3 of the scoring time (Nov 17: a full redraw took 7.7 s). */
+let __liveMemo = new Map(), __liveMemoAt = 0;
+function liveFacts(s) {
+  if (Date.now() - __liveMemoAt > 20000) { __liveMemo = new Map(); __liveMemoAt = Date.now(); }
+  let m = __liveMemo.get(s.id); if (m) return m; const c = {};
+  m = { get r48() { return "r48" in c ? c.r48 : (c.r48 = rain48(s)); }, get birds() { return c.birds || (c.birds = inatNear(s, 2.5).filter(o => o.g === "bird")); },
+    get mm() { return c.mm || (c.mm = inatTop(s, "mam", 1)); }, get bl() { return c.bl || (c.bl = inatTop(s, "bloom", 2.5)); },
+    get np() { return "np" in c ? c.np : (c.np = npsAt(s)); }, get eb() { return "eb" in c ? c.eb : (c.eb = LIVE.ebird && LIVE.ebird.rows.filter(o => km(s, o) <= 3)); } };
+  __liveMemo.set(s.id, m); return m;
+}
+const _paintLive = paint;
+paint = function () { __liveMemo = new Map(); __liveMemoAt = Date.now(); return _paintLive.apply(this, arguments); };   // fresh facts each redraw
 const _fitFor = fitFor;
 fitFor = function (s, w) {
   const f = _fitFor(s, w); if (!f || w.kind === "night") return f;
-  let n = f.n; const why = f.why;
-  if (s.cats.includes("waterfall")) { const r = rain48(s); if (r != null && r >= 0.4) { if (DAYK.has(w.kind) || n >= 60) n += 8; why.unshift(`${r.toFixed(1)} in of rain in 2 days: falls running big`); } else if (r != null && r < 0.05 && +laYMD(w.peak).slice(5, 7) >= 7 && +laYMD(w.peak).slice(5, 7) <= 10) { n -= 6; why.push("dry spell: flow may be thin"); } }
+  let n = f.n; const why = f.why; const L = liveFacts(s);
+  if (s.cats.includes("waterfall")) { const r = L.r48; if (r != null && r >= 0.4) { if (DAYK.has(w.kind) || n >= 60) n += 8; why.unshift(`${r.toFixed(1)} in of rain in 2 days: falls running big`); } else if (r != null && r < 0.05 && +laYMD(w.peak).slice(5, 7) >= 7 && +laYMD(w.peak).slice(5, 7) <= 10) { n -= 6; why.push("dry spell: flow may be thin"); } }
   const lt = lowTideNear(s, w); if (lt) { n += 10; why.unshift(`low tide ${fmtT(new Date(lt.t))} (${lt.v.toFixed(1)} ft): wet-sand reflections`); }
-  if (s.cats.some(c => LIFE.includes(c))) { const obs = inatNear(s, 2.5).filter(o => o.g === "bird"); if (obs.length >= 3) { n += Math.min(10, obs.length); why.push(`${obs.length} bird sightings logged here in 10 days`); }
-    const mm = inatTop(s, "mam", 1); if (mm.length) { const tot = mm.reduce((a, x) => a + x[1], 0); n += UI.group === "life" ? Math.min(14, 6 + 2 * tot) : Math.min(5, 2 + tot); /* full lift only when hunting wildlife */ why.unshift(`${mm[0][0]} seen here ${mm[0][1]}× this month${mm.length > 1 ? `, plus ${mm.slice(1, 3).map(x => x[0]).join(", ")}` : ""}`); } }
-  if (s.cats.includes("wildflowers") || s.kind === "meadow") { const bl = inatTop(s, "bloom", 2.5); const tot = bl.reduce((a, x) => a + x[1], 0);
+  if (s.cats.some(c => LIFE.includes(c))) { const obs = L.birds; if (obs.length >= 3) { n += Math.min(10, obs.length); why.push(`${obs.length} bird sightings logged here in 10 days`); }
+    const mm = L.mm; if (mm.length) { const tot = mm.reduce((a, x) => a + x[1], 0); n += UI.group === "life" ? Math.min(14, 6 + 2 * tot) : Math.min(5, 2 + tot); /* full lift only when hunting wildlife */ why.unshift(`${mm[0][0]} seen here ${mm[0][1]}× this month${mm.length > 1 ? `, plus ${mm.slice(1, 3).map(x => x[0]).join(", ")}` : ""}`); } }
+  if (s.cats.includes("wildflowers") || s.kind === "meadow") { const bl = L.bl; const tot = bl.reduce((a, x) => a + x[1], 0);
     if (tot >= 2) { n += Math.min(14, 4 + 2 * tot); why.unshift(`in bloom now: ${bl.slice(0, 3).map(x => x[0]).join(", ")} (${tot} reports in 2 weeks)`); } }
   // lists only carry park notices that plainly concern this spot; every notice is on the spot page
-  const np = npsAt(s); if (np) { const cl = (np.al || []).find(a => a.cat === "Park Closure" && nameShare(s.name, a.t)); if (cl) why.unshift(`closure notice: ${cl.t.slice(0, 70)}`); if (np.te) why.push("park may need a timed-entry reservation"); }
-  const eb = LIVE.ebird && LIVE.ebird.rows.filter(o => km(s, o) <= 3); if (eb && eb.length) { n += 12; why.unshift(`rare bird: ${eb[0].n} reported ${eb[0].t.slice(5, 10)}`); }
+  const np = L.np; if (np) { const cl = (np.al || []).find(a => a.cat === "Park Closure" && nameShare(s.name, a.t)); if (cl) why.unshift(`closure notice: ${cl.t.slice(0, 70)}`); if (np.te) why.push("park may need a timed-entry reservation"); }
+  const eb = L.eb; if (eb && eb.length) { n += 12; why.unshift(`rare bird: ${eb[0].n} reported ${eb[0].t.slice(5, 10)}`); }
   if (lifeLed(s) && UI.group !== "life" && n > f.n && !why.some(x => /in bloom now|rare bird/.test(x))) n = f.n + (n - f.n) * 0.35;   // sightings don't make a birding spot a sunrise spot
   return { ...f, n: Math.round(clamp(n, 0, 100)), why };
 };
