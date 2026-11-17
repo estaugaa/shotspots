@@ -11,7 +11,7 @@ fixed time). App code (any path that exists under app/) always comes from the wo
 Compared: the top 10 (names, scores, score after each layer for the top 5) and the score of every ranked spot.
 Each case runs twice; differing runs fail as unstable (the ranking must not depend on load order).
 """
-import asyncio, base64, datetime as dt, functools, gzip, hashlib, http.server, json, os, pathlib, sys, threading
+import asyncio, base64, datetime as dt, functools, gzip, hashlib, http.server, json, os, pathlib, re, sys, threading, urllib.parse
 from playwright.async_api import async_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -40,6 +40,76 @@ RANK = """(async ([kind]) => {
     if (i < 5) o.layers = scoreLayers(x.s, w).map(l => l.n);
     return o; }),
     all: R.map(x => x.s.name + " = " + x.f.n) }; })"""
+
+
+OSRM = "https://router.project-osrm.org/table/v1/driving/"
+_OSRM = {}
+
+
+def osrm_table(store):
+    """Drive times are asked for in batches whose make-up depends on which spot tiles had loaded at that moment, so
+    replaying by exact URL made a spot's drive time (and score) change between runs. Every recorded batch is split into
+    (start, destination) -> seconds; a destination never recorded gets null, as OSRM does, and the app's estimate."""
+    if id(store) not in _OSRM:
+        t = {}
+        for k, (st, _, b) in store.items():
+            if not k.startswith(OSRM) or st != 200: continue
+            try: d = json.loads(base64.b64decode(b))["durations"][0]
+            except Exception: continue
+            src, *dst = k[len(OSRM):].split("?")[0].split(";")
+            for c, sec in zip(dst, d[1:]):
+                if sec is not None: t[(src, c)] = sec
+        _OSRM[id(store)] = t
+    return _OSRM[id(store)]
+
+
+_OM = {}
+OM_HOST = re.compile(r"^https://(api|air-quality-api|marine-api)\.open-meteo\.com/")
+
+
+def om_inner(k):
+    """An Open-Meteo URL, asked for directly or through the forms Worker's /om forwarder; else None."""
+    if "/om?u=" in k: k = urllib.parse.unquote(k.split("/om?u=", 1)[1])
+    return k if OM_HOST.match(k) else None
+
+
+def om_split(u):
+    p = urllib.parse.urlsplit(u); q = urllib.parse.parse_qsl(p.query, keep_blank_values=True)
+    lat = next((v for k, v in q if k == "latitude"), None); lon = next((v for k, v in q if k == "longitude"), None)
+    rest = urllib.parse.urlencode(sorted((k, v) for k, v in q if k not in ("latitude", "longitude")))
+    return f"{p.netloc}{p.path}?{rest}", (lat or "").split(","), (lon or "").split(",")
+
+
+def om_table(store):
+    """The forecast is asked for at a set of points that grows as spot tiles load (wxPoints in app.js), so replaying by
+    exact URL gave far spots a different forecast point from run to run. Every recorded response is split per point;
+    every request is answered point by point (never by exact URL, which would again depend on load order): the exact
+    point if recorded, else the nearest recorded one with the same parameters."""
+    if id(store) not in _OM:
+        t = {}
+        # forwarded copies first, so a direct answer for the same point (fresher) wins; sorted, so the choice never varies
+        for k, (st, _, b) in sorted(store.items(), key=lambda kv: ("/om?u=" not in kv[0], kv[0])):
+            u = om_inner(k)
+            if not u or st != 200: continue
+            try: j = json.loads(base64.b64decode(b))
+            except Exception: continue
+            params, lats, lons = om_split(u); j = j if isinstance(j, list) else [j]
+            if len(j) != len(lats): continue
+            for la, lo, x in zip(lats, lons, j):
+                t.setdefault(params, {})[(float(la), float(lo))] = x
+        _OM[id(store)] = t
+    return _OM[id(store)]
+
+
+def om_answer(store, k):
+    u = om_inner(k)
+    params, lats, lons = om_split(u); pts = om_table(store).get(params)
+    if not pts or not lats[0]: return None
+    out = []
+    for la, lo in zip(lats, lons):
+        p = (float(la), float(lo))
+        out.append(pts.get(p) or pts[min(pts, key=lambda q: (q[0] - p[0]) ** 2 + ((q[1] - p[1]) * 0.7) ** 2)])
+    return out if len(out) > 1 else out[0]
 
 
 def key(url, base):
@@ -103,6 +173,16 @@ async def run_case(br, case, at, base, store, mode, missing):
                 store[k] = [r.status, r.headers.get("content-type", ""), base64.b64encode(body).decode()]
             return await rt.fulfill(response=r, body=body)
         if local_path(k): return await rt.continue_()
+        if k.startswith(OSRM):   # any batch of destinations, answered per destination (see osrm_table)
+            src, *dst = k[len(OSRM):].split("?")[0].split(";")
+            durs = [0] + [osrm_table(store).get((src, d)) for d in dst]
+            return await rt.fulfill(status=200, content_type="application/json", headers={"access-control-allow-origin": "*"},
+                                    body=json.dumps({"code": "Ok", "durations": [durs]}))
+        if om_inner(k):
+            ans = om_answer(store, k)
+            if ans is not None:
+                return await rt.fulfill(status=200, content_type="application/json", headers={"access-control-allow-origin": "*"},
+                                        body=json.dumps(ans))
         hit = store.get(k) or store.get(k.split("?")[0])
         if not hit:
             missing.add(k); return await rt.fulfill(status=404, body="")
