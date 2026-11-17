@@ -555,8 +555,7 @@ function fitFor(s, w) {
   if (s.seed && GENERIC_NAME.test(s.name) && (GOLDK.has(w.kind) || BLUEK.has(w.kind))) n *= 0.8;
   // flat light everywhere (thick overcast or rain at a golden hour): the well-known views are still the best bet, so fame counts double
   if (!v2 && s.seed && GOLDK.has(w.kind) && sk && (sk.cc >= 85 || sk.block >= 80) && UI.group !== "life" && !/landmark|hotspot|refuge|bridge/.test(s.kind)) n += Math.max(0, seedFame(s));   // also when distant cloud blocks the sun
-  // quality prior: researched spots are hand-picked; starter spots earn theirs from Wikipedia links, photos and eBird species
-  if (!s.seed) n += 3;
+  // (no bonus for being hand-researched: scoring is data driven, Eric Nov 16)
   // big areas (parks, wildernesses): the pin is just the middle of them, not a place to stand
   if (s.seed && (/^seed-r/.test(s.id) || /^(grand canyon|.* (wilderness|national forest|national park|national monument|recreation area|preserve))$/i.test(s.name)) && UI.group !== "life") n *= 0.7;
   // starter summits: often no trail (buttes inside canyons, remote peaks). Trust them only when people actually photograph from there
