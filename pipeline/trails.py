@@ -23,7 +23,7 @@ MIRRORS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.sys
 STOP = {"the", "and", "of", "at", "to", "from", "via", "park", "state", "viewpoint", "view", "point", "area", "trail", "lake", "mt", "mount", "national", "&", "-", "(", ")"}
 
 
-def fetch(lat, lon, r=2500):
+def fetch(lat, lon, r=2500, timeout=120, tries=2, mirrors=None):
     q = f"""[out:json][timeout:90];
 (way(around:{r},{lat},{lon})[highway~"^({WALK})$"][access!~"^(private|no)$"];)->.w;
 .w out body geom;
@@ -32,9 +32,9 @@ def fetch(lat, lon, r=2500):
  node(around:3000,{lat},{lon})[waterway=waterfall][name];node(around:3000,{lat},{lon})[natural=water][name];way(around:3000,{lat},{lon})[natural=water][name];);
 out center tags;"""
     last = None
-    for u in MIRRORS:
+    for u in (mirrors or MIRRORS):
         try:
-            return http(u, method="POST", data={"data": q}, timeout=120, tries=2).json()["elements"]
+            return http(u, method="POST", data={"data": q}, timeout=timeout, tries=tries).json()["elements"]
         except Exception as e:
             last = e
     raise last

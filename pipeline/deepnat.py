@@ -61,13 +61,19 @@ def _card(s, h_alt, h0, trail):
     return c
 
 
-def run(budget_min=150):
+def _quick_overpass(lat, lon):
+    """One try, short timeout, first two mirrors (trails.fetch defaults allow minutes per spot)."""
+    from . import trails
+    return trails.fetch(lat, lon, timeout=45, tries=1, mirrors=trails.MIRRORS[:2])
+
+
+def run(budget_min=120):
     from . import terrain, trails
     OD.mkdir(parents=True, exist_ok=True)
     t0 = time.time(); ranked = _tiles_ranked()
     done = {k for k in (read_json(OD / "index.json", []) or [])}
     todo = [(q, k, ss) for q, k, ss in ranked if k not in done or (read_json(OD / f"{k}.json", {}) or {}).get("v") != VERSION]
-    nt = ns = 0
+    nt = ns = 0; trail_fails = 0
     for q, k, ss in todo:
         if time.time() - t0 > budget_min * 60:
             open(".more", "w").write("1"); break
@@ -76,7 +82,7 @@ def run(budget_min=150):
             far = terrain.far_for(la + 0.5, lo + 0.5, f"tile_{k}", terrain.far_grid() if terrain.in_far(la + 0.5, lo + 0.5) else None)
         except Exception as e:
             log.warning("deepnat far %s: %s", k, e); far = None
-        cards = {}
+        cards = {}; over = False
         for s in ss:
             try:
                 near, mid = terrain.spot_grids(s["lat"], s["lon"], s["id"])
@@ -84,12 +90,16 @@ def run(budget_min=150):
             except Exception as e:
                 log.warning("deepnat terrain %s: %s", s["id"], e); continue
             tr = None
-            try:
-                els = trails.fetch(s["lat"], s["lon"]); time.sleep(1.5)
-                tr = trails.route(s, els)
-            except Exception as e:
-                log.info("deepnat trail %s: %s", s["id"], e)
+            if trail_fails < 4:   # the map service is slow or down: skip walking routes for the rest of this run
+                try:
+                    els = _quick_overpass(s["lat"], s["lon"]); time.sleep(1.5)
+                    tr = trails.route(s, els); trail_fails = 0
+                except Exception as e:
+                    trail_fails += 1; log.info("deepnat trail %s: %s", s["id"], e)
+            if time.time() - t0 > budget_min * 60: over = True; break
             cards[s["id"]] = _card(s, [float(x) for x in alt], h0, tr); ns += 1
+        if over:   # a half-done tile is redone next run
+            open(".more", "w").write("1"); break
         (OD / f"{k}.json").write_text(json.dumps({"gen": iso(utcnow()), "v": VERSION, "spots": cards}, separators=(",", ":")))
         done.add(k); nt += 1
         (OD / "index.json").write_text(json.dumps(sorted(done)))
