@@ -1,1 +1,1 @@
-{"ok":true,"kind":"MEASURED","note":"10 fog advisories active","at":"2026-11-17T15:41:51Z","secs":0.5}
+{"ok":false,"kind":"MEASURED","note":"HTTPError: HTTP 503","at":"2026-11-17T16:12:43Z","secs":62.0}
