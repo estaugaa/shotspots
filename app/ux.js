@@ -6,13 +6,14 @@
 "use strict";
 const SPOT_ORDER = [
   [/^How to shoot it/, 10], [/^Best photos here|^Right now from people there/, 5], [/^Best months/, 25],
-  [/^Getting there/, 30], [/^Light here today/, 35], [/^Sun & moon/, 37], [/^Wildlife here this week/, 40], [/^Seen here in the last/, 45],
+  [/^Why this score/, 20], [/^Getting there/, 30], [/^Light here today/, 35], [/^Sun & moon/, 37], [/^Wildlife here this week/, 40], [/^Seen here in the last/, 45],
   [/^Smoke and haze/, 55], [/^Odds next 18 hours/, 60], [/^Access/, 70], [/^Check before you go/, 72], [/^Conditions now/, 74],
   [/^Experimental ideas/, 90], [/^My notes/, 93], [/^See others/, 92], [/^Sources/, 95]];
 function blockTitle(el) {
   if (el.classList && el.classList.contains("photosbox")) return "Best photos here";
   if (el.classList && el.classList.contains("sunmoon")) return "Sun & moon";
   if (el.classList && el.classList.contains("mynotes")) return "My notes";
+  if (el.classList && el.classList.contains("scoremath")) return "Why this score";
   if (el.tagName === "H3") return el.textContent.trim();
   if (el.tagName === "DETAILS") return (el.querySelector("summary") || el).textContent.trim();
   if (el.classList && el.classList.contains("label") && /^Best months/.test(el.textContent)) return "Best months";

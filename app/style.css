@@ -407,3 +407,6 @@ details>summary{padding-top:10px;padding-bottom:10px}
 .conf-dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--moss);transform:translateY(-1px)}
 .conf-mixed .conf-dot{background:var(--gold)}.conf-disagree .conf-dot{background:var(--warn)}
 .conf-disagree{color:var(--ink)}
+
+.pick small.math{display:block;font-variant-numeric:tabular-nums;opacity:.75;font-size:12px}
+.scoremath ul{margin:.3em 0 0 1.1em;padding:0}.scoremath li{margin:.15em 0}

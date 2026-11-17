@@ -29,5 +29,42 @@ fitFor = function (s, w) {
   const f = _fitV1(s, w);
   if (!f || SCORE_V !== 2 || w.kind === "night" || UI.group === "life") return f;
   const q = spotQuality(s);
-  return { ...f, n: Math.round(clamp(f.n * (0.5 + 0.625 * q), 0, 100)), q };
+  const m = 0.5 + 0.625 * q;
+  return { ...f, n: Math.round(clamp(f.n * m, 0, 100)), q, light: f.n, qm: m };
+};
+
+/* ---- "Why this score": the arithmetic, on the spot page, and on every card in test mode (#math in the URL) ---- */
+let SCORE_MATH = false; try { SCORE_MATH = localStorage.getItem("ss2:math") === "1"; } catch (e) { }
+(function () { if (/#math\b/.test(location.hash)) { const on = !SCORE_MATH; SCORE_MATH = on; try { localStorage.setItem("ss2:math", on ? "1" : "0"); } catch (e) { }
+  history.replaceState(null, "", location.pathname); setTimeout(() => typeof toast === "function" && toast(on ? "Score math shown on cards" : "Score math hidden"), 900); } })();
+function qualityText(s) {
+  const bits = [], r = s.refs || {};
+  if (r.commons) bits.push(`${r.commons} Wikimedia photos`); if (r.flickr) bits.push(`${r.flickr} Flickr photos`);
+  if (s.views) bits.push(`${s.views >= 1000 ? Math.round(s.views / 1000) + "k" : s.views} Wikipedia views a year`);
+  if (s.score) bits.push("Wikipedia/Wikidata links"); if (s._stand && s._stand.u) bits.push(`${s._stand.u} photographers' positions`);
+  if (/landmark|bridge/.test(s.kind || "")) bits.push("buildings count 25% less");
+  return bits.length ? bits.join(", ") : "no photo or Wikipedia record found (an unknown spot)";
+}
+function distFactor(s) { const d = driveMin(s); return 1 - 0.1 * Math.min(1, d / Math.max(1, maxTravel())); }
+function mathLine(f, s) {
+  if (f.light == null) return "";
+  return `Light ${Math.round(f.light)} × spot ${f.qm.toFixed(2)} = ${f.n}; list order × ${distFactor(s).toFixed(2)} for distance`;
+}
+const _pickRowM = pickRow;
+pickRow = function (x, w) {
+  const h = _pickRowM(x, w); if (!SCORE_MATH || !x.f || x.f.light == null) return h;
+  return h.replace(/<\/small><\/span>\s*<span class="drive">/, `</small><small class="math">${esc(mathLine(x.f, x.s))}</small></span><span class="drive">`);
+};
+const _openSpotM = openSpot;
+openSpot = function (id) {
+  _openSpotM(id);
+  const s = byId[id], b = $("#sheetBody"); if (!s || !b || b.querySelector(".scoremath")) return;
+  const ws = allWindows(LOC, PLAN_HOURS), w = ws[UI.focus] || ws[0]; if (!w) return;
+  const f = fitFor(s, w); if (!f) return;
+  const wl = (w.label || w.kind).replace(/^\w/, c => c.toUpperCase());
+  const parts = f.light == null ? `<p>${f.n} for ${esc(wl)}. Night and the Wildlife filter score on conditions alone.</p>`
+    : `<p><b>${f.n}</b> for ${esc(wl)} = light and weather <b>${Math.round(f.light)}</b> × spot <b>${f.qm.toFixed(2)}</b></p>
+       <p class="muted">Spot ${f.qm.toFixed(2)} (0.50 unknown to 1.12 most photographed): ${esc(qualityText(s))}. In the list, distance trims up to 10% (× ${distFactor(s).toFixed(2)} here).</p>`;
+  b.insertAdjacentHTML("beforeend", `<div class="scoremath"><h3>Why this score</h3>${parts}<ul>${f.why.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`);
+  if (typeof orderSpotPage === "function") { b._ordered = false; orderSpotPage(); }
 };

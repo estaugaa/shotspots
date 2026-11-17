@@ -13,6 +13,9 @@ All of these run on GitHub Actions against the live site. Run one with
 | Why a spot ranks where it does | diag.yml `tools/whyprobe.py <place words>` -> branch `diag-whyprobe` | debugging |
 | Smoke (site up) | smoke.yml | every 30 min |
 
+Score math: open the app with `#math` at the end of the URL to show the breakdown on every card (again to hide it).
+Each spot page has a "Why this score" section.
+
 Rules
 - When a bug is fixed, add an expectation for it in `tools/expect.py`.
 - Expectations are deliberately loose ("one of these in the top 3") so weather alone doesn't fail them.
