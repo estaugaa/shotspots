@@ -1,6 +1,7 @@
 """Ground truth for fog: airport weather reports (METARs) around the coverage area, from aviationweather.gov
 (free, no key). Visibility, fog/mist and the lowest cloud base catch what the satellite can't see under a
 higher cloud deck. Writes feed/obs.json; runs with every GOES scan."""
+import time
 from .common import http, write_json, utcnow, iso, log
 
 BBOX = "41.9,-124.8,49.1,-116.4"   # lat0,lon0,lat1,lon1: Washington and Oregon (the app shows the nearest few)
@@ -88,10 +89,11 @@ def _tiles():
     import math, json as _j
     from .common import FEED
     j = []
-    boxes = [(24, -125, 50, -110), (24, -110, 50, -97), (24, -97, 50, -85), (24, -85, 50, -66), (51, -170, 72, -130), (18, -161, 23, -154)]
-    for b in boxes:   # one big box is refused (HTTP 400)
+    boxes = [(la, lo, la + 5, lo + 5) for la in range(24, 50, 5) for lo in range(-125, -65, 5)] + [(50, lo, 72, lo + 10) for lo in range(-170, -129, 10)] + [(18, -161, 23, -154)]
+    for b in boxes:   # big boxes are refused or capped: 5-degree boxes, last hour
+        if j: time.sleep(0.3)
         try:
-            j += http("https://aviationweather.gov/api/data/metar", params={"bbox": ",".join(map(str, b)), "format": "json", "hours": 2},
+            j += http("https://aviationweather.gov/api/data/metar", params={"bbox": ",".join(map(str, b)), "format": "json", "hours": 1},
                       headers={"User-Agent": "ShotSpots/1.0 (https://github.com/estaugaa/shotspots)"}, timeout=90).json()
         except Exception as e:
             log.warning("METAR box %s: %s", b, e)
