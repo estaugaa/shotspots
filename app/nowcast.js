@@ -22,11 +22,27 @@ function obsFor(pt) {
   for (const o of OBSNOW) { if (Date.now() - o.t > 100 * 60e3) continue; const d = km(pt, o); if (d < bd) { bd = d; best = o; } }
   return best;
 }
+/* Calibration (pipeline/skill.py): what forecast low cloud turned out to mean at airports at sunrise/sunset, from the
+   last 60 days nationwide. Used only where the held-out test shows it lowers the error. */
+let CALIB = null;
+fetch("feed/calib.json").then(r => r.ok ? r.json() : null).then(j => { CALIB = j; if (typeof __skyMemoAt !== "undefined") __skyMemoAt = -1; if (j && typeof render === "function") render(); }).catch(() => { });
+function calibLow(v, lon, model) {
+  if (!CALIB || !CALIB.cal || v == null) return null;
+  const k = `${model || "best_match"}/${lon < -100 ? "west" : "east"}`, bins = CALIB.cal[k], sk = (CALIB.skill || {})[k];
+  if (!bins || !sk || !(sk.mae_cal < sk.mae_raw - 1)) return null;
+  const pts = bins.filter(b => b[1] != null && b[2] >= 30); if (pts.length < 3) return null;
+  if (v <= pts[0][0]) return pts[0][1];
+  for (let i = 1; i < pts.length; i++) if (v <= pts[i][0]) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; return y0 + (y1 - y0) * (v - x0) / (x1 - x0); }
+  return pts[pts.length - 1][1];
+}
 const NOWTXT = c => c >= 95 ? "overcast" : c >= 70 ? "broken cloud" : c >= 35 ? "scattered cloud" : c > 0 ? "a few clouds" : "clear";
 const _hourAtNC = hourAt;
 hourAt = function (pt, t) {
-  const c = _hourAtNC(pt, t); if (!c || !pt) return c;
-  const ahead = (t.getTime() - Date.now()) / 36e5; if (ahead < -1 || ahead > 3) return c;
+  let c = _hourAtNC(pt, t); if (!c || !pt) return c;
+  const ahead = (t.getTime() - Date.now()) / 36e5;
+  const cl = calibLow(c.low, pt.lon, c.model);
+  if (cl != null) { const low = Math.round(cl); c = { ...c, low, cc: Math.round(Math.min(100, Math.max(low, c.mid, c.high * 0.8, low + (100 - low) * c.mid / 100 * 0.6))), cal: c.low }; }
+  if (ahead < -1 || ahead > 3) return c;
   const o = obsFor(pt); if (!o) return c;
   const wgt = ahead <= 0 ? 1 : 1 - 0.7 * ahead / 3;
   const low = Math.round(c.low * (1 - wgt) + o.low * wgt), mid = Math.round(c.mid * (1 - wgt) + o.mid * wgt);

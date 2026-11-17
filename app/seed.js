@@ -8,8 +8,8 @@ if (typeof D !== "undefined" && D.CATS && !D.CATS.landmark) D.CATS.landmark = { 
 const SEED_KIND = { waterfall: "Waterfall", viewpoint: "Viewpoint", peak: "Summit", lighthouse: "Lighthouse", arch: "Arch", hotspring: "Hot spring", refuge: "Refuge", beach: "Beach", bridge: "Bridge", landmark: "Landmark", hotspot: "Birding hotspot", lake: "Lake", pass: "Mountain pass", lookout: "Lookout tower", cave: "Cave" };
 SEED.ready = fetch("feed/seed/index.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { SEED.idx = j; }).catch(() => { });
 // which tiles have popularity / opening-hours files yet (both jobs fill in over time); null = unknown, so try all
-SEED.has = { seedpop: null, seedhours: null, stands: null, seedviews: null };
-SEED.hasReady = Promise.all(["seedpop", "seedhours", "stands", "seedviews"].map(d => fetch(`feed/${d}/index.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { if (Array.isArray(j)) SEED.has[d] = new Set(j); }).catch(() => { })));
+SEED.has = { seedpop: null, seedhours: null, stands: null, seedviews: null, deep: null };
+SEED.hasReady = Promise.all(["seedpop", "seedhours", "stands", "seedviews", "deep"].map(d => fetch(`feed/${d}/index.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { if (Array.isArray(j)) SEED.has[d] = new Set(j); }).catch(() => { })));
 const seedHas = (d, k) => !SEED.has[d] || SEED.has[d].has(k);
 const seedCovers = () => !!(SEED.idx && SEED.idx.tiles[`${Math.floor(LOC.lat)}_${Math.floor(LOC.lon)}`]);
 async function loadSeed() {
@@ -24,6 +24,12 @@ async function loadSeed() {
   await SEED.hasReady;   // so missing popularity/hours tiles aren't requested
   const [got, pops] = await Promise.all([Promise.all(want.map(k => fetch(`feed/seed/${k}.json`).then(r => r.ok ? r.json() : null).catch(() => null))),
     Promise.all(want.map(k => !seedHas("seedpop", k) ? null : fetch(`feed/seedpop/${k}.json`).then(r => r.ok ? r.json() : null).catch(() => null)))]);
+  // full research cards, nationwide (pipeline/deepnat.py): facing from 10 m terrain, walk from parking, horizon profile
+  want.filter(k => SEED.has.deep && seedHas("deep", k)).forEach(k => fetch(`feed/deep/${k}.json`).then(r => r.ok ? r.json() : null).then(j => {
+    if (!j || !j.spots) return; let c = 0;
+    for (const [id, d] of Object.entries(j.spots)) { const s = byId[id]; if (!s) continue;
+      if (d.light && !s._psLight) s.light = d.light; /* people's photos showing the light win */ if (d.eff) s.effort = d.eff; if (d.tip) s.tip = d.tip; if (d.hz) s.hzp = d.hz; s.deep = true; c++; }
+    if (c && typeof render === "function") { clearTimeout(SEED._dt); SEED._dt = setTimeout(render, 400); } }).catch(() => { }));
   // Wikipedia page views: how famous (pipeline/wikiviews.py)
   want.filter(k => SEED.has.seedviews && seedHas("seedviews", k)).forEach(k => fetch(`feed/seedviews/${k}.json`).then(r => r.ok ? r.json() : null).then(j => {
     if (!j) return; let c = 0; for (const [id, v] of Object.entries(j)) { const s = byId[id]; if (s && typeof v === "number") { s.views = v; c++; } }
@@ -40,7 +46,7 @@ async function loadSeed() {
       const pp = pops[i] && pops[i][x.id]; if (pp) { x.pop = pp[0]; x.refs = { commons: pp[1], flickr: pp[2], inat: pp[3] }; }
       const dp = ((fd("deep") || {}).spots || {})[x.id];   // full research card (pipeline/deepspots.py): fine terrain facing, walk, tip
       if (dp) { if (dp.light && !(ps && ps.light && ps.n >= 8)) x.light = dp.light; if (dp.eff) x.effort = dp.eff; if (dp.tip) x.tip = dp.tip; if (dp.months && !(ps && ps.months)) x.months = dp.months; x.deep = true; }
-      const s = { ...x, region: `${SEED_KIND[x.kind] || "Place"} · starter spot`, months: ps && ps.months || null, light: ps && ps.light || x.light, osm: true, seed: true, src: [], osmUrl: `https://www.openstreetmap.org/${x.osm}`, ps };
+      const s = { ...x, region: `${SEED_KIND[x.kind] || "Place"} · starter spot`, months: ps && ps.months || null, light: ps && ps.light || x.light, _psLight: !!(ps && ps.light && ps.n >= 8), osm: true, seed: true, src: [], osmUrl: `https://www.openstreetmap.org/${x.osm}`, ps };
       SPOTS.push(s); byId[s.id] = s; added++; } });
   SEED.n += added;
   SEED.busy = false;

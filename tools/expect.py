@@ -28,13 +28,15 @@ CASES = [
  ("Zion sunset: not taken over by birding spots", (37.189, -112.999), {"maxDrive": 30}, "all", "sunset", "max_kind", [3, ["hotspot", "refuge"], 1]),
  ("Yosemite sunset: Yosemite Valley icons in the top 5", (37.745, -119.59), {"maxDrive": 45}, "all", "sunset", "any_top", [5, ["Yosemite Fall", "El Capitan", "Tunnel View", "Glacier Point", "Half Dome", "Vernal", "Bridalveil", "Valley View", "Sentinel"]]),
  ("Grand Canyon sunrise: nothing beyond the travel limit", (36.0, -112.12), {"maxDrive": 45}, "all", "sunrise", "none_far", 10),
+ ("Washougal sunrise: 'Why this score' layers add up to the score shown", (45.582, -122.353), {"maxDrive": 60}, "all", "sunrise", "layers_ok", 5),
 ]
 
 RANK = """(async ([kind]) => {
   const t0 = Date.now(); while (!WX && Date.now() - t0 < 30000) await new Promise(r => setTimeout(r, 500));
   const all = allWindows(LOC, PLAN_HOURS), want = laYMD(new Date(Date.now() + 864e5));
   const w = all.find(x => winDay(x) === want && x.kind === kind); if (!w) return { err: "no " + kind + " window" };
-  return { wx: !!WX, top: rankFor(w).slice(0, 10).map(x => ({ n: x.s.name, k: x.s.kind || "", life: lifeLed(x.s), far: tooFar(x.s), sc: x.f.n })) }; })"""
+  const R = rankFor(w); const layersOk = R.slice(0, 5).every(x => { const L = scoreLayers(x.s, w); return L.length && L[L.length - 1].n === x.f.n; });
+  return { wx: !!WX, layersOk, top: R.slice(0, 10).map(x => ({ n: x.s.name, k: x.s.kind || "", life: lifeLed(x.s), far: tooFar(x.s), sc: x.f.n })) }; })"""
 
 
 def judge(rule, arg, top):
@@ -45,6 +47,8 @@ def judge(rule, arg, top):
         n, k = arg; hit = [t["n"] for t in top[:n] if t["life"]]; return len(hit) <= k, hit
     if rule == "max_kind":
         n, kinds, k = arg; hit = [t["n"] for t in top[:n] if t["k"] in kinds]; return len(hit) <= k, hit
+    if rule == "layers_ok":
+        return bool(top and top[0].get("_layers_ok")), []
     if rule == "none_far":
         hit = [t["n"] for t in top[:arg] if t["far"]]; return not hit, hit
     return False, ["unknown rule"]
@@ -64,7 +68,9 @@ async def main():
                 await pg.goto(URL); await pg.wait_for_timeout(12000)
                 r = await pg.evaluate(RANK, [kind])
                 if r.get("err"): ok, why = False, [r["err"]]
-                else: ok, why = judge(rule, arg, r["top"])
+                else:
+                    if r.get("top"): r["top"][0]["_layers_ok"] = r.get("layersOk")
+                    ok, why = judge(rule, arg, r["top"])
                 top3 = [f'{t["sc"]} {t["n"]}' for t in r.get("top", [])[:3]]
             except Exception as e:
                 ok, why, top3 = False, [f"error: {str(e)[:150]}"], []

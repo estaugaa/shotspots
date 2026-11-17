@@ -65,6 +65,35 @@ openSpot = function (id) {
   const parts = f.light == null ? `<p>${f.n} for ${esc(wl)}. Night and the Wildlife filter score on conditions alone.</p>`
     : `<p><b>${f.n}</b> for ${esc(wl)} = light and weather <b>${Math.round(f.light)}</b> × spot <b>${f.qm.toFixed(2)}</b></p>
        <p class="muted">Spot ${f.qm.toFixed(2)} (0.50 unknown to 1.12 most photographed): ${esc(qualityText(s))}. In the list, distance trims up to 10% (× ${distFactor(s).toFixed(2)} here).</p>`;
-  b.insertAdjacentHTML("beforeend", `<div class="scoremath"><h3>Why this score</h3>${parts}<ul>${f.why.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`);
+  const L = scoreLayers(s, w).filter((x, i) => i === 0 || (x.delta != null && (x.delta !== 0 || x.add.length)));
+  const steps = L.map((x, i) => `<li><b>${x.n == null ? "-" : x.n}</b> ${esc(x.label)}${i && x.delta ? ` <span class="${x.delta > 0 ? "up" : "dn"}">(${x.delta > 0 ? "+" : ""}${x.delta}${x.mult ? `, ×${x.mult.toFixed(2)}` : ""})</span>` : ""}${x.add.length ? `<br><small>${x.add.map(esc).join("; ")}</small>` : ""}</li>`).join("");
+  b.insertAdjacentHTML("beforeend", `<div class="scoremath"><h3>Why this score</h3>${parts}<ol class="layers">${steps}</ol></div>`);
   if (typeof orderSpotPage === "function") { b._ordered = false; orderSpotPage(); }
 };
+
+/* ---- Score layers, in one place. Each file that adjusts the score wraps fitFor; the function each file captured is the
+   score up to that point. SCORE_LAYERS names them in order, so the breakdown, tests and tuning can see what each layer
+   did to a spot's score. Add new layers here when a file wraps fitFor. ---- */
+const SCORE_LAYERS = [
+  ["Light and weather for this kind of spot", () => _fitFor],
+  ["Wildlife sightings, tides, live reports", () => _fitSky],
+  ["Night sky", () => _fitFeed],
+  ["Hourly colour model, fog, satellite, terrain sun times", () => _fitAl],
+  ["Alerts and closures", () => _fitAc],
+  ["Access: roads, trails, permits", () => _fitExtras],
+  ["Smoke, haze, surf, peaks hidden", () => _fitHours],
+  ["Opening hours", () => _fitNC],
+  ["Live airport report", () => _fitV1],
+  ["Spot quality (photos, Wikipedia, photographers)", () => fitFor],
+];
+function scoreLayers(s, w) {
+  const out = []; let prevN = null, prevWhy = [];
+  for (const [label, get] of SCORE_LAYERS) {
+    let f = null; try { f = get()(s, w); } catch (e) { }
+    if (!f) { out.push({ label, n: null, delta: null, add: [] }); continue; }
+    const add = f.why.filter(x => !prevWhy.includes(x));
+    out.push({ label, n: f.n, delta: prevN == null ? null : f.n - prevN, add, mult: label.startsWith("Spot quality") && f.qm ? f.qm : null });
+    prevN = f.n; prevWhy = f.why;
+  }
+  return out;
+}

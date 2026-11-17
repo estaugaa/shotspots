@@ -34,6 +34,8 @@ Live at https://estaugaa.github.io/shotspots/ (GitHub Pages). It must work as we
 score = conditions (0-100, light/weather fit for what the spot is for) x quality (0.5-1.12 from measured fame, same for every
 spot; landmarks x0.75) ; ranking then x (1 - 0.1 x share of the travel range used). Night and the Wildlife filter keep v1.
 `localStorage ss2:scorev = "1"` switches back to v1 for comparison.
+Every file that adjusts the score wraps `fitFor`; list it in `SCORE_LAYERS` (app/score2.js) so the spot page's
+"Why this score" and the tests can show what each layer did.
 
 ## Before saying something works
 Check it: run the relevant tool (docs/TESTING.md) and read the output. Never report a key, job or feature as working
