@@ -12,8 +12,10 @@ All of these run on GitHub Actions against the live site. Run one with
 | Old vs new scoring, same forecast | diag.yml `tools/scorecmp.py` -> branch `diag-scorecmp` | after scoring changes |
 | Why a spot ranks where it does | diag.yml `tools/whyprobe.py <place words>` -> branch `diag-whyprobe` | debugging |
 | Smoke (site up, page doesn't jump while loading) | smoke.yml | every 30 min |
+| Webcam truth: real sunrise/sunset colour vs the sky formula | camtruth.yml (after every GOES run) -> feed/camtruth.json | continuous |
 | Forecast vs reality (cloud at sunrise/sunset, nationwide) | job=skill -> feed/calib.json `skill` | daily |
 
+Weights: open the app with `#tune` for sliders (this device only; Reset restores defaults).
 Score math: open the app with `#math` at the end of the URL to show the breakdown on every card (again to hide it).
 Each spot page has a "Why this score" section.
 
