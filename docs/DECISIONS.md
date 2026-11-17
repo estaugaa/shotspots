@@ -2,6 +2,9 @@
 
 One line each: what was decided, and why. Add a line when a choice is made; edit a line when it is reversed.
 
+- 2026-11-17 Outside the Wildlife filter wildlife-led spots get x0.85 overall (their sunset sky still counts).
+- 2026-11-17 Speed: wildlife-layer facts once per spot per redraw, nearest forecast point memoised (full redraw 7.7 s -> 2.1 s). Forecast requests race Open-Meteo against the forwarder after 2 s. Header no longer wraps while loading.
+- 2026-11-17 Forecast check stores its own day-ahead forecasts (Open-Meteo's previous-runs archive has no low/mid cloud); first comparisons Nov 18.
 - 2026-11-17 Forecast check (pipeline/skill.py, daily 12:20 PM PT): day-ahead forecast low cloud vs airport reports at every US sunrise/sunset; calibration applied only where a held-out test shows it lowers the error. HRRR replaces the default forecast for the next 18 h only where it measured more accurate. Data decides, not my judgment.
 - 2026-11-17 Unknown is not bad: a spot with no photo/Wikipedia record gets the median quality of recorded spots nearby. Settings has "Lesser-known" (fame lowers the score instead).
 - 2026-11-17 Mapillary not used for quality: its image counts measure dashcam road coverage, not how photogenic a spot is.
