@@ -8,6 +8,7 @@ of the next night on live weather (tools/expect.py).
 
 Fixtures: tests/score/responses.json.gz (every response the page needed, keyed by URL) and tests/score/cases.json (the
 fixed time). App code (any path that exists under app/) always comes from the working copy: that is what is tested.
+Compared: the top 10 (names, scores, score after each layer for the top 5) and the score of every ranked spot.
 Each case runs twice; differing runs fail as unstable (the ranking must not depend on load order).
 """
 import asyncio, base64, datetime as dt, functools, gzip, hashlib, http.server, json, os, pathlib, sys, threading
@@ -37,7 +38,8 @@ RANK = """(async ([kind]) => {
   return { top: R.slice(0, 10).map((x, i) => {
     const o = { name: x.s.name, score: x.f.n };
     if (i < 5) o.layers = scoreLayers(x.s, w).map(l => l.n);
-    return o; }) }; })"""
+    return o; }),
+    all: R.map(x => x.s.name + " = " + x.f.n) }; })"""
 
 
 def key(url, base):
@@ -52,8 +54,9 @@ def local_path(k):
 
 
 def serve():
-    h = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(APP))
-    h.log_message = lambda *a: None
+    class Quiet(http.server.SimpleHTTPRequestHandler):
+        def log_message(self, *a): pass
+    h = functools.partial(Quiet, directory=str(APP))
     s = http.server.ThreadingHTTPServer(("127.0.0.1", 0), h)
     threading.Thread(target=s.serve_forever, daemon=True).start()
     return f"http://127.0.0.1:{s.server_address[1]}/"
@@ -160,6 +163,11 @@ async def main(mode):
                     if o != n:
                         lines.append(f"  #{i + 1}: was {o.get('score')} {o.get('name')} {o.get('layers', '')}"
                                      f" -> now {n.get('score')} {n.get('name')} {n.get('layers', '')}")
+            elif w and r.get("all") != w.get("all"):   # top 10 the same, but some spot further down changed
+                a, b = w.get("all") or [], r.get("all") or []
+                gone, new = [x for x in a if x not in b], [x for x in b if x not in a]
+                lines.append(f"  top 10 unchanged; {len(new)} of {len(b)} ranked spots changed, e.g. "
+                             + "; ".join(f"{o} -> {n.rsplit(' = ', 1)[1]}" for o, n in zip(gone[:6], new[:6])))
         else: lines.append(f"PASS {name} | " + "; ".join(f"{t['score']} {t['name']}" for t in r["top"][:3]))
     print("\n".join(lines))
     print(f"{len(got) - fails}/{len(got)} match. If the change is intended: run scoretest.yml with mode=update.")

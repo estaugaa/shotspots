@@ -23,7 +23,7 @@ Each spot page has a "Why this score" section.
 Rules
 - When a bug is fixed, add an expectation for it in `tools/expect.py`.
 - Expectations are deliberately loose ("one of these in the top 3") so weather alone doesn't fail them.
-- After an intended scoring change the scoring test fails and shows what moved: run scoretest.yml mode=update to accept (it publishes too); mode=capture refreshes the frozen data.
+- After an intended scoring change the scoring test fails and shows what moved: run scoretest.yml mode=update to accept (it publishes too); mode=capture refreshes the frozen data. On a branch, a commit message containing [scoretest:update] or [scoretest:capture] does the same and saves to that branch.
 - Judge ranking changes on the same forecast (scorecmp), not on runs from different days.
 
 ## Latest results

@@ -29,8 +29,12 @@ jobs:
           python-version: "3.12"
       - run: pip install playwright && python -m playwright install --with-deps chromium
       - id: mode
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+          M: ${{ inputs.mode }}
         run: |
-          M="${{ inputs.mode }}"; [ -n "$M" ] || M=check
+          # on a branch push, a commit message with [scoretest:update] or [scoretest:capture] does that and saves it to the branch
+          [ -n "$M" ] || M=$(printf '%s' "$MSG" | grep -o 'scoretest:\(update\|capture\)' | head -1 | cut -d: -f2); [ -n "$M" ] || M=check
           echo "mode=$M" >> "$GITHUB_OUTPUT"
       - run: python tools/scoretest.py --${{ steps.mode.outputs.mode }} 2>&1 | tee scoretest.txt; exit ${PIPESTATUS[0]}
         shell: bash
@@ -48,5 +52,5 @@ jobs:
           for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 5; done
   publish:
     needs: run
-    if: needs.run.outputs.mode != 'check'
+    if: needs.run.outputs.mode != 'check' && github.ref == 'refs/heads/main'
     uses: ./.github/workflows/publish.yml
