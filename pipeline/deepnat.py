@@ -83,9 +83,15 @@ def run(budget_min=120):
         except Exception as e:
             log.warning("deepnat far %s: %s", k, e); far = None
         cards = {}; over = False
+        from concurrent.futures import ThreadPoolExecutor
+        def grids(s):   # elevation downloads for the whole tile, 6 at a time (the slow part)
+            try: return s["id"], terrain.spot_grids(s["lat"], s["lon"], s["id"])
+            except Exception as e: log.warning("deepnat dem %s: %s", s["id"], e); return s["id"], None
+        with ThreadPoolExecutor(6) as ex: G = dict(ex.map(grids, ss))
         for s in ss:
+            if not G.get(s["id"]): continue
             try:
-                near, mid = terrain.spot_grids(s["lat"], s["lon"], s["id"])
+                near, mid = G[s["id"]]
                 alt, bd, h0 = terrain.horizon(s["lat"], s["lon"], [g for g in (near, mid, far) if g is not None], edge=True)
             except Exception as e:
                 log.warning("deepnat terrain %s: %s", s["id"], e); continue
@@ -106,4 +112,5 @@ def run(budget_min=120):
         for f in glob.glob(str(terrain.CACHE / "dem" / "*.npy")):   # DEM cache would fill the runner's disk
             if "far_full" not in f: os.remove(f)
     left = len(todo) - nt
-    return f"{nt} tiles ({ns} spots) researched this run; {len(done)} of {len(ranked)} tiles done, {left} left"
+    mins = (time.time() - t0) / 60
+    return f"{nt} tiles ({ns} spots) researched this run in {mins:.0f} min ({mins / max(1, nt):.1f} min a tile); {len(done)} of {len(ranked)} tiles done, {left} left"
