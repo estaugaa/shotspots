@@ -1,0 +1,55 @@
+name: Data branch
+description: >
+  feed/ and data/ (everything the jobs generate) live on the "data" branch, not main, so main holds only code and docs.
+  setup: shallow-clone the data branch into _data/ and link feed -> _data/feed, data -> _data/data (pipeline paths unchanged).
+  save: commit this job's changes and push. If another job pushed first (or the branch was squashed), re-apply exactly
+  this job's changed and deleted files on the new tip and try again: this job's files win, as with the old -X theirs.
+inputs:
+  mode:
+    description: setup | save
+    required: true
+  message:
+    description: commit message (save)
+    default: "update feed [skip ci]"
+  after:
+    description: shell command run (from the workspace root) before each commit, e.g. rebuilding an index
+    default: ""
+runs:
+  using: composite
+  steps:
+    - if: inputs.mode == 'setup'
+      shell: bash
+      env:
+        TOKEN: ${{ github.token }}
+        REPO: ${{ github.repository }}
+      run: |
+        for i in 1 2 3 4 5 6; do
+          git clone -q --depth 1 --branch data "https://x-access-token:${TOKEN}@github.com/${REPO}" _data && break
+          rm -rf _data; echo "data branch not reachable yet; retrying"; sleep 30
+        done
+        [ -d _data/.git ] || { echo "::error::could not clone the data branch"; exit 1; }
+        mkdir -p _data/feed _data/data
+        rm -rf feed data && ln -s _data/feed feed && ln -s _data/data data
+        echo "data branch at $(git -C _data rev-parse --short HEAD)"
+    - if: inputs.mode == 'save'
+      shell: bash
+      env:
+        MSG: ${{ inputs.message }}
+        AFTER: ${{ inputs.after }}
+      run: |
+        [ -d _data/.git ] || { echo "no _data checkout: nothing to save"; exit 0; }
+        cd _data
+        git config user.name "shotspots-bot"; git config user.email "shotspots-bot@users.noreply.github.com"
+        commit() { [ -z "$AFTER" ] || (cd .. && eval "$AFTER"); git add -A; git diff --cached --quiet && return 1; git commit -qm "$MSG"; }
+        rm -f feed/*.tmp
+        commit || { echo "no data changes"; exit 0; }
+        C=$(git rev-parse HEAD)
+        for i in 1 2 3 4 5 6 7 8; do
+          git push -q origin HEAD:data && { echo "saved $(git rev-parse --short HEAD)"; exit 0; }
+          sleep $((RANDOM % 15 + 5))
+          git fetch -q --depth 1 origin data && git reset -q --hard FETCH_HEAD
+          git diff -z --name-only --no-renames --diff-filter=d "$C~1" "$C" | xargs -0 -r git checkout "$C" --
+          git diff -z --name-only --no-renames --diff-filter=D "$C~1" "$C" | xargs -0 -r git rm -q --ignore-unmatch --
+          commit || { echo "nothing left to save after re-applying"; exit 0; }
+        done
+        echo "::error::could not push to the data branch"; exit 1

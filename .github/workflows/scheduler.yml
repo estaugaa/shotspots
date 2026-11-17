@@ -18,6 +18,9 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/data
+        with:
+          mode: setup
       - run: python tools/scheduler.py
         env:
           GH_TOKEN: ${{ github.token }}

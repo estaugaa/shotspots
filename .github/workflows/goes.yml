@@ -24,6 +24,9 @@ jobs:
       SS_CACHE: ${{ github.workspace }}/.cache
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/data
+        with:
+          mode: setup
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -42,14 +45,21 @@ jobs:
         with:
           path: .cache
           key: ss-cache-goes-${{ github.run_id }}
-      - name: Commit feed
+      - name: Save feed and data (data branch)
+        if: always()
+        uses: ./.github/actions/data
+        with:
+          mode: save
+          message: "goes: update feed [skip ci]"
+      - name: Commit config and inbox changes (main)
         if: always()
         run: |
           git config user.name "shotspots-bot"
           git config user.email "shotspots-bot@users.noreply.github.com"
-          git add -A -- feed data config inbox
-          git diff --cached --quiet || git commit -m "goes: update feed [skip ci]"
-          for i in 1 2 3; do git pull --rebase -X theirs && git push && break; sleep 5; done
+          git add -A -- config inbox
+          git diff --cached --quiet && exit 0   # (feed/ and data/ are linked to the data branch here: --autostash below)
+          git commit -m "goes: config [skip ci]"
+          for i in 1 2 3; do git pull --rebase --autostash -X theirs && git push && break; sleep 5; done
   publish:
     needs: run
     if: always()

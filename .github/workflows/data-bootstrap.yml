@@ -1,0 +1,31 @@
+name: Data branch bootstrap
+# One-time: creates the "data" branch from the last main commit that still had feed/ and data/. Does nothing if the
+# branch exists. Kept so the move can be repeated (e.g. in a fork); safe to delete later.
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/data-bootstrap.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 200
+      - name: Create the data branch
+        run: |
+          if git ls-remote --exit-code origin refs/heads/data >/dev/null; then echo "data branch exists; nothing to do"; exit 0; fi
+          R=HEAD                                                                    # main still has the (frozen) feed: newest state
+          if ! git cat-file -e "HEAD:feed/manifest.json" 2>/dev/null; then      # already removed from main: take the last commit that had it
+            R=$(git log -1 --format=%H -- feed/manifest.json); git cat-file -e "$R:feed/manifest.json" 2>/dev/null || R="$R^"
+          fi
+          echo "taking feed/ and data/ from $(git rev-parse --short $R)"
+          mkdir /tmp/d && git archive "$R" feed data | tar -x -C /tmp/d
+          cd /tmp/d && git init -q -b data && git add -A
+          git -c user.name=shotspots-bot -c user.email=shotspots-bot@users.noreply.github.com commit -qm "data: feed/ and data/ moved from main [skip ci]"
+          git push -q "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" data
+          echo "created the data branch: $(git ls-files | wc -l) files"

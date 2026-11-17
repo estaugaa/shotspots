@@ -6,3 +6,5 @@ _site/
 worker/wrangler.toml
 worker/.wrangler/
 .more
+# the data branch checkout in CI (.github/actions/data); feed/ and data/ get ignored once removed from main
+/_data

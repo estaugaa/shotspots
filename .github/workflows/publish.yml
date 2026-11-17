@@ -20,6 +20,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+      - uses: ./.github/actions/data
+        with:
+          mode: setup
+      - name: App code that passed the checks (app-verified branch; see app-publish.yml)
+        run: |
+          if git fetch -q --depth 1 origin app-verified; then
+            git checkout -q FETCH_HEAD -- app && echo "app/ from app-verified $(git rev-parse --short FETCH_HEAD)"
+            git diff --quiet HEAD -- app || echo "::notice::main has app changes that have not passed the checks yet; publishing the last checked app"
+          else echo "no app-verified branch yet: publishing app/ from main"; fi
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"

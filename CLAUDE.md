@@ -22,6 +22,8 @@ Live at https://estaugaa.github.io/shotspots/ (GitHub Pages). It must work as we
   `fitFor` (scoring), `openSpot`, `renderNow`, `render`. Links built from data use `safeUrl()`; recovered errors `noteErr()`. Load order is in `app/index.html`; a new script must also be
   listed in `SHELL` in `app/sw.js` (a test checks this).
 - `pipeline/`: data jobs (`python -m pipeline <job>`), writing `feed/` (read by the app) and `data/` (state).
+  Both live on the `data` branch, not main: workflows use `.github/actions/data` (setup links them in, save commits them;
+  squashed daily by data-squash.yml). To change a file there, commit to the data branch, not main.
   A skipped/recovered error calls `soft_fail(where, e)` (never a bare `except: pass`); jobs install `requirements.lock`.
 - Publishing: pushing a change under `app/` publishes automatically (`.github/workflows/app-publish.yml`); the
   service-worker version is a hash of the app files set at build time. No manual bump or dispatch needed.

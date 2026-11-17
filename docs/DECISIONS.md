@@ -2,6 +2,9 @@
 
 One line each: what was decided, and why. Add a line when a choice is made; edit a line when it is reversed.
 
+- 2026-11-17 Only checked app code is published: data jobs republish every ~30 min and used to take app/ from main, so a change the scoring test had blocked still went live. Passing checks move branch app-verified; publish.yml takes app/ from it.
+- 2026-11-17 Scoring test answers drive times and forecasts per point, not by exact URL: both are requested in batches that depend on which spot tiles have loaded, which made far spots' scores vary between identical runs.
+- 2026-11-17 feed/ and data/ moved to a `data` branch, squashed daily (Eric): 647 of 956 commits on main were bot feed updates and every clone kept growing. Jobs commit only their own changed files and re-apply them if another job pushed first. Main's old history is left as it is (no rewrite).
 - 2026-11-17 Data jobs install exact versions from requirements.lock (an upstream release can't break a scheduled run); tests.yml also tests the newest allowed versions and publishes their freeze to branch diag-freeze for upgrading.
 - 2026-11-17 Recovered errors are counted, not silent: pipeline soft_fail() -> "soft" in feed/status/<module>.json; app noteErr() -> problem reports. Links from data go through safeUrl() (no javascript:/data: links).
 - 2026-11-17 Forms rate limit fixed: the 60-per-hour check compared ISO times with SQLite's space format and was really ~60 per UTC day.

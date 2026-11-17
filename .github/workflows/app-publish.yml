@@ -1,12 +1,13 @@
 name: Publish on app change
 # Any push that changes the app publishes it: no manual dispatch, and the service-worker version is derived from the
-# app files at build time (pipeline/deploy.py), so phones always get the new code.
+# app files at build time (pipeline/deploy.py), so phones always get the new code. Only app code that passed the checks
+# is published: passing moves the app-verified branch, and every publish (data jobs included) takes app/ from there.
 on:
   push:
     branches: [main]
     paths: ["app/**"]
 permissions:
-  contents: read
+  contents: write   # moves the app-verified branch when the checks pass
   pages: write
   id-token: write
 concurrency:
@@ -28,6 +29,8 @@ jobs:
         run: for f in tests/js/*.test.js; do node "$f" || exit 1; done
       - name: Scoring test (same data, fixed clock; see tools/scoretest.py)
         run: pip install playwright && python -m playwright install --with-deps chromium && python tools/scoretest.py
+      - name: Mark this app as checked (publish.yml takes app/ from the app-verified branch)
+        run: git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:refs/heads/app-verified
   publish:
     needs: checks
     uses: ./.github/workflows/publish.yml

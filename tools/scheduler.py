@@ -1,7 +1,7 @@
 """Start daily jobs that are due. GitHub's own cron drops and delays runs (Nov 17: the 3:23 AM nightly check never
 ran; job.yml's three daily schedules fired once a day, hours late), while "GOES fog now" runs every ~30 minutes, so
 this runs after it and dispatches whatever is due and hasn't run since its due time. Each job's last run is read from
-its own record in the repo."""
+its own record on the data branch (feed/status, data/test_history.jsonl)."""
 import json, os, subprocess, datetime as dt
 NOW = dt.datetime.now(dt.timezone.utc)
 # name, due hour (UTC), how to tell when it last ran, how to start it
@@ -10,6 +10,7 @@ JOBS = [
     ("fog chance", 3, ("status", "fogprob"), ["job.yml", "-f", "job=fogprob"]),
     ("walking routes", 10, ("status", "deeproutes"), ["job.yml", "-f", "job=deeproutes"]),
     ("forecast check", 20, ("status", "skill"), ["job.yml", "-f", "job=skill"]),
+    ("data squash", 9, ("status", "datasquash"), ["data-squash.yml"]),   # keeps the data branch at ~1 commit a day
 ]
 def last_run(kind, ref):
     try:

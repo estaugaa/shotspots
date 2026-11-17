@@ -1,0 +1,32 @@
+name: Data branch squash
+# Keeps the "data" branch (feed/ and data/, see .github/actions/data) at about one commit a day, so the repository stops
+# growing with every job run. Started daily by tools/scheduler.py. --force-with-lease: if a job pushed in between, this
+# run starts over instead of overwriting it; jobs that pushed onto the old history re-apply their files (actions/data).
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: data-squash
+  cancel-in-progress: false
+jobs:
+  squash:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Squash
+        env:
+          TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          for i in 1 2 3 4 5; do
+            rm -rf d && git clone -q --depth 1 --branch data "https://x-access-token:${TOKEN}@github.com/${REPO}" d && cd d
+            B=$(git rev-parse HEAD); N=$(git ls-files | wc -l)
+            mkdir -p feed/status
+            printf '{"ok":true,"kind":"MEASURED","note":"data branch squashed (%s files)","at":"%s"}' "$N" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > feed/status/datasquash.json
+            git checkout -q --orphan snap && git add -A
+            git -c user.name=shotspots-bot -c user.email=shotspots-bot@users.noreply.github.com commit -qm "data snapshot $(date -u +%F) [skip ci]"
+            git push -q --force-with-lease=data:$B origin snap:data && { echo "squashed to one commit ($N files)"; exit 0; }
+            cd .. && sleep 20
+          done
+          echo "::error::data branch kept changing; try again later"; exit 1

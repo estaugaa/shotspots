@@ -20,6 +20,9 @@ jobs:
       NETLIFY_SITE_ID: a54b42ef-afe7-4c95-922e-7d174dff4e98
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/data
+        with:
+          mode: setup
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
