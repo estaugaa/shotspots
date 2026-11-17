@@ -8,11 +8,11 @@ async function feedGet(name) {
   if (FEED.d[name]) return FEED.d[name];
   if (FEED.loading[name]) return FEED.loading[name];
   if (FEED.m && FEED.m.files && !FEED.m.files.includes(name + ".json")) return Promise.resolve(null);   // not published (yet): don't ask
-  FEED.loading[name] = fetch(`feed/${name}.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).catch(() => null).then(j => { if (j) FEED.d[name] = j; delete FEED.loading[name]; return j; });
+  FEED.loading[name] = fetch(`feed/${name}.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : noteErr("feed " + name, "HTTP " + r.status)).catch(e => noteErr("feed " + name, e)).then(j => { if (j) FEED.d[name] = j; delete FEED.loading[name]; return j; });
   return FEED.loading[name];
 }
 async function loadFeed() {
-  FEED.m = await fetch("feed/manifest.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).catch(() => null);
+  FEED.m = await fetch("feed/manifest.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : noteErr("feed manifest", "HTTP " + r.status)).catch(e => noteErr("feed manifest", e));
   if (!FEED.m) return false;
   for (const k of [...EAGER, ...REGIONAL, ...LAZY, "verify_obs"]) delete FEED.d[k];
   await Promise.all(EAGER.concat(nearResearched() ? REGIONAL : []).filter(n => FEED.m.files.includes(n + ".json")).map(feedGet));
@@ -164,7 +164,7 @@ async function sheetFeed(s) {
     ${ov.under.length || ov.quiet_months.length ? `<p><b>Under-photographed:</b> ${[ov.under.length ? ov.under.map(k => ({ blue: "blue hour", night: "night", golden: "golden hour" }[k])).join(", ") : "", ov.quiet_months.length ? "in-season months " + ov.quiet_months.map(m => "JFMAMJJASOND"[m - 1]).join(" ") : ""].filter(Boolean).join("; ")}.</p>` : ""}`;
   // access
   const ac = fd("access"), av = ac && ac.spots[s.id];
-  if (av) h += `<h3>Access ${tag("access")}</h3><p>${av.land && av.land.manager ? `${esc(av.land.unit || "")} (${esc(av.land.manager)})${av.land.access ? ", public access: " + esc(av.land.access) : ""}.` : av.land && !av.land.error ? "" : ""}${!av.land ? "<b>Not inside a mapped public-land boundary</b> (PAD-US, within 150 m). It may be a roadside pull-off or private land: check where to park." : ""}</p>${av.alerts ? `<ul class="plain">${av.alerts.map(a => `<li><a href="${a.url}" target="_blank" rel="noopener">${esc(a.title)}</a></li>`).join("")}</ul>` : ""}`;
+  if (av) h += `<h3>Access ${tag("access")}</h3><p>${av.land && av.land.manager ? `${esc(av.land.unit || "")} (${esc(av.land.manager)})${av.land.access ? ", public access: " + esc(av.land.access) : ""}.` : av.land && !av.land.error ? "" : ""}${!av.land ? "<b>Not inside a mapped public-land boundary</b> (PAD-US, within 150 m). It may be a roadside pull-off or private land: check where to park." : ""}</p>${av.alerts ? `<ul class="plain">${av.alerts.map(a => `<li><a href="${safeUrl(a.url)}" target="_blank" rel="noopener">${esc(a.title)}</a></li>`).join("")}</ul>` : ""}`;
   if (!h) return;
   const box = document.createElement("div"); box.className = "live feedbox"; box.innerHTML = h;
   const anchor = body.querySelector("details"); anchor ? body.insertBefore(box, anchor) : body.appendChild(box);
@@ -199,7 +199,7 @@ specialsHtml = function () {
     : "No fog or low cloud near you. ";
   const item = `<div class="item"><b>🛰 Right now (GOES-18, ${ageMin} min ago) ${tag("goes")}</b><p>${sat} The Map tab shows the satellite fog layer.</p>${obsHtml()}</div>`;
   const bd = fd("birds"), bn = bd && km(LOC, { lat: 45.6, lon: -122.3 }) < 120 ? (bd.notables || []).filter(n => n.lat == null || !tooFar({ id: "_b", lat: n.lat, lon: n.lon })).slice(0, 5) : [];
-  const birdItem = bn.length ? `<div class="item"><b>🐦 Notable birds nearby (last 4 days)</b><ul class="plain birdlist">${bn.map(n => `<li>${n.photo ? `<img src="${n.photo}" alt="" loading="lazy" width="44" height="44">` : ""}<span><a href="${n.url}" target="_blank" rel="noopener"><b>${n.target ? "🎯 " : ""}${esc(n.species)}</b></a> · ${esc((n.place || "").replace(/\s*\([-\d.,\s]+\)\s*$/, "").replace(/,? US-[A-Z]{2}\b/, "").replace(/, (OR|WA), US$/, ""))} · ${esc(dayWordYMD(n.date))}<br><small>${esc(n.why.replace(/^./, c => c.toUpperCase()))}${n.src === "eBird" ? "" : ` (${esc(n.src)})`}</small></span></li>`).join("")}</ul></div>` : "";
+  const birdItem = bn.length ? `<div class="item"><b>🐦 Notable birds nearby (last 4 days)</b><ul class="plain birdlist">${bn.map(n => `<li>${n.photo ? `<img src="${n.photo}" alt="" loading="lazy" width="44" height="44">` : ""}<span><a href="${safeUrl(n.url)}" target="_blank" rel="noopener"><b>${n.target ? "🎯 " : ""}${esc(n.species)}</b></a> · ${esc((n.place || "").replace(/\s*\([-\d.,\s]+\)\s*$/, "").replace(/,? US-[A-Z]{2}\b/, "").replace(/, (OR|WA), US$/, ""))} · ${esc(dayWordYMD(n.date))}<br><small>${esc(n.why.replace(/^./, c => c.toUpperCase()))}${n.src === "eBird" ? "" : ` (${esc(n.src)})`}</small></span></li>`).join("")}</ul></div>` : "";
   // actionable things first (alignments, events, ideas), then birds, then the satellite and airport details
   if (!base) return `<div class="sect"><h3>Also worth knowing</h3>${birdItem}${item}</div>`;
   const cut = base.lastIndexOf("</div>");

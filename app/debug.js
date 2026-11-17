@@ -13,7 +13,7 @@ async function sendDebug() {
   const d = { v: await appVersion(), sw: navigator.serviceWorker && navigator.serviceWorker.controller ? "controlled" : "none",
     ua: navigator.userAgent.slice(0, 200), standalone: String(matchMedia("(display-mode: standalone)").matches || !!navigator.standalone),
     view: `${innerWidth}x${innerHeight} scroll=${Math.round(scrollY)}`, ui: typeof UI !== "undefined" ? JSON.stringify({ view: UI.view, day: UI.day, focus: UI.focus, group: UI.group }) : "",
-    errs: DBG.errs.join("\n"), taps: DBG.taps.join("\n"), stick: getComputedStyle(document.documentElement).getPropertyValue("--stick"), at: new Date().toISOString() };
+    errs: DBG.errs.concat(Object.entries(SOFT_ERRS).map(([k, v]) => `caught ${v.n}x ${k}: ${v.first}`)).join("\n"), taps: DBG.taps.join("\n"), stick: getComputedStyle(document.documentElement).getPropertyValue("--stick"), at: new Date().toISOString() };
   const ok = await postForm("debug", d); toast(ok ? "Problem report sent. Thanks!" : "Couldn't send the report; check your connection."); return later;
 }
 { const _rs = renderSettings; renderSettings = function () { const r = _rs.apply(this, arguments);

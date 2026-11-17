@@ -264,7 +264,7 @@ openSpot = function (id) {
   }
   const cams = CAMS.filter(c => c.re.test(s.region + " " + s.name)).flatMap(c => c.cams).filter((x, i, a) => a.findIndex(y => y[1] === x[1]) === i);
   const wa = /Washington|Camas|Close to home|Helens|Adams|Rainier|Lewis|WA\b|Yakima|Cascades/.test(s.region);
-  h += `<details><summary>Conditions now: cams & trip reports</summary><ul class="plain">${cams.map(([n, u]) => `<li><a href="${u}" target="_blank" rel="noopener">${esc(n)}</a></li>`).join("")}
+  h += `<details><summary>Conditions now: cams & trip reports</summary><ul class="plain">${cams.map(([n, u]) => `<li><a href="${safeUrl(u)}" target="_blank" rel="noopener">${esc(n)}</a></li>`).join("")}
     <li><a href="https://www.flickr.com/search/?lat=${s.lat.toFixed(4)}&lon=${s.lon.toFixed(4)}&radius=1&has_geo=1&sort=date-taken-desc" target="_blank" rel="noopener">Newest Flickr photos here</a> (how it looks this week)</li>
     ${wa ? `<li><a href="https://www.wta.org/go-outside/hikes?title=${encodeURIComponent(name)}" target="_blank" rel="noopener">WTA trip reports</a></li>` : `<li><a href="https://www.oregonhikers.org/w/index.php?search=${encodeURIComponent(name)}" target="_blank" rel="noopener">Oregon Hikers field guide</a></li>`}
     <li><a href="https://www.inaturalist.org/observations?lat=${s.lat.toFixed(4)}&lng=${s.lon.toFixed(4)}&radius=2&order_by=observed_on" target="_blank" rel="noopener">Recent wildlife & bloom sightings (iNaturalist)</a></li></ul></details>`;

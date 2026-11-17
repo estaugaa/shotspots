@@ -6,10 +6,10 @@
 const SEED = { idx: null, tiles: new Set(), n: 0 };
 if (typeof D !== "undefined" && D.CATS && !D.CATS.landmark) D.CATS.landmark = { label: "Landmarks", color: (D.CATS.historic || {}).color || "var(--rust)" };
 const SEED_KIND = { waterfall: "Waterfall", viewpoint: "Viewpoint", peak: "Summit", lighthouse: "Lighthouse", arch: "Arch", hotspring: "Hot spring", refuge: "Refuge", beach: "Beach", bridge: "Bridge", landmark: "Landmark", hotspot: "Birding hotspot", lake: "Lake", pass: "Mountain pass", lookout: "Lookout tower", cave: "Cave" };
-SEED.ready = fetch("feed/seed/index.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { SEED.idx = j; }).catch(() => { });
+SEED.ready = fetch("feed/seed/index.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { SEED.idx = j; }).catch(e => noteErr("spot tiles", e));
 // which tiles have popularity / opening-hours files yet (both jobs fill in over time); null = unknown, so try all
 SEED.has = { seedpop: null, seedhours: null, stands: null, seedviews: null, deep: null };
-SEED.hasReady = Promise.all(["seedpop", "seedhours", "stands", "seedviews", "deep"].map(d => fetch(`feed/${d}/index.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { if (Array.isArray(j)) SEED.has[d] = new Set(j); }).catch(() => { })));
+SEED.hasReady = Promise.all(["seedpop", "seedhours", "stands", "seedviews", "deep"].map(d => fetch(`feed/${d}/index.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { if (Array.isArray(j)) SEED.has[d] = new Set(j); }).catch(e => noteErr("spot tiles", e))));
 const seedHas = (d, k) => !SEED.has[d] || SEED.has[d].has(k);
 const seedCovers = () => !!(SEED.idx && SEED.idx.tiles[`${Math.floor(LOC.lat)}_${Math.floor(LOC.lon)}`]);
 async function loadSeed() {
@@ -22,21 +22,21 @@ async function loadSeed() {
   const real = SPOTS.filter(s => !s.seed && !s.osm);
   SEED.busy = true; setTimeout(() => { SEED.busy = false; }, 20000);
   await SEED.hasReady;   // so missing popularity/hours tiles aren't requested
-  const [got, pops] = await Promise.all([Promise.all(want.map(k => fetch(`feed/seed/${k}.json`).then(r => r.ok ? r.json() : null).catch(() => null))),
-    Promise.all(want.map(k => !seedHas("seedpop", k) ? null : fetch(`feed/seedpop/${k}.json`).then(r => r.ok ? r.json() : null).catch(() => null)))]);
+  const [got, pops] = await Promise.all([Promise.all(want.map(k => fetch(`feed/seed/${k}.json`).then(r => r.ok ? r.json() : null).catch(e => noteErr("spot tiles", e)))),
+    Promise.all(want.map(k => !seedHas("seedpop", k) ? null : fetch(`feed/seedpop/${k}.json`).then(r => r.ok ? r.json() : null).catch(e => noteErr("spot tiles", e))))]);
   // full research cards, nationwide (pipeline/deepnat.py): facing from 10 m terrain, walk from parking, horizon profile
   want.filter(k => SEED.has.deep && seedHas("deep", k)).forEach(k => fetch(`feed/deep/${k}.json`).then(r => r.ok ? r.json() : null).then(j => {
     if (!j || !j.spots) return; let c = 0;
     for (const [id, d] of Object.entries(j.spots)) { const s = byId[id]; if (!s) continue;
       if (d.light && !s._psLight) s.light = d.light; /* people's photos showing the light win */ if (d.eff) s.effort = d.eff; if (d.tip) s.tip = d.tip; if (d.hz) s.hzp = d.hz; s.deep = true; c++; }
-    if (c && typeof render === "function" && typeof BOOT !== "undefined" && !BOOT.core) { clearTimeout(SEED._dt); SEED._dt = setTimeout(render, 400); } }).catch(() => { }));   // after the first screen: next redraw
+    if (c && typeof render === "function" && typeof BOOT !== "undefined" && !BOOT.core) { clearTimeout(SEED._dt); SEED._dt = setTimeout(render, 400); } }).catch(e => noteErr("spot tiles", e)));   // after the first screen: next redraw
   // Wikipedia page views: how famous (pipeline/wikiviews.py)
   want.filter(k => SEED.has.seedviews && seedHas("seedviews", k)).forEach(k => fetch(`feed/seedviews/${k}.json`).then(r => r.ok ? r.json() : null).then(j => {
     if (!j) return; let c = 0; for (const [id, v] of Object.entries(j)) { const s = byId[id]; if (s && typeof v === "number") { s.views = v; c++; } }
-    if (c && typeof render === "function" && typeof BOOT !== "undefined" && !BOOT.core) { clearTimeout(SEED._vt); SEED._vt = setTimeout(render, 400); } }).catch(() => { }));   // after the first screen: next redraw
+    if (c && typeof render === "function" && typeof BOOT !== "undefined" && !BOOT.core) { clearTimeout(SEED._vt); SEED._vt = setTimeout(render, 400); } }).catch(e => noteErr("spot tiles", e)));   // after the first screen: next redraw
   // where photographers stand + classic direction (pipeline/stands.py)
-  setTimeout(() => want.filter(k => seedHas("stands", k) && SEED.has.stands).forEach(k => fetch(`feed/stands/${k}.json`).then(r => r.ok ? r.json() : null).then(j => { if (j) { Object.assign(STANDS, j); applyStands(); } }).catch(() => { })), 2500);   // not needed for the first list: let the spots load first
-  setTimeout(() => want.filter(k => seedHas("seedhours", k)).forEach(k => fetch(`feed/seedhours/${k}.json`).then(r => r.ok ? r.json() : null).then(j => { if (j && typeof SEEDHOURS !== "undefined") Object.assign(SEEDHOURS, j); }).catch(() => { })), 2500);   // photos & sightings per spot (pipeline/seedpop.py)
+  setTimeout(() => want.filter(k => seedHas("stands", k) && SEED.has.stands).forEach(k => fetch(`feed/stands/${k}.json`).then(r => r.ok ? r.json() : null).then(j => { if (j) { Object.assign(STANDS, j); applyStands(); } }).catch(e => noteErr("spot tiles", e))), 2500);   // not needed for the first list: let the spots load first
+  setTimeout(() => want.filter(k => seedHas("seedhours", k)).forEach(k => fetch(`feed/seedhours/${k}.json`).then(r => r.ok ? r.json() : null).then(j => { if (j && typeof SEEDHOURS !== "undefined") Object.assign(SEEDHOURS, j); }).catch(e => noteErr("spot tiles", e))), 2500);   // photos & sightings per spot (pipeline/seedpop.py)
   let added = 0;
   got.forEach((t, i) => { if (!t) return; SEED.tiles.add(want[i]);
     for (const x of t.spots) { if (byId[x.id] || real.some(s => Math.abs(s.lat - x.lat) < 0.004 && Math.abs(s.lon - x.lon) < 0.006)) continue;
@@ -72,12 +72,12 @@ const _openSeed = openSpot;
 openSpot = function (id) { _openSeed(id); const s = byId[id]; if (!s || !s.seed) return; const b = $("#sheetBody"); if (!b || b.querySelector(".seednote")) return;
   const a = b.querySelector(".prose") || b.querySelector("h2");
   const ps = s.ps ? ` From ${s.ps.n} photos taken here, people shoot it mostly ${({ sunrise: "at sunrise", sunset: "at sunset", both: "at sunrise and sunset", night: "at night", day: "in daylight" })[s.ps.light]}${s.ps.months ? `, busiest in ${s.ps.months.map(m => ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m - 1]).join(", ")}` : ""}.` : "";
-  const h = `<p class="seednote muted" style="font-size:14px"><span class="seasontag">Starter spot</span>${ps} From <a href="${s.osmUrl}" target="_blank" rel="noopener">OpenStreetMap</a>${s.wd ? ` and <a href="https://www.wikidata.org/wiki/${s.wd}" target="_blank" rel="noopener">Wikidata</a>` : ""}. The tip is general and the pin isn't checked yet; ShotSpots researches the most notable starter spots first. Scores, light and drive times work the same as for any spot.</p>`;
+  const h = `<p class="seednote muted" style="font-size:14px"><span class="seasontag">Starter spot</span>${ps} From <a href="${safeUrl(s.osmUrl)}" target="_blank" rel="noopener">OpenStreetMap</a>${s.wd ? ` and <a href="https://www.wikidata.org/wiki/${s.wd}" target="_blank" rel="noopener">Wikidata</a>` : ""}. The tip is general and the pin isn't checked yet; ShotSpots researches the most notable starter spots first. Scores, light and drive times work the same as for any spot.</p>`;
   a ? a.insertAdjacentHTML("afterend", h) : b.insertAdjacentHTML("afterbegin", h); };
 
 /* ---- where to stand ---- */
 const STANDS = {};
-fetch("feed/stands/researched.json").then(r => r.ok ? r.json() : null).then(j => { if (j) { Object.assign(STANDS, j); applyStands(); } }).catch(() => { });
+fetch("feed/stands/researched.json").then(r => r.ok ? r.json() : null).then(j => { if (j) { Object.assign(STANDS, j); applyStands(); } }).catch(e => noteErr("spot tiles", e));
 const CONFIDENT = new Set(["photos", "feature", "agree"]);
 // a confident classic direction replaces the terrain guess for starter spots (researched spots keep their hand-checked light)
 function applyStands() {
@@ -96,10 +96,10 @@ function standHtml(s) {
   let h = `<h3>Where to stand</h3>`;
   if (st.st) { const p = { lat: st.st[0], lon: st.st[1] };
     h += st.d >= 25 ? `<p>${st.u ? `Most photographers (${st.u} in shared photos)` : "The mapped viewpoint"} stand <b>${st.d} m ${CW(br(s, p))}</b> of this pin.</p>` : `<p>${st.u ? `Most photographers (${st.u} in shared photos) stand` : "The mapped viewpoint is"} right at this pin.</p>`;
-    if (st.d >= 25) h += `<div class="actions"><a class="btn" href="${mapsUrl(p.lat, p.lon)}" target="_blank" rel="noopener">Directions to the spot</a></div>`; }
+    if (st.d >= 25) h += `<div class="actions"><a class="btn" href="${safeUrl(mapsUrl(p.lat, p.lon))}" target="_blank" rel="noopener">Directions to the spot</a></div>`; }
   if (st.f != null) h += CONFIDENT.has(st.fs) ? `<p>The classic shot faces <b>${CW(st.f)}</b>${st.fs === "photos" ? ", from the compass in people’s photos" : st.fs === "feature" ? ", toward the feature" : ", where two sources agree"}.</p>`
     : `<p class="muted">Street-level photos here often point ${CW(st.f)}. Unconfirmed: road traffic can skew this.</p>`;
-  if (st.ex && st.ex.length) h += `<p class="muted" style="font-size:13px">Examples: ${st.ex.map(e => `<a href="${esc(e[1])}" target="_blank" rel="noopener">${esc(e[0])}</a>`).join(", ")} (Wikimedia Commons)</p>`;
+  if (st.ex && st.ex.length) h += `<p class="muted" style="font-size:13px">Examples: ${st.ex.map(e => `<a href="${safeUrl(e[1])}" target="_blank" rel="noopener">${esc(e[0])}</a>`).join(", ")} (Wikimedia Commons)</p>`;
   return h;
 }
 
@@ -114,4 +114,4 @@ fetch("feed/icons.json").then(r => r.ok ? r.json() : null).then(j => {
     const dp = ((fd("deep") || {}).spots || {})[x.id]; if (dp) { if (dp.light) s.light = dp.light; if (dp.eff) s.effort = dp.eff; if (dp.tip) s.tip = dp.tip; if (dp.months) s.months = dp.months; s.deep = true; }   // curated classics: famous by definition
     SPOTS.push(s); byId[s.id] = s; c++; }
   if (c && typeof render === "function" && typeof BOOT !== "undefined" && !BOOT.core) { clearTimeout(SEED._it); SEED._it = setTimeout(render, 600); }   // after the first screen: next redraw
-}).catch(() => { });
+}).catch(e => noteErr("spot tiles", e));

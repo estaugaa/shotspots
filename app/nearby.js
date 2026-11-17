@@ -74,7 +74,7 @@ document.addEventListener("click", e => { if (e.target.closest("#nearbyRetry")) 
 /* OSM spots: say where they came from on the spot page */
 const _openN = openSpot;
 openSpot = function (id) { _openN(id); const s = byId[id]; if (!s || !s.osm) return; const b = $("#sheetBody");
-  b && b.insertAdjacentHTML("afterbegin", `<div class="alertbox research">From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. <a href="${s.osmUrl}" target="_blank" rel="noopener">See it on OpenStreetMap</a>.</div>`); };
+  b && b.insertAdjacentHTML("afterbegin", `<div class="alertbox research">From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. <a href="${safeUrl(s.osmUrl)}" target="_blank" rel="noopener">See it on OpenStreetMap</a>.</div>`); };
 /* times follow the planning location: the device's own zone when you're there, else a US/Canada zone by position */
 const DEVICE_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Los_Angeles";
 function tzFor(p) {

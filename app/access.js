@@ -31,10 +31,10 @@ openSpot = function (id) {
     const mins = Math.round(mi / 2.5 * 60 + (tr.m >= 800 ? tr.up_m || 0 : 0) * 3.281 / 1000 * 30);
     const dir = mapsUrl(tr.park.lat, tr.park.lon, tr.park.name);
     h += tr.kind === "roadside" && (s.effort === "hike" || s.effort === "hard")
-      ? `<p style="font-size:15px"><b>Starts at</b> <a href="${dir}" target="_blank" rel="noopener">${esc(tr.park.name)}</a>. The pin marks the trailhead, so the hike itself isn't measured here; see the description above.</p>`
+      ? `<p style="font-size:15px"><b>Starts at</b> <a href="${safeUrl(dir)}" target="_blank" rel="noopener">${esc(tr.park.name)}</a>. The pin marks the trailhead, so the hike itself isn't measured here; see the description above.</p>`
       : tr.kind === "roadside"
-      ? `<p style="font-size:15px"><b>Roadside:</b> ${Math.round(tr.m * 3.281)} ft from <a href="${dir}" target="_blank" rel="noopener">${esc(tr.park.name)}</a>.</p>`
-      : `<p style="font-size:15px"><b>${mi.toFixed(mi < 3 ? 1 : 0)} mi one way</b> from <a href="${dir}" target="_blank" rel="noopener">${esc(tr.park.name)}</a>${tr.up_m != null && tr.m >= 800 ? `, about ${ft(tr.up_m)} ft up and ${ft(tr.down_m)} ft down` : ""} (roughly ${mins >= 60 ? Math.floor(mins / 60) + " h " + (mins % 60) + " min" : mins + " min"} in)${tr.trails && tr.trails.length ? ` on ${tr.trails.map(esc).join(", ")}` : ""}.${tr.park.fee === "yes" ? " Parking fee or pass." : ""} <span class="muted">${tag("trails")}</span></p>`;
+      ? `<p style="font-size:15px"><b>Roadside:</b> ${Math.round(tr.m * 3.281)} ft from <a href="${safeUrl(dir)}" target="_blank" rel="noopener">${esc(tr.park.name)}</a>.</p>`
+      : `<p style="font-size:15px"><b>${mi.toFixed(mi < 3 ? 1 : 0)} mi one way</b> from <a href="${safeUrl(dir)}" target="_blank" rel="noopener">${esc(tr.park.name)}</a>${tr.up_m != null && tr.m >= 800 ? `, about ${ft(tr.up_m)} ft up and ${ft(tr.down_m)} ft down` : ""} (roughly ${mins >= 60 ? Math.floor(mins / 60) + " h " + (mins % 60) + " min" : mins + " min"} in)${tr.trails && tr.trails.length ? ` on ${tr.trails.map(esc).join(", ")}` : ""}.${tr.park.fee === "yes" ? " Parking fee or pass." : ""} <span class="muted">${tag("trails")}</span></p>`;
     if (tr.kind === "walk" && tr.m > 400 && (s.light === "sunrise" || (s.cats || []).includes("fog")) && w0Dark(s)) h += `<p class="muted" style="font-size:14px">For sunrise, start walking by about ${w0Dark(s)}: bring a headlamp.</p>`;
   }
   const c = closedRule(id, now);
@@ -47,7 +47,7 @@ openSpot = function (id) {
     h += `<p style="font-size:15px">${sn.in > 0 ? `<b>${sn.in} in of snow</b>` : "No snow"} at ${esc(sn.station)} SNOTEL (${ft.toLocaleString()} ft, ${sn.km} km away, ${sn.delev_m >= 0 ? sn.delev_m + " m above" : -sn.delev_m + " m below"} this spot) on ${sn.date.slice(5).replace("-", "/")}. ${tag("snow")}${sn.in >= 6 ? " Expect snow on the road and trail; carry chains." : ""}</p>`; }
   if (hr && hr.snow_m != null && el != null && el > 300) { const below = hr.snow_m < el;
     h += `<p class="muted" style="font-size:14px">Forecast snow level about ${Math.round(hr.snow_m * 3.281).toLocaleString()} ft vs. ${Math.round(el * 3.281).toLocaleString()} ft here: ${below ? "any precipitation would fall as snow." : "precipitation would fall as rain."}</p>`; }
-  const srcs = rules.flatMap(r => r.src || []); if (srcs.length) h += `<p class="muted" style="font-size:13px">Sources: ${[...new Map(srcs.map(x => [x[1], x])).values()].map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join(" · ")}</p>`;
+  const srcs = rules.flatMap(r => r.src || []); if (srcs.length) h += `<p class="muted" style="font-size:13px">Sources: ${[...new Map(srcs.map(x => [x[1], x])).values()].map(([t, u]) => `<a href="${safeUrl(u)}" target="_blank" rel="noopener">${esc(t)}</a>`).join(" · ")}</p>`;
   const put = () => { const b = $("#sheetBody"); const fb = b && b.querySelector(".feedbox"); if (fb) { if (!fb.querySelector(".accessbox")) fb.insertAdjacentHTML("afterbegin", `<div class="accessbox">${h}</div>`); } else if ((put.n = (put.n || 0) + 1) < 40) setTimeout(put, 150); };
   put();
 };

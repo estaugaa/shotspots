@@ -66,6 +66,12 @@ const inGroup = s => (groupTest[UI.group] || groupTest.all)(s);   // the app-wid
 /* ---------- small helpers ---------- */
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+// Errors the app recovers from (a feed that failed to load, a bad response) are counted here instead of vanishing; problem
+// reports (Settings › "Send a problem report", debug.js) include them. The first message of each kind is kept.
+const SOFT_ERRS = {};
+function noteErr(where, e) { const k = String(where); const x = SOFT_ERRS[k] || (SOFT_ERRS[k] = { n: 0, first: String(e && e.message || e || "").slice(0, 160) }); x.n++; return null; }
+// Links built from feed or third-party data: only web, mail, phone, map and relative links; anything else (javascript:, data:) becomes "#".
+const safeUrl = u => { const t = String(u == null ? "" : u).trim(); return /^(https?:|mailto:|tel:|geo:)/i.test(t) || !/^[a-z][a-z0-9+.-]*:/i.test(t) ? esc(t) : "#"; };
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 function km(a, b) { return geoTo(a, b).dist / 1000; }
 function dest(p, az, kmD) { const R = 6371, d = kmD / R, la1 = p.lat * D2R, lo1 = p.lon * D2R, th = az * D2R;
@@ -892,7 +898,7 @@ function openSpot(id) {
   const wl = wildlifeNow(s);
   let h = `<h2 id="sheetTitle">${esc(s.name)}</h2><p class="sub">${esc(s.region)} · ${fmtDur(d)} ${PREFS.travel === "walk" ? "walk" : "drive"}${s.effort ? " · " + ({ road: "roadside", short: "short walk", hike: "hike", hard: "strenuous" }[s.effort]) : ""}${s.approx ? " · approximate pin" : ""}</p>
     ${bestTimeHtml(s, wins, d)}
-    <div class="actions"><a class="btn primary" href="${mapsUrl(s.park ? s.park[0] : la, s.park ? s.park[1] : lo)}" target="_blank" rel="noopener">Directions${s.park ? " to trailhead" : ""}</a>
+    <div class="actions"><a class="btn primary" href="${safeUrl(mapsUrl(s.park ? s.park[0] : la, s.park ? s.park[1] : lo))}" target="_blank" rel="noopener">Directions${s.park ? " to trailhead" : ""}</a>
       <button class="btn" id="saveBtn" data-id="${s.id}">${SAVED[s.id] ? "★ Saved" : "☆ Save"}</button>
       <button class="btn" id="shotBtn" data-id="${s.id}">📷 Shot it</button>${navigator.share ? `<button class="btn" id="shareBtn" data-id="${s.id}">Share</button>` : ""}</div>
     ${hours12(s)}
@@ -907,8 +913,8 @@ function openSpot(id) {
   if (pro.ideas.length) h += `<details><summary>Experimental ideas</summary><ul class="plain">${pro.ideas.map(x => `<li>${esc(x)}</li>`).join("")}</ul></details>`;
   if (al.length) h += `<details open><summary>Upcoming alignments here</summary><ul class="plain">${al.map(e => `<li>${fmtDate(e.t)} ${fmtT(e.t)}: ${esc(e.what)}${e.illum ? ` (${e.illum}% lit)` : ""}</li>`).join("")}</ul></details>`;
   if (pv) h += `<details><summary>Volcanoes visible from here</summary><ul class="plain">${pv.map(([pk, az, alt, show, vm, bkm]) => `<li>${show >= 0.3 ? "✓" : show >= 0.05 ? "◐" : "✗"} ${pk}: ${show >= 0.05 ? `${Math.round(az)}°, ${alt.toFixed(1)}° up${show < 0.3 ? ", summit tip only" : ""}` : `hidden by terrain ${bkm} km out`}</li>`).join("")}</ul><p class="muted" style="font-size:14px">From 30 m terrain profiles; trees and buildings not modeled.</p></details>`;
-  h += `<details><summary>See others' photos here</summary><ul class="plain"><li><a href="https://www.flickr.com/search/?lat=${la}&lon=${lo}&radius=0.5&has_geo=1&sort=interestingness-desc" target="_blank" rel="noopener">Flickr</a></li><li><a href="https://www.google.com/maps/search/?api=1&query=${la},${lo}" target="_blank" rel="noopener">Google Maps photos</a></li>${also.map(([n, u]) => `<li><a href="${u}" target="_blank" rel="noopener">${esc(n)}</a></li>`).join("")}</ul></details>`;
-  if (srcs.length) h += `<details><summary>Sources (${srcs.length})</summary><ul class="plain">${srcs.map(([n, u]) => `<li><a href="${u}" target="_blank" rel="noopener">${esc(n)}</a></li>`).join("")}</ul></details>`;
+  h += `<details><summary>See others' photos here</summary><ul class="plain"><li><a href="https://www.flickr.com/search/?lat=${la}&lon=${lo}&radius=0.5&has_geo=1&sort=interestingness-desc" target="_blank" rel="noopener">Flickr</a></li><li><a href="https://www.google.com/maps/search/?api=1&query=${la},${lo}" target="_blank" rel="noopener">Google Maps photos</a></li>${also.map(([n, u]) => `<li><a href="${safeUrl(u)}" target="_blank" rel="noopener">${esc(n)}</a></li>`).join("")}</ul></details>`;
+  if (srcs.length) h += `<details><summary>Sources (${srcs.length})</summary><ul class="plain">${srcs.map(([n, u]) => `<li><a href="${safeUrl(u)}" target="_blank" rel="noopener">${esc(n)}</a></li>`).join("")}</ul></details>`;
   h += `<p class="muted" style="font-size:13px;margin-top:14px">${la}, ${lo}</p>`;
   $("#sheetBody").innerHTML = h; $("#sheet").hidden = false; $("#sheetBody").scrollTop = 0;
   history.pushState({ sheet: id }, "");

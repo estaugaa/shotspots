@@ -80,7 +80,7 @@ function lbOpen(list, i) {
   el.hidden = false; lbShow();
 }
 function lbShow() { const p = LB.list[LB.i], img = $("#lbImg"); img.src = p.thumb; img.alt = p.title; const hi = new Image(); hi.onload = () => { if (LB && LB.list[LB.i] === p) img.src = p.big; }; hi.src = p.big;
-  $("#lbCap").innerHTML = `<b>${esc(p.title)}</b><br>${esc(p.by)}${p.lic ? " · " + esc(p.lic) : ""} · <a href="${p.page}" target="_blank" rel="noopener">${esc(p.src)}</a><span class="muted"> · ${LB.i + 1} of ${LB.list.length}</span>`;
+  $("#lbCap").innerHTML = `<b>${esc(p.title)}</b><br>${esc(p.by)}${p.lic ? " · " + esc(p.lic) : ""} · <a href="${safeUrl(p.page)}" target="_blank" rel="noopener">${esc(p.src)}</a><span class="muted"> · ${LB.i + 1} of ${LB.list.length}</span>`;
   $("#lbPrev").hidden = LB.i === 0; $("#lbNext").hidden = LB.i === LB.list.length - 1; }
 function lbStep(d) { if (!LB) return; const n = LB.i + d; if (n < 0 || n >= LB.list.length) return; LB.i = n; lbShow(); }
 function lbClose() { const el = $("#lightbox"); if (el) el.hidden = true; LB = null; }

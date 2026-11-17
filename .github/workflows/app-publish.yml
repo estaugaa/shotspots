@@ -24,6 +24,8 @@ jobs:
       - run: pip install pytest && python -m pytest -q tests/test_consistency.py
       - name: JavaScript parses
         run: for f in app/*.js; do node -e "new Function(require('fs').readFileSync('$f','utf8'))" || exit 1; done
+      - name: JavaScript unit tests
+        run: for f in tests/js/*.test.js; do node "$f" || exit 1; done
       - name: Scoring test (same data, fixed clock; see tools/scoretest.py)
         run: pip install playwright && python -m playwright install --with-deps chromium && python tools/scoretest.py
   publish:
