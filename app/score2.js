@@ -10,7 +10,7 @@ try { if (localStorage.getItem("ss2:scorev") === "1") SCORE_V = 1; } catch (e) {
 // Quality is measured the same way for every spot, hand-researched or not (photo and sighting counts, Wikipedia, photographer
 // stands): how much research a spot has had must not decide its rank. Hand spots get their counts from feed/handpop.json.
 let HANDPOP = null;
-fetch("feed/handpop.json").then(r => r.ok ? r.json() : null).then(j => { HANDPOP = j || {}; for (const s of SPOTS) setHandPop(s); if (typeof render === "function") render(); }).catch(() => { HANDPOP = {}; });
+fetch("feed/handpop.json").then(r => r.ok ? r.json() : null).then(j => { HANDPOP = j || {}; for (const s of SPOTS) setHandPop(s); if (typeof lateRender === "function") lateRender(); }).catch(() => { HANDPOP = {}; });
 function setHandPop(s) { const p = HANDPOP && HANDPOP[s.id]; if (p && !s.seed && s.pop == null) { s.pop = p[0]; s.refs = { commons: p[1], flickr: p[2], inat: p[3] }; } }
 // Photo quality counts photos only: iNaturalist sightings measure naturalist activity, not how photogenic a view is
 // (a rhododendron garden with 2,878 sightings and 6 photos looked as famous as Multnomah Falls). The Wildlife filter keeps v1.
@@ -60,7 +60,7 @@ function mathLine(f, s) {
 }
 const _pickRowM = pickRow;
 pickRow = function (x, w) {
-  let h = _pickRowM(x, w); if (!x.f || x.f.light == null) return h;
+  let h = _pickRowM(x, w); if (!x.f || x.f.light == null) return h.replace(/(<span class="score [^"]*">)(\d+)(<\/span>)/, `$1$2<small class="lt">&nbsp;</small>$3`);   // same height either way
   // the light score under the overall number, so "good light, little-known spot" doesn't read as a bad evening
   h = h.replace(/(<span class="score [^"]*">)(\d+)(<\/span>)/, `$1$2<small class="lt" title="Light and weather score">light ${Math.round(x.f.light)}</small>$3`);
   if (!SCORE_MATH) return h;
