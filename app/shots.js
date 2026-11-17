@@ -167,3 +167,29 @@ document.addEventListener("submit", async e => {
 });
 window.addEventListener("online", flushOutcomes);
 if (OUTQ.length) flushOutcomes();
+
+/* ---- One-tap check-in after a sunrise or sunset: "How was it near you?" Sent like a full outing log (with what the app
+   predicted), filed under the nearest spot; the pipeline checks it against satellite and airport data. ---- */
+let QLOG = store.get("quicklog", []);
+function quickLogWindow() {
+  if (typeof allWindows !== "function" || !LOC) return null; const now = Date.now();
+  const w = allWindows(LOC, PLAN_HOURS).filter(x => GOLDK.has(x.kind) && x.peak.getTime() < now && now - x.peak.getTime() < 3 * 36e5).pop();
+  if (!w) return null; const k = laYMD(w.peak) + "|" + w.kind; return QLOG.includes(k) ? null : { w, k };
+}
+function quickLogHtml() {
+  const q = quickLogWindow(); if (!q) return "";
+  return `<div class="quicklog" data-qk="${q.k}"><p><b>How was ${q.w.kind === "sunrise" ? "sunrise" : "sunset"} near you?</b> One tap helps check the forecasts.</p>
+    <div class="chips"><button class="chip" data-ql="none">No colour</button><button class="chip" data-ql="some">Some colour</button><button class="chip" data-ql="strong">Strong colour</button><button class="chip" data-ql="skip">Didn't see it</button></div></div>`;
+}
+const _renderNowQL = renderNow;
+renderNow = function () { const r = _renderNowQL.apply(this, arguments); const v = $("#v-now");
+  if (v && !v.querySelector(".quicklog")) { const h = quickLogHtml(); if (h) v.insertAdjacentHTML("afterbegin", h); } return r; };
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-ql]"); if (!b) return; const box = b.closest(".quicklog"), k = box.dataset.qk, q = quickLogWindow();
+  QLOG.push(k); store.set("quicklog", QLOG.slice(-60)); box.remove(); if (b.dataset.ql === "skip" || !q) return;
+  const s = SPOTS.filter(x => !x.seed || x.deep).reduce((a, x) => !a || km(LOC, x) < km(LOC, a) ? x : a, null) || SPOTS[0];
+  const o = { spot: s.id, t: String(q.w.peak.getTime()), kind: q.w.kind, rating: "", keepers: "0", sky: "", fog: "", color: b.dataset.ql, species: "", ebird: "", sqm: "",
+    notes: `quick check-in from about ${Math.round(km(LOC, s) * 10) / 10} km away` };
+  try { o.pred = JSON.stringify(predBundle(s, q.w.peak)); } catch (err) { }
+  OUTQ.push(o); store.set("outq", OUTQ); const left = await flushOutcomes(); toast(left ? "Saved; will send when online" : "Thanks: sent for checking");
+});

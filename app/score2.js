@@ -60,7 +60,10 @@ function mathLine(f, s) {
 }
 const _pickRowM = pickRow;
 pickRow = function (x, w) {
-  const h = _pickRowM(x, w); if (!SCORE_MATH || !x.f || x.f.light == null) return h;
+  let h = _pickRowM(x, w); if (!x.f || x.f.light == null) return h;
+  // the light score under the overall number, so "good light, little-known spot" doesn't read as a bad evening
+  h = h.replace(/(<span class="score [^"]*">)(\d+)(<\/span>)/, `$1$2<small class="lt" title="Light and weather score">light ${Math.round(x.f.light)}</small>$3`);
+  if (!SCORE_MATH) return h;
   return h.replace(/<\/small><\/span>\s*<span class="drive">/, `</small><small class="math">${esc(mathLine(x.f, x.s))}</small></span><span class="drive">`);
 };
 const _openSpotM = openSpot;
