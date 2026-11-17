@@ -10,9 +10,10 @@ const TUNE_INFO = {
   qMin: ["Spot quality: least photographed", 0.2, 1, 0.05, "multiplier for spots with the least record"],
   qMax: ["Spot quality: most photographed", 0.8, 1.5, 0.02, "multiplier for the best-known spots"],
   wildlifeOutside: ["Wildlife spots outside Wildlife", 0.5, 1, 0.05, "multiplier for refuges and birding spots"],
-  capMorning: ["Morning (after golden hour)", 0.4, 1, 0.02, "time-of-day multiplier"],
-  capAfternoon: ["Afternoon", 0.4, 1, 0.02, "time-of-day multiplier"],
-  capMidday: ["Midday", 0.3, 1, 0.02, "time-of-day multiplier"],
+  sunLow: ["Daytime, sun below 12°", 0.5, 1, 0.02, "multiplier: low, warm, raking light"],
+  sunMid: ["Daytime, sun 12–25°", 0.4, 1, 0.02, "multiplier: a winter midday"],
+  sunHigh: ["Daytime, sun 25–40°", 0.4, 1, 0.02, "multiplier"],
+  sunOverhead: ["Daytime, sun above 40°", 0.3, 1, 0.02, "multiplier: a summer midday, harsh"],
   distance: ["Distance tie-break", 0, 0.4, 0.02, "most taken off at the edge of your travel range"],
 };
 function tuneHtml() {

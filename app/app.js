@@ -35,7 +35,16 @@ const LIFE = ["birds", "wildlife"];
 /* Scoring weights in one place. Defaults are the best current settings (webcam checks: pipeline/camtruth.py); the hidden
    tuning panel (#tune in the URL) overrides them on this device for testing. */
 const TUNE_DEFAULT = { lowBroken: 0.85, lowDeck: 0.4, clearLight: 64, alpenglow: 8, qMin: 0.5, qMax: 1.12, wildlifeOutside: 0.85,
-  capMorning: 0.8, capMidday: 0.62, capAfternoon: 0.74, distance: 0.1, canvasFloor: 0.32 };
+  capMorning: 0.8, capMidday: 0.62, capAfternoon: 0.74, distance: 0.1, canvasFloor: 0.32,
+  sunLow: 0.95, sunMid: 0.82, sunHigh: 0.72, sunOverhead: 0.62 };
+/* daytime windows: light quality follows how high the sun is, not the clock (a November afternoon at 45°N has the sun
+   below 20°: low, raking light all day; a July noon has it at 68°) */
+function capFor(w, p) {
+  if (!DAYK.has(w.kind)) return KCAP[w.kind] || 1;
+  let alt = null; try { alt = sunPos(w.peak, (p || LOC).lat, (p || LOC).lon).app; } catch (e) { }
+  if (alt == null) return KCAP[w.kind] || 1;
+  return alt <= 12 ? TUNE.sunLow : alt <= 25 ? TUNE.sunMid : alt <= 40 ? TUNE.sunHigh : TUNE.sunOverhead;
+}
 let TUNE = { ...TUNE_DEFAULT }; try { Object.assign(TUNE, JSON.parse(localStorage.getItem("ss2:tune") || "{}")); } catch (e) { }
 const NIGHT = ["night", "aurora"];
 const WALK = { road: 5, short: 15, hike: 45, hard: 90 };
@@ -568,7 +577,7 @@ function fitFor(s, w) {
   }
   if (BLUEK.has(w.kind) && /bridge|landmark|lighthouse/.test(kindOf(s))) n += 5;
   if (w.kind !== "night" && !BLUEK.has(w.kind) && s.light === "night") n -= 25;
-  n *= KCAP[w.kind] || 1;
+  n *= capFor(w, s);   // by sun height for daytime windows
   // starter spots all share the same sky, so let how notable a place is (Wikipedia links, photos) break ties
   // fame: at golden and blue hour the known natural views should rise (Cadillac Mountain over an unnamed lookout); not for landmarks, birding hotspots or refuges
   const v2 = typeof SCORE_V !== "undefined" && SCORE_V === 2 && w.kind !== "night" && UI.group !== "life";   // v2 applies fame as a multiplier (score2.js)

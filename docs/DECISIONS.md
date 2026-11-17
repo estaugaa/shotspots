@@ -2,6 +2,7 @@
 
 One line each: what was decided, and why. Add a line when a choice is made; edit a line when it is reversed.
 
+- 2026-11-17 Daytime windows scaled by sun height (below 12° 0.95, 12-25° 0.82, 25-40° 0.72, above 40° 0.62) instead of clock time: winter afternoons have low raking light all day.
 - 2026-11-17 Webcam truth (pipeline/camtruth.py, after every satellite run): public road cameras (Oregon, California) photographed at every sunrise/sunset; real sky/land colour vs the sky formula with the forecast of the moment; Spearman and a weight search in feed/camtruth.json. Hundreds of checks a day instead of waiting for outing logs.
 - 2026-11-17 Clear golden hours credit warm light on the land (64) and alpenglow (+8): a clear evening was scoring 23-32 because only cloud colour counted. Broken low cloud x0.85 (was 0.7), solid deck x0.4 (was 0.3). All weights in TUNE; #tune opens a testing panel. To be checked against webcam truth.
 - 2026-11-17 Every scoring adjustment applies to every spot by what it is (kindOf: map kind, or categories for hand-researched spots); the +3 hand-research bonus is gone. (Eric)
