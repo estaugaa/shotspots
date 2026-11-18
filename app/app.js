@@ -131,6 +131,10 @@ function wxPoints() {
   const cells = {}; for (const s of far) { const k = `${Math.round(s.lat * 2) / 2},${Math.round(s.lon * 2) / 2}`; (cells[k] = cells[k] || []).push(s); }
   Object.values(cells).sort((a, b) => b.length - a.length).slice(0, 8).forEach((g, i) => pts.push({ id: "x" + i, n: g[0].name, lat: g.reduce((a, s) => a + s.lat, 0) / g.length, lon: g.reduce((a, s) => a + s.lon, 0) / g.length }));
   return pts; }
+// The forecast's identity for caches: its time AND which request produced it. Time alone missed a replacement made
+// in the same millisecond (and every one under the scoring test's frozen clock), leaving nearest points, sky memos,
+// day-tab rankings and the HRRR fetch on the old, smaller set of forecast points.
+const wxVer = () => WX ? WX.at + ":" + (WX.ver || 0) : "0";
 let __wxSeq = 0;   // a plain variable, not loadWx.seq: nowcast.js replaces loadWx with a wrapper, which has no .seq
 async function loadWx(force) {
   if (!force && WX && Date.now() - WX.at < 30 * 60000 && WX.key === locKey() && WX.n === wxPoints().length) return false;
@@ -143,7 +147,7 @@ async function loadWx(force) {
     const r = await omFetch(url);
     let j = await r.json(); if (!Array.isArray(j)) j = [j];
     if (seq !== __wxSeq) return false;
-    WX = { at: Date.now(), key: locKey(), n: pts.length, pts: j.map((x, i) => ({ id: pts[i].id, n: pts[i].n, lat: pts[i].lat, lon: pts[i].lon, h: x.hourly })) };
+    WX = { at: Date.now(), ver: seq, key: locKey(), n: pts.length, pts: j.map((x, i) => ({ id: pts[i].id, n: pts[i].n, lat: pts[i].lat, lon: pts[i].lon, h: x.hourly })) };
     store.set("wx", WX); loadHorizon(true).then(ok => { if (ok) { __topsKey = ""; render(); } }); return true;
   } catch (e) { if (seq !== __wxSeq) return false; WXERR = String(e.message || e); WX && (WX.err = WXERR); if (!loadWx.retry) { loadWx.retry = setTimeout(async () => { loadWx.retry = 0; if (await loadWx(true)) { __topsKey = ""; render(); } }, 20000); } return false; }
 }
@@ -186,7 +190,7 @@ function wxMiss() { return !WX ? (navigator.onLine === false ? "offline: no fore
 let __npMemo = new Map(), __npAt = 0;
 function nearestPt(p, maxKm, exclude) {
   if (!WX) return null;
-  if (__npAt !== WX.at) { __npMemo = new Map(); __npAt = WX.at; }
+  if (__npAt !== wxVer()) { __npMemo = new Map(); __npAt = wxVer(); }
   const key = p.lat.toFixed(4) + "," + p.lon.toFixed(4) + "|" + (maxKm || 60) + "|" + (exclude || "");
   const hit = __npMemo.get(key); if (hit !== undefined) return hit;
   let best = null, bd = 1e9;
@@ -326,7 +330,7 @@ let __skyMemo = {}, __skyMemoAt = 0;
 function skyAt(p, w) {
   const pt = nearestPt(p, 60); if (!pt) return null;
   const sp = sunPos(w.peak, p.lat, p.lon), probeP = dest(p, sp.az, 90), probePt = nearestPt(probeP, 75, pt && pt.id);
-  const memoAt = (WX ? WX.at : 0) + (HZN ? HZN.at : 0);
+  const memoAt = wxVer() + "|" + (HZN ? HZN.at : 0);
   if (__skyMemoAt !== memoAt) { __skyMemo = {}; __skyMemoAt = memoAt; }
   const mk = pt.id + "|" + (probePt ? probePt.id : "") + "|" + w.kind + "|" + w.peak.getTime();
   if (__skyMemo[mk] !== undefined) return __skyMemo[mk];
@@ -681,7 +685,7 @@ function dayTab(ymd) { const y = laYMD(new Date()); if (ymd === y) return "Today
   return new Date(ymd + "T12:00:00").toLocaleDateString("en-US", { weekday: "short" }); }
 let __tops3 = [], __topsKey = "", __tops = [];
 function windowTops(all) {   // best spot per window, cached per forecast/feed state
-  const k = all.length + "|" + SPOTS.length + "|" + (all[0] && all[0].start.getTime()) + "|" + (WX ? WX.at : 0) + "|" + (window.FEED && FEED.m ? FEED.m.gen : "") + "|" + Object.keys(SAVED).length + "|" + LOC.lat + "|" + UI.group + "|" + PREFS.travel + maxTravel() + "|" + (HZN ? HZN.at : 0);
+  const k = all.length + "|" + SPOTS.length + "|" + (all[0] && all[0].start.getTime()) + "|" + wxVer() + "|" + (window.FEED && FEED.m ? FEED.m.gen : "") + "|" + Object.keys(SAVED).length + "|" + LOC.lat + "|" + UI.group + "|" + PREFS.travel + maxTravel() + "|" + (HZN ? HZN.at : 0);
   if (k !== __topsKey) { __tops3 = []; __tops = all.map((x, i) => { const r = rankFor(x); __tops3[i] = r.length ? Math.round(r.slice(0, 3).reduce((a, y) => a + y.f.n, 0) / Math.min(3, r.length)) : 0; return r[0] || null; }); __topsKey = k; }
   return __tops;
 }
