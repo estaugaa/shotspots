@@ -27,6 +27,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: JavaScript parses (a broken script fails alone in the browser, so the scoring test can't see it)
+        run: for f in app/*.js; do node -e "new Function(require('fs').readFileSync('$f','utf8'))" || { echo "::error file=$f::does not parse"; exit 1; }; done
+      - name: JavaScript unit tests
+        run: for f in tests/js/*.test.js; do node "$f" || exit 1; done
       - run: pip install playwright && python -m playwright install --with-deps chromium
       - id: mode
         env:
