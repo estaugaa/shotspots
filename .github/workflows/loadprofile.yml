@@ -1,0 +1,39 @@
+name: Load profile (phone-like)
+# tools/loadprofile.py: what loads when and what moves on screen, on a slow-4G phone profile, cold and warm.
+# Runs after every app publish (so a load regression shows the day it lands) and when the tool changes.
+# Output: branch diag-loadprofile, loadprofile.txt (readable without logging in).
+on:
+  workflow_run:
+    workflows: ["Publish on app change"]
+    types: [completed]
+  push:
+    branches: [main]
+    paths: ["tools/loadprofile.py", ".github/workflows/loadprofile.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: loadprofile
+  cancel-in-progress: true
+jobs:
+  profile:
+    runs-on: ubuntu-24.04   # Playwright can't install its browser deps on 26.04 yet
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install Chromium
+        timeout-minutes: 12
+        run: pip install -q playwright && python -m playwright install --with-deps chromium
+      - run: sleep 60   # after a publish: let GitHub Pages serve the new version
+        if: github.event_name == 'workflow_run'
+      - run: python -u tools/loadprofile.py
+      - name: Output to the diag-loadprofile branch
+        if: always()
+        run: |
+          [ -f ux/loadprofile.txt ] || echo "load profile did not run" > ux/loadprofile.txt
+          mkdir -p out && cp ux/loadprofile.txt out/ && cd out && git init -q && git checkout -q -b diag-loadprofile && git add -A
+          git -c user.name=diag -c user.email=diag@users.noreply.github.com commit -qm "loadprofile ${{ github.sha }} ${{ job.status }}"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" diag-loadprofile
