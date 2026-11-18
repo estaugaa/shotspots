@@ -2,7 +2,9 @@ name: Trails from parking
 on:
   workflow_dispatch:
 concurrency:
-  group: pipeline
+  # its own queue: a run takes up to ~5 h, and in the shared pipeline queue it held up every 30-minute GOES update
+  # (each waiting run was replaced by the next and cancelled). The data branch save handles concurrent writers.
+  group: long-trails
   cancel-in-progress: false
 permissions:
   contents: write
