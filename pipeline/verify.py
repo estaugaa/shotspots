@@ -144,31 +144,9 @@ def submissions():
 
 
 def goes_at(spot_id, t):
-    best = None
-    for p in sorted(DATA.glob("goes_history*.txt")):
-        lines = p.read_text().splitlines()
-        if not lines:
-            continue
-        ids = lines[0][5:].split(",")
-        if spot_id not in ids:
-            continue
-        k = ids.index(spot_id)
-        best = _scan(lines, k, t, best)
+    from .goes import history_at
+    best = history_at(spot_id, t)   # data/archive/goes, kept indefinitely
     return None if best is None else {"cloud_pct": best[1], "lowcloud_pct": best[2], "dt_min": round(best[0] / 60)}
-
-
-def _scan(lines, k, t, best):
-    for l in lines[1:]:
-        ts, code = l.split(" ", 1)
-        try:
-            tt = dt.datetime.fromisoformat(ts.replace("Z", "+00:00").split(".")[0] + ("+00:00" if "+" not in ts else ""))
-        except Exception as e:
-            soft_fail("verify: observation: bad timestamp", e)
-            continue
-        dtm = abs((tt - t).total_seconds())
-        if dtm <= 3600 and (best is None or dtm < best[0]):
-            best = (dtm, int(code[2 * k]) * 11, int(code[2 * k + 1]) * 11)
-    return best
 
 
 def ebird_checklist(sub_id):

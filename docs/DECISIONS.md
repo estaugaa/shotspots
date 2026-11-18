@@ -2,6 +2,8 @@
 
 One line each: what was decided, and why. Add a line when a choice is made; edit a line when it is reversed.
 
+- 2026-11-17 Observations are kept indefinitely in monthly gzip CSV archives (data/archive/<kind>/<YYYY-MM>.csv.gz, one row per report; pipeline/archive.py): airport reports, NWS fog advisories, satellite scans, webcam truth, forecast-check pairs. Rolling 30-120 day files made seasonal and year-on-year checks impossible. Readers take their window from the recent months (verify_obs 60 d, skill 60 d, camtruth fit 30 d). Old files are moved in on each job's first run, then removed.
+- 2026-11-17 Prediction log: each night the live site ranks the next sunrise and sunset for 8 fixed places (tools/scoretest.py --live) and the top 20 with every layer's score go to data/archive/predictions; tools/predeval.py joins them with webcam and airport truth (Spearman). Needed before the v2 weights can be tuned against outcomes.
 - 2026-11-17 Only checked app code is published: data jobs republish every ~30 min and used to take app/ from main, so a change the scoring test had blocked still went live. Passing checks move branch app-verified; publish.yml takes app/ from it.
 - 2026-11-17 Scoring test answers drive times and forecasts per point, not by exact URL: both are requested in batches that depend on which spot tiles have loaded, which made far spots' scores vary between identical runs.
 - 2026-11-17 feed/ and data/ moved to a `data` branch, squashed daily (Eric): 647 of 956 commits on main were bot feed updates and every clone kept growing. Jobs commit only their own changed files and re-apply them if another job pushed first. Main's old history is left as it is (no rewrite).

@@ -17,6 +17,9 @@ All of these run on GitHub Actions against the live site. Run one with
 | Smoke (site up, page doesn't jump while loading) | smoke.yml | every 30 min |
 | Webcam truth: real sunrise/sunset colour vs the sky formula | camtruth.yml (after every GOES run) -> feed/camtruth.json | continuous |
 | Forecast vs reality (cloud at sunrise/sunset, nationwide) | job=skill -> feed/calib.json `skill` | daily |
+| Prediction log: live site ranks the next sunrise/sunset for 8 places, top 20 + layers archived | `tools/scoretest.py --live` -> data/archive/predictions | nightly (regress.yml) |
+| Predictions vs truth (webcam colour, airport low cloud and fog; Spearman, spot and night level) | diag.yml `tools/predeval.py [days]` -> branch `diag-predeval` | weekly, once windows are over |
+| Archive (append, de-dup, monthly files, readers' windows, old-file migration) | `pytest tests/test_archive.py` | every pipeline push |
 
 Weights: open the app with `#tune` for sliders (this device only; Reset restores defaults).
 Score math: open the app with `#math` at the end of the URL to show the breakdown on every card (again to hide it).

@@ -4,7 +4,7 @@ For every US airport (ASOS, Iowa Environmental Mesonet archive) and each sunrise
   observed  = low cloud (< 6,500 ft) and mid cloud (6,500-12,000 ft) from the report nearest the event (within 30 min)
   forecast  = the same hour's cloud cover as forecast the DAY BEFORE (saved by this job a day earlier, best_match and HRRR;
               Open-Meteo's previous-runs archive keeps no low/mid cloud)
-Pairs are kept for 60 days (data/skill/<date>.csv). From them:
+Pairs are kept indefinitely (data/archive/skill/<month>.csv.gz); the last 60 days are used. From them:
   * skill: mean absolute error and bias of low cloud, raw vs calibrated (calibration fitted on even days, scored on odd)
   * calibration: forecast low cloud in 10%-bins -> what was actually observed on average, by region (west/east of -100)
     and model -> feed/calib.json, which the app applies to forecast low cloud (app/nowcast.js).
@@ -148,12 +148,28 @@ def collect():
         lat, lon = pts[sid]
         for m, (fl, fm) in f.items():
             rows.append([ev.date().isoformat(), sid, lat, lon, kind, m, fl, fm if fm is not None else "", ol, om])
-    path = SKD / f"{now.date().isoformat()}.csv"
-    if not rows: return len(by), len(events), 0
-    with open(path, "w", newline="") as fh:
-        w = csv.writer(fh); w.writerow(["date", "sid", "lat", "lon", "kind", "model", "f_low", "f_mid", "o_low", "o_mid"]); w.writerows(rows)
-    for p in sorted(SKD.glob("*.csv"))[:-60]: p.unlink()
+    _archive([dict(zip(FIELDS, r)) for r in rows])
     return len(by), len(events), len(rows)
+
+
+FIELDS = ["date", "sid", "lat", "lon", "kind", "model", "f_low", "f_mid", "o_low", "o_mid"]
+
+
+def _archive(rows):
+    """Pairs go to data/archive/skill/<month>.csv.gz, kept indefinitely; the daily data/skill/<date>.csv files this
+    replaced are moved in once, then removed."""
+    from . import archive
+    old = sorted(SKD.glob("20*.csv"))
+    for p in old:
+        with open(p) as fh: rows = list(csv.DictReader(fh)) + rows
+    archive.append("skill", FIELDS, rows, lambda r: r["date"], lambda r: (r["date"], r["sid"], r["kind"], r["model"]))
+    for p in old: p.unlink()
+
+
+def recent(days=60):
+    from . import archive
+    _archive([])
+    return archive.read("skill", str(utcnow().date() - dt.timedelta(days=days)), "date")
 
 
 def _bins(pairs):
@@ -173,10 +189,8 @@ def _apply(bins, f):
 
 
 def fit():
-    rows = []
-    for p in sorted(SKD.glob("*.csv")):
-        with open(p) as fh: rows += list(csv.DictReader(fh))
-    out = {"gen": iso(utcnow()), "days": len(list(SKD.glob("*.csv"))), "note": "forecast low cloud (day ahead) -> observed at airports at sunrise/sunset", "cal": {}, "skill": {}}
+    rows = recent(60)
+    out = {"gen": iso(utcnow()), "days": len({r["date"] for r in rows}), "note": "forecast low cloud (day ahead) -> observed at airports at sunrise/sunset", "cal": {}, "skill": {}}
     for m in MODELS:
         for reg in ("west", "east"):
             rs = [r for r in rows if r["model"] == m and ((float(r["lon"]) < -100) == (reg == "west"))]

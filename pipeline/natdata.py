@@ -1,8 +1,8 @@
 """National datasets that work anywhere in the US.
 
 tide_stations  NOAA CO-OPS tide-prediction stations -> feed/tidestations.json (the app picks the nearest one for coast spots)
-nws_fog        active NWS Dense Fog / Freezing Fog advisories with zone outlines -> feed/nwsfog.json, plus a 60-day history
-               in data/nwsfog_history.json used as a second fog "truth" when scoring forecasts
+nws_fog        active NWS Dense Fog / Freezing Fog advisories with zone outlines -> feed/nwsfog.json, plus a history kept
+               indefinitely in data/archive/nwsfog/<month>.csv.gz (by start), a second fog "truth" for scoring forecasts
 """
 import datetime as dt
 from .common import write_json, read_json, DATA, http, log, utcnow, iso
@@ -60,12 +60,10 @@ def nws_fog():
     write_json(DATA / "nwszones.json", zc)
     write_json("nwsfog.json", {"gen": iso(utcnow()), "items": items})
     # history for scoring: one row per advisory, de-duplicated by area + start
-    hist = read_json(DATA / "nwsfog_history.json", []) or []
-    seen = {(h["area"], h["start"]) for h in hist}
-    for it in items:
-        if (it["area"], it["start"]) not in seen:
-            hist.append({k: it[k] for k in ("event", "start", "ends", "area")} | {"b": [s["b"] for s in it["shapes"]]})
-    cut = iso(utcnow() - dt.timedelta(days=60))
-    hist = [h for h in hist if (h.get("ends") or h["start"] or "") >= cut]
-    write_json(DATA / "nwsfog_history.json", hist)
+    from . import archive
+    old = DATA / "nwsfog_history.json"   # the 60-day file the archive replaced: moved in once, then removed
+    hist = (read_json(old, []) or []) if old.exists() else []
+    hist += [{k: it[k] for k in ("event", "start", "ends", "area")} | {"b": [s["b"] for s in it["shapes"]]} for it in items]
+    archive.append("nwsfog", ["event", "start", "ends", "area", "b"], hist, lambda r: r["start"], lambda r: (r["area"], r["start"]))
+    if old.exists(): old.unlink()
     return f"{len(items)} fog advisories active"

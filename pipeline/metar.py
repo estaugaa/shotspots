@@ -38,16 +38,19 @@ def run():
     return f"{len(out)} stations, {sum(o['fog'] for o in out)} with fog"
 
 
+OBS_FIELDS = ["id", "name", "lat", "lon", "t", "vis_mi", "wx", "base_ft", "fog"]
+
+
 def _keep_for_scoring(out):
-    """Keep reports taken within 45 min of local sunrise or sunset (data/obs_history.json, 60 days) for verify_obs."""
+    """Keep reports taken within 45 min of local sunrise or sunset for verify_obs: data/archive/obs/<month>.csv.gz,
+    kept indefinitely (pipeline/archive.py)."""
     import datetime as dt
+    from . import archive
     from .common import read_json, DATA
     from .sunlite import sun_times
-    p = DATA / "obs_history.json"
-    h = read_json(p, {"obs": []})
-    have = {(o["id"], o["t"]) for o in h["obs"]}
+    keep = []
     for o in out:
-        if not o.get("lat") or not o.get("t") or (o["id"], o["t"]) in have:
+        if not o.get("lat") or not o.get("t"):
             continue
         try:
             t = dt.datetime.fromtimestamp(o["t"], dt.timezone.utc) if isinstance(o["t"], (int, float)) else dt.datetime.fromisoformat(str(o["t"]).replace("Z", "+00:00").replace(" ", "T"))
@@ -57,15 +60,24 @@ def _keep_for_scoring(out):
             t = t.replace(tzinfo=dt.timezone.utc)
         r, s_ = sun_times(o["lat"], o["lon"], t.date())
         if r and min(abs((t - r).total_seconds()), abs((t - s_).total_seconds())) <= 45 * 60:
-            rec = {k: o[k] for k in ("id", "name", "lat", "lon", "vis_mi", "wx", "base_ft", "fog")}
+            rec = {k: o[k] for k in OBS_FIELDS if k != "t"}
             rec["t"] = (t + dt.timedelta(minutes=30)).strftime("%Y-%m-%dT%H:00")   # nearest hour, matches forecast times
-            if (rec["id"], rec["t"]) not in have:
-                h["obs"].append(rec); have.add((rec["id"], rec["t"]))
-    cut = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=60)).strftime("%Y-%m-%dT%H:00")
-    h["obs"] = [o for o in h["obs"] if o["t"] >= cut]
-    p.parent.mkdir(parents=True, exist_ok=True)
-    import json
-    p.write_text(json.dumps(h, separators=(",", ":")))
+            keep.append(rec)
+    old = DATA / "obs_history.json"   # the 60-day file the archive replaced: moved in once, then removed
+    if old.exists():
+        keep = (read_json(old, {"obs": []}) or {"obs": []})["obs"] + keep
+    archive.append("obs", OBS_FIELDS, keep, lambda r: r["t"], lambda r: (r["id"], r["t"]))
+    if old.exists():
+        old.unlink()
+
+
+def history(days=60):
+    """Archived sunrise/sunset reports of the last `days` days, typed as _keep_for_scoring wrote them."""
+    import datetime as dt
+    from . import archive
+    cut = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=days)).strftime("%Y-%m-%dT%H:00")
+    return [{**r, "lat": archive.num(r["lat"]), "lon": archive.num(r["lon"]), "vis_mi": archive.num(r["vis_mi"]),
+             "base_ft": archive.num(r["base_ft"]), "fog": archive.flag(r["fog"])} for r in archive.read("obs", cut, "t")]
 
 
 COVER = {"FEW": 19, "SCT": 44, "BKN": 75, "OVC": 100, "VV": 100, "OVX": 100}

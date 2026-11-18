@@ -1,5 +1,5 @@
 """Free forecast scoring from airport reports. Every GOES run, metar.py keeps the METARs taken near sunrise and
-sunset (data/obs_history.json, 60 days). Daily, this matches each one to what the forecast said a day earlier at
+sunset (data/archive/obs/, kept indefinitely; the last 60 days are used here). Daily, this matches each one to what the forecast said a day earlier at
 that airport (Open-Meteo previous-runs API, HRRR in the US; keyless) and scores three events:
 
   fog        reported visibility ≤ 1 mi or FG   vs  forecast visibility ≤ 1,600 m
@@ -12,7 +12,6 @@ import datetime as dt
 from collections import defaultdict
 from .common import http, read_json, write_json, utcnow, iso, log, DATA
 
-HIST = DATA / "obs_history.json"
 
 
 VARS = ("visibility_previous_day1", "cloud_cover_low_previous_day1", "cloud_cover_previous_day1")
@@ -82,7 +81,8 @@ def _snapshot(stations):
 
 
 def run():
-    hist = read_json(HIST, {"obs": []})["obs"]
+    from .metar import history
+    hist = history(60)
     if not hist:
         return "no airport history yet"
     st = {}

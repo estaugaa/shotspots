@@ -8,7 +8,7 @@ At the same time the forecast cloud layers for that spot and for a point 60 km t
 sky formula can be recomputed later with any weights (fit()).
 fit(): over the last 30 days, how well does the formula's sky score rank the real colour (Spearman), what the best
 weights would be (grid search), and how much golden light the land gets on clear vs cloudy evenings.
--> data/camtruth/<date>.csv, feed/camtruth.json. MEASURED (camera pixels) vs MODELED (forecast + formula).
+-> data/archive/camtruth/<month>.csv.gz (kept indefinitely), feed/camtruth.json. MEASURED (camera pixels) vs MODELED (forecast + formula).
 Caveats: cameras point along roads, not always toward the sun; overlays and headlights are cropped out roughly.
 """
 import io, json, math, time, csv, colorsys, datetime as dt
@@ -21,6 +21,19 @@ D = DATA / "camtruth"; INV = DATA / "cams_inventory.json"
 H = {"User-Agent": "ShotSpots/1.0 (photo-planning research; github.com/estaugaa/shotspots)"}
 FIELDS = ["date", "cam", "src", "lat", "lon", "event", "min", "sky_warm", "land_warm", "sky_blue", "sky_grey", "sky_v",
           "low", "mid", "high", "pop", "p_low", "p_mid"]
+NUM = FIELDS[6:]
+FIELDS = FIELDS + ["t"]   # capture time (UTC), for joining with predictions
+
+
+def _archive(rows):
+    """Frames go to data/archive/camtruth/<month>.csv.gz, kept indefinitely. The daily data/camtruth/<date>.csv files
+    this replaced are moved in once, then removed."""
+    from . import archive
+    old = sorted(D.glob("20*.csv"))
+    for p in old:
+        with open(p) as fh: rows = list(csv.DictReader(fh)) + rows
+    archive.append("camtruth", FIELDS, rows, lambda r: r["date"], lambda r: (r["date"], r["cam"], r["event"]))
+    for p in old: p.unlink()
 
 
 def inventory(force=False):
@@ -127,14 +140,12 @@ def capture(max_n=400):
         az = 120 if ev == "sunrise" else 240
         pts += [(c["lat"], c["lon"]), _toward(c["lat"], c["lon"], az)]
     fc = _forecast(pts)
-    D.mkdir(parents=True, exist_ok=True); path = D / f"{now.date()}.csv"; new = not path.exists()
-    with open(path, "a", newline="") as fh:
-        w = csv.writer(fh)
-        if new: w.writerow(FIELDS)
-        for i, ((c, ev, m, key), mt) in enumerate(got):
-            here, probe = fc[2 * i] if 2 * i < len(fc) else (None,) * 4, fc[2 * i + 1] if 2 * i + 1 < len(fc) else (None,) * 4
-            w.writerow([now.date(), c["id"], c["src"], c["lat"], c["lon"], ev, m, *mt, here[0], here[1], here[2], here[3], probe[0], probe[1]])
-            state[key] = 1
+    rows = []
+    for i, ((c, ev, m, key), mt) in enumerate(got):
+        here, probe = fc[2 * i] if 2 * i < len(fc) else (None,) * 4, fc[2 * i + 1] if 2 * i + 1 < len(fc) else (None,) * 4
+        rows.append(dict(zip(FIELDS, [now.date(), c["id"], c["src"], c["lat"], c["lon"], ev, m, *mt, here[0], here[1], here[2], here[3], probe[0], probe[1], iso(now)])))
+        state[key] = 1
+    _archive(rows)
     for (c, ev, m, key) in due: state.setdefault(key, 0)   # tried (no image or too dark): don't retry this event
     cutoff = str(now.date() - dt.timedelta(days=2)); state = {k: v for k, v in state.items() if k.split("|")[1] >= cutoff}
     write_json(D / "state.json", state)
@@ -170,16 +181,15 @@ def _spearman(a, b):
 
 def fit():
     rows = []
-    for p in sorted(D.glob("20*.csv"))[-30:]:
-        with open(p) as fh:
-            for r in csv.DictReader(fh):
-                try:
-                    v = {k: (float(r[k]) if r[k] not in ("", "None") else None) for k in FIELDS[6:]}
-                    if None in (v["low"], v["mid"], v["high"]): continue
-                    v["event"] = r["event"]; rows.append(v)
-                except Exception as e:
-                    soft_fail("camtruth: webcam row skipped", e)
-                    pass
+    from . import archive
+    _archive([])
+    for r in archive.read("camtruth", str(utcnow().date() - dt.timedelta(days=30)), "date"):
+        try:
+            v = {k: archive.num(r.get(k)) for k in NUM}
+            if None in (v["low"], v["mid"], v["high"]): continue
+            v["event"] = r["event"]; rows.append(v)
+        except Exception as e:
+            soft_fail("camtruth: webcam row skipped", e)
     out = {"gen": iso(utcnow()), "n": len(rows)}
     if len(rows) < 30:
         write_json("camtruth.json", {**out, "note": "not enough frames yet"}); return out

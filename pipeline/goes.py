@@ -8,7 +8,7 @@ Low cloud / fog = cloudy with cloud top below 1500 m. Writes per-spot fractions 
 """
 import datetime as dt, io, re, json, math
 import numpy as np
-from .common import http, spots, write_json, FEED, DATA, CACHE, log, utcnow, iso
+from .common import http, spots, write_json, FEED, DATA, CACHE, log, utcnow, iso, soft_fail
 
 BUCKET = "https://noaa-goes18.s3.amazonaws.com"
 BBOX = (-124.4, 44.6, -120.0, 46.8)
@@ -112,17 +112,53 @@ def run():
         log.warning("gap grid: %s", e)
     write_json("goes.json", {"gen": iso(utcnow()), "obs": tstamp, "cols": ["cloud_pct", "lowcloud_pct", "top_m"], "spots": out,
                              "overlay": {"png": "goes_lowcloud.png", "bbox": BBOX}, "products": [km_, kh]})
-    # rolling 120-day history: one line per scan, two digits per spot (cloud tenth, low-cloud tenth)
-    hp = DATA / "goes_history.txt"
-    lines = hp.read_text().splitlines() if hp.exists() else []
-    hdr = "#ids " + ",".join(p["id"] for p in pts)
-    if lines and lines[0] != hdr:  # spot list changed (e.g. new researched spots): start a new history file
-        hp.rename(DATA / f"goes_history_{utcnow():%Y%m%d%H%M}.txt")
-        lines = []
-    if not lines:
-        lines = [hdr]
-    lines.append(f"{tstamp} {''.join(hist)}")
-    cut = (utcnow() - dt.timedelta(days=120)).strftime("%Y-%m-%d")
-    lines = [lines[0]] + [l for l in lines[1:] if l[:10] >= cut]
-    hp.write_text("\n".join(lines) + "\n")
+    keep_history([p["id"] for p in pts], [(tstamp, "".join(hist))])
     return f"scan {tstamp}"
+
+
+def _set_id(ids):
+    """Spot lists change (new researched spots); each scan row names its list by a short hash (data/archive/goes/sets.json)."""
+    import hashlib
+    from . import archive
+    from .common import read_json
+    h = hashlib.sha1(",".join(ids).encode()).hexdigest()[:10]
+    sp = archive.ROOT / "goes" / "sets.json"; sets = read_json(sp, {}) or {}
+    if h not in sets:
+        sets[h] = list(ids); sp.parent.mkdir(parents=True, exist_ok=True); sp.write_text(json.dumps(sets, separators=(",", ":")))
+    return h
+
+
+def keep_history(ids, scans):
+    """History kept indefinitely: data/archive/goes/<month>.csv.gz, one row per scan (t, spot list, two digits per spot:
+    cloud tenth, low-cloud tenth). The old rolling goes_history*.txt files are moved in once, then removed."""
+    from . import archive
+    rows = [{"t": t, "set": _set_id(ids), "d": d} for t, d in scans]
+    for p in sorted(DATA.glob("goes_history*.txt")):
+        lines = p.read_text().splitlines()
+        if lines and lines[0].startswith("#ids "):
+            s = _set_id(lines[0][5:].split(","))
+            rows = [{"t": l.split(" ", 1)[0], "set": s, "d": l.split(" ", 1)[1]} for l in lines[1:] if " " in l] + rows
+    archive.append("goes", ["t", "set", "d"], rows, lambda r: r["t"], lambda r: (r["t"], r["set"]))
+    for p in DATA.glob("goes_history*.txt"): p.unlink()
+
+
+def history_at(spot_id, t, within=3600):
+    """The scan nearest time t (datetime, within `within` s) that covered the spot: (seconds off, cloud %, low cloud %)."""
+    from . import archive
+    from .common import read_json
+    sets = read_json(archive.ROOT / "goes" / "sets.json", {}) or {}
+    col = {h: ids.index(spot_id) for h, ids in sets.items() if spot_id in ids}
+    if not col: return None
+    lo, hi = (t - dt.timedelta(seconds=within)).strftime("%Y-%m-%dT%H:%M"), (t + dt.timedelta(seconds=within)).strftime("%Y-%m-%dT%H:%M:99")
+    best = None
+    for r in archive.read("goes", lo, "t", hi):
+        k = col.get(r["set"])
+        if k is None: continue
+        try:
+            tt = dt.datetime.fromisoformat(r["t"][:19]).replace(tzinfo=dt.timezone.utc)
+            dtm = abs((tt - t).total_seconds())
+            if dtm <= within and (best is None or dtm < best[0]):
+                best = (dtm, int(r["d"][2 * k]) * 11, int(r["d"][2 * k + 1]) * 11)
+        except (ValueError, IndexError) as e:
+            soft_fail("goes: archived scan unreadable", e)
+    return best
