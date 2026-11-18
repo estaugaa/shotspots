@@ -126,13 +126,16 @@ async function loadWx(force) {
   const url = "https://api.open-meteo.com/v1/forecast?latitude=" + pts.map(p => p.lat.toFixed(3)).join(",") + "&longitude=" + pts.map(p => p.lon.toFixed(3)).join(",") +
     "&hourly=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,visibility,relative_humidity_2m,dew_point_2m,temperature_2m,wind_speed_10m,precipitation_probability,weather_code,precipitation" +
     "&past_days=2&forecast_days=8&timeformat=unixtime&wind_speed_unit=mph&temperature_unit=fahrenheit&timezone=GMT";
-  try {
+  const seq = ++loadWx.seq;   // seed.js asks again as each batch of spot tiles adds forecast points: an older request that answers
+  try {                      // last must not overwrite the newer, larger set (far spots then lost their own point; Nov 18)
     const r = await omFetch(url);
     let j = await r.json(); if (!Array.isArray(j)) j = [j];
+    if (seq !== loadWx.seq) return false;
     WX = { at: Date.now(), key: locKey(), n: pts.length, pts: j.map((x, i) => ({ id: pts[i].id, n: pts[i].n, lat: pts[i].lat, lon: pts[i].lon, h: x.hourly })) };
     store.set("wx", WX); loadHorizon(true).then(ok => { if (ok) { __topsKey = ""; render(); } }); return true;
-  } catch (e) { WXERR = String(e.message || e); WX && (WX.err = WXERR); if (!loadWx.retry) { loadWx.retry = setTimeout(async () => { loadWx.retry = 0; if (await loadWx(true)) { __topsKey = ""; render(); } }, 20000); } return false; }
+  } catch (e) { if (seq !== loadWx.seq) return false; WXERR = String(e.message || e); WX && (WX.err = WXERR); if (!loadWx.retry) { loadWx.retry = setTimeout(async () => { loadWx.retry = 0; if (await loadWx(true)) { __topsKey = ""; render(); } }, 20000); } return false; }
 }
+loadWx.seq = 0;
 // Open-Meteo, with a fallback through our Cloudflare Worker when the direct request is refused (rate limits, outages)
 const WORKER_URL = "https://shotspots-forms.shotspots-eric.workers.dev"; let WXERR = null;
 async function omFetch(url) {
