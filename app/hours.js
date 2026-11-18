@@ -10,9 +10,9 @@ function ohHours(s) { const h = (fd("hours") || { spots: {} }).spots[s.id]; retu
 // returns true (open), false (closed) or null (can't tell) for spot s at time t
 function ohOpenAt(oh, s, t) {
   if (!oh) return null; oh = oh.trim(); if (oh === "24/7") return true;
-  const parts = new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "short", month: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(t);
+  const parts = __fmt("ohParts", { o: { weekday: "short", month: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" } }).formatToParts(t);   // cached formatter (building one per call was the cost)
   const g = k => (parts.find(p => p.type === k) || {}).value, wd = OH_DAYS.indexOf(g("weekday").slice(0, 2)), mo = OH_MON.indexOf(g("month")), mins = +g("hour") * 60 + +g("minute");
-  const ev = dayEvents(s, laYMD(t)), toMin = d => { if (!d) return null; const p = new Intl.DateTimeFormat("en-US", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(d); return +p.find(x => x.type === "hour").value * 60 + +p.find(x => x.type === "minute").value; };
+  const ev = dayEvents(s, laYMD(t)), toMin = d => { if (!d) return null; const p = __fmt("ohHM", { o: { hour: "2-digit", minute: "2-digit", hourCycle: "h23" } }).formatToParts(d); return +p.find(x => x.type === "hour").value * 60 + +p.find(x => x.type === "minute").value; };
   const word = { sunrise: toMin(ev.sunrise), sunset: toMin(ev.sunset), dawn: toMin(ev.civilDawn), dusk: toMin(ev.civilDusk) };
   const tmin = x => x in word ? word[x] : /^\d{1,2}:\d{2}$/.test(x) ? +x.split(":")[0] * 60 + +x.split(":")[1] : NaN;
   const inRange = (list, i, names) => list.split(",").some(r => { const [a, b] = r.split("-").map(x => names.indexOf(x.trim().slice(0, names === OH_DAYS ? 2 : 3)));

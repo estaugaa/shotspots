@@ -73,13 +73,24 @@ function noteErr(where, e) { const k = String(where); const x = SOFT_ERRS[k] || 
 // Links built from feed or third-party data: only web, mail, phone, map and relative links; anything else (javascript:, data:) becomes "#".
 const safeUrl = u => { const t = String(u == null ? "" : u).trim(); return /^(https?:|mailto:|tel:|geo:)/i.test(t) || !/^[a-z][a-z0-9+.-]*:/i.test(t) ? esc(t) : "#"; };
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
-function km(a, b) { return geoTo(a, b).dist / 1000; }
+// Distance only: the same formula and operations as geoTo's dist, without the bearing it threw away; the last answer
+// per spot is kept (checked against both positions), since a redraw asked the same distances millions of times.
+const __kmMemo = new WeakMap();
+function km(a, b) {
+  const o = b !== null && typeof b === "object", m = o && __kmMemo.get(b);
+  if (m && m.a === a && m.la === a.lat && m.lo === a.lon && m.lb === b.lat && m.ob === b.lon) return m.d;
+  const p1 = a.lat * D2R, p2 = b.lat * D2R, dl = (b.lon - a.lon) * D2R;
+  const d = RE * Math.acos(Math.max(-1, Math.min(1, Math.sin(p1) * Math.sin(p2) + Math.cos(p1) * Math.cos(p2) * Math.cos(dl)))) / 1000;
+  if (o) __kmMemo.set(b, { a, la: a.lat, lo: a.lon, lb: b.lat, ob: b.lon, d });
+  return d;
+}
 function dest(p, az, kmD) { const R = 6371, d = kmD / R, la1 = p.lat * D2R, lo1 = p.lon * D2R, th = az * D2R;
   const la2 = Math.asin(Math.sin(la1) * Math.cos(d) + Math.cos(la1) * Math.sin(d) * Math.cos(th));
   const lo2 = lo1 + Math.atan2(Math.sin(th) * Math.sin(d) * Math.cos(la1), Math.cos(d) - Math.sin(la1) * Math.sin(la2));
   return { lat: la2 * R2D, lon: lo2 * R2D }; }
 const atHome = () => km(LOC, HOME) < 4;
-const locKey = () => LOC.lat.toFixed(2) + "," + LOC.lon.toFixed(2);
+let __lk = { o: null, la: NaN, lo: NaN, k: "" };   // remembered while LOC is the same object at the same place
+const locKey = () => { if (__lk.o !== LOC || __lk.la !== LOC.lat || __lk.lo !== LOC.lon) __lk = { o: LOC, la: LOC.lat, lo: LOC.lon, k: LOC.lat.toFixed(2) + "," + LOC.lon.toFixed(2) }; return __lk.k; };
 function fmtDur(min) { min = Math.round(min); if (min < 60) return min + " min"; const h = Math.floor(min / 60), m = min % 60; return h + " h" + (m ? " " + m + " m" : ""); }
 function fmtIn(t) { const m = Math.round((t - Date.now()) / 60000); if (m <= 0) return "now"; return "in " + fmtDur(m); }
 function dayWord(t) { const y = laYMD(new Date()), d = laYMD(t); if (d === y) return "Today"; if (d === addDays(y, 1)) return "Tomorrow"; return t.toLocaleDateString("en-US", { timeZone: TZ, weekday: "long" }); }

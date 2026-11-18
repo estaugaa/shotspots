@@ -67,7 +67,12 @@ const fmtT=d=>d?__fmt("hm",{o:{hour:"numeric",minute:"2-digit"}}).format(d):"–
 /* ---- v36 perf: cached formatters, day-base cache, memoized dayEvents ---- */
 const __fmtCache={};
 function __fmt(key,opts){ const k=key+"|"+TZ; return __fmtCache[k]||(__fmtCache[k]=new Intl.DateTimeFormat(opts.locale||"en-US",Object.assign({timeZone:TZ},opts.o))); }
-laYMD=function(date){ return __fmt("ymd",{locale:"en-CA",o:{year:"numeric",month:"2-digit",day:"2-digit"}}).format(date); };
+// remembered per 15 minutes: a local date can only change on a quarter hour (every real time zone), in any zone (TZ is in the key)
+const __ymdMemo=new Map();
+laYMD=function(date){ const ms=+date; if(ms!==ms) return __fmt("ymd",{locale:"en-CA",o:{year:"numeric",month:"2-digit",day:"2-digit"}}).format(date);
+  const k=TZ+"|"+Math.floor(ms/9e5); let v=__ymdMemo.get(k);
+  if(v===undefined){ v=__fmt("ymd",{locale:"en-CA",o:{year:"numeric",month:"2-digit",day:"2-digit"}}).format(date); if(__ymdMemo.size>20000) __ymdMemo.clear(); __ymdMemo.set(k,v); }
+  return v; };
 const __baseCache={};
 laDate=function(ymd,minutes){ let B=__baseCache[ymd]; if(B===undefined){ const [y,m,d]=ymd.split("-").map(Number); const base=Date.UTC(y,m-1,d,0,0); let off=__offCache[ymd]; if(off===undefined){ off=tzOffsetMin(new Date(base+12*36e5)); __offCache[ymd]=off; } B=base-off*60000; __baseCache[ymd]=B; } return new Date(B+minutes*60000); };
 const fmtD=ymd=>{ const [y,m,d]=ymd.split("-").map(Number); return new Date(Date.UTC(y,m-1,d,12)).toLocaleDateString("en-US",{timeZone:"UTC",weekday:"short",month:"short",day:"numeric"}); };
