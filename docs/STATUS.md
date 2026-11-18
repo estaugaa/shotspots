@@ -4,6 +4,7 @@
 - 2026-11-17 feed/ and data/ moved to the `data` branch (squashed daily). Phase A: jobs read/write the data branch; main keeps a
   frozen copy so runs that started on the old workflows can't break anything. Phase B: delete feed/ and data/ from main
   (git rm -r --cached feed data; add /feed and /data to .gitignore) once every data job has run once on the new workflows.
+- 2026-11-17 Cards show data depth (4 dots: terrain, facing, photo record, routed drive) and the spot page says what is measured vs estimated; fog/low-cloud reasons carry the measured day-ahead record (app/depth.js).
 - App publishing is gated: every publish takes app/ from `app-verified`, which only moves when app-publish's checks pass (or scoretest update on main).
 - National research (job.yml job=deepnat): terrain/facing for the top 15 spots in each of 1,038 tiles, ~8 min a tile, self-chaining (several days). Walking routes added separately (job=deeproutes, daily 2:40 AM PT, chains). Progress: feed/status/deepnat.json.
 - Forecast check (job=skill) daily 12:20 PM PT; feed/calib.json fills over the first week (needs ~200 pairs per region and model before anything is applied).

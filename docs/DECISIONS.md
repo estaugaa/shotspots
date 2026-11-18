@@ -2,6 +2,7 @@
 
 One line each: what was decided, and why. Add a line when a choice is made; edit a line when it is reversed.
 
+- 2026-11-17 Data depth shown, not hidden (app/depth.js, display only): four dots on every card (terrain, facing, photo record, routed drive; filled = measured) and a "Data behind it" line under "Why this score". Where fog or low cloud is a main reason, a note gives the measured day-ahead record (verify_obs: nearest verified airport with >=20 reports, else the whole network, nothing beyond 250 km). The figure shown is "came true when forecast" (1 - false-alarm ratio), since that is what a fog-boosted score relies on; the hit rate is on the spot page too.
 - 2026-11-17 Only checked app code is published: data jobs republish every ~30 min and used to take app/ from main, so a change the scoring test had blocked still went live. Passing checks move branch app-verified; publish.yml takes app/ from it.
 - 2026-11-17 Scoring test answers drive times and forecasts per point, not by exact URL: both are requested in batches that depend on which spot tiles have loaded, which made far spots' scores vary between identical runs.
 - 2026-11-17 feed/ and data/ moved to a `data` branch, squashed daily (Eric): 647 of 956 commits on main were bot feed updates and every clone kept growing. Jobs commit only their own changed files and re-apply them if another job pushed first. Main's old history is left as it is (no rewrite).
