@@ -23,8 +23,8 @@ jobs:
     outputs:
       mode: ${{ steps.mode.outputs.mode }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: JavaScript parses (a broken script fails alone in the browser, so the scoring test can't see it)
@@ -54,7 +54,7 @@ jobs:
         run: |
           git config user.name "shotspots-bot"; git config user.email "actions@users.noreply.github.com"
           git add tests/score && git commit -qm "Scoring test: ${{ steps.mode.outputs.mode }}" || true
-          for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 5; done
+          for i in 1 2 3; do git pull -q --rebase && git push -q && break; git rebase --abort 2>/dev/null; [ $i = 3 ] && { echo "::error::could not push to main after 3 tries"; exit 1; }; sleep 5; done
           # accepted on main: this app is now the checked one (publish.yml takes app/ from app-verified)
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then git push -q -f origin HEAD:refs/heads/app-verified; fi
   publish:

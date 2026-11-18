@@ -19,11 +19,11 @@ jobs:
       EARTHDATA_TOKEN: ${{ secrets.EARTHDATA_TOKEN || secrets.EARTHKEY_TOKEN }}
       NETLIFY_SITE_ID: a54b42ef-afe7-4c95-922e-7d174dff4e98
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/data
         with:
           mode: setup
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip

@@ -20,7 +20,7 @@ permissions:
   actions: write
 jobs:
   run:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # pinned: ubuntu-latest moves to 26.04, where Playwright can't install yet
     timeout-minutes: 340
     env:
       NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
@@ -35,15 +35,15 @@ jobs:
       VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
       SS_CACHE: ${{ github.workspace }}/.cache
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/data
         with:
           mode: setup
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v6
         with:
           path: .cache
           key: ss-cache-seed-${{ github.run_id }}
@@ -71,7 +71,7 @@ jobs:
         run: python -m pipeline seed $STATES
         env:
           STATES: ${{ steps.st.outputs.states }}
-      - uses: actions/cache/save@v4
+      - uses: actions/cache/save@v6
         if: always()
         with:
           path: .cache

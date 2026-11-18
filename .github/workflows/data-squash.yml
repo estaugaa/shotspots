@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   squash:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # pinned: ubuntu-latest moves to 26.04, where Playwright can't install yet
     timeout-minutes: 15
     steps:
       - name: Squash

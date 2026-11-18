@@ -10,15 +10,15 @@ concurrency:
   cancel-in-progress: false
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # pinned: ubuntu-latest moves to 26.04, where Playwright can't install yet
     timeout-minutes: 15
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       GH_DISPATCH_TOKEN: ${{ secrets.GH_DISPATCH_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: "20"
       - name: Check secrets
@@ -63,4 +63,4 @@ jobs:
           git config user.name "shotspots-bot"; git config user.email "shotspots-bot@users.noreply.github.com"
           git add config/endpoints.json
           git diff --cached --quiet || git commit -m "cloudflare: forms endpoint [skip ci]"
-          for i in 1 2 3; do git pull --rebase -X theirs && git push && break; sleep 5; done
+          for i in 1 2 3; do git pull --rebase -X theirs && git push && break; git rebase --abort 2>/dev/null; [ $i = 3 ] && { echo "::error::could not push to main after 3 tries"; exit 1; }; sleep 5; done
