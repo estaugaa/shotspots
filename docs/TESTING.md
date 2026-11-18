@@ -9,6 +9,7 @@ All of these run on GitHub Actions against the live site. Run one with
 | Unit tests (terrain horizon, GOES projection, verification maths, consistency) | `pytest tests/` (tests.yml) | every push touching pipeline/, tests/, config/, requirements |
 | Scoring, repeatable: app/ code ranks 6 situations on frozen feeds + forecast at a fixed clock, must match `tests/score/expected.json` | `tools/scoretest.py` (scoretest.yml: mode check / update / capture) | every app push, blocks publishing |
 | JavaScript unit tests (safeUrl) | `node tests/js/*.test.js` | every app push (app-publish) |
+| Daily ops watcher (cloud routine, claude.ai/code/routines): workflow health, feed freshness, soft errors, publish gate, diag outputs; mechanical fixes on ops/ branches only | report on branch `diag-ops` (ops.md) | daily 6:30 AM PT |
 | Regression checks (forecast loads, nothing past the travel limit, no Washougal text elsewhere) | `tools/regress.py` | nightly (regress.yml) |
 | Expectations: pass/fail on real situations | `tools/expect.py` | nightly; history in `data/test_history.jsonl` |
 | 30 situation walkthroughs (full list text) | diag.yml `tools/diag.py [numbers]` -> branch `diag-out`, `scenarios.txt` | after ranking changes |
