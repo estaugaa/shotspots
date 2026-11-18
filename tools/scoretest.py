@@ -10,6 +10,8 @@ Fixtures: tests/score/responses.json.gz (every response the page needed, keyed b
 fixed time). App code (any path that exists under app/) always comes from the working copy: that is what is tested.
 Compared: the top 10 (names, scores, score after each layer for the top 5) and the score of every ranked spot.
 Each case runs twice; differing runs fail as unstable (the ranking must not depend on load order).
+Nov 18: the app's forecast caches key on time plus version (wxVer), so a replaced forecast is never missed under the
+frozen clock; the baseline was re-recorded then (8 far spots changed, every top 10 unchanged).
 
     python tools/scoretest.py --live     prediction log (nightly, regress.yml): the LIVE site at the real time ranks the
                                          next sunrise and sunset for LIVE_CASES; the top 20 (score, score after each layer,
