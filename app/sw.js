@@ -32,7 +32,7 @@ self.addEventListener("fetch",e=>{
     return r||net;})));
 });
 
-// push alerts from the pipeline (alerts.py)
+// push alerts from the pipeline (alerts.py); clicking one opens the alerts view
 self.addEventListener("push",e=>{let d={};try{d=e.data.json();}catch(x){d={title:"ShotSpots",body:e.data?e.data.text():""};}
   e.waitUntil(self.registration.showNotification(d.title||"ShotSpots",{body:d.body||"",tag:d.tag||"ss",icon:"icon-192.png",badge:"icon-192.png",actions:d.actions||[],data:{url:d.url||"./#alerts",key:d.key||d.tag||""}}));});
 self.addEventListener("notificationclick",e=>{e.notification.close();const nd=e.notification.data||{};
