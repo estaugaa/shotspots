@@ -21,8 +21,8 @@ WATCH = """(() => { const W = window.__lp = { t0: performance.now(), ev: [], cls
   try { new PerformanceObserver(l => l.getEntries().forEach(e => { W.long += e.duration; W.longN++; if (e.duration > 200) log("long task " + Math.round(e.duration) + "ms"); })).observe({ type: "longtask", buffered: true }); } catch (e) {}
   let last = null, lastH = 0;
   const tick = () => { if (t() > %d) return;
-    if (!W.marks.wx && window.WX) { W.marks.wx = t(); log("forecast loaded"); }
-    if (!W.marks.core && window.BOOT && BOOT.core) { W.marks.core = t(); log("core data ready (BOOT.core)"); }
+    if (!W.marks.wx && typeof WX !== "undefined" && WX && WX.pts) { W.marks.wx = t(); log("forecast loaded"); }
+    if (!W.marks.core && typeof BOOT !== "undefined" && BOOT.core) { W.marks.core = t(); log("core data ready (BOOT.core)"); }
     const view = document.querySelector(".view:not([hidden])");
     const cards = view ? [...view.querySelectorAll("[data-spot]")].filter(e => { const r = e.getBoundingClientRect(); return r.height > 0 && r.top < innerHeight * 2; }).slice(0, 6) : [];
     const cur = cards.map(e => ({ id: e.dataset.spot, y: Math.round(e.getBoundingClientRect().top + scrollY) }));
@@ -48,6 +48,33 @@ SUMMARY = """() => { const W = window.__lp, R = performance.getEntriesByType("re
     lastReq: Math.round(Math.max(0, ...R.map(r => r.responseEnd))), big, paints: window.__paints, ev: W.ev, shifts: W.shifts }; }"""
 
 
+def hotspots(prof, n=30):
+    """Aggregate a CDP CPU profile by function: self time, and total time (self + callees, counted once per sample)."""
+    nodes = {x["id"]: x for x in prof["nodes"]}; parent = {}
+    for x in prof["nodes"]:
+        for ch in x.get("children", []): parent[ch] = x["id"]
+    dt = prof.get("timeDeltas", []); samples = prof.get("samples", [])
+    def key(x):
+        f = x["callFrame"]; u = f.get("url", "").rsplit("/", 1)[-1]
+        return f"{f.get('functionName') or '(anonymous)'} {u}:{f.get('lineNumber', -1) + 1}" if u else (f.get("functionName") or "(program)")
+    self_t, total_t = {}, {}
+    for sid, d in zip(samples, dt[1:] + [0]):
+        x = nodes.get(sid)
+        if not x: continue
+        k = key(x); self_t[k] = self_t.get(k, 0) + d
+        seen = set(); cur = sid
+        while cur in nodes:
+            kk = key(nodes[cur])
+            if kk not in seen: total_t[kk] = total_t.get(kk, 0) + d; seen.add(kk)
+            cur = parent.get(cur)
+    ms = lambda us: round(us / 1000)
+    skip = ("(program)", "(idle)", "(root)", "(garbage collector)")
+    top_self = sorted(((v, k) for k, v in self_t.items() if k not in skip), reverse=True)[:n]
+    top_total = sorted(((v, k) for k, v in total_t.items() if k not in skip and ".js:" in k), reverse=True)[:n]
+    return ([f"self  {ms(v):>6} ms  {k}" for v, k in top_self] + [f"total {ms(v):>6} ms  {k}" for v, k in top_total]
+            + [f"garbage collection {ms(self_t.get('(garbage collector)', 0))} ms"])
+
+
 async def profile(p, lat, lon):
     out = []
     b = await p.chromium.launch()
@@ -63,10 +90,16 @@ async def profile(p, lat, lon):
     await cdp.send("Network.emulateNetworkConditions", {"offline": False, "latency": 150, "downloadThroughput": 1.6e6 / 8, "uploadThroughput": 750e3 / 8})
     await cdp.send("Emulation.setCPUThrottlingRate", {"rate": 4})
     for name in ("cold (first visit)", "warm (returning, service worker)"):
-        if name.startswith("cold"): await pg.goto(URL, wait_until="domcontentloaded", timeout=90000)
-        else: await pg.reload(wait_until="domcontentloaded", timeout=90000)
+        warm = not name.startswith("cold")
+        if warm:   # CPU profile of the warm load: which functions take the time
+            await cdp.send("Profiler.enable"); await cdp.send("Profiler.setSamplingInterval", {"interval": 1000}); await cdp.send("Profiler.start")
+            await pg.reload(wait_until="domcontentloaded", timeout=90000)
+        else: await pg.goto(URL, wait_until="domcontentloaded", timeout=90000)
         await pg.wait_for_timeout(SECS * 1000 + 1000)
         s = await pg.evaluate(SUMMARY); m = s["marks"]
+        hot = []
+        if warm:
+            prof = (await cdp.send("Profiler.stop"))["profile"]; hot = hotspots(prof)
         out.append(f"\n=== {name} ===")
         out.append(f"first paint {s['fcp']} ms | first card {m.get('first')} ms | forecast {m.get('wx')} ms | core data {m.get('core')} ms | "
                    f"last change in top cards {m.get('lastChange', '-')} ms | list redraws {s['paints']} | layout shift {s['cls']}")
@@ -75,6 +108,7 @@ async def profile(p, lat, lon):
         out.append("largest downloads: " + "; ".join(f"{x['kb']}KB {x['n']} (done {x['end']} ms)" for x in s["big"]))
         out.append("timeline:"); out += ["  " + e for e in s["ev"][:60]]
         if s["shifts"]: out.append("layout shifts:"); out += ["  " + e for e in s["shifts"][:25]]
+        if hot: out.append("CPU, warm load (self time = in the function itself; total = including what it calls):"); out += ["  " + h for h in hot]
     await b.close()
     return out
 
