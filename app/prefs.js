@@ -38,6 +38,8 @@ renderSettings = function () { const r = _renderSettingsP.apply(this, arguments)
     const k = b.querySelector(".kitbox"), u = b.querySelector("#setupBox"); if (k) b.prepend(k); b.prepend(u);   // your setup and camera first
     if (typeof isOwner === "function" && isOwner() && typeof researchHtml === "function" && !b.querySelector(".explore")) (k || u).insertAdjacentHTML("afterend", researchHtml());
     if (typeof SHOTS !== "undefined" && SHOTS.length && !b.querySelector(".shotlist")) b.querySelector(".statusbox, .pipebox")?.insertAdjacentHTML("beforebegin", shotsHtml());
+    // loadFeed's refresh drops verify_obs and doesn't fetch it again: fetch it here when missing, then retry
+    if (!b.querySelector(".accbox") && !fd("verify_obs") && !put.asked && typeof feedGet === "function") { put.asked = true; feedGet("verify_obs").then(j => { if (j) put(); }); }
     if (!b.querySelector(".accbox")) { const v = fd("verify_obs"), f = v && v.events && v.events.fog, o = v && v.events && v.events.ovc, l = v && v.events && v.events.low;
       const pct = x => x == null ? "–" : Math.round(x * 100) + "%";
       const row = (name, e) => e && e.n >= 20 ? `<li><b>${name}</b>: caught ${pct(e.hit_rate)} of them; ${pct(e.false_alarm_ratio)} of warnings were false alarms. Right ${pct(e.accuracy)} of the time vs ${pct(e.accuracy_if_always_usual)} by always guessing the usual (${e.n} reports).</li>` : "";
