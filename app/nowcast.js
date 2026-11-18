@@ -48,11 +48,12 @@ function hrrrBetter(lon) {
 async function loadHrrr() {
   if (!WX || !WX.pts || !(LOC.lat > 21 && LOC.lat < 53 && LOC.lon > -135 && LOC.lon < -60)) return;
   if (HRRR && HRRR.key === wxVer()) return;
-  const pts = WX.pts;
+  const pts = WX.pts, v = wxVer();   // the forecast this request is for: its points (x0, x1, ... are reused per set)
   const url = "https://api.open-meteo.com/v1/forecast?latitude=" + pts.map(p => p.lat.toFixed(3)).join(",") + "&longitude=" + pts.map(p => p.lon.toFixed(3)).join(",") +
     "&hourly=cloud_cover_low,cloud_cover_mid,cloud_cover_high&models=gfs_hrrr&forecast_hours=18&past_hours=1&timeformat=unixtime&timezone=GMT";
   try { const r = await omFetch(url); let j = await r.json(); if (!Array.isArray(j)) j = [j];
-    HRRR = { key: wxVer(), by: Object.fromEntries(j.map((x, i) => [pts[i].id, x.hourly])) };
+    if (v !== wxVer()) return;   // the forecast was replaced meanwhile: this answer is for the old points
+    HRRR = { key: v, by: Object.fromEntries(j.map((x, i) => [pts[i].id, x.hourly])) };
     if (typeof __skyMemoAt !== "undefined") __skyMemoAt = -1; lateRender();
   } catch (e) { }
 }
