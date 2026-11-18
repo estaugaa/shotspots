@@ -8,12 +8,24 @@ self.addEventListener("fetch",e=>{
   const u=new URL(e.request.url); if(e.request.method!=="GET")return;
   // live data: always network (the app keeps its own cached copy)
   if(/open-meteo|weather\.gov|swpc|osrm|nominatim|inaturalist|ebird|tidesandcurrents|usgs|7timer/.test(u.host))return;
-  // pipeline feed: network first, cached copy when offline
-  if(u.origin===location.origin&&u.pathname.includes("/feed/")){e.respondWith(fetch(e.request).then(n=>{if(n.ok){const c2=n.clone();caches.open("ss2-feed").then(c=>c.put(e.request,c2));}return n;}).catch(()=>caches.open("ss2-feed").then(c=>c.match(e.request,{ignoreSearch:true}))));return;}
+  // pipeline feed: network first; on a slow connection the cached copy after 3 s (the fresh one still lands in the
+  // cache when it arrives, for the next read), and the cached copy when offline
+  if(u.origin===location.origin&&u.pathname.includes("/feed/")){
+    const net=fetch(e.request).then(n=>{if(n.ok){const c2=n.clone();caches.open("ss2-feed").then(c=>c.put(e.request,c2));}return n;});
+    e.respondWith(caches.open("ss2-feed").then(c=>c.match(e.request,{ignoreSearch:true})).then(hit=>{
+      if(!hit) return net;
+      return Promise.race([net.then(n=>n.ok?n:hit).catch(()=>hit),new Promise(r=>setTimeout(()=>r(hit),3000))]);}));
+    return;}
   // map tiles: cache as you browse so the map works offline where you've looked
   if(/tile\.openstreetmap\.org/.test(u.host)){e.respondWith(caches.open("ss2-tiles").then(c=>c.match(e.request).then(r=>r||fetch(e.request).then(n=>{c.put(e.request,n.clone());return n;}))));return;}
-  // our own app files: network first (so every file is the same version), cached copy when offline
-  if(u.origin===location.origin){e.respondWith(fetch(e.request,{cache:"no-cache"}).then(n=>{if(n.ok){const c2=n.clone();caches.open(V).then(c=>c.put(e.request,c2));}return n;}).catch(()=>caches.open(V).then(c=>c.match(e.request,{ignoreSearch:true}))));return;}
+  // the app's own files (SHELL): cache first. The cache is named after the build (V = hash of the app files), so a
+  // phone always runs one complete version; a new build installs in the background and reloads open windows
+  // (activate above). Was network first, which made every return visit wait on ~35 requests before showing anything.
+  const own=u.origin===location.origin, rel=own?u.pathname.slice(self.registration.scope.length-location.origin.length):"";
+  if(own&&(SHELL.includes(rel||"./")||e.request.mode==="navigate")){
+    e.respondWith(caches.open(V).then(c=>c.match(e.request,{ignoreSearch:true}).then(hit=>hit||fetch(e.request,{cache:"no-cache"}).then(n=>{if(n.ok)c.put(e.request,n.clone());return n;}))));return;}
+  // other files of ours (endpoints.json, icons): network first, cached copy when offline
+  if(own){e.respondWith(fetch(e.request,{cache:"no-cache"}).then(n=>{if(n.ok){const c2=n.clone();caches.open(V).then(c=>c.put(e.request,c2));}return n;}).catch(()=>caches.open(V).then(c=>c.match(e.request,{ignoreSearch:true}))));return;}
   // fonts and libraries: cache first, update in the background
   e.respondWith(caches.open(V).then(c=>c.match(e.request,{ignoreSearch:u.origin===location.origin}).then(r=>{
     const net=fetch(e.request).then(n=>{if(n.ok||n.type==="opaque")c.put(e.request,n.clone());return n;}).catch(()=>r);
