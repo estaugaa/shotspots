@@ -5,11 +5,11 @@ on:
     types: [completed]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write   # pushes the output to the diag-smoke branch (logs need a sign-in)
 jobs:
   smoke:
     runs-on: ubuntu-24.04   # Playwright can't install its browser deps on 26.04 yet
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
         with:
@@ -32,4 +32,12 @@ jobs:
           curl -sf -H "Origin: https://estaugaa.github.io" "$W/seeing?lat=45.58&lon=-122.35" | python3 -c "import json,sys;j=json.load(sys.stdin);print('seeing rows',len(j['dataseries']))"
           curl -sf https://estaugaa.github.io/shotspots/feed/goes_grid.json | python3 -c "import json,sys;j=json.load(sys.stdin);print('gap grid',j['nx'],'x',j['ny'],'obs',j['obs'],'cloudy cells',sum(c>'4' for c in j['d9']))" || echo "gap grid not published yet"
       - if: steps.chg.outputs.go == '1'
-        run: python tools/smoke.py
+        run: python -u tools/smoke.py 2>&1 | tee smoke.txt; exit ${PIPESTATUS[0]}
+        shell: bash
+      - name: Output to the diag-smoke branch (readable without logging in)
+        if: always() && steps.chg.outputs.go == '1'
+        run: |
+          [ -f smoke.txt ] || echo "smoke.py did not run (an earlier step failed)" > smoke.txt
+          mkdir -p out && cp smoke.txt out/ && cd out && git init -q && git checkout -q -b diag-smoke && git add -A
+          git -c user.name=diag -c user.email=diag@users.noreply.github.com commit -qm "smoke ${{ github.sha }} ${{ job.status }}"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" diag-smoke

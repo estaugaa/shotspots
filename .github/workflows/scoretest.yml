@@ -19,7 +19,7 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-24.04   # Playwright can't install its browser deps on 26.04 yet
-    timeout-minutes: 20
+    timeout-minutes: 45   # [scoretest:runs=6] is 36 page loads of 6 s or more
     outputs:
       mode: ${{ steps.mode.outputs.mode }}
     steps:
@@ -41,7 +41,7 @@ jobs:
           [ -n "$M" ] || M=$(printf '%s' "$MSG" | grep -o 'scoretest:\(update\|capture\)' | head -1 | cut -d: -f2); [ -n "$M" ] || M=check
           echo "mode=$M" >> "$GITHUB_OUTPUT"
           N=$(printf '%s' "$MSG" | grep -o 'scoretest:runs=[0-9]*' | head -1 | cut -d= -f2); echo "SCORETEST_RUNS=${N:-2}" >> "$GITHUB_ENV"
-      - run: python tools/scoretest.py --${{ steps.mode.outputs.mode }} 2>&1 | tee scoretest.txt; exit ${PIPESTATUS[0]}
+      - run: python -u tools/scoretest.py --${{ steps.mode.outputs.mode }} 2>&1 | tee scoretest.txt; exit ${PIPESTATUS[0]}
         shell: bash
       - name: Result to the diag-scoretest branch (readable without logging in)
         if: always()
