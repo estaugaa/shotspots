@@ -46,7 +46,8 @@ RANK = """(async ([kind]) => {
     const o = { name: x.s.name, score: x.f.n };
     if (i < 5) o.layers = scoreLayers(x.s, w).map(l => l.n);
     return o; }),
-    all: R.map(x => x.s.name + " = " + x.f.n) }; })"""
+    all: R.map(x => x.s.name + " = " + x.f.n),
+    why: Object.fromEntries(R.map(x => [x.s.name, (x.f.why || []).slice(0, 5).join("; ")])) }; })"""
 
 
 # prediction log: places with ground truth nearby (airport reports in WA/OR, webcams in OR/CA, airports nationwide)
@@ -310,10 +311,13 @@ async def main(mode):
         runs = int(os.environ.get("SCORETEST_RUNS") or 2)
         for case in CASES:
             rs = [await run_case(br, case, at, base, store, "replay", missing) for _ in range(runs)]
-            a = rs[0]; b = next((x for x in rs if x != a), a)
+            whys = [r.pop("why", {}) for r in rs]
+            a = rs[0]; b = next((x for x in rs if x != a), a); wb = whys[rs.index(b)] if b in rs else {}
             if a != b:
                 A = dict(x.rsplit(" = ", 1) for x in a.get("all") or []); B = dict(x.rsplit(" = ", 1) for x in b.get("all") or [])
                 d = [f"{k}: {A.get(k, '-')} | {B.get(k, '-')}" for k in {**A, **B} if A.get(k) != B.get(k)][:15]
+                for k in [k for k in {**A, **B} if A.get(k) != B.get(k)][:3]:   # why they differ: the reasons each run gave
+                    d.append(f"  {k} run 1: {whys[0].get(k, '-')[:240]}"); d.append(f"  {k} other: {wb.get(k, '-')[:240]}")
                 if not d:   # same scores, different order or layers
                     d = [f"#{i + 1}: {x} | {y}" for i, (x, y) in enumerate(zip(a.get("top", []), b.get("top", []))) if x != y][:5] or [f"{a.get('err')} | {b.get('err')}"]
                 a = {"err": f"unstable: runs on the same data ranked differently ({sum(x != rs[0] for x in rs)} of {runs} differ from run 1; run 1 | other):\n    " + "\n    ".join(d)}
