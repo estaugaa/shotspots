@@ -1,6 +1,7 @@
 # Status (update at the end of every work session)
 
 ## Running
+- 2026-11-17 National sunrise/sunset sky climatology (job.yml job=climonat; started by the scheduler, chains itself): ~2,000 airport stations, ~6 s each, West first. Output feed/climo/ (1° tiles + index.json, `states_done`). Spot pages show "Clear at sunset this time of year" (MEASURED) wherever a station is within 80 km; the shot list and alignment alerts use it at sunrise/sunset.
 - 2026-11-17 feed/ and data/ moved to the `data` branch (squashed daily). Phase A: jobs read/write the data branch; main keeps a
   frozen copy so runs that started on the old workflows can't break anything. Phase B: delete feed/ and data/ from main
   (git rm -r --cached feed data; add /feed and /data to .gitignore) once every data job has run once on the new workflows.

@@ -2,6 +2,7 @@
 
 One line each: what was decided, and why. Add a line when a choice is made; edit a line when it is reversed.
 
+- 2026-11-17 Seasonal sky odds come from a national sunrise/sunset climatology (pipeline/climonat.py, job=climonat): every US ASOS/AWOS station with 5+ years in the free IEM archive, 10 years, the report nearest each sunrise/sunset (within 45 min), counted by week of year. The old 7-station Gorge table (by month and hour) stays only as the fallback away from sunrise/sunset. Counts are stored (not percentages) so the app can show sample sizes; the app pools the week with its neighbours (~200 days). ASOS can't see cloud above 12,000 ft, which the app says.
 - 2026-11-17 Only checked app code is published: data jobs republish every ~30 min and used to take app/ from main, so a change the scoring test had blocked still went live. Passing checks move branch app-verified; publish.yml takes app/ from it.
 - 2026-11-17 Scoring test answers drive times and forecasts per point, not by exact URL: both are requested in batches that depend on which spot tiles have loaded, which made far spots' scores vary between identical runs.
 - 2026-11-17 feed/ and data/ moved to a `data` branch, squashed daily (Eric): 647 of 956 commits on main were bot feed updates and every clone kept growing. Jobs commit only their own changed files and re-apply them if another job pushed first. Main's old history is left as it is (no rewrite).

@@ -10,6 +10,7 @@ JOBS = [
     ("fog chance", 3, ("status", "fogprob"), ["job.yml", "-f", "job=fogprob"]),
     ("walking routes", 10, ("status", "deeproutes"), ["job.yml", "-f", "job=deeproutes"]),
     ("forecast check", 20, ("status", "skill"), ["job.yml", "-f", "job=skill"]),
+    ("sky climatology", 6, ("status", "climonat"), ["job.yml", "-f", "job=climonat"]),   # chains itself until every station is done; then weekly re-check
     ("data squash", 9, ("status", "datasquash"), ["data-squash.yml"]),   # keeps the data branch at ~1 commit a day
 ]
 def last_run(kind, ref):

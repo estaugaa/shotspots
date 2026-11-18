@@ -49,8 +49,32 @@ function litDuring(id, w) {
 }
 function spotElev(id) { const L = fd("light"); return L && L.elev ? L.elev[id] : null; }
 function soundingTop() { const s = fd("sounding"); const o = s && s.obs && s.obs[0]; return o && o.inv_c >= 2 ? o : null; }
+/* National sunrise/sunset sky climatology (pipeline/climonat.py): 1° tiles under feed/climo/, only nearby ones fetched.
+   Counts per week of year of the days with an airport report within 45 min of sunrise (r) / sunset (s). */
+const CLIMO = { idx: null, p: null, tiles: {}, got: {} };
+function climoKeys(s) { const I = CLIMO.idx, la = Math.floor(s.lat), lo = Math.floor(s.lon), k = [];
+  if (I) for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) { const x = `${la + a}_${lo + b}`; if (I.tiles[x]) k.push(x); } return k; }
+function climoLoad(s) {
+  CLIMO.p = CLIMO.p || fetch("feed/climo/index.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { CLIMO.idx = j; }).catch(e => noteErr("sky climatology", e));
+  return CLIMO.p.then(() => Promise.all(climoKeys(s).map(k => CLIMO.tiles[k] = CLIMO.tiles[k] ||
+    fetch(`feed/climo/${k}.json`).then(r => r.ok ? r.json() : null).catch(e => noteErr("sky climatology", e)).then(j => { CLIMO.got[k] = j || { stations: {} }; }))));
+}
+// nearest station within 80 km with its data for the week of t (pooled with the weeks either side), or null; starts loading if needed
+function climoWeek(s, t, ev) {
+  if (!CLIMO.idx) { if (!CLIMO.p) climoLoad(s); return null; } const keys = climoKeys(s); if (keys.some(k => !CLIMO.got[k])) { climoLoad(s); return null; }
+  let best = null, bd = 80;
+  for (const k of keys) for (const [id, v] of Object.entries(CLIMO.got[k].stations || {})) { const d = km(s, v); if (d < bd) { bd = d; best = [id, v]; } }
+  if (!best) return null; const [id, v] = best, nc = (CLIMO.idx.cols || []).length || 5, wk = weekIdx(t), sum = [0, 0, 0, 0, 0];
+  for (const w of [wk - 1, wk, wk + 1]) { const i = ((w + 52) % 52) * nc; for (let j = 0; j < 5; j++) sum[j] += v[ev][i + j] || 0; }
+  if (sum[0] < 20) return null; const pc = x => Math.round(x / sum[0] * 100);
+  return { id, name: v.name, km: bd, y: v.y, n: sum[0], clear: pc(sum[1]), bkn: pc(sum[2]), ovc: pc(sum[3]), fog: pc(sum[4]) };
+}
+// "r" / "s" if t is within 90 min of sunrise / sunset at s
+function climoEvent(s, t) { const e = dayEvents(s, laYMD(t)); for (const [k, x] of [["r", e.sunrise], ["s", e.sunset]]) if (x && Math.abs(t - x) <= 90 * 6e4) return k; return null; }
 const __climoSt = {};
 function climoFor(s, t) {
+  const ev = climoEvent(s, t), nat = ev && climoWeek(s, t, ev);
+  if (nat) return { station: nat.id, fog: nat.fog, clear: nat.clear, lowovc: nat.bkn + nat.ovc, n: nat.n, src: "national" };
   const c = fd("climo"); if (!c) return null; let best = __climoSt[s.id], bd = 1e9;
   if (best === undefined) { for (const [k, v] of Object.entries(c.stations)) { const d = km(s, v); if (d < bd) { bd = d; best = [k, v]; } } if (bd > 80) best = null; __climoSt[s.id] = best; }
   if (!best) return null; const mo = +laYMD(t).slice(5, 7) - 1, hr = +t.toLocaleString("en-US", { timeZone: TZ, hour: "numeric", hourCycle: "h23" });
@@ -171,7 +195,19 @@ async function sheetFeed(s) {
 }
 const OBJN = { sun: "Sun", moon: "Moon", mwcore: "Milky Way core", orion: "Orion", pleiades: "Pleiades", cygnus: "Cygnus Milky Way" };
 const _openFeed = openSpot;
-openSpot = function (id) { _openFeed(id); const s = byId[id]; if (!s) return; const b = $("#shotBtn"); if (b) { b.id = "outcomeBtn"; b.textContent = "📷 Log outing"; } sheetFeed(s); };
+openSpot = function (id) { _openFeed(id); const s = byId[id]; if (!s) return; const b = $("#shotBtn"); if (b) { b.id = "outcomeBtn"; b.textContent = "📷 Log outing"; } sheetFeed(s); climoLine(s); };
+// spot page: how often the sky has been clear at sunset (and sunrise) this week of the year, from the nearest airport's reports
+let __climoOpen = null;
+function climoLine(s) {
+  __climoOpen = s.id;
+  climoLoad(s).then(() => {
+    const body = $("#sheetBody"); if (__climoOpen !== s.id || !body || body.querySelector(".climoline")) return;
+    const t = new Date(), ss = climoWeek(s, t, "s"), sr = climoWeek(s, t, "r"); if (!ss) return;
+    const html = `<p class="climoline muted" style="font-size:14px;margin:0 0 8px">🌇 <b>Clear at sunset this time of year: ${ss.clear}%</b> of evenings${sr ? ` (sunrise ${sr.clear}%)` : ""} · overcast ${ss.ovc}% · fog or mist ${ss.fog}% <span class="prov p-measured" title="Airport reports within 45 min of sunset, this week and the weeks either side">measured</span>
+      <span style="font-size:12px">${ss.n} evenings ${ss.y[0]}–${ss.y[1]} at ${esc(ss.name)} (${esc(ss.id)}), ${Math.round(ss.km)} km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)</span></p>`;
+    const oh = body.querySelector(".ohline"); oh ? oh.insertAdjacentHTML("afterend", html) : body.insertAdjacentHTML("afterbegin", html);
+  }).catch(e => noteErr("sky climatology", e));
+}
 
 /* ---------- Now: GOES card + map overlay ---------- */
 /* airport weather reports near you: what the ground sees (visibility, fog or mist, cloud base) */
