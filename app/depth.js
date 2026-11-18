@@ -41,7 +41,7 @@ function accStation(p) {   // nearest verified airport (coordinates from the liv
 }
 // loadFeed's periodic refresh drops verify_obs and only the first load fetches it again: fetch it here when missing
 let __accAsk = 0;
-function accFeed() { const v = fd("verify_obs"); if (!v && Date.now() - __accAsk > 6e4 && typeof feedGet === "function") { __accAsk = Date.now(); feedGet("verify_obs").then(j => { if (j) { if (typeof __topsKey !== "undefined") __topsKey = ""; render(); } }); } return v; }
+function accFeed() { const v = fd("verify_obs"); if (!v && Date.now() - __accAsk > 6e4 && typeof feedGet === "function") { __accAsk = Date.now(); feedGet("verify_obs").then(j => { if (j) setTimeout(render, 0); });   // rankings do not depend on it: no cache reset } return v; }
 function accFor(p, ev) {   // stats for event "fog" or "low" near p: { e, where } or null
   const v = accFeed(); if (!v || !v.events) return null; const ns = accStation(p); if (!ns || ns.d > 250) return null;
   const se = ns.st[ev], ok = e => e && e.n >= 20 && e.hit + e.false_alarm >= 5 && e.hit + e.miss >= 5;
