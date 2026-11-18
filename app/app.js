@@ -683,10 +683,24 @@ const KSHORT2 = { blueAM: "Blue hour", sunrise: "Sunrise", morning: "Morning", m
 function winDay(w) { return laYMD(w.kind === "night" ? w.start : w.peak); }
 function dayTab(ymd) { const y = laYMD(new Date()); if (ymd === y) return "Today"; if (ymd === addDays(y, 1)) return "Tomorrow";
   return new Date(ymd + "T12:00:00").toLocaleDateString("en-US", { weekday: "short" }); }
-let __tops3 = [], __topsKey = "", __tops = [];
+let __tops3 = [], __topsKey = "", __tops = [], __topsJob = 0, __topsDone = new Set(), __topsOne = null;
 function windowTops(all) {   // best spot per window, cached per forecast/feed state
   const k = all.length + "|" + SPOTS.length + "|" + (all[0] && all[0].start.getTime()) + "|" + wxVer() + "|" + (window.FEED && FEED.m ? FEED.m.gen : "") + "|" + Object.keys(SAVED).length + "|" + LOC.lat + "|" + UI.group + "|" + PREFS.travel + maxTravel() + "|" + (HZN ? HZN.at : 0);
-  if (k !== __topsKey) { __tops3 = []; __tops = all.map((x, i) => { const r = rankFor(x); __tops3[i] = r.length ? Math.round(r.slice(0, 3).reduce((a, y) => a + y.f.n, 0) / Math.min(3, r.length)) : 0; return r[0] || null; }); __topsKey = k; }
+  if (k !== __topsKey) {
+    // The day you're looking at is ranked now; the rest of the week fills in, in slices of ~30 ms between frames,
+    // then one redraw. A full week in one go (~50 rankings) froze a phone for 2-8 s each time data arrived.
+    const same = __tops.length === all.length, old = __tops, old3 = __tops3;
+    __tops = all.map((x, i) => same ? old[i] : null); __tops3 = all.map((x, i) => same ? old3[i] || 0 : 0); __topsKey = k;
+    __topsDone = new Set();
+    const one = __topsOne = i => { __topsDone.add(i); const r = rankFor(all[i]); __tops3[i] = r.length ? Math.round(r.slice(0, 3).reduce((a, y) => a + y.f.n, 0) / Math.min(3, r.length)) : 0; __tops[i] = r[0] || null; };
+    const day = UI.day || winDay(all[clamp(UI.focus, 0, all.length - 1)]), rest = [];
+    all.forEach((w, i) => { if (i === UI.focus || winDay(w) === day) one(i); else rest.push(i); });
+    clearTimeout(__topsJob);
+    if (rest.length) { const job = k, step = () => { if (__topsKey !== job) return; const t0 = performance.now();
+        while (rest.length && performance.now() - t0 < 30) { const i = rest.shift(); if (!__topsDone.has(i)) one(i); }
+        if (rest.length) __topsJob = setTimeout(step, 0); else render(); };
+      __topsJob = setTimeout(step, 0); }
+  }
   return __tops;
 }
 function chipTime(w) { return w.kind === "night" ? (w.dark ? fmtT(w.dark.s) : "all night") : w.live ? "now" : fmtT(GOLDK.has(w.kind) ? w.peak : w.start); }
@@ -709,13 +723,37 @@ function plannerHtml(all, tops) {
     return `<button class="winchip${i === UI.focus ? " on" : ""}" data-focus="${i}" aria-pressed="${i === UI.focus}"><span class="wk">${KSHORT2[w.kind]}${flag ? ` <i class="adot" title="alert"></i>` : ""}</span><span class="wt">${chipTime(w)}${soft(i) ? " · ☁ soft" : ""}</span><span class="score sm ${scoreCls(n)}">${n || "–"}</span>${n && n === best && i === bestI && nBest < idx.length ? `<span class="wbest">best</span>` : ""}</button>`; }).join("")}</div></div>`;
   return h;
 }
+/* A list that stays put (Nov 18, load profile: the top cards were replaced 2-3 times in the first 15 s on a phone).
+   Until the main data is in (forecast for the current points, spot tiles) the list shows placeholder cards, at most
+   LIST_HOLD_MS. After that the top picks keep their order for this window, filter and place while later data only
+   updates their scores; when the order would change, a pill offers it. Any choice you make (window, day, filter,
+   place) starts a fresh list. Display only: the ranking itself (rankFor) is unchanged. */
+const LIST_HOLD_MS = 4500;
+let __listOk = false, __pin = null, __listHold = 0;
+function listReady() {
+  if (__listOk) return true;
+  const tiles = typeof SEED === "undefined" || (!SEED.busy && (SEED.n > 0 || !(typeof seedCovers === "function" && seedCovers())));
+  if ((WX && WX.pts && tiles && WX.n === wxPoints().length) || Date.now() - BOOT.t0 > LIST_HOLD_MS) __listOk = true;
+  else if (!__listHold) __listHold = setTimeout(() => { __listHold = 0; render(); }, Math.max(50, LIST_HOLD_MS - (Date.now() - BOOT.t0)));
+  return __listOk;
+}
+const pinKeyFor = w => [w.kind, w.start.getTime(), UI.group, locKey(), PREFS.travel, maxTravel()].join("|");
+function pinned(top, ranked, key) {   // returns { top, moved }: the shown order if it still holds, else the new one
+  if (!__pin || __pin.key !== key) { __pin = { key, ids: top.map(x => x.s.id) }; return { top, moved: false }; }
+  const by = new Map(ranked.map(x => [x.s.id, x])), keep = __pin.ids.map(id => by.get(id));
+  if (keep.some(x => !x) || keep.length !== top.length) { __pin = { key, ids: top.map(x => x.s.id) }; return { top, moved: false }; }   // a pick left the list: show the new one
+  return { top: keep, moved: keep.some((x, i) => x !== top[i]) };
+}
+const skelRows = n => `<ul class="picks skel" aria-busy="true" aria-label="Finding the best spots">${Array.from({ length: n }, () => `<li><div class="pick"><span class="score">&nbsp;</span><span><b>&nbsp;</b><small>&nbsp;</small></span><span class="drive">&nbsp;<small>&nbsp;</small></span></div></li>`).join("")}</ul>`;
 function renderNow() {
   const el = $("#v-now"); const all = allWindows(LOC, PLAN_HOURS);
   if (!all.length) { el.innerHTML = `<p class="empty">Working out the light…</p>`; return; }
   UI.focus = clamp(UI.focus, 0, all.length - 1);
   const w = all[UI.focus], tops = windowTops(all);
   const sk = w.kind === "night" ? null : skyAt(LOC, w), v = w.kind === "night" ? null : verdict(sk);
-  const ranked = rankFor(w); const top = diversify(ranked, 3), more = ranked.filter(x => !top.includes(x)).slice(0, 7);
+  const ranked = rankFor(w), fresh3 = diversify(ranked, 3), ready = listReady();
+  const pin = ready && fresh3.length ? pinned(fresh3, ranked, pinKeyFor(w)) : { top: fresh3, moved: false };
+  const top = pin.top, more = ranked.filter(x => !top.includes(x)).slice(0, 7);
   const timeTxt = !GOLDK.has(w.kind) && w.kind !== "night" ? `${fmtT(w.start)}–${fmtT(w.end)}` : w.kind === "night" ? (w.dark ? `${fmtT(w.dark.s)}–${fmtT(w.dark.e)} moon-free` : `Moon ${Math.round(w.illum * 100)}% all night`) : `${fmtT(w.peak)} · golden ${fmtT(w.start)}–${fmtT(w.end)}`;
   if ((tops[UI.focus] || null) !== (ranked[0] || null) && (!tops[UI.focus] || !ranked[0] || tops[UI.focus].f.n !== ranked[0].f.n)) tops[UI.focus] = ranked[0] || null;
   let h = plannerHtml(all, tops);
@@ -729,8 +767,9 @@ function renderNow() {
       if (w.kind === "night") { const here = hourAt(nearestPt(LOC, 60), w.peak), there = typeof nightCloud === "function" ? nightCloud(t0.s, w) : null;   // sky.js loads after this file
         if (here && there && Math.abs(here.cc - there.cc) >= 30) h += `<p class="why">That's for here. At ${esc(t0.s.name)}: ${there.cc <= 20 ? "clear" : there.cc <= 50 ? "partly cloudy" : "cloudy"} (${Math.round(there.cc)}% cloud).</p>`; }
       else if (v && t0.f.sk) { const vt = verdict(t0.f.sk); if (vt.cls !== v.cls) h += `<p class="why">That's for here. At ${esc(t0.s.name)}: ${esc(vt.txt.split(". ")[0])}.</p>`; } } }
-  h += top.length ? `<ul class="picks">${top.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<p class="empty">${typeof SEED !== "undefined" && SEED.busy ? "Still finding spots near you…" : !WX ? "Waiting for the forecast…" : w.kind === "night" && (() => { const c = hourAt(nearestPt(LOC, 60), w.peak); return c && c.cc > 60; })() ? "Too cloudy tonight for the night-sky spots. Try another night above." : UI.group !== "all" && !SPOTS.some(s => groupTest[UI.group] && groupTest[UI.group](s) && !tooFar(s)) ? `No ${(GROUPS.find(g => g[0] === UI.group) || [, "matching"])[1].toLowerCase()} spots within your travel limit here yet. Tap Show all above, or allow more travel time in Settings.` : "No spots you can reach in time. Pick a later window above, or allow more travel time in Settings."}</p>`;
-  if (more.length) h += UI.more ? `<ul class="picks" style="border-top:0">${more.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<button class="more" id="moreBtn">${more.length} more options</button>`;
+  if (pin.moved) h += `<button class="resort" id="resortBtn">Updated picks · tap to re-sort</button>`;
+  h += !ready ? skelRows(3) : top.length ? `<ul class="picks">${top.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<p class="empty">${typeof SEED !== "undefined" && SEED.busy ? "Still finding spots near you…" : !WX ? "Waiting for the forecast…" : w.kind === "night" && (() => { const c = hourAt(nearestPt(LOC, 60), w.peak); return c && c.cc > 60; })() ? "Too cloudy tonight for the night-sky spots. Try another night above." : UI.group !== "all" && !SPOTS.some(s => groupTest[UI.group] && groupTest[UI.group](s) && !tooFar(s)) ? `No ${(GROUPS.find(g => g[0] === UI.group) || [, "matching"])[1].toLowerCase()} spots within your travel limit here yet. Tap Show all above, or allow more travel time in Settings.` : "No spots you can reach in time. Pick a later window above, or allow more travel time in Settings."}</p>`;
+  if (more.length && ready) h += UI.more ? `<ul class="picks" style="border-top:0">${more.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<button class="more" id="moreBtn">${more.length} more options</button>`;
   h += `</div>`;
   h += `<p class="muted scorenote">Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.</p>`;
   h += specialsHtml();
@@ -1055,7 +1094,7 @@ function show(v) { UI.view = v; document.querySelectorAll(".view").forEach(x => 
 async function refresh(force) { await Promise.all([loadWx(force), loadKp(), loadNws()]); render(); if (typeof FEED !== "undefined" && FEED.m) bootReady(); }
 
 document.addEventListener("click", e => {
-  const t = e.target.closest("[data-spot],[data-focus],[data-group],[data-hit],[data-v],#moreBtn,#moreSpots,#saveBtn,#shotBtn,#shareBtn,#nightBtn,#locBtn,#locClose,#sheetClose,#useGps,#fresh");
+  const t = e.target.closest("[data-spot],[data-focus],[data-group],[data-hit],[data-v],#moreBtn,#resortBtn,#moreSpots,#saveBtn,#shotBtn,#shareBtn,#nightBtn,#locBtn,#locClose,#sheetClose,#useGps,#fresh");
   if (!t) return;
   if (t.dataset.v) return show(t.dataset.v);
   if (t.dataset.spot) return openSpot(t.dataset.spot);
@@ -1065,6 +1104,7 @@ document.addEventListener("click", e => {
     fbar(); return render(); }
   if (t.dataset.hit != null) { const x = $("#locHits")._list[+t.dataset.hit]; $("#locSheet").hidden = true; return setLoc({ lat: x.lat, lon: x.lon, label: x.label, src: "search" }); }
   if (t.id === "moreBtn") { UI.more = true; return renderNow(); }
+  if (t.id === "resortBtn") { __pin = null; return renderNow(); }
   if (t.id === "moreSpots") { UI.limit = (UI.limit || 40) + 40; return renderSpots(); }
   if (t.id === "saveBtn") { const id = t.dataset.id; if (SAVED[id]) delete SAVED[id]; else SAVED[id] = Date.now(); store.set("saved", SAVED); t.textContent = SAVED[id] ? "★ Saved" : "☆ Save"; haptic(); return; }
   if (t.id === "shotBtn") { const id = t.dataset.id, s = byId[id], w = windows(s, 1)[0], c = hourAt(nearestPt(s, 60), new Date());
@@ -1115,6 +1155,7 @@ document.addEventListener("click", e => {
   const t = e.target.closest("[data-day]"); if (!t || !t.closest("#planner")) return;
   const all = allWindows(LOC, PLAN_HOURS), tops = windowTops(all); UI.day = t.dataset.day; UI.more = false;
   const idx = all.map((w, i) => i).filter(i => winDay(all[i]) === UI.day);
+  if (__topsOne) idx.forEach(i => { if (!__topsDone.has(i)) __topsOne(i); });   // that day may not be filled in yet
   UI.focus = idx.reduce((b, i) => (tops[i] ? tops[i].f.n : -1) > (tops[b] ? tops[b].f.n : -1) ? i : b, idx[0] ?? UI.focus);
   paint(); showDetail();
 });
