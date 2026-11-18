@@ -437,4 +437,5 @@ details>summary{padding-top:10px;padding-bottom:10px}
 @keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
 @media (prefers-reduced-motion:reduce){.picks.skel .score,.picks.skel b,.picks.skel small{animation:none}}
 /* offered instead of reshuffling the list under your finger */
-.resort{display:block;margin:6px auto 8px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--paper);font:inherit;font-size:14px;font-weight:600;color:var(--ink)}
+/* floats over the page: inserted into the flow it pushed the list down ~60 px, the very jump it is there to avoid */
+.resort{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom));z-index:40;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--paper);box-shadow:0 2px 10px rgba(0,0,0,.18);font:inherit;font-size:14px;font-weight:600;color:var(--ink)}

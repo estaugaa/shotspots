@@ -732,7 +732,8 @@ const LIST_HOLD_MS = 4500;
 let __listOk = false, __pin = null, __listHold = 0;
 function listReady() {
   if (__listOk) return true;
-  const tiles = typeof SEED === "undefined" || (!SEED.busy && (SEED.n > 0 || !(typeof seedCovers === "function" && seedCovers())));
+  // spot tiles: wait for the tile index too (before it loads, "no tiles cover this place" looked true and the list showed early)
+  const tiles = typeof SEED === "undefined" || (SEED.idxDone && !SEED.busy && (SEED.n > 0 || !(typeof seedCovers === "function" && seedCovers())));
   if ((WX && WX.pts && tiles && WX.n === wxPoints().length) || Date.now() - BOOT.t0 > LIST_HOLD_MS) __listOk = true;
   else if (!__listHold) __listHold = setTimeout(() => { __listHold = 0; render(); }, Math.max(50, LIST_HOLD_MS - (Date.now() - BOOT.t0)));
   return __listOk;

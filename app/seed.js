@@ -6,7 +6,7 @@
 const SEED = { idx: null, tiles: new Set(), n: 0 };
 if (typeof D !== "undefined" && D.CATS && !D.CATS.landmark) D.CATS.landmark = { label: "Landmarks", color: (D.CATS.historic || {}).color || "var(--rust)" };
 const SEED_KIND = { waterfall: "Waterfall", viewpoint: "Viewpoint", peak: "Summit", lighthouse: "Lighthouse", arch: "Arch", hotspring: "Hot spring", refuge: "Refuge", beach: "Beach", bridge: "Bridge", landmark: "Landmark", hotspot: "Birding hotspot", lake: "Lake", pass: "Mountain pass", lookout: "Lookout tower", cave: "Cave" };
-SEED.ready = fetch("feed/seed/index.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { SEED.idx = j; }).catch(e => noteErr("spot tiles", e));
+SEED.ready = fetch("feed/seed/index.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { SEED.idx = j; }).catch(e => noteErr("spot tiles", e)).finally(() => { SEED.idxDone = true; });   // loaded or failed: the list may stop waiting for it
 // which tiles have popularity / opening-hours files yet (both jobs fill in over time); null = unknown, so try all
 SEED.has = { seedpop: null, seedhours: null, stands: null, seedviews: null, deep: null };
 SEED.hasReady = Promise.all(["seedpop", "seedhours", "stands", "seedviews", "deep"].map(d => fetch(`feed/${d}/index.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { if (Array.isArray(j)) SEED.has[d] = new Set(j); }).catch(e => noteErr("spot tiles", e))));

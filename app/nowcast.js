@@ -19,11 +19,17 @@ async function loadObsNow() {
   lateRender();
 }
 setTimeout(loadObsNow, 300); setInterval(loadObsNow, 15 * 60e3);
+// remembered per point, set of reports and minute (it looped over every report on every hourAt call: load profile,
+// Nov 18); a report may count for up to a minute past its 100-minute cut-off
+let __obsMemo = new Map(), __obsMemoOf = null, __obsMemoMin = -1;
 function obsFor(pt) {
   if (!OBSNOW || !OBSNOW.length) return null;
+  const min = Math.floor(Date.now() / 60e3);
+  if (__obsMemoOf !== OBSNOW || __obsMemoMin !== min) { __obsMemo = new Map(); __obsMemoOf = OBSNOW; __obsMemoMin = min; }
+  const k = pt.lat + "," + pt.lon, hit = __obsMemo.get(k); if (hit !== undefined) return hit;
   let best = null, bd = 40;
   for (const o of OBSNOW) { if (Date.now() - o.t > 100 * 60e3) continue; const d = km(pt, o); if (d < bd) { bd = d; best = o; } }
-  return best;
+  __obsMemo.set(k, best); return best;
 }
 /* Calibration (pipeline/skill.py): what forecast low cloud turned out to mean at airports at sunrise/sunset, from the
    last 60 days nationwide. Used only where the held-out test shows it lowers the error. */
@@ -81,11 +87,13 @@ hourAt = function (pt, t) {
   const cc = Math.round(Math.min(100, Math.max(low, mid, c.high * 0.8, low + (100 - low) * mid / 100 * 0.6)));
   return { ...c, low, mid, cc, nc: { id: o.id, t: o.t, low: o.low, mid: o.mid, model: c.cc } };
 };
+const __ncT = new Map();   // the report's time label, made once per report time (toLocaleTimeString builds a formatter per call)
+const __ncTime = t => { let v = __ncT.get(t); if (v === undefined) { v = new Date(t).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); if (__ncT.size > 5000) __ncT.clear(); __ncT.set(t, v); } return v; };
 const _fitNC = fitFor;
 fitFor = function (s, w) {
   const f = _fitNC(s, w); if (!f) return f;
   const c = hourAt(nearestPt(s, 60), w.peak);
-  if (c && c.nc) { const t = new Date(c.nc.t).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  if (c && c.nc) { const t = __ncTime(c.nc.t);
     f.why = [`live airport report (${c.nc.id}, ${t}): ${NOWTXT(Math.max(c.nc.low, c.nc.mid))} below 12,000 ft (forecast said ${c.nc.model}%)`, ...f.why]; }
   return f;
 };
