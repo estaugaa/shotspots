@@ -24,7 +24,12 @@ jobs:
       - if: steps.chg.outputs.go == '1'
         run: sleep 60   # let GitHub Pages finish serving the new version
       - if: steps.chg.outputs.go == '1'
-        run: pip install playwright && python -m playwright install --with-deps chromium webkit
+        name: Install browsers (WebKit's system packages come from the Ubuntu mirrors; one retry, then say so)
+        timeout-minutes: 22
+        run: |
+          pip install -q playwright
+          for i in 1 2; do timeout 600 python -m playwright install --with-deps chromium webkit && exit 0; echo "browser install attempt $i timed out or failed"; done
+          echo "browsers could not be installed (Ubuntu package mirrors?): smoke test not run" > smoke.txt; exit 1
       - if: steps.chg.outputs.go == '1'
         name: Data proxies answer (7Timer via Worker, satellite gap grid)
         run: |
