@@ -80,6 +80,20 @@ def metrics(img_bytes):
     return round(sw * 100, 1), round(lw * 100, 1), round(sb * 100, 1), round(sg * 100, 1), round(sv, 3)
 
 
+def _thumbs(got, now):
+    """Small thumbnails of ~1 in 20 frames plus every unusually warm one, so the colour measure can be checked by eye."""
+    import random, re as _re
+    from PIL import Image
+    td = D / "thumbs" / str(now.date()); td.mkdir(parents=True, exist_ok=True)
+    for (c, ev, m, key), mt, img in got:
+        if mt[0] >= 20 or random.random() < 0.05:
+            try:
+                im = Image.open(io.BytesIO(img)).convert("RGB"); im.thumbnail((240, 180))
+                im.save(td / f"{_re.sub(r'[^A-Za-z0-9]', '', c['id'])}_{ev}_{m:+d}_sw{int(mt[0])}.jpg", quality=70)
+            except Exception as e:
+                log.info("thumb %s: %s", c["id"], e)
+
+
 def _forecast(pts):
     """Current-hour low/mid/high cloud and rain chance for many points (Open-Meteo, 50 a request)."""
     out = []
@@ -129,12 +143,14 @@ def capture(max_n=400):
         try:
             r = requests.get(c["url"], headers=H, timeout=25)
             if not r.ok or not r.headers.get("content-type", "").startswith("image"): return None
-            return item, metrics(r.content)
+            return item, metrics(r.content), r.content
         except Exception as e:
             soft_fail("camtruth: webcam fetch or metrics failed", e)
             return None
     with ThreadPoolExecutor(12) as ex: got = [g for g in ex.map(grab, due) if g]
-    got = [(it, mt) for it, mt in got if mt[4] >= 0.12]   # too dark to judge
+    got = [(it, mt, img) for it, mt, img in got if mt[4] >= 0.12]   # too dark to judge
+    _thumbs(got, now)
+    got = [(it, mt) for it, mt, img in got]
     pts = []
     for (c, ev, m, key), _ in got:
         az = 120 if ev == "sunrise" else 240
@@ -187,7 +203,7 @@ def fit():
         try:
             v = {k: archive.num(r.get(k)) for k in NUM}
             if None in (v["low"], v["mid"], v["high"]): continue
-            v["event"] = r["event"]; rows.append(v)
+            v["event"] = r["event"]; v["cam"] = r["cam"]; rows.append(v)
         except Exception as e:
             soft_fail("camtruth: webcam row skipped", e)
     out = {"gen": iso(utcnow()), "n": len(rows)}
@@ -195,10 +211,18 @@ def fit():
         write_json("camtruth.json", {**out, "note": "not enough frames yet"}); return out
     # cameras that show sky: some blue or grey sky in the sky band
     sky = [r for r in rows if r["sky_blue"] + r["sky_grey"] >= 25]
+    # each camera against its own history (tinted lenses, streetlights, cameras that never see the horizon cancel out):
+    # rel = this frame's warm colour minus that camera's median; used once a camera has 3+ frames
+    from statistics import median
+    per = {}
+    for r in sky: per.setdefault(r["cam"], []).append(r["sky_warm"])
+    rel = [dict(r, sky_warm=r["sky_warm"] - median(per[r["cam"]])) for r in sky if len(per[r["cam"]]) >= 3]
+    out["n_relative"] = len(rel)
     out["n_sky"] = len(sky)
     DEF = {"canvasFloor": 0.32, "lowBroken": 0.85, "lowDeck": 0.4}
     def score(prm, rs): return _spearman([sky_q(r["low"], r["mid"], r["high"], r["pop"], r["p_low"], r["p_mid"], prm) for r in rs], [r["sky_warm"] for r in rs])
     out["spearman_default"] = score(DEF, sky)
+    out["spearman_default_relative"] = score(DEF, rel) if len(rel) >= 30 else None
     out["spearman_old"] = score({"canvasFloor": 0.32, "lowBroken": 0.7, "lowDeck": 0.3}, sky)
     best = (None, -9)
     for cf in (0.2, 0.32, 0.45, 0.6):

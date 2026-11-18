@@ -16,6 +16,7 @@ All of these run on GitHub Actions against the live site. Run one with
 | Why a spot ranks where it does | diag.yml `tools/whyprobe.py <place words>` -> branch `diag-whyprobe` | debugging |
 | Smoke (site up, page doesn't jump while loading) | smoke.yml | every 30 min |
 | Webcam truth: real sunrise/sunset colour vs the sky formula | camtruth.yml (after every GOES run) -> feed/camtruth.json | continuous |
+| Sky climatology aggregation (report nearest sunrise/sunset, week of year, sky classes) | `pytest tests/test_climonat.py` | with the unit tests |
 | Forecast vs reality (cloud at sunrise/sunset, nationwide) | job=skill -> feed/calib.json `skill` | daily |
 | Prediction log: live site ranks the next sunrise/sunset for 8 places, top 20 + layers archived | `tools/scoretest.py --live` -> data/archive/predictions | nightly (regress.yml) |
 | Predictions vs truth (webcam colour, airport low cloud and fog; Spearman, spot and night level) | diag.yml `tools/predeval.py [days]` -> branch `diag-predeval` | weekly, once windows are over |

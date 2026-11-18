@@ -85,7 +85,42 @@ class Feed:
     def elev(self, sid):
         return (self.L or {}).get("elev", {}).get(sid)
 
+    def climo_nat(self, s, tmin):
+        """Clear-sky share at the nearest national climatology station (pipeline/climonat.py) within 80 km, if tmin is
+        within 90 min of sunrise/sunset there: the week and the weeks either side pooled, like the app."""
+        import math
+        from .sunlite import sun_times
+        from .climonat import tile_key, week_of
+        t = dt.datetime.fromtimestamp(tmin * 60, dt.timezone.utc)
+        d = (t + dt.timedelta(hours=s["lon"] / 15)).date()
+        ev = next((k for k, et in zip(("r", "s"), sun_times(s["lat"], s["lon"], d)) if et and abs((t - et).total_seconds()) <= 5400), None)
+        if not ev:
+            return None
+        if not hasattr(self, "_ct"):
+            self._ct = {}
+        best, bd = None, 80.0
+        for a in (-1, 0, 1):
+            for b in (-1, 0, 1):
+                k = tile_key(s["lat"] + a, s["lon"] + b)
+                if k not in self._ct:
+                    self._ct[k] = (read_json(FEED / "climo" / f"{k}.json") or {}).get("stations", {})
+                for v in self._ct[k].values():
+                    dk = math.hypot(v["lat"] - s["lat"], (v["lon"] - s["lon"]) * math.cos(math.radians(s["lat"]))) * 111.2
+                    if dk < bd:
+                        best, bd = v, dk
+        if not best:
+            return None
+        w0, tot = week_of(d), [0, 0]
+        for w in (w0 - 1, w0, w0 + 1):
+            i = (w % 52) * 5
+            tot[0] += best[ev][i]
+            tot[1] += best[ev][i + 1]
+        return round(100 * tot[1] / tot[0]) if tot[0] >= 20 else None
+
     def climo_clear(self, s, tmin):
+        nat = self.climo_nat(s, tmin)
+        if nat is not None:
+            return nat
         if not self.C:
             return None
         best, bd = None, 1e9
