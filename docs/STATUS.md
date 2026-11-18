@@ -20,6 +20,7 @@
 - Optional: an NPS_API_KEY secret (the NPS feed runs on DEMO_KEY).
 
 ## Next
+- Fog/low-cloud weighting: decide once verify_obs method 2 has run (daily job, first Nov 18 ~11 UTC). Then: low-cloud calibration from the forecast check (~Nov 24) and the fog model out of shadow (~Dec 7).
 - Check nowcast against outing logs (verify_outcomes) as more come in; Eric's first log (Nov 16, Steamboat Landing): partly cloudy, no colour; forecast said 97% low cloud, KPDX said few low/broken mid.
 - Spot research (weekly Sunday 1:23 AM scheduled task) still uses the old Netlify app address in its prompt; harmless but update when convenient.
 - Widen deep research nationally once the test regions improve.

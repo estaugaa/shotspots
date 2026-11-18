@@ -43,7 +43,8 @@ renderSettings = function () { const r = _renderSettingsP.apply(this, arguments)
     if (!b.querySelector(".accbox")) { const v = fd("verify_obs"), f = v && v.events && v.events.fog, o = v && v.events && v.events.ovc, l = v && v.events && v.events.low;
       const pct = x => x == null ? "–" : Math.round(x * 100) + "%";
       const row = (name, e) => e && e.n >= 20 ? `<li><b>${name}</b>: caught ${pct(e.hit_rate)} of them; ${pct(e.false_alarm_ratio)} of warnings were false alarms. Right ${pct(e.accuracy)} of the time vs ${pct(e.accuracy_if_always_usual)} by always guessing the usual (${e.n} reports).</li>` : "";
-      const rows = [row("Fog", f), row("Low cloud on the hills", l), row("Overcast", o)].join("");
+      // fog and low cloud only from the like-with-like check (method 2); method 1 compared low cloud with a 1,500 ft ceiling
+      const m2 = v && v.method === 2, rows = [m2 ? row("Fog", f) : "", m2 ? row("Low cloud on the hills", l) : "", row("Overcast", o)].join("");
       if (rows) (b.querySelector(".statusbox, .pipebox") || b.lastElementChild).insertAdjacentHTML("beforebegin", `<div class="accbox"><h3 style="margin-top:18px">How accurate is the forecast?</h3><p class="muted" style="font-size:14px">Checked against airport weather reports at sunrise and sunset over the last 30 days, using the forecast from a day before.</p><ul class="plain" style="font-size:14.5px">${rows}</ul></div>`); }
     let lv = b.querySelector("details.livedata"); if (!lv) { b.insertAdjacentHTML("beforeend", `<details class="livedata"><summary>Live data and pipeline status</summary></details>`); lv = b.querySelector("details.livedata"); }
     b.querySelectorAll(":scope > .statusbox, :scope > .pipebox").forEach(x => lv.appendChild(x)); };
