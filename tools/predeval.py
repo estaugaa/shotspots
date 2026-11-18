@@ -43,7 +43,7 @@ def spearman(a, b):
 
 
 def ts(s):
-    return dt.datetime.fromisoformat(s.replace("Z", "+00:00")[:25]).astimezone(dt.timezone.utc)
+    return dt.datetime.fromisoformat(s[:19]).replace(tzinfo=dt.timezone.utc)   # every logged time is UTC
 
 
 def truth_sources(since):
