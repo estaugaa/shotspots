@@ -107,12 +107,24 @@ function driveMin(s) {   // travel minutes: driving, or walking when Settings sa
   if (atHome() && s.drive != null) return s.drive;
   const d = km(LOC, s); return Math.round(6 + Math.min(d, 10) * 1.25 / 55 * 60 + Math.max(0, d - 10) * 1.15 / 95 * 60);   // town streets, then highway (real routes replace this when they load)
 }
+// road times asked for (per place) and requests in flight: the first list waits for its top candidates' road times,
+// since an estimated time can put a spot inside the travel limit that the real route then takes out
+const __drvAsked = new Set(); let __drvBusy = 0;
 async function loadDrives(ids) {
   const k = locKey(); const have = DRIVES[k] && Date.now() - DRIVES[k].at < 6 * 36e5 ? DRIVES[k] : { at: Date.now(), m: {} };
-  const all = ids.filter(id => have.m[id] == null).slice(0, 180); if (!all.length) return false;
-  let any = false;
-  for (let c = 0; c < all.length; c += 90) { if (await _route(all.slice(c, c + 90), have, k)) any = true; }
+  const all = ids.filter(id => have.m[id] == null && !__drvAsked.has(k + "|" + id)).slice(0, 180); if (!all.length) return false;
+  all.forEach(id => __drvAsked.add(k + "|" + id));
+  let any = false; __drvBusy++;
+  try { for (let c = 0; c < all.length; c += 90) { const part = all.slice(c, c + 90);
+      if (await _route(part, have, k)) any = true; else part.forEach(id => __drvAsked.delete(k + "|" + id)); } }   // failed: ask again next redraw
+  finally { __drvBusy--; }
   return any;
+}
+const drivesFetched = () => (atHome() && LOC.src !== "gps") || PREFS.travel === "walk";   // the cases where renderNow fetches no road times
+function drivesReady(ranked) {
+  if (drivesFetched()) return true;
+  const k = locKey(), m = (DRIVES[k] || { m: {} }).m;
+  return !__drvBusy && ranked.slice(0, 10).every(x => m[x.s.id] != null || __drvAsked.has(k + "|" + x.s.id));
 }
 async function _route(need, have, k) {
   const coords = [[LOC.lon, LOC.lat], ...need.map(id => byId[id].park ? [byId[id].park[1], byId[id].park[0]] : [byId[id].lon, byId[id].lat])].map(c => c[0].toFixed(5) + "," + c[1].toFixed(5)).join(";");
@@ -733,13 +745,14 @@ function plannerHtml(all, tops) {
    place) starts a fresh list. Display only: the ranking itself (rankFor) is unchanged. */
 const LIST_HOLD_MS = 3500;
 let __listOk = false, __pin = null, __listHold = 0;
-function listReady() {
+function listReady(ranked) {
   if (__listOk) return true;
   // spot tiles: wait for the tile index too (before it loads, "no tiles cover this place" looked true and the list showed early)
   const tiles = typeof SEED === "undefined" || (SEED.idxDone && !SEED.busy && (SEED.n > 0 || !(typeof seedCovers === "function" && seedCovers())));
   // the forecast and nearby tiles are enough: the second forecast fetch (adding far cluster points) only nudges far
   // spots, and if that changes the top picks the pill offers it
-  if ((WX && WX.pts && tiles) || Date.now() - BOOT.t0 > LIST_HOLD_MS) __listOk = true;
+  // core data too: on a return visit it lands ~0.1 s after the forecast and adds the planner tabs above the list
+  if ((WX && WX.pts && tiles && BOOT.core && drivesReady(ranked || [])) || Date.now() - BOOT.t0 > LIST_HOLD_MS) __listOk = true;
   else if (!__listHold) __listHold = setTimeout(() => { __listHold = 0; render(); }, Math.max(50, LIST_HOLD_MS - (Date.now() - BOOT.t0)));
   return __listOk;
 }
@@ -757,7 +770,7 @@ function renderNow() {
   UI.focus = clamp(UI.focus, 0, all.length - 1);
   const w = all[UI.focus], tops = windowTops(all);
   const sk = w.kind === "night" ? null : skyAt(LOC, w), v = w.kind === "night" ? null : verdict(sk);
-  const ranked = rankFor(w), fresh3 = diversify(ranked, 3), ready = listReady();
+  const ranked = rankFor(w), fresh3 = diversify(ranked, 3), ready = listReady(ranked);
   const pin = ready && fresh3.length ? pinned(fresh3, ranked, pinKeyFor(w)) : { top: fresh3, moved: false };
   const top = pin.top, more = ranked.filter(x => !top.includes(x)).slice(0, 7);
   const timeTxt = !GOLDK.has(w.kind) && w.kind !== "night" ? `${fmtT(w.start)}–${fmtT(w.end)}` : w.kind === "night" ? (w.dark ? `${fmtT(w.dark.s)}–${fmtT(w.dark.e)} moon-free` : `Moon ${Math.round(w.illum * 100)}% all night`) : `${fmtT(w.peak)} · golden ${fmtT(w.start)}–${fmtT(w.end)}`;
@@ -768,13 +781,16 @@ function renderNow() {
   if (v) h += `<p class="verdict ${v.cls}">${v.txt}</p><p class="why">${esc(sk ? sk.why.join(", ") : (WX ? "No forecast for this place." : loadWx.retry ? "The forecast service is busy; trying again in a few seconds…" : "Loading the forecast…"))}</p>${skyLine(sk)}`;
   else { const c = hourAt(nearestPt(LOC, 60), w.peak); h += `<p class="verdict ${c && c.cc <= 20 ? "good" : "mid"}">${c ? (c.cc <= 20 ? "Clear and dark enough for stars" : c.cc <= 50 ? "Partly cloudy: gaps for stars" : "Cloudy: skip the stars") : "Forecast doesn't reach this far yet"}</p>
     <button class="chip" data-v="sky" style="margin:4px 0 8px">Night sky details: Milky Way, moon, planets ›</button>`; }
-  // the headline is for where you are; say so when the top pick is somewhere with different weather
-  { const t0 = ranked[0]; if (t0 && km(LOC, t0.s) > 25) {
+  // the headline is for where you are; say so (under the picks, so it can't push them down when it appears late)
+  let forHere = "";
+  // say so when the top pick is somewhere with different weather
+  { const t0 = top[0] || ranked[0]; if (t0 && km(LOC, t0.s) > 25) {
       if (w.kind === "night") { const here = hourAt(nearestPt(LOC, 60), w.peak), there = typeof nightCloud === "function" ? nightCloud(t0.s, w) : null;   // sky.js loads after this file
-        if (here && there && Math.abs(here.cc - there.cc) >= 30) h += `<p class="why">That's for here. At ${esc(t0.s.name)}: ${there.cc <= 20 ? "clear" : there.cc <= 50 ? "partly cloudy" : "cloudy"} (${Math.round(there.cc)}% cloud).</p>`; }
-      else if (v && t0.f.sk) { const vt = verdict(t0.f.sk); if (vt.cls !== v.cls) h += `<p class="why">That's for here. At ${esc(t0.s.name)}: ${esc(vt.txt.split(". ")[0])}.</p>`; } } }
+        if (here && there && Math.abs(here.cc - there.cc) >= 30) forHere = `<p class="why forhere">The headline above is for here. At ${esc(t0.s.name)}: ${there.cc <= 20 ? "clear" : there.cc <= 50 ? "partly cloudy" : "cloudy"} (${Math.round(there.cc)}% cloud).</p>`; }
+      else if (v && t0.f.sk) { const vt = verdict(t0.f.sk); if (vt.cls !== v.cls) forHere = `<p class="why forhere">The headline above is for here. At ${esc(t0.s.name)}: ${esc(vt.txt.split(". ")[0])}.</p>`; } } }
   if (pin.moved) h += `<button class="resort" id="resortBtn">Updated picks · tap to re-sort</button>`;
   h += !ready ? skelRows(3) : top.length ? `<ul class="picks">${top.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<p class="empty">${typeof SEED !== "undefined" && SEED.busy ? "Still finding spots near you…" : !WX ? "Waiting for the forecast…" : w.kind === "night" && (() => { const c = hourAt(nearestPt(LOC, 60), w.peak); return c && c.cc > 60; })() ? "Too cloudy tonight for the night-sky spots. Try another night above." : UI.group !== "all" && !SPOTS.some(s => groupTest[UI.group] && groupTest[UI.group](s) && !tooFar(s)) ? `No ${(GROUPS.find(g => g[0] === UI.group) || [, "matching"])[1].toLowerCase()} spots within your travel limit here yet. Tap Show all above, or allow more travel time in Settings.` : "No spots you can reach in time. Pick a later window above, or allow more travel time in Settings."}</p>`;
+  if (ready) h += forHere;
   if (more.length && ready) h += UI.more ? `<ul class="picks" style="border-top:0">${more.map(x => `<li>${pickRow(x, w)}</li>`).join("")}</ul>` : `<button class="more" id="moreBtn">${more.length} more options</button>`;
   h += `</div>`;
   h += `<p class="muted scorenote">Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.</p>`;

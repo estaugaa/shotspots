@@ -2,7 +2,7 @@
    and when does that change? Open-Meteo current conditions plus its 15-minute precipitation (HRRR-based in the US),
    refreshed every 10 minutes, with the nearest airport report as a cross-check. */
 "use strict";
-const NOW = { at: 0, key: "", d: null };
+const NOW = { at: 0, key: "", d: null, fail: false };
 const WCODE = c => c == null ? null : c >= 95 ? "Thunderstorms" : c >= 85 ? "Snow showers" : c >= 80 ? (c === 82 ? "Heavy showers" : "Showers") : c >= 71 && c <= 77 ? "Snow" : c >= 66 ? "Freezing rain" : c >= 61 ? (c >= 65 ? "Heavy rain" : c >= 63 ? "Rain" : "Light rain") : c >= 56 ? "Freezing drizzle" : c >= 51 ? "Drizzle" : c === 45 || c === 48 ? "Fog" : null;
 async function loadNow(force) {
   const key = `${LOC.lat.toFixed(2)},${LOC.lon.toFixed(2)}`;
@@ -10,11 +10,14 @@ async function loadNow(force) {
   NOW.key = key; NOW.at = Date.now();
   try {
     const j = await getJson(`https://api.open-meteo.com/v1/forecast?latitude=${LOC.lat.toFixed(3)}&longitude=${LOC.lon.toFixed(3)}&current=precipitation,rain,showers,snowfall,weather_code,temperature_2m,cloud_cover,wind_speed_10m&minutely_15=precipitation&forecast_minutely_15=16&past_minutely_15=2&timeformat=unixtime&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=GMT`);
-    NOW.d = j; if (UI.view === "now") renderNow();
-  } catch (e) { NOW.d = null; }
+    NOW.d = j; NOW.fail = false; if (UI.view === "now") renderNow();
+  } catch (e) { NOW.d = null; NOW.fail = true; noteErr("now", e); if (UI.view === "now") renderNow(); }
 }
 function nowLine() {
-  const j = NOW.d; if (!j || !j.current) return "";
+  const j = NOW.d;
+  // until the first answer, hold the line's space so the cards below don't jump down when it arrives
+  if (!j && !NOW.fail) return `<div class="nowline skel" aria-hidden="true"><span class="ni">&nbsp;</span><span class="muted">Checking the weather right now…</span></div>`;
+  if (!j || !j.current) return "";
   const c = j.current, m = j.minutely_15 || { time: [], precipitation: [] }, t0 = Date.now() / 1000;
   const fut = m.time.map((t, i) => [t, m.precipitation[i] || 0]).filter(([t]) => t >= t0 - 450);
   const wetNow = (c.precipitation || 0) > 0 || (fut[0] && fut[0][1] >= 0.1) || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95].includes(c.weather_code);

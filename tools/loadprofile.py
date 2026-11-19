@@ -24,16 +24,25 @@ WATCH = """(() => { const W = window.__lp = { t0: performance.now(), ev: [], cls
     if (!W.marks.wx && typeof WX !== "undefined" && WX && WX.pts) { W.marks.wx = t(); log("forecast loaded"); }
     if (!W.marks.core && typeof BOOT !== "undefined" && BOOT.core) { W.marks.core = t(); log("core data ready (BOOT.core)"); }
     const view = document.querySelector(".view:not([hidden])");
-    const cards = view ? [...view.querySelectorAll("[data-spot]")].filter(e => { const r = e.getBoundingClientRect(); return r.height > 0 && r.top < innerHeight * 2; }).slice(0, 6) : [];
+    // the picks: the first real (not placeholder) list under the forecast headline; other cards (week planner, extra
+    // sections) are counted separately, since those are expected to fill in while the week is ranked
+    const pl = view && view.querySelector("#winDetail ul.picks:not(.skel)");
+    const cards = pl ? [...pl.querySelectorAll("[data-spot]")] : [];
     const cur = cards.map(e => ({ id: e.dataset.spot, y: Math.round(e.getBoundingClientRect().top + scrollY) }));
-    if (cur.length && !W.marks.first) { W.marks.first = t(); log("first card: " + cur[0].id + " at y=" + cur[0].y); }
+    // heights of everything above the picks, to name what pushed them when they move
+    const above = []; if (pl) { let n = pl; while (n && n !== view) { let p = n.previousElementSibling; while (p) { if (getComputedStyle(p).position !== "fixed") above.push([(p.id ? "#" + p.id : String(p.className || p.nodeName).split(" ")[0]) || p.nodeName, Math.round(p.getBoundingClientRect().height)]); p = p.previousElementSibling; } n = n.parentElement; } }
+    const other = view ? [...view.querySelectorAll("[data-spot]")].filter(e => !pl || !pl.contains(e)).map(e => e.dataset.spot).join(",") : "";
+    if (W.lastOther != null && other !== W.lastOther) W.otherN = (W.otherN || 0) + 1; W.lastOther = other;
+    if (cur.length && !W.marks.first) { W.marks.first = t(); log("picks shown: " + cur.map(x => x.id.slice(0, 18)).join(" | ") + " (first at y=" + cur[0].y + ")"); }
     if (last && cur.length) {
       const a = last.map(x => x.id).join(","), b = cur.map(x => x.id).join(",");
       if (a !== b) { const gone = last.filter(x => !cur.some(y => y.id === x.id)).length, add = cur.filter(x => !last.some(y => y.id === x.id)).length;
-        log("top cards changed: " + (gone || add ? add + " new, " + gone + " gone" : "reordered") + " -> " + cur.map(x => x.id.slice(0, 18)).join(" | ")); W.marks.lastChange = t(); }
-      else { const mv = cur.filter((x, i) => Math.abs(x.y - last[i].y) > 8); if (mv.length) { log("top cards moved " + (cur[0].y - last[0].y) + "px (first card y " + last[0].y + " -> " + cur[0].y + ")"); W.marks.lastChange = t(); } }
+        log("picks changed: " + (gone || add ? add + " new, " + gone + " gone" : "reordered") + " -> " + cur.map(x => x.id.slice(0, 18)).join(" | ")); W.marks.lastChange = t(); W.pickChanges = (W.pickChanges || 0) + 1; }
+      else { const mv = cur.filter((x, i) => Math.abs(x.y - last[i].y) > 8); if (mv.length) {
+        const was = new Map((W.above || []).map(([k, h]) => [k, h])), d = above.filter(([k, h]) => was.get(k) !== h).map(([k, h]) => k + " " + (was.has(k) ? was.get(k) + "->" : "new ") + h + "px");
+        log("picks moved " + (cur[0].y - last[0].y) + "px (first y " + last[0].y + " -> " + cur[0].y + ")" + (d.length ? "; above: " + d.join(", ") : "")); W.marks.lastChange = t(); W.pickMoves = (W.pickMoves || 0) + 1; } }
     }
-    if (cur.length) last = cur;
+    if (cur.length) { last = cur; W.above = above; }
     const h = document.documentElement.scrollHeight; if (lastH && Math.abs(h - lastH) > 150) log("page height " + lastH + " -> " + h); lastH = h;
     setTimeout(tick, 100); };
   addEventListener("DOMContentLoaded", tick); })()""" % (SECS * 1000)
@@ -43,7 +52,7 @@ SUMMARY = """() => { const W = window.__lp, R = performance.getEntriesByType("re
   const host = u => { try { const x = new URL(u); return x.host === location.host ? x.pathname.replace("/shotspots/", "") : x.host; } catch (e) { return u; } };
   const big = R.map(r => ({ n: host(r.name), kb: Math.round((r.transferSize || 0) / 1024), end: Math.round(r.responseEnd) })).sort((a, b) => b.kb - a.kb).slice(0, 10);
   const fcp = (performance.getEntriesByType("paint").find(p => p.name === "first-contentful-paint") || {}).startTime;
-  return { fcp: fcp && Math.round(fcp), dcl: Math.round(nav.domContentLoadedEventEnd), marks: W.marks, cls: +W.cls.toFixed(3), long: Math.round(W.long), longN: W.longN,
+  return { fcp: fcp && Math.round(fcp), dcl: Math.round(nav.domContentLoadedEventEnd), marks: W.marks, pickChanges: W.pickChanges || 0, pickMoves: W.pickMoves || 0, otherN: W.otherN || 0, cls: +W.cls.toFixed(3), long: Math.round(W.long), longN: W.longN,
     req: R.length, kbAll: kb(() => true), kbJs: kb(r => /\\.js(\\?|$)/.test(r.name)), kbFeed: kb(r => r.name.includes("/feed/")), kbOther: kb(r => !r.name.includes(location.host)),
     lastReq: Math.round(Math.max(0, ...R.map(r => r.responseEnd))), big, paints: window.__paints, ev: W.ev, shifts: W.shifts }; }"""
 
@@ -101,8 +110,8 @@ async def profile(p, lat, lon):
         if warm:
             prof = (await cdp.send("Profiler.stop"))["profile"]; hot = hotspots(prof)
         out.append(f"\n=== {name} ===")
-        out.append(f"first paint {s['fcp']} ms | first card {m.get('first')} ms | forecast {m.get('wx')} ms | core data {m.get('core')} ms | "
-                   f"last change in top cards {m.get('lastChange', '-')} ms | list redraws {s['paints']} | layout shift {s['cls']}")
+        out.append(f"first paint {s['fcp']} ms | picks shown {m.get('first')} ms | forecast {m.get('wx')} ms | core data {m.get('core')} ms | "
+                   f"picks changed {s['pickChanges']}x, moved {s['pickMoves']}x (last {m.get('lastChange', '-')} ms) | other cards changed {s['otherN']}x | list redraws {s['paints']} | layout shift {s['cls']}")
         out.append(f"{s['req']} requests, {s['kbAll']} KB transferred (scripts {s['kbJs']}, feed {s['kbFeed']}, other sites {s['kbOther']}); "
                    f"last request done {s['lastReq']} ms | long script tasks {s['longN']} totalling {s['long']} ms")
         out.append("largest downloads: " + "; ".join(f"{x['kb']}KB {x['n']} (done {x['end']} ms)" for x in s["big"]))
@@ -120,4 +129,5 @@ async def main():
     txt = "\n".join(out); print(txt)
     open("ux/loadprofile.txt", "w", encoding="utf-8").write(txt + "\n")
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
