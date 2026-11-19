@@ -28,23 +28,24 @@ function peaksNear(p) {
 }
 let MTN = null, AIR = null, LOCAL = null, SEA = null;
 
-async function loadExtras(force) {
+async function loadExtras(force, mtnOnly) {
   const key = locKey(); if (!force && MTN && MTN.key === key && Date.now() - MTN.at < 60 * 60000) return false;
   let changed = false;
-  try {
+  if (!mtnOnly) try {
     const r = await omFetch(`https://api.open-meteo.com/v1/forecast?latitude=${LOC.lat.toFixed(3)}&longitude=${LOC.lon.toFixed(3)}&minutely_15=precipitation&forecast_minutely_15=12&past_minutely_15=2` +
       `&hourly=cape,snowfall,snow_depth,temperature_2m,relative_humidity_2m,wind_speed_10m&past_days=2&forecast_days=3&timeformat=unixtime&timezone=GMT`);
     LOCAL = { key, at: Date.now(), ...(await r.json()) }; changed = true;
   } catch (e) { }
   try {
-    const near = peaksNear(LOC);
+    const near = peaksNear(LOC), names = near.map(p => p.name).join("|");
     if (near.length) {
       const r = await omFetch("https://api.open-meteo.com/v1/forecast?latitude=" + near.map(p => p.lat).join(",") + "&longitude=" + near.map(p => p.lon).join(",") +
         "&hourly=" + LEVELS.map(([l]) => `cloud_cover_${l}hPa`).join(",") + ",snowfall&past_days=2&forecast_days=8&timeformat=unixtime&timezone=GMT");
       let j = await r.json(); if (!Array.isArray(j)) j = [j];
-      MTN = { key, at: Date.now(), peaks: near.map((p, i) => ({ ...p, h: j[i].hourly })) }; changed = true;
-    } else MTN = { key, at: Date.now(), peaks: [] };
+      MTN = { key, names, at: Date.now(), peaks: near.map((p, i) => ({ ...p, h: j[i].hourly })) }; changed = true;
+    } else MTN = { key, names, at: Date.now(), peaks: [] };
   } catch (e) { MTN = MTN || null; }
+  if (mtnOnly) return changed;
   const coast = SPOTS.filter(x => (x.cats.includes("coast") || x.kind === "lighthouse" || (x.kind === "beach" && !/river|lake|swimming|pond|creek/i.test(x.name))) && km(LOC, x) < 50).sort((a, b) => km(LOC, a) - km(LOC, b))[0];
   SEA = null;
   if (coast) try {
@@ -202,6 +203,14 @@ renderNow = function () {
   return r;
 };
 setTimeout(() => loadExtras().then(ch => { if (ch) { __topsKey = ""; render(); } }).catch(() => { }), 2500);
+// peaks found in spot tiles that load after that first fetch (slow phones) got no summit forecast for an hour, so whether a
+// view "should be out" depended on load speed. A second after redraws settle, ask again if the nearby peaks changed.
+{ let t = 0, tried = ""; const _rX = render;
+  render = function () { const r = _rX.apply(this, arguments); clearTimeout(t);
+    t = setTimeout(() => { if (!MTN || MTN.key !== locKey()) return; const want = peaksNear(LOC).map(p => p.name).join("|");
+      if (want === MTN.names || want === tried) return; tried = want;
+      loadExtras(true, true).then(ch => { if (ch) { __topsKey = ""; render(); } }).catch(e => noteErr("peaks", e)); }, 1000);
+    return r; }; }
 setTimeout(() => loadRainbow().then(ch => { if (ch) { __topsKey = ""; render(); } }).catch(() => { }), 4000);
 setInterval(() => { if (document.visibilityState === "visible") loadRainbow().then(ch => { if (ch) { __topsKey = ""; render(); } }).catch(() => { }); }, 15 * 60000);
 setInterval(() => loadExtras().then(ch => { if (ch) { __topsKey = ""; render(); } }).catch(() => { }), 30 * 60000);
