@@ -83,8 +83,19 @@ function climoFor(s, t) {
 }
 function weekIdx(t) { const d = new Date(laYMD(t) + "T12:00:00"); const start = new Date(d.getFullYear(), 0, 1); return Math.min(51, Math.floor((d - start) / 864e5 / 7)); }
 function wildlifeFor(id) { const w = fd("wildlife"); return w && w.v >= 2 && w.spots ? w.spots[id] : null; }   // v1 used a ~3 km box that mixed habitats
+// remembered per spot, week and 3-hour block (worked out per spot per window with a time-zone format each call: ~1 s of
+// a return visit's script time, load profile Nov 19). Week and hour block are remembered per hour.
+let __spMemo = new Map(), __spOf = null; const __spHb = new Map();
 function topSpecies(id, t, n) {
-  const w = wildlifeFor(id); if (!w) return []; const wk = weekIdx(t), hb = Math.floor(+t.toLocaleString("en-US", { timeZone: TZ, hour: "numeric", hourCycle: "h23" }) / 3);
+  const w = wildlifeFor(id); if (!w) return [];
+  const all = fd("wildlife"); if (__spOf !== all) { __spMemo = new Map(); __spOf = all; }
+  const hk = Math.floor(t.getTime() / 36e5); let wh = __spHb.get(hk);   // [week, hour block]: both follow from the hour
+  if (!wh) { wh = [weekIdx(t), Math.floor(+t.toLocaleString("en-US", { timeZone: TZ, hour: "numeric", hourCycle: "h23" }) / 3)]; if (__spHb.size > 2000) __spHb.clear(); __spHb.set(hk, wh); }
+  const [wk, hb] = wh, key = id + "|" + wk + "|" + hb + "|" + (n || 6); let r = __spMemo.get(key);
+  if (!r) { r = topSpeciesRaw(w, wk, hb, n); if (__spMemo.size > 50000) __spMemo.clear(); __spMemo.set(key, r); }
+  return r;
+}
+function topSpeciesRaw(w, wk, hb, n) {
   return w.species.map(x => { const tot = x.hr ? x.hr.reduce((a, b) => a + b, 0) : 0; const hf = x.hr && tot ? x.hr[hb] / tot * 8 : 1;
     return { sp: x.sp, p: x.wk[wk], best: x.hr ? x.hr.indexOf(Math.max(...x.hr)) * 3 : null, hf }; }).filter(x => x.p > 0).sort((a, b) => b.p - a.p).slice(0, n || 6);
 }

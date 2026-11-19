@@ -78,10 +78,13 @@ laDate=function(ymd,minutes){ let B=__baseCache[ymd]; if(B===undefined){ const [
 const fmtD=ymd=>{ const [y,m,d]=ymd.split("-").map(Number); return new Date(Date.UTC(y,m-1,d,12)).toLocaleDateString("en-US",{timeZone:"UTC",weekday:"short",month:"short",day:"numeric"}); };
 
 /* Crossings of a threshold during a local day; returns [{t, dir}] */
+// the 10-minute step times of a day, made once per day (laDate per step per scan showed in the load profile, Nov 19)
+const __stepT=new Map();
+function stepTimes(ymd,step){ const k=ymd+"|"+step; let a=__stepT.get(k); if(!a){ a=[]; for(let m=0;m<=1440;m+=step) a.push(laDate(ymd,m)); if(__stepT.size>400) __stepT.clear(); __stepT.set(k,a); } return a; }
 function crossings(ymd,fn,thr,step=10){
-  const out=[]; let prevT=laDate(ymd,0), prev=fn(prevT)-thr;
-  for(let m=step;m<=1440;m+=step){
-    const t=laDate(ymd,m), v=fn(t)-thr;
+  const T=stepTimes(ymd,step), out=[]; let prevT=T[0], prev=fn(prevT)-thr;
+  for(let i=1;i<T.length;i++){
+    const t=T[i], v=fn(t)-thr;
     if((prev<0)!==(v<0)){ let a=prevT.getTime(), b=t.getTime(), fa=prev;
       for(let k=0;k<14;k++){ const mid=(a+b)/2, fm=fn(new Date(mid))-thr; if((fa<0)===(fm<0)){a=mid;fa=fm;}else b=mid; }
       out.push({t:new Date((a+b)/2),dir:v>prev?"up":"down"}); }
@@ -103,7 +106,10 @@ function targetFrom(v,t){ const g=geoTo(v,t); return {az:g.az, alt:appAlt(v.elev
 const __dayEvCache={};
 function dayEvents(v,ymd){ const k=(Math.round(v.lat*20)/20)+","+(Math.round(v.lon*20)/20)+","+ymd; return __dayEvCache[k]||(__dayEvCache[k]=__dayEventsRaw(v,ymd)); }
 function __dayEventsRaw(v,ymd){
-  const sf=t=>sunPos(t,v.lat,v.lon).alt, mf=t=>moonPos(t,v.lat,v.lon).alt;
+  // remembered per instant: the four sun scans share their 145 step positions (they were each worked out four times;
+  // sun and moon positions were ~1/4 of the script time on a return visit, load profile Nov 19). Same results.
+  const memo=fn=>{ const m=new Map(); return t=>{ const k=t.getTime(); let x=m.get(k); if(x===undefined){ x=fn(t); m.set(k,x); } return x; }; };
+  const sf=memo(t=>sunPos(t,v.lat,v.lon).alt), mf=memo(t=>moonPos(t,v.lat,v.lon).alt);
   const pick=(arr,dir)=>{ const x=arr.find(c=>c.dir===dir); return x?x.t:null; };
   const rs=crossings(ymd,sf,-0.833), g6=crossings(ymd,sf,6), c6=crossings(ymd,sf,-6), a18=crossings(ymd,sf,-18), mr=crossings(ymd,mf,-0.8,10);
   return {astroDawn:pick(a18,"up"),civilDawn:pick(c6,"up"),sunrise:pick(rs,"up"),goldEndAM:pick(g6,"up"),goldStartPM:pick(g6,"down"),sunset:pick(rs,"down"),civilDusk:pick(c6,"down"),astroDusk:pick(a18,"down"),moonrise:pick(mr,"up"),moonset:pick(mr,"down")};

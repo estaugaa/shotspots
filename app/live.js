@@ -31,10 +31,18 @@ const SMALL_MAM = /coypu|nutria|muskrat|prairie dog|squirrel|chipmunk|mouse|\bra
 // "columbian white-tailed deer" -> "white-tailed deer", "mountain coyote" -> "coyote", "tamanend's bottlenose dolphin" -> "bottlenose dolphin"
 const MAM_NAME = n => n.replace(/^wapiti$/, "elk").replace(/^(american|common|north american|columbian|columbia|mountain(?! lion| goat| beaver)|rocky mountain|pacific|atlantic|california|eastern|western|northern|southern|olympic|sitka|desert|tule|roosevelt(?:'s)?|tamanend's|plains|great basin|nelson's|audubon's|florida|texas|virginia|carolina|arizona|new mexico|coues|gulf coast|alaska|hudsonian|canada) (?=\S)/, "").replace(/^(american|common) /, "");
 function inatTop(s, g, kmR) { const m = new Map(); inatNear(s, kmR).filter(o => o.g === g && /^(species|subspecies|variety)$/.test(o.rank) && !(g === "mam" && SMALL_MAM.test(o.n))).forEach(o => { const k = MAM_NAME(o.n.toLowerCase()); m.set(k, (m.get(k) || 0) + 1); }); return [...m].sort((a, b) => b[1] - a[1]); }
-function inatNear(s, kmR) { return LIVE.inat ? LIVE.inat.rows.filter(o => km(s, o) <= (kmR || 2.5)) : []; }
+// a latitude check first (a degree of latitude is over 110 km, so nothing in range is skipped), then the distance
+const nearRows = (rows, s, r) => { const dl = r / 110; return rows.filter(o => Math.abs(o.lat - s.lat) <= dl && km(s, o) <= r); };
+function inatNear(s, kmR) { return LIVE.inat ? nearRows(LIVE.inat.rows, s, kmR || 2.5) : []; }
 
 /* ---- National Park Service alerts and timed entry (feed/nps.json, pipeline/nps.py) ---- */
+// remembered per spot until the park feed changes (it tested every park against every spot on each redraw: half the
+// distance calculations on a return visit, load profile Nov 19)
+let __npsMemo = new Map(), __npsOf = null;
 function npsAt(s) { const f = typeof fd === "function" && fd("nps"); if (!f || !f.parks) return null;
+  if (__npsOf !== f) { __npsMemo = new Map(); __npsOf = f; }
+  let r = __npsMemo.get(s.id); if (r === undefined) { r = npsFind(f, s); __npsMemo.set(s.id, r); } return r; }
+function npsFind(f, s) {
   return f.parks.find(p => p.b ? s.lon >= p.b[0] && s.lon <= p.b[2] && s.lat >= p.b[1] && s.lat <= p.b[3] && p.r.some(r => inRing(s.lon, s.lat, r)) : p.pt && km(s, { lat: p.pt[1], lon: p.pt[0] }) <= 2.5 && nameShare(s.name + " " + (s.region || ""), p.n)) || null; }   // no outline yet: only a close spot that names the park
 const nameShare = (a, b) => { const w = x => new Set(x.toLowerCase().match(/[a-z]{5,}/g) || []), A = w(a); return [...w(b)].some(x => A.has(x) && !/national|historic|memorial|recreation|preserve|monument|seashore|lakeshore/.test(x)); };
 function npsHtml(s) { const p = npsAt(s); if (!p) return "";
@@ -152,7 +160,7 @@ function liveFacts(s) {
   let m = __liveMemo.get(s.id); if (m) return m; const c = {};
   m = { get r48() { return "r48" in c ? c.r48 : (c.r48 = rain48(s)); }, get birds() { return c.birds || (c.birds = inatNear(s, 2.5).filter(o => o.g === "bird")); },
     get mm() { return c.mm || (c.mm = inatTop(s, "mam", 1)); }, get bl() { return c.bl || (c.bl = inatTop(s, "bloom", 2.5)); },
-    get np() { return "np" in c ? c.np : (c.np = npsAt(s)); }, get eb() { return "eb" in c ? c.eb : (c.eb = LIVE.ebird && LIVE.ebird.rows.filter(o => km(s, o) <= 3)); } };
+    get np() { return "np" in c ? c.np : (c.np = npsAt(s)); }, get eb() { return "eb" in c ? c.eb : (c.eb = LIVE.ebird && nearRows(LIVE.ebird.rows, s, 3)); } };
   __liveMemo.set(s.id, m); return m;
 }
 const _paintLive = paint;
