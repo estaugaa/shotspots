@@ -11,13 +11,21 @@ let OBSNOW = null;
 // so whether a phone showed it (and the scoring test's result) depended on whether anything else redrew afterwards.
 // Safe now: placeholders hold the list's space until it is ready, then the picks keep their order (the pill offers a re-sort).
 let __lateT = 0;
+// late data the first list also waits for (at most LIST_HOLD_MS, app.js): each changes scores and the reason shown under
+// each pick, and the airport-report line added a line to every card ~1 s after the picks showed (load profile, Nov 19)
+const LATE = { obs: false, calib: false, hrrr: "" };
+function lateSettled() {
+  return LATE.obs && LATE.calib && (typeof HANDPOP === "undefined" || HANDPOP !== null)
+    && (!WX || !WX.pts || !hrrrBetter(LOC.lon) || LATE.hrrr === wxVer());   // HRRR only where it is used
+}
 function lateRender() { clearTimeout(__lateT); __lateT = setTimeout(() => { __lateT = 0; if (typeof render === "function") render(); }, 300); }
 function obsTileKey(lat, lon) { return `${5 * Math.floor(lat / 5)}_${5 * Math.floor(lon / 5)}`; }
 async function loadObsNow() {
-  if (typeof LOC === "undefined" || !LOC) return;
+  if (typeof LOC === "undefined" || !LOC) { LATE.obs = true; return; }
   const keys = new Set(); for (const dl of [-1.5, 0, 1.5]) for (const dn of [-2, 0, 2]) keys.add(obsTileKey(LOC.lat + dl, LOC.lon + dn));
   const rows = [];
   await Promise.all([...keys].map(k => fetch(`feed/obsnow/${k}.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { if (j && j.s) rows.push(...j.s); }).catch(() => { })));
+  LATE.obs = true;
   OBSNOW = rows.map(([id, lat, lon, t, low, mid, cover, wx]) => ({ id, lat, lon, t: t * 1000, low, mid, cover, wx: wx || "" }));
   if (typeof __skyMemoAt !== "undefined") __skyMemoAt = -1;   // re-score with the reports
   lateRender();
@@ -38,7 +46,7 @@ function obsFor(pt) {
 /* Calibration (pipeline/skill.py): what forecast low cloud turned out to mean at airports at sunrise/sunset, from the
    last 60 days nationwide. Used only where the held-out test shows it lowers the error. */
 let CALIB = null;
-fetch("feed/calib.json").then(r => r.ok ? r.json() : null).then(j => { CALIB = j; if (typeof __skyMemoAt !== "undefined") __skyMemoAt = -1; if (j) lateRender(); }).catch(() => { });
+fetch("feed/calib.json").then(r => r.ok ? r.json() : null).then(j => { CALIB = j; if (typeof __skyMemoAt !== "undefined") __skyMemoAt = -1; }).catch(e => noteErr("calib", e)).finally(() => { LATE.calib = true; lateRender(); });
 function calibLow(v, lon, model) {
   if (!CALIB || !CALIB.cal || v == null) return null;
   const k = `${model || "best_match"}/${lon < -100 ? "west" : "east"}`, bins = CALIB.cal[k], sk = (CALIB.skill || {})[k];
@@ -56,8 +64,9 @@ function hrrrBetter(lon) {
   const a = sk[`gfs_hrrr/${reg}`], b = sk[`best_match/${reg}`]; return !!(a && b && a.n >= 200 && a.mae_raw < b.mae_raw);
 }
 async function loadHrrr() {
-  if (!WX || !WX.pts || !(LOC.lat > 21 && LOC.lat < 53 && LOC.lon > -135 && LOC.lon < -60)) return;
-  if (HRRR && HRRR.key === wxVer()) return;
+  const settle = v => { if (LATE.hrrr !== v) { LATE.hrrr = v; lateRender(); } };   // answered (or not needed) for this forecast
+  if (!WX || !WX.pts) return;
+  if (!(LOC.lat > 21 && LOC.lat < 53 && LOC.lon > -135 && LOC.lon < -60) || (HRRR && HRRR.key === wxVer())) return settle(wxVer());
   const pts = WX.pts, v = wxVer();   // the forecast this request is for: its points (x0, x1, ... are reused per set)
   const url = "https://api.open-meteo.com/v1/forecast?latitude=" + pts.map(p => p.lat.toFixed(3)).join(",") + "&longitude=" + pts.map(p => p.lon.toFixed(3)).join(",") +
     "&hourly=cloud_cover_low,cloud_cover_mid,cloud_cover_high&models=gfs_hrrr&forecast_hours=18&past_hours=1&timeformat=unixtime&timezone=GMT";
@@ -65,7 +74,8 @@ async function loadHrrr() {
     if (v !== wxVer()) return;   // the forecast was replaced meanwhile: this answer is for the old points
     HRRR = { key: v, by: Object.fromEntries(j.map((x, i) => [pts[i].id, x.hourly])) };
     if (typeof __skyMemoAt !== "undefined") __skyMemoAt = -1; lateRender();
-  } catch (e) { }
+  } catch (e) { noteErr("hrrr", e); }
+  finally { if (v === wxVer()) settle(v); }
 }
 const _loadWxH = loadWx;
 loadWx = async function (f) { const r = await _loadWxH(f); loadHrrr(); return r; };

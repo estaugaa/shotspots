@@ -761,7 +761,10 @@ function listReady(ranked) {
   // the forecast and nearby tiles are enough: the second forecast fetch (adding far cluster points) only nudges far
   // spots, and if that changes the top picks the pill offers it
   // core data too: on a return visit it lands ~0.1 s after the forecast and adds the planner tabs above the list
-  if ((WX && WX.pts && tiles && BOOT.core && drivesReady(ranked || [])) || Date.now() - BOOT.t0 > LIST_HOLD_MS) __listOk = true;
+  // late data (airport reports, calibration, HRRR) and the eager feeds (the alert line above the list) too, so neither
+  // changes the cards or pushes them once shown
+  const late = (typeof lateSettled !== "function" || lateSettled()) && (typeof FEED === "undefined" || FEED.eager);
+  if ((WX && WX.pts && tiles && BOOT.core && late && drivesReady(ranked || [])) || Date.now() - BOOT.t0 > LIST_HOLD_MS) __listOk = true;
   else if (!__listHold) __listHold = setTimeout(() => { __listHold = 0; render(); }, Math.max(50, LIST_HOLD_MS - (Date.now() - BOOT.t0)));
   return __listOk;
 }

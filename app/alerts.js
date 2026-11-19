@@ -50,8 +50,17 @@ function alertRow(a) {
   return `<button class="lrow alertrow r-${a.rule}" ${sp && byId[sp] ? `data-spot="${sp}"` : `data-openalerts="1"`}><span><b>${esc(a.title)}</b><small>${esc(a.body)}</small></span><span class="pct">${a.rule === "smoke" ? "!" : a.p + "%"}</span></button>`;
 }
 const _renderNowAl = renderNow;
+// shown with the list, not before: arriving with the alerts feed it pushed everything below down 54 px about 1 s in
+// (load profile, Nov 19). Until then its slot is kept (blank) if the last visit had one, so a return visit doesn't move.
+let __alHad = store.get("alertline", false);
 renderNow = function () {
-  _renderNowAl(); const u = upcoming(); const v = $("#v-now"); if (!u.length || !v || (typeof outsideCoverage === "function" && outsideCoverage())) return;
+  _renderNowAl(); const v = $("#v-now"); if (!v) return;
+  if (typeof __listOk !== "undefined" && !__listOk) {
+    if (__alHad) v.insertAdjacentHTML("afterbegin", `<div class="alertline skel" aria-hidden="true"><i class="adot"></i><span><b>&nbsp;</b></span><span class="chev">›</span></div>`);
+    return; }
+  const u = (typeof outsideCoverage === "function" && outsideCoverage()) ? [] : upcoming();
+  if (!!u.length !== __alHad) { __alHad = !!u.length; store.set("alertline", __alHad); }
+  if (!u.length) return;
   const a = u[0];
   v.insertAdjacentHTML("afterbegin", `<button class="alertline r-${a.rule}" data-openalerts="1"><i class="adot"></i><span><b>${esc(a.title)}</b></span>${a.rule === "smoke" ? "" : `<b class="ap">${a.p}%</b>`}${u.length > 1 ? `<small>+${u.length - 1}</small>` : ""}<span class="chev" aria-hidden="true">›</span></button>`);
 };

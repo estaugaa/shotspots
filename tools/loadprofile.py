@@ -17,7 +17,8 @@ os.makedirs("ux", exist_ok=True)
 WATCH = """(() => { const W = window.__lp = { t0: performance.now(), ev: [], cls: 0, shifts: [], long: 0, longN: 0, marks: {} };
   const t = () => Math.round(performance.now() - W.t0), log = s => W.ev.push(t() + "ms " + s);
   try { new PerformanceObserver(l => l.getEntries().forEach(e => { if (e.hadRecentInput) return; W.cls += e.value;
-    if (e.value > 0.002) W.shifts.push(t() + "ms " + e.value.toFixed(3) + " " + (e.sources || []).map(s => s.node ? (s.node.id ? "#" + s.node.id : String(s.node.className || s.node.nodeName).split(" ")[0]) : "?").join(",")); }))
+    if (e.value > 0.002) W.shifts.push(t() + "ms " + e.value.toFixed(3) + " " + (e.sources || []).map(s => { const n = s.node; if (!n) return "?"; const nm = x => x ? (x.id ? "#" + x.id : String(x.className || x.nodeName).split(" ")[0]) : "";
+      return nm(n.parentElement) + ">" + nm(n) + " y" + Math.round(s.previousRect.y) + "->" + Math.round(s.currentRect.y) + " h" + Math.round(s.previousRect.height) + "->" + Math.round(s.currentRect.height) + " '" + String(n.textContent || "").trim().slice(0, 30) + "'"; }).join("; ")); }))
     .observe({ type: "layout-shift", buffered: true }); } catch (e) {}
   try { new PerformanceObserver(l => l.getEntries().forEach(e => { W.long += e.duration; W.longN++; if (e.duration > 200) log("long task " + Math.round(e.duration) + "ms"); })).observe({ type: "longtask", buffered: true }); } catch (e) {}
   let last = null, lastH = 0;
@@ -29,7 +30,7 @@ WATCH = """(() => { const W = window.__lp = { t0: performance.now(), ev: [], cls
     // sections) are counted separately, since those are expected to fill in while the week is ranked
     const pl = view && view.querySelector("#winDetail ul.picks:not(.skel)");
     const cards = pl ? [...pl.querySelectorAll("[data-spot]")] : [];
-    const cur = cards.map(e => ({ id: e.dataset.spot, y: Math.round(e.getBoundingClientRect().top + scrollY) }));
+    const cur = cards.map(e => { const r = e.getBoundingClientRect(); return { id: e.dataset.spot, y: Math.round(r.top + scrollY), h: Math.round(r.height), tx: e.innerText.replace(/\\s+/g, " ").slice(0, 300) }; });
     // heights of everything above the picks, to name what pushed them when they move
     const above = []; if (pl) { let n = pl; while (n && n !== view) { let p = n.previousElementSibling; while (p) { if (getComputedStyle(p).position !== "fixed") above.push([(p.id ? "#" + p.id : String(p.className || p.nodeName).split(" ")[0]) || p.nodeName, Math.round(p.getBoundingClientRect().height)]); p = p.previousElementSibling; } n = n.parentElement; } }
     const other = view ? [...view.querySelectorAll("[data-spot]")].filter(e => !pl || !pl.contains(e)).map(e => e.dataset.spot).join(",") : "";
@@ -41,7 +42,9 @@ WATCH = """(() => { const W = window.__lp = { t0: performance.now(), ev: [], cls
         log("picks changed: " + (gone || add ? add + " new, " + gone + " gone" : "reordered") + " -> " + cur.map(x => x.id.slice(0, 18)).join(" | ")); W.marks.lastChange = t(); W.pickChanges = (W.pickChanges || 0) + 1; }
       else { const mv = cur.filter((x, i) => Math.abs(x.y - last[i].y) > 8); if (mv.length) {
         const was = new Map((W.above || []).map(([k, h]) => [k, h])), d = above.filter(([k, h]) => was.get(k) !== h).map(([k, h]) => k + " " + (was.has(k) ? was.get(k) + "->" : "new ") + h + "px");
-        log("picks moved " + (cur[0].y - last[0].y) + "px (first y " + last[0].y + " -> " + cur[0].y + ")" + (d.length ? "; above: " + d.join(", ") : "")); W.marks.lastChange = t(); W.pickMoves = (W.pickMoves || 0) + 1; } }
+        // a card that grew pushes the ones below it: name it and what text it gained
+        const grew = cur.map((x, i) => x.h !== last[i].h ? "card " + (i + 1) + " " + last[i].h + "->" + x.h + "px" + (x.tx !== last[i].tx ? " (text was '" + last[i].tx.slice(-80) + "' now '" + x.tx.slice(-80) + "')" : "") : "").filter(Boolean);
+        log("picks moved: " + mv.map(x => "card " + (cur.indexOf(x) + 1) + " " + (x.y - last[cur.indexOf(x)].y) + "px").join(", ") + (grew.length ? "; grew: " + grew.join(", ") : "") + (d.length ? "; above: " + d.join(", ") : "")); W.marks.lastChange = t(); W.pickMoves = (W.pickMoves || 0) + 1; } }
     }
     if (cur.length) { last = cur; W.above = above; }
     const h = document.documentElement.scrollHeight; if (lastH && Math.abs(h - lastH) > 150) log("page height " + lastH + " -> " + h); lastH = h;
@@ -130,8 +133,9 @@ async def main():
             ver = re.search(r'const V\s*=\s*"([^"]+)"', urllib.request.urlopen(URL + "sw.js?v=" + str(int(time.time())), timeout=20).read().decode()).group(1)
         except Exception as e: ver = f"unknown ({str(e)[:60]})"
         out = [f"Load profile {URL} (live build {ver}) at {lat},{lon}: Chromium, 150 ms RTT, 1.6 Mbit/s, CPU x4, 375x812"] + await profile(p, lat, lon)
-    txt = "\n".join(out); print(txt)
+    txt = "\n".join(out)
     open("ux/loadprofile.txt", "w", encoding="utf-8").write(txt + "\n")
+    print(txt.encode("ascii", "replace").decode())
 
 if __name__ == "__main__":
     asyncio.run(main())

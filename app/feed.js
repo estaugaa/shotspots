@@ -11,7 +11,8 @@ async function feedGet(name) {
   FEED.loading[name] = fetch(`feed/${name}.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : noteErr("feed " + name, "HTTP " + r.status)).catch(e => noteErr("feed " + name, e)).then(j => { if (j) FEED.d[name] = j; delete FEED.loading[name]; return j; });
   return FEED.loading[name];
 }
-async function loadFeed() {
+async function loadFeed() { try { return await _loadFeed(); } finally { FEED.eager = true; } }   // the list waits for this (alerts above it)
+async function _loadFeed() {
   FEED.m = await fetch("feed/manifest.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : noteErr("feed manifest", "HTTP " + r.status)).catch(e => noteErr("feed manifest", e));
   if (!FEED.m) return false;
   for (const k of [...EAGER, ...REGIONAL, ...LAZY, "verify_obs"]) delete FEED.d[k];
