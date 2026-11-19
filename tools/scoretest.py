@@ -252,6 +252,8 @@ async def run_case(br, case, at, base, store, mode, missing):
         if rq.resource_type in SKIP or "/f/" in rq.url or (rq.method != "GET" and k.startswith("SITE/")): return await rt.abort()
         if rq.method != "GET": k += " POST " + hashlib.sha1((rq.post_data or "").encode()).hexdigest()[:16]
         if mode == "capture":
+            f = local_path(k)   # the app under test, not the published one (its requests may have changed)
+            if f: return await rt.fulfill(path=str(f), headers={"access-control-allow-origin": "*"})
             try:
                 r = await rt.fetch(timeout=30000); body = await r.body()
             except Exception:
