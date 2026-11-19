@@ -9,16 +9,18 @@ async function loadNow(force) {
   if (!force && NOW.key === key && Date.now() - NOW.at < 10 * 6e4) return;
   NOW.key = key; NOW.at = Date.now();
   try {
-    const j = await getJson(`https://api.open-meteo.com/v1/forecast?latitude=${LOC.lat.toFixed(3)}&longitude=${LOC.lon.toFixed(3)}&current=precipitation,rain,showers,snowfall,weather_code,temperature_2m,cloud_cover,wind_speed_10m&minutely_15=precipitation&forecast_minutely_15=16&past_minutely_15=2&timeformat=unixtime&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=GMT`);
+    const j = await (await omFetch(`https://api.open-meteo.com/v1/forecast?latitude=${LOC.lat.toFixed(3)}&longitude=${LOC.lon.toFixed(3)}&current=precipitation,rain,showers,snowfall,weather_code,temperature_2m,cloud_cover,wind_speed_10m&minutely_15=precipitation&forecast_minutely_15=16&past_minutely_15=2&timeformat=unixtime&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=GMT`)).json();   // omFetch: falls back to the forwarder when Open-Meteo is slow or refuses (Nov 19: line said unavailable while the forecast loaded)
+    if (!j.current || Date.now() / 1000 - j.current.time > 45 * 60) throw new Error("current weather too old (forwarder's stale copy)");
     NOW.d = j; NOW.fail = false; if (UI.view === "now") renderNow();
-  } catch (e) { NOW.d = null; NOW.fail = true; noteErr("now", e); if (UI.view === "now") renderNow(); }
+  } catch (e) { NOW.d = null; NOW.fail = true; NOW.at = Date.now() - 9 * 6e4;   // retry in about a minute, not ten
+    noteErr("now", e); if (UI.view === "now") renderNow(); }
 }
 function nowLine() {
   const j = NOW.d;
   // until the first answer, hold the line's space so the cards below don't jump down when it arrives
   if (!j && !NOW.fail) return `<div class="nowline skel" aria-hidden="true"><span class="ni">&nbsp;</span><span class="muted">Checking the weather right now…</span></div>`;
   // no answer: keep the line (dropping it moved everything below up 61 px when the weather service was slow, Nov 19)
-  if (!j || !j.current) return `<div class="nowline" role="status"><span class="ni" aria-hidden="true">&nbsp;</span><span class="muted">Current weather unavailable; it will try again in a few minutes.</span></div>`;
+  if (!j || !j.current) return `<div class="nowline" role="status"><span class="ni" aria-hidden="true">&nbsp;</span><span class="muted">Current weather unavailable; trying again in a minute.</span></div>`;
   const c = j.current, m = j.minutely_15 || { time: [], precipitation: [] }, t0 = Date.now() / 1000;
   const fut = m.time.map((t, i) => [t, m.precipitation[i] || 0]).filter(([t]) => t >= t0 - 450);
   const wetNow = (c.precipitation || 0) > 0 || (fut[0] && fut[0][1] >= 0.1) || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95].includes(c.weather_code);
@@ -36,5 +38,5 @@ function nowLine() {
 }
 { const _rnNow = renderNow; renderNow = function () { _rnNow.apply(this, arguments); loadNow(); const v = $("#v-now"); if (!v) return; const old = v.querySelector(".nowline"); if (old) old.remove();
   const h = nowLine(); if (!h) return; const pl = v.querySelector(".planner"); pl ? pl.insertAdjacentHTML("beforebegin", h) : v.insertAdjacentHTML("afterbegin", h); }; }
-setInterval(() => { if (document.visibilityState === "visible") loadNow(); }, 5 * 6e4);
+setInterval(() => { if (document.visibilityState === "visible") loadNow(); }, 6e4);   // cheap: loadNow returns early unless due
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") loadNow(); });
