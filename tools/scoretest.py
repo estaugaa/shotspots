@@ -219,7 +219,7 @@ def serve():
     return f"http://127.0.0.1:{s.server_address[1]}/"
 
 
-async def settle(pg, inflight, quiet=4.0, least=6.0, limit=60):
+async def settle(pg, inflight, quiet=6.0, least=10.0, limit=75):
     """Wait until no request has been open for `quiet` seconds and at least `least` seconds have passed (real time; the
     page clock is frozen). Both must exceed the app's deferred loads: seed.js fetches stands and opening hours 2.5 s
     after the spot tiles, and a 2.5 s quiet window sometimes ranked before they arrived (Washougal, Nov 17)."""
