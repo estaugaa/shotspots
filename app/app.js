@@ -683,6 +683,7 @@ const KSHORT2 = { blueAM: "Blue hour", sunrise: "Sunrise", morning: "Morning", m
 function winDay(w) { return laYMD(w.kind === "night" ? w.start : w.peak); }
 function dayTab(ymd) { const y = laYMD(new Date()); if (ymd === y) return "Today"; if (ymd === addDays(y, 1)) return "Tomorrow";
   return new Date(ymd + "T12:00:00").toLocaleDateString("en-US", { weekday: "short" }); }
+const TOPS_QUIET_MS = 3000;
 let __tops3 = [], __topsKey = "", __tops = [], __topsJob = 0, __topsDone = new Set(), __topsOne = null;
 function windowTops(all) {   // best spot per window, cached per forecast/feed state
   const k = all.length + "|" + SPOTS.length + "|" + (all[0] && all[0].start.getTime()) + "|" + wxVer() + "|" + (window.FEED && FEED.m ? FEED.m.gen : "") + "|" + Object.keys(SAVED).length + "|" + LOC.lat + "|" + UI.group + "|" + PREFS.travel + maxTravel() + "|" + (HZN ? HZN.at : 0);
@@ -695,11 +696,13 @@ function windowTops(all) {   // best spot per window, cached per forecast/feed s
     const one = __topsOne = i => { __topsDone.add(i); const r = rankFor(all[i]); __tops3[i] = r.length ? Math.round(r.slice(0, 3).reduce((a, y) => a + y.f.n, 0) / Math.min(3, r.length)) : 0; __tops[i] = r[0] || null; };
     const day = UI.day || winDay(all[clamp(UI.focus, 0, all.length - 1)]), rest = [];
     all.forEach((w, i) => { if (i === UI.focus || winDay(w) === day) one(i); else rest.push(i); });
+    // the rest of the week starts 3 s after data stops arriving (each arrival used to restart it: ~1 s a window on
+    // a slow phone, so the phone computed for 30 s); a tapped day is ranked on the spot (click handler below)
     clearTimeout(__topsJob);
     if (rest.length) { const job = k, step = () => { if (__topsKey !== job) return; const t0 = performance.now();
         while (rest.length && performance.now() - t0 < 30) { const i = rest.shift(); if (!__topsDone.has(i)) one(i); }
         if (rest.length) __topsJob = setTimeout(step, 0); else render(); };
-      __topsJob = setTimeout(step, 0); }
+      __topsJob = setTimeout(step, TOPS_QUIET_MS); }
   }
   return __tops;
 }
@@ -728,13 +731,15 @@ function plannerHtml(all, tops) {
    LIST_HOLD_MS. After that the top picks keep their order for this window, filter and place while later data only
    updates their scores; when the order would change, a pill offers it. Any choice you make (window, day, filter,
    place) starts a fresh list. Display only: the ranking itself (rankFor) is unchanged. */
-const LIST_HOLD_MS = 4500;
+const LIST_HOLD_MS = 3500;
 let __listOk = false, __pin = null, __listHold = 0;
 function listReady() {
   if (__listOk) return true;
   // spot tiles: wait for the tile index too (before it loads, "no tiles cover this place" looked true and the list showed early)
   const tiles = typeof SEED === "undefined" || (SEED.idxDone && !SEED.busy && (SEED.n > 0 || !(typeof seedCovers === "function" && seedCovers())));
-  if ((WX && WX.pts && tiles && WX.n === wxPoints().length) || Date.now() - BOOT.t0 > LIST_HOLD_MS) __listOk = true;
+  // the forecast and nearby tiles are enough: the second forecast fetch (adding far cluster points) only nudges far
+  // spots, and if that changes the top picks the pill offers it
+  if ((WX && WX.pts && tiles) || Date.now() - BOOT.t0 > LIST_HOLD_MS) __listOk = true;
   else if (!__listHold) __listHold = setTimeout(() => { __listHold = 0; render(); }, Math.max(50, LIST_HOLD_MS - (Date.now() - BOOT.t0)));
   return __listOk;
 }
@@ -1070,17 +1075,24 @@ function fbar() { const el = $("#fbar"); if (!el) return;
    in the same place on screen (Safari has no CSS scroll anchoring, so it's done by hand). */
 const BOOT_MS = 2500, BOOT = { t0: Date.now(), core: false, input: 0 };
 ["pointerdown", "keydown"].forEach(ev => addEventListener(ev, () => { BOOT.input = Date.now(); }, true));
-let __rq = 0, __hold = 0;
+let __rq = 0, __hold = 0, __trail = 0, __lastPaint = 0;
+const PAINT_GAP_MS = 1500;
 function bootReady() { if (BOOT.core) return; BOOT.core = true; clearTimeout(__hold); __hold = 0; render(); }
 function render() {
   const left = BOOT_MS - (Date.now() - BOOT.t0), view = $("#v-" + UI.view);
   if (!BOOT.core && left > 0 && view && view.childElementCount && Date.now() - BOOT.input > 1000) {
     if (!__hold) __hold = setTimeout(() => { __hold = 0; BOOT.core = true; render(); }, left);
     return; }
+  // once the list is showing, redraws caused by arriving data come at most every PAINT_GAP_MS (each one re-scores the
+  // window on screen: ~1 s on a slow phone); anything within a second of your tap redraws at once
+  const since = Date.now() - __lastPaint;
+  if (typeof __listOk !== "undefined" && __listOk && Date.now() - BOOT.input > 1000 && since < PAINT_GAP_MS) {
+    if (!__trail) __trail = setTimeout(() => { __trail = 0; render(); }, PAINT_GAP_MS - since);
+    return; }
   if (!__rq) __rq = requestAnimationFrame(() => { __rq = 0; paint(); });
 }
 function paint() {
-  window.__paints = (window.__paints || 0) + 1;
+  window.__paints = (window.__paints || 0) + 1; __lastPaint = Date.now();
   const view = $("#v-" + UI.view); let anc = null, top = 0;
   if (view && scrollY > 40) for (const c of view.querySelectorAll("[data-spot]")) { const r = c.getBoundingClientRect(); if (r.bottom > 60) { anc = c.dataset.spot; top = r.top; break; } }
   updLoc(); fresh(); if ($("#fbar") && !$("#fbar").children.length) fbar();
