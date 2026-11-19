@@ -7,7 +7,11 @@
 let OBSNOW = null;
 /* Data that arrives after the first screen is drawn is applied on the next redraw instead of forcing one, so the list
    doesn't shift under your thumb while the page settles (smoke test: layout shift). */
-function lateRender() { }   // never forces a redraw: before the first screen it would paint too early (half-loaded page that then shifts), after it the list would move; the next redraw uses the data
+// late data (HRRR, calibration, airport reports) redraws once, shortly after it lands. It used to wait for the next redraw,
+// so whether a phone showed it (and the scoring test's result) depended on whether anything else redrew afterwards.
+// Safe now: placeholders hold the list's space until it is ready, then the picks keep their order (the pill offers a re-sort).
+let __lateT = 0;
+function lateRender() { clearTimeout(__lateT); __lateT = setTimeout(() => { __lateT = 0; if (typeof render === "function") render(); }, 300); }
 function obsTileKey(lat, lon) { return `${5 * Math.floor(lat / 5)}_${5 * Math.floor(lon / 5)}`; }
 async function loadObsNow() {
   if (typeof LOC === "undefined" || !LOC) return;

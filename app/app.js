@@ -111,7 +111,10 @@ function driveMin(s) {   // travel minutes: driving, or walking when Settings sa
 // since an estimated time can put a spot inside the travel limit that the real route then takes out
 const __drvAsked = new Set(); let __drvBusy = 0;
 async function loadDrives(ids) {
-  const k = locKey(); const have = DRIVES[k] && Date.now() - DRIVES[k].at < 6 * 36e5 ? DRIVES[k] : { at: Date.now(), m: {} };
+  // one shared object per place, made before any request: two requests in flight used to each start an empty one, and
+  // the last to finish replaced the other's road times
+  const k = locKey(); if (!(DRIVES[k] && Date.now() - DRIVES[k].at < 6 * 36e5)) DRIVES = { [k]: { at: Date.now(), m: {} } };
+  const have = DRIVES[k];
   const all = ids.filter(id => have.m[id] == null && !__drvAsked.has(k + "|" + id)).slice(0, 180); if (!all.length) return false;
   all.forEach(id => __drvAsked.add(k + "|" + id));
   let any = false; __drvBusy++;
@@ -132,7 +135,7 @@ async function _route(need, have, k) {
     const r = await fetch("https://router.project-osrm.org/table/v1/driving/" + coords + "?sources=0&annotations=duration");
     const j = await r.json(); if (j.code !== "Ok") return false;
     need.forEach((id, i) => { const sec = j.durations[0][i + 1]; if (sec != null) have.m[id] = Math.round(sec / 60 * 1.08); });
-    DRIVES = { [k]: have }; store.set("drives", DRIVES); return true;
+    if (DRIVES[k] === have) store.set("drives", DRIVES); return true;   // (moved meanwhile: this answer is for the old place)
   } catch (e) { return false; }
 }
 
