@@ -18,7 +18,7 @@ async function loadObsNow() {
   const keys = new Set(); for (const dl of [-1.5, 0, 1.5]) for (const dn of [-2, 0, 2]) keys.add(obsTileKey(LOC.lat + dl, LOC.lon + dn));
   const rows = [];
   await Promise.all([...keys].map(k => fetch(`feed/obsnow/${k}.json`, { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { if (j && j.s) rows.push(...j.s); }).catch(() => { })));
-  OBSNOW = rows.map(([id, lat, lon, t, low, mid, cover]) => ({ id, lat, lon, t: t * 1000, low, mid, cover }));
+  OBSNOW = rows.map(([id, lat, lon, t, low, mid, cover, wx]) => ({ id, lat, lon, t: t * 1000, low, mid, cover, wx: wx || "" }));
   if (typeof __skyMemoAt !== "undefined") __skyMemoAt = -1;   // re-score with the reports
   lateRender();
 }

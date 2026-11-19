@@ -96,7 +96,22 @@ async function loadRainbow(force) {
   } catch (e) { return false; }
 }
 const DIR8 = ["north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest"];
+/* Rainbow watch from what airports are reporting right now: a station within ~40 km reporting rain or showers, a station
+   near you with breaks in the cloud (not overcast), and the sun 3-42 degrees up. Forecast models often miss the sun
+   breaks on shower days entirely (Round Lake double rainbow, Nov 18: model 0 min of sunshine all afternoon; Troutdale
+   reported light rain with scattered cloud at 3:53 PM). Only for the next ~45 minutes. */
+function rainbowObs(t) {
+  if (typeof OBSNOW === "undefined" || !OBSNOW || !OBSNOW.length || Math.abs(t.getTime() - Date.now()) > 45 * 6e4) return null;
+  const fresh = OBSNOW.filter(o => Date.now() - o.t < 80 * 6e4 && km(LOC, o) < 40); if (!fresh.length) return null;
+  const sp = sunPos(t, LOC.lat, LOC.lon); if (sp.alt < 3 || sp.alt > 42) return null;
+  const wet = fresh.filter(o => /(^|[ +-])(SH|RA|DZ|VCSH|TS)/.test(o.wx)), near = fresh.filter(o => km(LOC, o) < 30);
+  const breaks = near.filter(o => !/OVC|VV/.test(o.cover) && Math.max(o.low, o.mid) < 95);
+  if (!wet.length || !breaks.length) return null;
+  const anti = (sp.az + 180) % 360;
+  return { dir: DIR8[Math.round(anti / 45) % 8], alt: Math.round(sp.alt), strength: "watch", obs: `${wet[0].id} reports ${wet[0].wx.trim()}, ${breaks[0].id} has breaks` };
+}
 function rainbow15(t) {   // near you, at time t: {dir, alt, strength} or null
+  const ob = rainbowObs(t); if (ob) return ob;
   if (!RBOW) return null; const ts = t.getTime() / 1000; let i = -1, bd = 1e12;
   RBOW.t.forEach((x, k) => { const d = Math.abs(x - ts); if (d < bd) { bd = d; i = k; } }); if (i < 0 || bd > 600) return null;
   const sp = sunPos(t, LOC.lat, LOC.lon); if (sp.alt < 3 || sp.alt > 42) return null;
@@ -183,7 +198,7 @@ function extrasHtml() {
   { let start = null, end = null, info = null;
     for (let k = 0; k <= 48 * 4; k++) { const t = new Date(Date.now() + k * 15 * 6e4), rb = RBOW ? rainbow15(t) : (k % 4 === 0 ? rainbowAt(LOC, t) : null);
       if (rb && !start) { start = t; info = rb; } if (start && !rb && (RBOW || k % 4 === 0)) { end = t; break; } }
-    if (start) items.push(`<div class="item"><b>🌈 Rainbow chance ${dayTab(laYMD(start)).toLowerCase()} ${fmtT(start)}${end ? "–" + fmtT(end) : ""}${info.strength === "good" ? " (good)" : ""}</b><p>Sun on you with showers about ${info.miles || "10–20"} miles to the ${info.dir}, sun ${info.alt}° up. Face ${info.dir}, away from the sun: the bow sits 42° around the shadow of your head. ${RBOW ? "Checked every 15 minutes." : ""}</p></div>`); }
+    if (start) items.push(`<div class="item"><b>🌈 Rainbow chance ${dayTab(laYMD(start)).toLowerCase()} ${fmtT(start)}${end ? "–" + fmtT(end) : ""}${info.strength === "good" ? " (good)" : info.strength === "watch" ? " (watch now)" : ""}</b><p>${info.obs ? `Live airport reports (${esc(info.obs)}): showers around with the sun breaking through, sun ${info.alt}° up.` : `Sun on you with showers about ${info.miles || "10–20"} miles to the ${info.dir}, sun ${info.alt}° up.`} Face ${info.dir}, away from the sun: the bow sits 42° around the shadow of your head. ${RBOW ? "Checked every 15 minutes." : ""}</p></div>`); }
   const L = landscape(), rs = rainSoon();
   if (rs && (rs.nowWet || rs.at)) items.unshift(`<div class="item"><b>${rs.nowWet ? "☔ Raining now" : "🌦️ Rain on the way"}</b><p>${rs.nowWet ? (rs.at ? `Should ease around ${fmtT(rs.at)}.` : "Steady for the next 3 hours.") : `Starting around ${fmtT(rs.at)}.`} <span class="muted">15-minute forecast, updated hourly from radar.</span></p></div>`);
   if (MTN) MTN.peaks.slice(0, 3).forEach(P => { const sn = freshSnowOn(P), o = peakOut(P, LOC, w.peak);

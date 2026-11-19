@@ -116,10 +116,10 @@ def _tiles():
             latest[sid] = m
     tiles = {}
     for sid, m in latest.items():
-        if not m.get("clouds") and m.get("cover") not in ("CLR", "SKC", "CAVOK"): continue
+        if not m.get("clouds") and m.get("cover") not in ("CLR", "SKC", "CAVOK") and not m.get("wxString"): continue
         low, mid = _layers(m)
         k = f"{5 * math.floor(m['lat'] / 5)}_{5 * math.floor(m['lon'] / 5)}"
-        tiles.setdefault(k, []).append([sid, round(m["lat"], 3), round(m["lon"], 3), m.get("obsTime"), low, mid, m.get("cover") or ""])
+        tiles.setdefault(k, []).append([sid, round(m["lat"], 3), round(m["lon"], 3), m.get("obsTime"), low, mid, m.get("cover") or "", m.get("wxString") or ""])
     od = FEED / "obsnow"; od.mkdir(exist_ok=True)
     for k, rows in tiles.items():
         (od / f"{k}.json").write_text(_j.dumps({"gen": iso(utcnow()), "s": rows}, separators=(",", ":")))
