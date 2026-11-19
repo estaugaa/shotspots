@@ -1,11 +1,12 @@
 """Which fog rule does the app's scoring deserve? Scores candidate fog rules against what airports reported.
 
-verify_obs (method 2) tests the model's visibility alone. The app's rule (app/app.js skyAt) is different: fog in a
+verify_obs (method 2) tests the model's visibility alone. The app's rule until Nov 19 (app/app.js skyAt) was different: fog in a
 morning window when low cloud >= 80 % with visibility under 3 km, OR humidity >= 96 % with wind <= 3 mph. This replays
 that rule and variants on the latest forecast before each report and the one made a day ahead, for every archived sunrise
 report (data/archive/obs, airport reports within 45 min of sunrise; observed fog = visibility <= 1 mi or FG).
-Free data: Open-Meteo previous-runs API (humidity, wind; same-day visibility and low cloud) and verify_obs's daily
-snapshot data/fc_archive.json (day-ahead visibility and low cloud, which the archive API doesn't keep). Output: ux/fogrule.txt
+Free data: Open-Meteo previous-runs API (humidity, wind; same-day visibility and low cloud), verify_obs's daily
+snapshot data/fc_archive.json (day-ahead visibility and low cloud, which the archive API doesn't keep) and its evening
+snapshot data/fc_archive_eve.json (all four, saved ~03 UTC: the lead people plan with). Output: ux/fogrule.txt
 
     python tools/fogrule.py
 """
@@ -18,12 +19,12 @@ from pipeline.metar import history
 V = ("visibility", "cloud_cover_low", "relative_humidity_2m", "wind_speed_10m")
 # rule name -> f(vis m, low %, rh %, wind mph): True = fog forecast
 RULES = {
-    "app now: (low>=80 & vis<3km) or (rh>=96 & wind<=3)": lambda v, l, r, w: (l >= 80 and v < 3000) or (r >= 96 and w <= 3),
+    "old app rule: (low>=80 & vis<3km) or (rh>=96 & wind<=3)": lambda v, l, r, w: (l >= 80 and v < 3000) or (r >= 96 and w <= 3),
     "  part 1 only: low>=80 & vis<3km": lambda v, l, r, w: l >= 80 and v < 3000,
     "  part 2 only: rh>=96 & wind<=3": lambda v, l, r, w: r >= 96 and w <= 3,
     "vis<=1600 (verify_obs)": lambda v, l, r, w: v <= 1600,
     "vis<1000": lambda v, l, r, w: v < 1000,
-    "vis<3km": lambda v, l, r, w: v < 3000,
+    "app since Nov 19: vis<3km": lambda v, l, r, w: v < 3000,
     "rh>=98 & wind<=3": lambda v, l, r, w: r >= 98 and w <= 3,
     "rh>=96 & wind<=3 & vis<5km": lambda v, l, r, w: r >= 96 and w <= 3 and v < 5000,
     "(low>=80 & vis<3km) or (rh>=98 & wind<=3 & vis<5km)": lambda v, l, r, w: (l >= 80 and v < 3000) or (r >= 98 and w <= 3 and v < 5000),
@@ -94,6 +95,10 @@ def main():
                 skipped += 1; continue
             pairs.append((o["fog"], tuple(x)))
         out += ["", f"== {label}: {len(pairs)} scored, {skipped} without all four forecast fields, fog {sum(p[0] for p in pairs)}"] + table(pairs)
+    eve = read_json(DATA / "fc_archive_eve.json", {}) or {}   # saved ~03 UTC for the next 24 h (verify_obs.snapshot_evening)
+    pairs = [(o["fog"], tuple(x)) for o in am for x in [(eve.get(o["id"]) or {}).get(o["t"])] if x and all(v is not None for v in x)]
+    out += ["", f"== evening-before forecast (saved ~03 UTC, ~8-12 h ahead of sunrise): {len(pairs)} scored, fog {sum(p[0] for p in pairs)}"]
+    out += table(pairs) if pairs else ["  (none yet: the evening snapshot started Nov 19)"]
     txt = "\n".join(out); print(txt)
     os.makedirs("ux", exist_ok=True); open("ux/fogrule.txt", "w", encoding="utf-8").write(txt + "\n")
 

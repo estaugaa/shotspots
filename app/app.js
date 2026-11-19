@@ -363,8 +363,14 @@ function skyCalc(p, w, pt, sp, probePt) {
   const hz = hzBlock(p, w);
   const block = hz ? hz.block : pc ? Math.max(pc.low, pc.mid * 0.6) : null, g = block == null ? 1 : block <= 30 ? 1 : block <= 60 ? 0.72 : 0.38;
   let q = Math.round(100 * f * lowF * g); if (c.pop >= 60) q = 8;
-  const fog = AMK.has(w.kind) && ((c.low >= 80 && c.vis < 3000) || (c.rh >= 96 && c.wind <= 3));
+  // fog: forecast visibility under 3 km in a morning window, and only up to FOG_LEAD_H ahead. Tested against airport
+  // reports at sunrise (tools/fogrule.py, Nov 19, 12 days, 75 stations): same day this caught 67% of fog with 60% of
+  // calls right; the old rule's "humid and calm" half added mostly false alarms (51% right). A day ahead no rule had
+  // skill (15% caught, 26% right), so later fog is only mentioned, never scored.
+  const fogWx = AMK.has(w.kind) && c.vis < 3000, fogNear = (w.peak - Date.now()) / 36e5 <= FOG_LEAD_H;
+  const fog = fogWx && fogNear;
   const why = [];
+  if (fogWx && !fogNear) why.push("fog possible (fog forecasts this far ahead often miss)");
   if (c.pop >= 60) why.push(`${c.pop}% chance of rain`);
   else {
     if (!GOLDK.has(w.kind)) why.push(c.cc >= 80 ? `overcast (${c.cc}%)` : c.cc >= 30 ? `${c.cc}% cloud` : `mostly clear (${c.cc}%)`); else if (canvas >= 15 && canvas <= 75) why.push(`${canvas}% mid/high cloud to catch color`); else if (canvas < 15) why.push(c.low >= 60 ? `low cloud deck (${c.low}%), little high cloud to catch color` : `mostly clear overhead (${c.cc}%)`); else why.push(cirrus ? `thin high cloud overhead (${c.high}%): it can glow if the light gets under it` : `thick cloud overhead (${c.cc}%)`);
@@ -419,6 +425,7 @@ function verdict(sk) {
   if (sk.cc >= 85) return { cls: "mid", txt: GOLDK.has(sk.kind) ? `Little ${sk.kind} color likely. The score is for soft overcast light: waterfalls, forest and birds` : "Overcast: soft light for waterfalls and birds" };
   return { cls: "mid", txt: "Fair: some color possible" };
 }
+const FOG_LEAD_H = 18;   // fog is scored only this many hours ahead (see skyAt)
 function lowlandFog(w) { const sk = skyAt(HOME, w) || skyAt(LOC, w); return !!(sk && sk.fog && sk.pop < 40); }
 
 /* ---------- events ---------- */
@@ -600,7 +607,7 @@ function fitFor(s, w) {
       parts.push(v); }
     if (FOG_ABOVE.includes(s.id) && sk.pop < 50 && lowlandFog(w)) { parts.push(93); why.unshift("should be above the fog"); }
     else { const fa = (((typeof fd === "function" && fd("fogabove")) || {}).spots || {})[s.id], hit = fa && fa.find(x => Math.abs(new Date(x.t) - w.peak) < 100 * 6e4);
-      if (hit && sk.pop < 50) { const m = v => METRIC() ? `${v} m` : `${Math.round(v * 3.281 / 10) * 10} ft`; parts.push(hit.p + 10); why.unshift(`should be above the fog: tops near ${m(hit.top)}, you're at ${m(hit.elev)}`); } }
+      if (hit && sk.pop < 50 && (w.peak - Date.now()) / 36e5 <= FOG_LEAD_H) { const m = v => METRIC() ? `${v} m` : `${Math.round(v * 3.281 / 10) * 10} ft`; parts.push(hit.p + 10); why.unshift(`should be above the fog: tops near ${m(hit.top)}, you're at ${m(hit.elev)}`); } }
     const al = alignOn(s, w);
     if (al) { if (wet || m === "overcast" || (sk.block != null && sk.block > 60)) why.push(`${al.what} ${fmtT(al.t)}, likely hidden by cloud`);
       else { parts.push(Math.max(...parts, 60) + 18); why.unshift(`${al.what} ${fmtT(al.t)}`); } }

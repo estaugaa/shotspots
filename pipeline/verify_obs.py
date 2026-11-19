@@ -149,6 +149,36 @@ def _snapshot(stations):
     return arch
 
 
+EVE = DATA / "fc_archive_eve.json"
+
+
+def snapshot_evening():
+    """Save the evening forecast (visibility, low cloud, humidity, wind) for the next 24 hours at every verified airport,
+    so fog can be scored at the lead people plan with (the evening before, ~12 h; tools/fogrule.py). Runs after the
+    fog-chance job (~03 UTC). The archive API keeps none of these at that lead."""
+    from .metar import history
+    st = {}
+    for o in history(60):
+        st.setdefault(o["id"], {"id": o["id"], "lat": o["lat"], "lon": o["lon"]})
+    arch = read_json(EVE, {}) or {}; now = utcnow(); end = (now + dt.timedelta(hours=24)).strftime("%Y-%m-%dT%H:00"); n = 0
+    stations = list(st.values())
+    for i in range(0, len(stations), 40):
+        ch = stations[i:i + 40]
+        try:
+            j = http("https://api.open-meteo.com/v1/forecast", params={"latitude": ",".join(str(s["lat"]) for s in ch), "longitude": ",".join(str(s["lon"]) for s in ch),
+                     "hourly": "visibility,cloud_cover_low,relative_humidity_2m,wind_speed_10m", "wind_speed_unit": "mph", "forecast_days": 2, "timezone": "GMT"}, timeout=120).json()
+        except Exception as e:
+            soft_fail("fcsnap_eve", e); continue
+        for s, r in zip(ch, j if isinstance(j, list) else [j]):
+            h = r.get("hourly") or {}; a = arch.setdefault(s["id"], {})
+            for t, v, l, rh, w in zip(h.get("time", []), h.get("visibility", []), h.get("cloud_cover_low", []), h.get("relative_humidity_2m", []), h.get("wind_speed_10m", [])):
+                if now.strftime("%Y-%m-%dT%H:00") < t <= end and t not in a:
+                    a[t] = [v, l, rh, w]; n += 1
+    cut = (now - dt.timedelta(days=60)).strftime("%Y-%m-%dT%H:%M")
+    write_json(EVE, {k: {t: x for t, x in v.items() if t >= cut} for k, v in arch.items()})
+    return f"{n} hours saved for {len(st)} airports"
+
+
 def run():
     from .metar import history
     hist = history(60)
