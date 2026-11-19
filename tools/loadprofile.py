@@ -7,7 +7,7 @@ and when the forecast and the list's "core data" arrive. Output: ux/loadprofile.
 
     python tools/loadprofile.py [lat lon]        default Washougal
 """
-import asyncio, json, os, sys
+import asyncio, json, os, re, sys, time, urllib.request
 from playwright.async_api import async_playwright
 URL = "https://estaugaa.github.io/shotspots/"
 SECS = 30
@@ -125,7 +125,10 @@ async def profile(p, lat, lon):
 async def main():
     lat, lon = (float(sys.argv[1]), float(sys.argv[2])) if len(sys.argv) > 2 else (45.582, -122.353)
     async with async_playwright() as p:
-        out = [f"Load profile {URL} at {lat},{lon}: Chromium, 150 ms RTT, 1.6 Mbit/s, CPU x4, 375x812"] + await profile(p, lat, lon)
+        try:   # which build is live (the service-worker version is a hash of the app files), so a report names what it measured
+            ver = re.search(r'const V\s*=\s*"([^"]+)"', urllib.request.urlopen(URL + "sw.js?v=" + str(int(time.time())), timeout=20).read().decode()).group(1)
+        except Exception as e: ver = f"unknown ({str(e)[:60]})"
+        out = [f"Load profile {URL} (live build {ver}) at {lat},{lon}: Chromium, 150 ms RTT, 1.6 Mbit/s, CPU x4, 375x812"] + await profile(p, lat, lon)
     txt = "\n".join(out); print(txt)
     open("ux/loadprofile.txt", "w", encoding="utf-8").write(txt + "\n")
 

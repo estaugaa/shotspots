@@ -17,6 +17,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   profile:
+    # after a publish only when it deployed (a failed deploy left the old app live, and the profile measured that)
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04   # Playwright can't install its browser deps on 26.04 yet
     timeout-minutes: 20
     steps:

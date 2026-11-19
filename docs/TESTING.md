@@ -10,7 +10,7 @@ All of these run on GitHub Actions against the live site. Run one with
 | Scoring, repeatable: app/ code ranks 6 situations on frozen feeds + forecast at a fixed clock, must match `tests/score/expected.json` | `tools/scoretest.py` (scoretest.yml: mode check / update / capture) | every app push, blocks publishing |
 | JavaScript unit tests (safeUrl) | `node tests/js/*.test.js` | every app push (app-publish) |
 | Daily ops watcher (cloud routine, claude.ai/code/routines): workflow health, feed freshness, soft errors, publish gate, diag outputs; mechanical fixes on ops/ branches only | report on branch `diag-ops` (ops.md) | daily 6:30 AM PT |
-| Load profile on a phone-like connection (slow 4G, CPU x4): what loads when, whether the picks list changes or is pushed (and by which element above it), CPU hotspots | `tools/loadprofile.py` (loadprofile.yml) -> branch `diag-loadprofile` | after every app publish |
+| Load profile on a phone-like connection (slow 4G, CPU x4): what loads when, whether the picks list changes or is pushed (and by which element above it), CPU hotspots | `tools/loadprofile.py` (loadprofile.yml) -> branch `diag-loadprofile` | after every app publish that deployed (the report names the live build) |
 | Regression checks (forecast loads, nothing past the travel limit, no Washougal text elsewhere) | `tools/regress.py` | nightly (regress.yml) |
 | Expectations: pass/fail on real situations | `tools/expect.py` | nightly; history in `data/test_history.jsonl` |
 | 30 situation walkthroughs (full list text) | diag.yml `tools/diag.py [numbers]` -> branch `diag-out`, `scenarios.txt` | after ranking changes |
