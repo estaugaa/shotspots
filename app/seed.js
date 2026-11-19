@@ -3,7 +3,7 @@
    and a "Starter" tag; nightly research promotes the best ones to full researched spots.
    Where no tiles exist yet, nearby.js still falls back to a live OpenStreetMap lookup. */
 "use strict";
-const SEED = { idx: null, tiles: new Set(), n: 0 };
+const SEED = { idx: null, tiles: new Set(), n: 0, pending: new Set(), inflight: null };
 if (typeof D !== "undefined" && D.CATS && !D.CATS.landmark) D.CATS.landmark = { label: "Landmarks", color: (D.CATS.historic || {}).color || "var(--rust)" };
 const SEED_KIND = { waterfall: "Waterfall", viewpoint: "Viewpoint", peak: "Summit", lighthouse: "Lighthouse", arch: "Arch", hotspring: "Hot spring", refuge: "Refuge", beach: "Beach", bridge: "Bridge", landmark: "Landmark", hotspot: "Birding hotspot", lake: "Lake", pass: "Mountain pass", lookout: "Lookout tower", cave: "Cave" };
 SEED.ready = fetch("feed/seed/index.json", { cache: "no-cache" }).then(r => r.ok ? r.json() : null).then(j => { SEED.idx = j; }).catch(e => noteErr("spot tiles", e)).finally(() => { SEED.idxDone = true; });   // loaded or failed: the list may stop waiting for it
@@ -17,8 +17,12 @@ async function loadSeed() {
   const R = Math.max(120, Math.min(260, (PREFS.travel === "walk" ? 5 : maxTravel()) * 1.2));   // km around you: roughly your drive limit
   const want = [];
   for (let la = Math.floor(LOC.lat - R / 111); la <= Math.floor(LOC.lat + R / 111); la++)
-    for (let lo = Math.floor(LOC.lon - R / 75); lo <= Math.floor(LOC.lon + R / 75); lo++) { const k = `${la}_${lo}`; if (SEED.idx.tiles[k] && !SEED.tiles.has(k)) want.push(k); }
-  if (!want.length) return;
+    for (let lo = Math.floor(LOC.lon - R / 75); lo <= Math.floor(LOC.lon + R / 75); lo++) { const k = `${la}_${lo}`; if (SEED.idx.tiles[k] && !SEED.tiles.has(k) && !SEED.pending.has(k)) want.push(k); }
+  // a second call while tiles are on their way (the 400 ms start and loadNearby both ask) waits for that run instead
+  // of fetching and parsing every tile a second time (it did, Nov 19: 12 tiles x 2 folders, twice, on each load)
+  if (!want.length) return SEED.inflight;
+  want.forEach(k => SEED.pending.add(k)); let done; SEED.inflight = new Promise(r => { done = r; });
+  try {
   const real = SPOTS.filter(s => !s.seed && !s.osm);
   SEED.busy = true; setTimeout(() => { SEED.busy = false; }, 20000);
   await SEED.hasReady;   // so missing popularity/hours tiles aren't requested
@@ -51,6 +55,7 @@ async function loadSeed() {
   SEED.n += added;
   SEED.busy = false;
   if (added) { if (typeof __topsKey !== "undefined") __topsKey = ""; render(); if (await loadWx(true)) { __topsKey = ""; render(); } }
+  } finally { want.forEach(k => SEED.pending.delete(k)); done(); }
 }
 /* seed spots count as coverage, so the live OSM fallback only runs where no tiles exist */
 realSpots = function () { return SPOTS.filter(s => !s.osm || s.seed); };
