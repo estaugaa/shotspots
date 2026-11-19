@@ -27,4 +27,4 @@ async def main():
         out.append("ERRS: " + json.dumps(await pg.evaluate("window.ERRS||window.__errs||null"))[:800])
         await br.close()
 asyncio.run(main())
-open("diag/nowcheck.txt", "w").write("\n".join(out)); print("\n".join(out))
+print("\n".join(out))
