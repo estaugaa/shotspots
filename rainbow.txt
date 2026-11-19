@@ -1,0 +1,61 @@
+15-min replay of the 'near you' rule (sun 3-40 deg, direct sun >=120 W/m2 at you, >=0.15 mm/15min shower 16 or 32 km opposite the sun, no shower 16 km toward the sun):
+16:00 PT sun  4.7deg dni   118 here_rain 0.00 opp(45) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new -
+16:15 PT sun  2.5deg dni   190 here_rain 0.00 opp(45) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new -
+16:30 PT sun  0.2deg dni    19 here_rain 0.00 opp(45) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new -
+07:30 PT sun  1.7deg dni     0 here_rain 0.00 opp(315) 0.00/0.00 toward 0.00 ringmax 0.30 -> old - | new -
+07:45 PT sun  4.0deg dni     0 here_rain 0.00 opp(315) 0.00/0.00 toward 0.00 ringmax 0.10 -> old - | new -
+08:00 PT sun  6.1deg dni     0 here_rain 0.00 opp(315) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new -
+08:15 PT sun  8.2deg dni     0 here_rain 0.00 opp(315) 0.00/0.00 toward 0.00 ringmax 0.10 -> old - | new -
+08:30 PT sun 10.2deg dni    75 here_rain 0.00 opp(315) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new -
+08:45 PT sun 12.1deg dni    10 here_rain 0.00 opp(315) 0.00/0.00 toward 0.00 ringmax 0.10 -> old - | new -
+09:00 PT sun 13.9deg dni     0 here_rain 0.00 opp(315) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new -
+09:15 PT sun 15.6deg dni     0 here_rain 0.00 opp(315) 0.00/0.00 toward 0.00 ringmax 0.20 -> old - | new -
+09:30 PT sun 17.2deg dni    11 here_rain 0.00 opp(315) 0.00/0.00 toward 0.00 ringmax 0.10 -> old - | new -
+09:45 PT sun 18.7deg dni     0 here_rain 0.00 opp(315) 0.00/0.00 toward 0.00 ringmax 0.10 -> old - | new -
+10:00 PT sun 20.0deg dni     0 here_rain 0.00 opp(315) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new -
+10:15 PT sun 21.2deg dni     0 here_rain 0.00 opp(315) 0.00/0.00 toward 0.00 ringmax 0.20 -> old - | new -
+10:30 PT sun 22.3deg dni   313 here_rain 0.00 opp(0) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new -
+10:45 PT sun 23.1deg dni     3 here_rain 0.00 opp(0) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new -
+11:00 PT sun 23.9deg dni     0 here_rain 0.00 opp(0) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new -
+11:15 PT sun 24.4deg dni     0 here_rain 0.00 opp(0) 0.00/0.00 toward 0.00 ringmax 0.30 -> old - | new -
+11:30 PT sun 24.8deg dni     7 here_rain 0.00 opp(0) 0.00/0.00 toward 0.00 ringmax 0.10 -> old - | new -
+11:45 PT sun 25.0deg dni   482 here_rain 0.00 opp(0) 0.00/0.00 toward 0.00 ringmax 0.20 -> old - | new -
+12:00 PT sun 25.0deg dni     0 here_rain 0.00 opp(0) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new -
+12:15 PT sun 24.9deg dni     0 here_rain 0.00 opp(0) 0.00/0.00 toward 0.00 ringmax 0.10 -> old - | new -
+12:30 PT sun 24.5deg dni    22 here_rain 0.00 opp(0) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new -
+12:45 PT sun 24.0deg dni     0 here_rain 0.00 opp(0) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new -
+13:00 PT sun 23.4deg dni     0 here_rain 0.00 opp(0) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new -
+13:15 PT sun 22.5deg dni     0 here_rain 0.00 opp(0) 0.00/0.00 toward 0.00 ringmax 0.60 -> old - | new -
+13:30 PT sun 21.5deg dni   301 here_rain 0.00 opp(45) 0.00/0.50 toward 0.00 ringmax 0.50 -> old RAINBOW | new RAINBOW
+13:45 PT sun 20.4deg dni   391 here_rain 0.00 opp(45) 0.00/0.30 toward 0.00 ringmax 0.40 -> old RAINBOW | new RAINBOW
+14:00 PT sun 19.1deg dni     0 here_rain 0.00 opp(45) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new RAINBOW
+14:15 PT sun 17.7deg dni     0 here_rain 0.00 opp(45) 0.00/0.30 toward 0.20 ringmax 0.40 -> old - | new -
+14:30 PT sun 16.1deg dni     7 here_rain 0.00 opp(45) 0.00/0.20 toward 0.10 ringmax 0.50 -> old - | new -
+14:45 PT sun 14.4deg dni     0 here_rain 0.00 opp(45) 0.00/0.20 toward 0.00 ringmax 0.20 -> old - | new -
+15:00 PT sun 12.6deg dni     0 here_rain 0.00 opp(45) 0.00/0.00 toward 0.00 ringmax 0.00 -> old - | new -
+15:15 PT sun 10.8deg dni     0 here_rain 0.10 opp(45) 0.00/0.10 toward 0.00 ringmax 0.30 -> old - | new -
+15:30 PT sun  8.8deg dni     0 here_rain 0.00 opp(45) 0.00/0.20 toward 0.00 ringmax 0.20 -> old - | new -
+15:45 PT sun  6.7deg dni     0 here_rain 0.00 opp(45) 0.00/0.20 toward 0.00 ringmax 0.20 -> old - | new -
+
+hourly rule (main score): showers = rain chance 30-59%, or clearing after rain; sun under 40 deg; cloud < 90%:
+16:00 PT pop 0 precip 0.0 cloud 0 code 0 sun 31 min mode - -> old - | new -
+08:00 PT pop 26 precip 0.0 cloud 99 code 3 sun 0 min mode - -> old - | new -
+09:00 PT pop 21 precip 0.0 cloud 99 code 3 sun 0 min mode - -> old - | new -
+10:00 PT pop 19 precip 0.0 cloud 99 code 3 sun 0 min mode - -> old - | new -
+11:00 PT pop 22 precip 0.0 cloud 99 code 3 sun 0 min mode - -> old - | new -
+12:00 PT pop 25 precip 0.0 cloud 99 code 3 sun 0 min mode - -> old - | new -
+13:00 PT pop 42 precip 0.0 cloud 99 code 3 sun 0 min mode showers -> old - | new -
+14:00 PT pop 49 precip 0.0 cloud 99 code 3 sun 4 min mode showers -> old - | new -
+15:00 PT pop 35 precip 0.0 cloud 100 code 3 sun 0 min mode showers -> old - | new -
+
+airport reports (present weather, sky):
+TTD 07:53 wx=M sky=FEW11000.00 MM precip=0.00
+TTD 08:53 wx=M sky=BKN9500.00 MM precip=0.00
+TTD 09:53 wx=M sky=SCT5000.00 OVC8000.00 precip=0.00
+TTD 10:53 wx=M sky=SCT3800.00 SCT4400.00 precip=0.00
+TTD 11:53 wx=M sky=FEW4000.00 SCT7000.00 precip=0.00
+TTD 12:53 wx=M sky=BKN5000.00 OVC6000.00 precip=0.00
+TTD 13:53 wx=M sky=OVC4500.00 MM precip=0.00
+TTD 14:53 wx=M sky=OVC4100.00 MM precip=0.00
+TTD 15:53 wx=-RA sky=SCT4200.00 OVC5500.00 precip=0.02
+TTD 16:53 wx=M sky=BKN5500.00 OVC9000.00 precip=0.0001
