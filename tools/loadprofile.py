@@ -7,6 +7,7 @@ and when the forecast and the list's "core data" arrive. Output: ux/loadprofile.
 
     python tools/loadprofile.py [lat lon]        default Washougal
 """
+# (a run is also started by any push that changes this file or its workflow)
 import asyncio, json, os, re, sys, time, urllib.request
 from playwright.async_api import async_playwright
 URL = "https://estaugaa.github.io/shotspots/"
