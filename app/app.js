@@ -1075,24 +1075,19 @@ function fbar() { const el = $("#fbar"); if (!el) return;
    in the same place on screen (Safari has no CSS scroll anchoring, so it's done by hand). */
 const BOOT_MS = 2500, BOOT = { t0: Date.now(), core: false, input: 0 };
 ["pointerdown", "keydown"].forEach(ev => addEventListener(ev, () => { BOOT.input = Date.now(); }, true));
-let __rq = 0, __hold = 0, __trail = 0, __lastPaint = 0;
-const PAINT_GAP_MS = 1500;
+let __rq = 0, __hold = 0;
 function bootReady() { if (BOOT.core) return; BOOT.core = true; clearTimeout(__hold); __hold = 0; render(); }
 function render() {
   const left = BOOT_MS - (Date.now() - BOOT.t0), view = $("#v-" + UI.view);
   if (!BOOT.core && left > 0 && view && view.childElementCount && Date.now() - BOOT.input > 1000) {
     if (!__hold) __hold = setTimeout(() => { __hold = 0; BOOT.core = true; render(); }, left);
     return; }
-  // once the list is showing, redraws caused by arriving data come at most every PAINT_GAP_MS (each one re-scores the
-  // window on screen: ~1 s on a slow phone); anything within a second of your tap redraws at once
-  const since = Date.now() - __lastPaint;
-  if (typeof __listOk !== "undefined" && __listOk && Date.now() - BOOT.input > 1000 && since < PAINT_GAP_MS) {
-    if (!__trail) __trail = setTimeout(() => { __trail = 0; render(); }, PAINT_GAP_MS - since);
-    return; }
+  // (no spacing of data redraws: drive times and sightings are fetched for the spots a redraw shows, so fewer redraws
+  // left them unfetched and changed the list; tried Nov 18, see DECISIONS)
   if (!__rq) __rq = requestAnimationFrame(() => { __rq = 0; paint(); });
 }
 function paint() {
-  window.__paints = (window.__paints || 0) + 1; __lastPaint = Date.now();
+  window.__paints = (window.__paints || 0) + 1;
   const view = $("#v-" + UI.view); let anc = null, top = 0;
   if (view && scrollY > 40) for (const c of view.querySelectorAll("[data-spot]")) { const r = c.getBoundingClientRect(); if (r.bottom > 60) { anc = c.dataset.spot; top = r.top; break; } }
   updLoc(); fresh(); if ($("#fbar") && !$("#fbar").children.length) fbar();
