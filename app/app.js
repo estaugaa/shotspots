@@ -155,7 +155,7 @@ async function loadWx(force) {
   if (!force && WX && Date.now() - WX.at < 30 * 60000 && WX.key === locKey() && WX.n === wxPoints().length) return false;
   const pts = wxPoints();
   const url = "https://api.open-meteo.com/v1/forecast?latitude=" + pts.map(p => p.lat.toFixed(3)).join(",") + "&longitude=" + pts.map(p => p.lon.toFixed(3)).join(",") +
-    "&hourly=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,visibility,relative_humidity_2m,dew_point_2m,temperature_2m,wind_speed_10m,precipitation_probability,weather_code,precipitation" +
+    "&hourly=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,visibility,relative_humidity_2m,dew_point_2m,temperature_2m,wind_speed_10m,precipitation_probability,weather_code,precipitation,sunshine_duration" +
     "&past_days=2&forecast_days=8&timeformat=unixtime&wind_speed_unit=mph&temperature_unit=fahrenheit&timezone=GMT";
   const seq = ++__wxSeq;   // seed.js asks again as each batch of spot tiles adds forecast points: an older request that answers
   try {                      // last must not overwrite the newer, larger set (far spots then lost their own point; Nov 18)
@@ -217,7 +217,8 @@ function hourAt(pt, t) {
   for (let i = 0; i < h.time.length; i++) { const d = Math.abs(h.time[i] - ts); if (d < bd) { bd = d; bi = i; } }
   if (bi < 0 || bd > 5400) return null;
   return { cc: h.cloud_cover[bi], low: h.cloud_cover_low[bi], mid: h.cloud_cover_mid[bi], high: h.cloud_cover_high[bi], vis: h.visibility[bi], rh: h.relative_humidity_2m[bi],
-    dew: h.dew_point_2m[bi], tf: h.temperature_2m[bi], wind: h.wind_speed_10m[bi], pop: h.precipitation_probability[bi], code: h.weather_code[bi], precip: h.precipitation ? h.precipitation[bi] || 0 : 0 };
+    dew: h.dew_point_2m[bi], tf: h.temperature_2m[bi], wind: h.wind_speed_10m[bi], pop: h.precipitation_probability[bi], code: h.weather_code[bi], precip: h.precipitation ? h.precipitation[bi] || 0 : 0,
+    sun: h.sunshine_duration ? h.sunshine_duration[bi] : null };   // seconds of sunshine in the hour
 }
 
 /* ---------- light windows ---------- */
@@ -377,7 +378,12 @@ function skyCalc(p, w, pt, sp, probePt) {
   const prevPop = Math.max(0, ...prev.map(x => x.pop)), prevRain = prev.reduce((a, x) => a + (x.precip || 0), 0);
   const mode = c.pop >= 40 && c.tf <= 34 ? "snow" : c.pop >= 60 ? "rain" : (prevPop >= 60 || prevRain >= 1) && c.pop < 40 && c.cc < 90 ? "clearing" : fog ? "fog" : c.pop >= 30 ? "showers" : c.wind >= 18 ? "wind" : c.cc <= 15 ? "clear" : c.cc >= 85 ? "overcast" : "color";
   if (mode === "clearing") { q = Math.min(100, q + 20); why.unshift("rain clearing just before: light breaking through"); }
-  const rainbow = (mode === "showers" || mode === "clearing") && sp.alt > -1 && sp.alt < 40 && c.cc < 90, rbDir = cmp((sp.az + 180) % 360);
+  // rainbows: showers around and sun breaking through, sun under 42 degrees. Shower days average ~99% cloud in hourly
+  // data even when the sun keeps breaking out (Round Lake double rainbow, Nov 18), so sun breaks are judged by minutes of
+  // sunshine in the hour, falling back to cloud cover only when that isn't available.
+  const sunBreaks = c.sun != null ? c.sun >= 600 : c.cc < 90;
+  const showery = mode === "showers" || mode === "clearing" || [80, 81, 82, 95].includes(c.code) || (c.pop >= 25 && c.precip > 0);
+  const rainbow = showery && sp.alt > -1 && sp.alt < 42 && sunBreaks, rbDir = cmp((sp.az + 180) % 360);
   if (rainbow) why.push(`showers with a low sun: rainbow odds, look ${rbDir}`);
   if (mode === "snow") why.unshift(`snow likely (${fmtTemp(c.tf)})`);
   return { ...c, q, fog, canvas, block, hzWorst: hz && hz.worst, why, probe: probePt && probePt.n, mode, rainbow, rbDir, kind: w.kind };

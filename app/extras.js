@@ -99,22 +99,29 @@ const DIR8 = ["north", "northeast", "east", "southeast", "south", "southwest", "
 function rainbow15(t) {   // near you, at time t: {dir, alt, strength} or null
   if (!RBOW) return null; const ts = t.getTime() / 1000; let i = -1, bd = 1e12;
   RBOW.t.forEach((x, k) => { const d = Math.abs(x - ts); if (d < bd) { bd = d; i = k; } }); if (i < 0 || bd > 600) return null;
-  const sp = sunPos(t, LOC.lat, LOC.lon); if (sp.alt < 3 || sp.alt > 40) return null;
-  if ((RBOW.here.direct_normal_irradiance[i] || 0) < 120) return null;          // no sun on you, no bow
+  const sp = sunPos(t, LOC.lat, LOC.lon); if (sp.alt < 3 || sp.alt > 42) return null;
+  // Shower timing in the model is rarely exact to 15 minutes: sun on you and a shower opposite the sun anywhere within
+  // half an hour either side counts (Round Lake double rainbow, Nov 18: the exact-slot rule saw only 30 minutes of a
+  // showery afternoon). "good" when they line up in the same slot.
+  const span = [-2, -1, 0, 1, 2].map(k => i + k).filter(k => k >= 0 && k < RBOW.t.length);
+  const sunAt = k => (RBOW.here.direct_normal_irradiance[k] || 0) >= 120;
   const anti = (sp.az + 180) % 360, ring = RBOW.ring.slice().sort((a, b) => Math.abs(((a.az - anti + 540) % 360) - 180) - Math.abs(((b.az - anti + 540) % 360) - 180));
-  const opp = ring[0], toSun = RBOW.ring.find(x => x.az === (opp.az + 180) % 360);
-  const wet = m => (m.precipitation[i] || 0) >= 0.15;                           // mm per 15 min: a real shower
-  const rainAway = wet(opp.near) || wet(opp.far), sunSide = !(toSun && wet(toSun.near));
-  if (!rainAway || !sunSide) return null;
-  return { dir: DIR8[Math.round(anti / 45) % 8], alt: Math.round(sp.alt), strength: wet(opp.near) && wet(opp.far) ? "good" : "fair", miles: wet(opp.near) ? "10" : "20" };
+  const opp = ring[0], side = ring[1], toSun = RBOW.ring.find(x => x.az === (opp.az + 180) % 360);
+  const wetAt = (m, k) => (m.precipitation[k] || 0) >= 0.15;                    // mm per 15 min: a real shower
+  const rainAt = k => wetAt(opp.near, k) || wetAt(opp.far, k) || wetAt(side.near, k);
+  if (!span.some(sunAt) || !span.some(rainAt)) return null;
+  if (toSun && wetAt(toSun.near, i) && !sunAt(i)) return null;                   // raining on the sun side right now
+  const same = sunAt(i) && rainAt(i);
+  return { dir: DIR8[Math.round(anti / 45) % 8], alt: Math.round(sp.alt), strength: same ? "good" : "fair", miles: span.some(k => wetAt(opp.near, k)) ? "10" : "20" };
 }
 function rainbowAt(p, t) {
   if (RBOW && km(LOC, p) < 25) { const r = rainbow15(t) || rainbow15(new Date(t.getTime() - 15 * 6e4)) || rainbow15(new Date(t.getTime() + 15 * 6e4)); return r; }
-  const sp = sunPos(t, p.lat, p.lon); if (sp.alt < 3 || sp.alt > 40) return null;
+  const sp = sunPos(t, p.lat, p.lon); if (sp.alt < 3 || sp.alt > 42) return null;
   const here = hourAt(nearestPt(p, 60), t), away = hourAt(nearestPt(dest(p, (sp.az + 180) % 360, 25), 60), t), toward = hourAt(nearestPt(dest(p, sp.az, 25), 60), t);
   if (!here || !away) return null;
-  const showers = c => [80, 81, 82].includes(c.code) || (c.pop >= 40 && c.precip >= 0.1 && c.precip < 4);
-  if (here.cc > 85 || !showers(away) || (toward && toward.cc > 90)) return null;
+  const showers = c => [80, 81, 82, 95].includes(c.code) || (c.pop >= 30 && c.precip >= 0.1 && c.precip < 4);
+  const sunny = c => c.sun != null ? c.sun >= 600 : c.cc <= 85;   // minutes of sun, not average cloud (shower days read ~99%)
+  if (!sunny(here) || !showers(away)) return null;
   return { dir: DIR8[Math.round(((sp.az + 180) % 360) / 45) % 8], alt: Math.round(sp.alt), strength: "fair" };
 }
 
