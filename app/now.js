@@ -17,7 +17,8 @@ function nowLine() {
   const j = NOW.d;
   // until the first answer, hold the line's space so the cards below don't jump down when it arrives
   if (!j && !NOW.fail) return `<div class="nowline skel" aria-hidden="true"><span class="ni">&nbsp;</span><span class="muted">Checking the weather right now…</span></div>`;
-  if (!j || !j.current) return "";
+  // no answer: keep the line (dropping it moved everything below up 61 px when the weather service was slow, Nov 19)
+  if (!j || !j.current) return `<div class="nowline" role="status"><span class="ni" aria-hidden="true">&nbsp;</span><span class="muted">Current weather unavailable; it will try again in a few minutes.</span></div>`;
   const c = j.current, m = j.minutely_15 || { time: [], precipitation: [] }, t0 = Date.now() / 1000;
   const fut = m.time.map((t, i) => [t, m.precipitation[i] || 0]).filter(([t]) => t >= t0 - 450);
   const wetNow = (c.precipitation || 0) > 0 || (fut[0] && fut[0][1] >= 0.1) || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95].includes(c.weather_code);

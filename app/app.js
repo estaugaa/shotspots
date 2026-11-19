@@ -1112,7 +1112,13 @@ const BOOT_MS = 2500, BOOT = { t0: Date.now(), core: false, input: 0 };
 ["pointerdown", "keydown"].forEach(ev => addEventListener(ev, () => { BOOT.input = Date.now(); }, true));
 let __rq = 0, __hold = 0;
 function bootReady() { if (BOOT.core) return; BOOT.core = true; clearTimeout(__hold); __hold = 0; render(); }
+// Nothing is drawn until every script has run. On a slow phone the scripts arrive over about a second, and a page
+// drawn before the later ones had run gained their parts one by one above the list: the Light / Night sky / Calendar
+// switch (54 px down) and the "right now" line (61 px) (load profile with slow 4G, Nov 19).
+let __scriptsIn = document.readyState === "complete";
+document.addEventListener("DOMContentLoaded", () => { __scriptsIn = true; render(); });
 function render() {
+  if (!__scriptsIn) return;
   const left = BOOT_MS - (Date.now() - BOOT.t0), view = $("#v-" + UI.view);
   if (!BOOT.core && left > 0 && view && view.childElementCount && Date.now() - BOOT.input > 1000) {
     if (!__hold) __hold = setTimeout(() => { __hold = 0; BOOT.core = true; render(); }, left);

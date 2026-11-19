@@ -104,7 +104,25 @@ function targetFrom(v,t){ const g=geoTo(v,t); return {az:g.az, alt:appAlt(v.elev
 
 
 const __dayEvCache={};
-function dayEvents(v,ymd){ const k=(Math.round(v.lat*20)/20)+","+(Math.round(v.lon*20)/20)+","+ymd; return __dayEvCache[k]||(__dayEvCache[k]=__dayEventsRaw(v,ymd)); }
+function dayEvents(v,ymd){ const c=(Math.round(v.lat*20)/20)+","+(Math.round(v.lon*20)/20), k=c+","+ymd; return __dayEvCache[k]||(__dayEvCache[k]=__dayEvKept(c,ymd)||__dayEvKeep(c,ymd,__dayEventsRaw(v,ymd))); }
+/* Sun and moon times per place and day never change, so they are kept between visits (localStorage "ss2:dayev", today
+   onward): a return visit worked out ~5,000 of them again, ~3 s of script time on a desktop (load profile, Nov 19).
+   Stored exactly (milliseconds after local midnight, base 36), so results are identical. */
+const DAYEV_KEYS=["astroDawn","civilDawn","sunrise","goldEndAM","goldStartPM","sunset","civilDusk","astroDusk","moonrise","moonset"];
+let __dayEvStore=null, __dayEvT=0;
+function __dayEvLoad(){ if(__dayEvStore) return __dayEvStore; let j=null; try{ j=JSON.parse(localStorage.getItem("ss2:dayev")||"null"); }catch(e){}
+  const today=laYMD(new Date()); __dayEvStore={};
+  if(j&&j.v===1&&j.d) for(const ymd in j.d) if(ymd>=today) __dayEvStore[ymd]=j.d[ymd];
+  return __dayEvStore; }
+function __dayEvKept(c,ymd){ const row=(__dayEvLoad()[ymd]||{})[c]; if(!row) return null; const base=stepTimes(ymd,10)[0].getTime(), p=row.split(" "), o={};
+  DAYEV_KEYS.forEach((k,i)=>{ o[k]=p[i]==="-"?null:new Date(base+parseInt(p[i],36)); }); return o; }
+function __dayEvKeep(c,ymd,o){ const base=stepTimes(ymd,10)[0].getTime(), st=__dayEvLoad();
+  (st[ymd]||(st[ymd]={}))[c]=DAYEV_KEYS.map(k=>o[k]?(o[k].getTime()-base).toString(36):"-").join(" ");
+  if(!__dayEvT) __dayEvT=setTimeout(__dayEvSave,4000);   // at most every 4 s (they arrive continuously while the week is ranked)
+  return o; }
+function __dayEvSave(){ clearTimeout(__dayEvT); __dayEvT=0; if(!__dayEvStore) return;
+  try{ localStorage.setItem("ss2:dayev",JSON.stringify({v:1,d:__dayEvStore})); }catch(e){ if(typeof noteErr==="function") noteErr("dayev",e); } }
+addEventListener("pagehide",()=>{ if(__dayEvT) __dayEvSave(); });
 function __dayEventsRaw(v,ymd){
   // remembered per instant: the four sun scans share their 145 step positions (they were each worked out four times;
   // sun and moon positions were ~1/4 of the script time on a return visit, load profile Nov 19). Same results.

@@ -56,7 +56,8 @@ let __alHad = store.get("alertline", false);
 renderNow = function () {
   _renderNowAl(); const v = $("#v-now"); if (!v) return;
   if (typeof __listOk !== "undefined" && !__listOk) {
-    if (__alHad) v.insertAdjacentHTML("afterbegin", `<div class="alertline skel" aria-hidden="true"><i class="adot"></i><span><b>&nbsp;</b></span><span class="chev">›</span></div>`);
+    // keep the slot if the last visit had an alert line, or the alerts are already in and one will show
+    if (__alHad || (fd("alerts") && !(typeof outsideCoverage === "function" && outsideCoverage()) && upcoming().length)) v.insertAdjacentHTML("afterbegin", `<div class="alertline skel" aria-hidden="true"><i class="adot"></i><span><b>&nbsp;</b></span><span class="chev">›</span></div>`);
     return; }
   const u = (typeof outsideCoverage === "function" && outsideCoverage()) ? [] : upcoming();
   if (!!u.length !== __alHad) { __alHad = !!u.length; store.set("alertline", __alHad); }
