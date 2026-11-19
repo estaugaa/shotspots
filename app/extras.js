@@ -73,9 +73,14 @@ function peakOut(peak, p, t) {
   return { out, hidden, summit: Math.round(summit), low: Math.round(low), dist };
 }
 // peaks a spot looks at: named in its name/tip, or a big peak close by from a viewpoint or summit
+// remembered per spot until the peak list or the spot changes (it was asked per window and filter: ~0.2 s a phone redraw)
+const __pkMemo = new WeakMap();
 function peaksFor(s) {
+  const src = MTN ? MTN.peaks : PEAKS, m = __pkMemo.get(s);
+  if (m && m.src === src && m.name === s.name && m.tip === s.tip && m.cats === s.cats && m.lat === s.lat && m.lon === s.lon) return m.r;
   const txt = s.name + " " + (s.tip || "");
-  return (MTN ? MTN.peaks : PEAKS).filter(p => { const d = km(s, p); return d < 160 && (p.re.test(txt) || (d < 60 && s.cats.some(c => c === "vista" || c === "mountain"))); });
+  const r = src.filter(p => { const d = km(s, p); return d < 160 && (p.re.test(txt) || (d < 60 && s.cats.some(c => c === "vista" || c === "mountain"))); });
+  __pkMemo.set(s, { src, name: s.name, tip: s.tip, cats: s.cats, lat: s.lat, lon: s.lon, r }); return r;
 }
 function airAt(t) { if (!AIR) return null; const i = _idx(AIR.h, t); if (i < 0) return null; return { aod: AIR.h.aerosol_optical_depth[i], dust: AIR.h.dust[i], pm: AIR.h.pm2_5[i] }; }
 // Rainbows need three things at once: the sun low (3-40 degrees; the bow is a 42-degree circle around the point opposite

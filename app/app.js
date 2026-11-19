@@ -202,14 +202,22 @@ function seedFame(s) {
 }
 function wxMiss() { return !WX ? (navigator.onLine === false ? "offline: no forecast" : "forecast loading") : "no forecast point near here yet"; }
 // memoised per place and forecast (it ran ~370k times a redraw); keyed by rounded position, so probe points work too
-let __npMemo = new Map(), __npAt = 0;
+let __npMemo = new Map(), __npAt = 0; const __npG = new WeakMap();
 function nearestPt(p, maxKm, exclude) {
   if (!WX) return null;
   if (__npAt !== wxVer()) { __npMemo = new Map(); __npAt = wxVer(); }
   const key = p.lat.toFixed(4) + "," + p.lon.toFixed(4) + "|" + (maxKm || 60) + "|" + (exclude || "");
   const hit = __npMemo.get(key); if (hit !== undefined) return hit;
-  let best = null, bd = 1e9;
-  for (const q of WX.pts) { if (exclude && q.id === exclude) continue; const d = km(p, q); if (d < bd) { bd = d; best = q; } }
+  // km()'s formula with each point's sin/cos of latitude kept, and the arccos only where a point can be nearest
+  // (arccos falls as its argument rises): the same operations in the same order, so the same answer; misses (probe
+  // points toward and away from the sun differ every window) were ~2 s of a phone's return visit. Checked Nov 19: 0
+  // differences in 393k lookups, 7.7x faster
+  const p1 = p.lat * D2R, s1 = Math.sin(p1), c1 = Math.cos(p1);
+  let best = null, bd = 1e9, bx = -Infinity;
+  for (const q of WX.pts) { if (exclude && q.id === exclude) continue;
+    let g = __npG.get(q); if (!g || g[2] !== q.lat) { const p2 = q.lat * D2R; g = [Math.sin(p2), Math.cos(p2), q.lat]; __npG.set(q, g); }
+    const x = s1 * g[0] + c1 * g[1] * Math.cos((q.lon - p.lon) * D2R); if (x < bx) continue;
+    const d = RE * Math.acos(Math.max(-1, Math.min(1, x))) / 1000; if (d < bd) { bd = d; best = q; bx = x; } }
   const r = bd <= (maxKm || 60) ? best : null; if (__npMemo.size > 50000) __npMemo.clear(); __npMemo.set(key, r); return r;
 }
 function hourAt(pt, t) {
