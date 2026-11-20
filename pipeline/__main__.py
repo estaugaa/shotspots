@@ -151,13 +151,18 @@ def job_astrometry():
     run_module("astrometry", verify.astrometry, "MEASURED", "nova.astrometry.net plate solving")
 
 
+def job_commonsphotos():
+    from . import commonsphotos
+    run_module("commonsphotos", commonsphotos.run, "MEASURED", "Wikimedia Commons dumps: capture time and place of US photos")
+
+
 def manifest():
     st = all_status()
     files = sorted(p.name for p in FEED.glob("*.json") if p.name not in ("manifest.json", "status.json"))
     write_json("manifest.json", {"gen": iso(utcnow()), "files": files, "status": st})
 
 
-JOBS = {"goes": job_goes, "conditions": job_conditions, "daily": job_daily, "weekly": job_weekly, "monthly": job_monthly,
+JOBS = {"commonsphotos": job_commonsphotos, "goes": job_goes, "conditions": job_conditions, "daily": job_daily, "weekly": job_weekly, "monthly": job_monthly,
         "outcomes": job_outcomes, "alerts": job_alerts, "weekend": job_weekend, "trails": job_trails, "astrometry": job_astrometry, "photostats": job_photostats, "verifyobs": job_verifyobs, "natdata": job_natdata, "camtruth": lambda: run_module("camtruth", __import__("pipeline.camtruth", fromlist=["x"]).run, "MEASURED", "webcam colour at sunrise/sunset vs the sky formula"), "deeproutes": lambda: run_module("deeproutes", __import__("pipeline.deepnat", fromlist=["x"]).routes, "MEASURED", "walking routes from parking for nationally researched spots"), "deepnat": lambda: run_module("deepnat", __import__("pipeline.deepnat", fromlist=["x"]).run, "MODELED", "full research for the best starter spots nationwide (terrain, walk, facing)"), "skill": lambda: run_module("skill", __import__("pipeline.skill", fromlist=["x"]).run, "MEASURED", "forecast vs airport-observed cloud at sunrise/sunset nationwide; calibration"), "handpop": lambda: run_module("handpop", __import__("pipeline.seedpop", fromlist=["x"]).run_hand, "MEASURED", "photo and sighting counts for hand-researched spots (same measure as starter spots)"), "deep": lambda: run_module("deep", __import__("pipeline.deepspots", fromlist=["x"]).run, "MODELED", "full research for the best starter spots (terrain, sun times, walk, card)"), "icons": lambda: run_module("icons", __import__("pipeline.icons", fromlist=["x"]).run, "MEASURED", "Famous landscape places missing from the starter data (Wikidata + page views)"), "wikiviews": lambda: run_module("wikiviews", __import__("pipeline.wikiviews", fromlist=["x"]).run, "MEASURED", "Wikipedia page views (fame) for starter spots"), "fogprob": lambda: (run_module("fogprob", __import__("pipeline.fogprob", fromlist=["x"]).run, "MODELED", "Valley-fog chance at dawn (shadow mode)"),
                             run_module("fcsnap_eve", __import__("pipeline.verify_obs", fromlist=["x"]).snapshot_evening, "MODELED", "evening forecast of next sunrise saved, to score fog ~12 h ahead")), "stands": lambda: run_module("stands", __import__("pipeline.stands", fromlist=["x"]).run, "MEASURED", "Where photographers stand + classic direction (Commons, OSM, Mapillary)"), "nps": lambda: run_module("nps", __import__("pipeline.nps", fromlist=["x"]).run, "MEASURED", "NPS park alerts, closures and timed entry"), "climonat": lambda: run_module("climonat", __import__("pipeline.climonat", fromlist=["x"]).run, "MEASURED", "sky at sunrise/sunset by week, 10 years of airport reports (IEM ASOS/AWOS), every US station"), "darkgrid": job_darkgrid, "seedlight": job_seedlight, "gonowtest": job_gonowtest, "seedpop": job_seedpop, "hours": job_hours, "hourscur": lambda: __import__("pipeline.hours", fromlist=["x"]) and run_module("hours", __import__("pipeline.hours", fromlist=["x"]).curated, "MEASURED", "opening hours, researched spots")}
 

@@ -1,6 +1,7 @@
 # Status (update at the end of every work session)
 
 ## Running
+- 2026-11-20 Commons photo history (job.yml job=commonsphotos; scheduler, every 30 days, chains itself): streams the Commons dumps and writes data/archive/commons/photos_<dump>.csv.gz (US photos: place, capture time, EV, name words) for the validation set. Next: join with historical weather (Open-Meteo archive) and test the sky formula against it.
 - 2026-11-17 National sunrise/sunset sky climatology (job.yml job=climonat; started by the scheduler, chains itself): ~2,000 airport stations, ~6 s each, West first. Output feed/climo/ (1° tiles + index.json, `states_done`). Spot pages show "Clear at sunset this time of year" (MEASURED) wherever a station is within 80 km; the shot list and alignment alerts use it at sunrise/sunset.
 - 2026-11-18 feed/ and data/ live only on the `data` branch (squashed daily; first squash 00:43 UTC). main is code and docs.
   Local copies of feed/ and data/ from before the move are stale; see README for viewing the data branch.

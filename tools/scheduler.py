@@ -12,7 +12,9 @@ JOBS = [
     ("forecast check", 20, ("status", "skill"), ["job.yml", "-f", "job=skill"]),
     ("sky climatology", 6, ("status", "climonat"), ["job.yml", "-f", "job=climonat"]),   # chains itself until every station is done; then weekly re-check
     ("data squash", 9, ("status", "datasquash"), ["data-squash.yml"]),   # keeps the data branch at ~1 commit a day
+    ("commons photos", 7, ("status", "commonsphotos"), ["job.yml", "-f", "job=commonsphotos"]),   # bulk validation history; chains itself
 ]
+EVERY_DAYS = {"commons photos": 30}   # jobs not run daily: due again this many days after their last run
 def last_run(kind, ref):
     try:
         if kind == "history":
@@ -20,10 +22,17 @@ def last_run(kind, ref):
         return dt.datetime.fromisoformat(json.load(open(f"feed/status/{ref}.json"))["at"].replace("Z", "+00:00"))
     except Exception:
         return None
+def last_ok(ref):
+    try:
+        return bool(json.load(open(f"feed/status/{ref}.json")).get("ok"))
+    except Exception:
+        return False
 for name, hour, (kind, ref), cmd in JOBS:
     due = NOW.replace(hour=hour, minute=0, second=0, microsecond=0)
     if due > NOW: due -= dt.timedelta(days=1)
     last = last_run(kind, ref)
+    if last is not None and name in EVERY_DAYS and last_ok(ref) and NOW - last < dt.timedelta(days=EVERY_DAYS[name]):
+        print(f"{name}: ran {last:%m-%d %H:%M}Z, every {EVERY_DAYS[name]} days"); continue
     if last is None or last < due:
         # skip if a run for this job has already been started since it fell due (job.yml runs are named "job: <name>")
         title = "job: " + cmd[-1].split("=")[1] if cmd[0] == "job.yml" else None
