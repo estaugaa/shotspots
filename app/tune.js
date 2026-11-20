@@ -14,6 +14,8 @@ const TUNE_INFO = {
   sunMid: ["Daytime, sun 12–25°", 0.4, 1, 0.02, "multiplier: a winter midday"],
   sunHigh: ["Daytime, sun 25–40°", 0.4, 1, 0.02, "multiplier"],
   sunOverhead: ["Daytime, sun above 40°", 0.3, 1, 0.02, "multiplier: a summer midday, harsh"],
+  faceAway: ["Faces away from the golden-hour sun", 0.4, 1, 0.01, "multiplier (measured x0.90 from photo history, Nov 20)"],
+  blocked: ["Terrain 6°+ toward the low sun", 0.4, 1, 0.01, "multiplier (measured x0.75 from photo history, Nov 20)"],
   distance: ["Distance tie-break", 0, 0.4, 0.02, "most taken off at the edge of your travel range"],
 };
 function tuneHtml() {

@@ -36,7 +36,7 @@ const LIFE = ["birds", "wildlife"];
    tuning panel (#tune in the URL) overrides them on this device for testing. */
 const TUNE_DEFAULT = { lowBroken: 0.85, lowDeck: 0.4, clearLight: 64, alpenglow: 8, qMin: 0.5, qMax: 1.12, wildlifeOutside: 0.85,
   capMorning: 0.8, capMidday: 0.62, capAfternoon: 0.74, distance: 0.1, canvasFloor: 0.32,
-  sunLow: 0.95, sunMid: 0.82, sunHigh: 0.72, sunOverhead: 0.62 };
+  sunLow: 0.95, sunMid: 0.82, sunHigh: 0.72, sunOverhead: 0.62, faceAway: 0.9, blocked: 0.75 };
 /* daytime windows: light quality follows how high the sun is, not the clock (a November afternoon at 45°N has the sun
    below 20°: low, raking light all day; a July noon has it at 68°) */
 function capFor(w, p) {
@@ -627,11 +627,17 @@ function fitFor(s, w) {
   // a famous view whose terrain "faces away" is usually shot with the sun behind you: warm light on the subject (Tunnel View at sunset)
   const famous = (s.score || 0) >= 12 || (s.views || 0) >= 40000 || (s._stand && s._stand.u >= 4) || seedFame(s) >= 7;   // any spot, by the data
   if (famous && side && GOLDK.has(w.kind) && (s.light === "blocked" || ((s.light === "sunrise" || s.light === "sunset") && s.light !== side))) why.push("sun behind you: warm light on the view");
-  else if (side && !s.cats.some(c => LIFE.includes(c)) && (GOLDK.has(w.kind) || BLUEK.has(w.kind)) && (s.light === "sunrise" || s.light === "sunset") && s.light !== side) { n = GOLDK.has(w.kind) ? n * 0.55 : n - 6; why.push(`faces ${s.light === "sunrise" ? "east: a sunrise spot" : "west: a sunset spot"}`); }
+  else if (side && !s.cats.some(c => LIFE.includes(c)) && (GOLDK.has(w.kind) || BLUEK.has(w.kind)) && (s.light === "sunrise" || s.light === "sunset") && s.light !== side) { n = GOLDK.has(w.kind) ? n * TUNE.faceAway : n - 6; why.push(`faces ${s.light === "sunrise" ? "east: a sunrise spot" : "west: a sunset spot"}`); }
   // starter spots: terrain says which way they open up (pipeline/seedlight.py)
+  // Measured Nov 20 (Commons photo history, 287 spots with a horizon profile and >= 20 photo days; share of photo days
+  // at sunset): terrain 5 deg or more toward the sun x0.75 (95% 0.58-0.93) vs under 2 deg; "blocked" x0.74; facing the
+  // other way x0.90 (0.80-1.02; was x0.55). Small horizon differences under 2 deg made no difference. The +4 for an
+  // open view stays: both groups compared (facing the sun, open both ways) had it, so the test says nothing about it.
   if (side && GOLDK.has(w.kind)) {   // every spot (hand-researched ones too): data, not origin
-    if (s.light === "blocked") { if (!famous) { n *= 0.7; why.push("hills block the low sun here"); } }
-    else if ((s.hz || !s.seed) && (s.light === side || s.light === "both")) { n += 4; why.push(`open view toward the ${side === "sunrise" ? "east" : "west"}`); }
+    const hzSun = s.hzp ? s.hzp[((Math.round(sunPos(w.peak, s.lat, s.lon).az) % 360) + 360) % 360] / 10 : null, dir = side === "sunrise" ? "east" : "west";
+    if (hzSun != null && hzSun >= 2) { if (!famous) { n *= 1 - (1 - TUNE.blocked) * clamp((hzSun - 2) / 4, 0, 1); why.push(`terrain ${Math.round(hzSun)}° high toward the sun: it goes behind the hills early`); } }
+    else if (hzSun == null && s.light === "blocked") { if (!famous) { n *= TUNE.blocked; why.push("hills block the low sun here"); } }
+    else if ((s.hz || !s.seed) && (s.light === side || s.light === "both")) { n += 4; why.push(`open view toward the ${dir}`); }
     const K = kindOf(s), KW = /bridge|landmark/.test(K) ? 0.85 : K === "waterfall" ? 0.85 : K === "refuge" ? 0.85 : 1; n *= KW;
    // big areas: the pin is just the middle of them   // bridges, landmarks and falls are better at blue hour or in soft light
   }
