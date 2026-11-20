@@ -1,0 +1,5 @@
+# Only for job=imagerate (pipeline/imagerate.py): CPU-only torch and the CLIP model package.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.14.1+cpu
+torchvision==0.29.2+cpu
+open_clip_torch==4.2.2

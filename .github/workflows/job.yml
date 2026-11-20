@@ -51,6 +51,9 @@ jobs:
             ss-cache-job-
             ss-cache-
       - run: pip install -r requirements.lock
+      - name: Image model packages (imagerate only)
+        if: inputs.job == 'imagerate'
+        run: pip install -r requirements-ml.txt
       - run: python -m pipeline $JOB
         env:
           JOB: ${{ inputs.job || (github.event.schedule == '20 20 * * *' && 'skill') || (github.event.schedule == '40 10 * * *' && 'deeproutes') || 'fogprob' }}

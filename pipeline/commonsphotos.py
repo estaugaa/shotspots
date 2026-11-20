@@ -10,7 +10,7 @@ Output data/archive/commons/photos_<dump date>.csv.gz, one row per photo with a 
   shutter/aperture/ISO; blank when missing), words (s sunset/sunrise/dusk/dawn/golden/afterglow/alpenglow, f fog/mist,
   r rainbow, t storm/lightning, w snow, n night sky: aurora/milky way/stars/star trails), who (uploader's account
   number from the dump, so the analysis counts photographers rather than photos: one person's 200 frames of a sunset
-  are one vote)
+  are one vote), pid (file page id, to fetch the image for rating)
 Time zone, country and sun position are worked out later (the analysis step), not here.
 
 Stages are checkpointed in .cache/commons, so a run that runs short of time continues where it stopped (.more).
@@ -27,7 +27,7 @@ BASE = "https://dumps.wikimedia.org/commonswiki/"
 H = {"User-Agent": "ShotSpots/1.0 (https://github.com/estaugaa/shotspots; photo-timing statistics from dumps)"}
 OUT = DATA / "archive" / "commons"
 CK = CACHE / "commons"
-VERSION = 2               # 2: uploader column
+VERSION = 3               # 2: uploader column; 3: page id (to fetch the image for rating, imagerate.py)
 BUDGET_MIN = 320          # job.yml allows 340
 IMAGE_MIN = 200           # don't start the image pass with less time than this left
 # lat/lon boxes: lower 48, Alaska, Hawaii (neighbouring Canada/Mexico is removed later by time zone)
@@ -96,7 +96,7 @@ def run():
     CK.mkdir(parents=True, exist_ok=True)
     url = lambda t: f"{BASE}{dump}/commonswiki-{dump}-{t}.sql.gz"
     # 1-2: file name -> location, for files with a primary geotag in the US boxes
-    ckf = CK / f"names_{dump}.pkl.gz"
+    ckf = CK / f"names_{dump}_v{VERSION}.pkl.gz"
     if ckf.exists():
         names = pickle.load(gzip.open(ckf, "rb"))
     else:
@@ -113,7 +113,7 @@ def run():
         for line in _lines(url("page")):
             m = PAGE_RE.match(line)
             if m and int(m.group(1)) in geo:
-                names[m.group(2)] = geo[int(m.group(1))]
+                names[m.group(2)] = geo[int(m.group(1))] + (int(m.group(1)),)
         del geo
         with gzip.open(ckf, "wb", compresslevel=3) as f:
             pickle.dump(names, f, protocol=pickle.HIGHEST_PROTOCOL)
@@ -126,7 +126,7 @@ def run():
     tmp = out.with_suffix(".tmp")
     rows = seen = 0
     with gzip.open(tmp, "wt", newline="") as f:
-        w = csv.writer(f); w.writerow(["lat", "lon", "taken", "ev", "words", "who"])
+        w = csv.writer(f); w.writerow(["lat", "lon", "taken", "ev", "words", "who", "pid"])
         for line in _lines(url("image")):
             m = NAME_RE.match(line)
             if not m:
@@ -143,7 +143,7 @@ def run():
                 continue   # unset camera clocks and date-only stamps carry no time of day
             nm = m.group(1).replace(b"_", b" ")
             words = "".join(k for k, r in WORD_RE if r.search(nm))
-            w.writerow([loc[0], loc[1], f"{y:04d}-{mo:02d}-{da:02d} {hh:02d}:{mi:02d}", _ev(line), words, (lambda a: a.group(1).decode() if a else "")(ACTOR_RE.search(line))]); rows += 1
+            w.writerow([loc[0], loc[1], f"{y:04d}-{mo:02d}-{da:02d} {hh:02d}:{mi:02d}", _ev(line), words, (lambda a: a.group(1).decode() if a else "")(ACTOR_RE.search(line)), loc[2]]); rows += 1
     tmp.rename(out)
     for p in CK.glob("names_*.pkl.gz"):
         p.unlink()

@@ -13,6 +13,7 @@ JOBS = [
     ("sky climatology", 6, ("status", "climonat"), ["job.yml", "-f", "job=climonat"]),   # chains itself until every station is done; then weekly re-check
     ("data squash", 9, ("status", "datasquash"), ["data-squash.yml"]),   # keeps the data branch at ~1 commit a day
     ("photo weather", 8, ("status", "photoweather"), ["job.yml", "-f", "job=photoweather"]),   # daily until every busy cell has its weather (~35 a day)
+    ("image rating", 13, ("status", "imagerate"), ["job.yml", "-f", "job=imagerate"]),   # ~3,000 golden-hour photos a day, after photo weather
     ("commons photos", 7, ("status", "commonsphotos"), ["job.yml", "-f", "job=commonsphotos"]),   # bulk validation history; chains itself
 ]
 EVERY_DAYS = {"commons photos": 30}   # jobs not run daily: due again this many days after their last run

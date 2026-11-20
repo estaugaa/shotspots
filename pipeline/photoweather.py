@@ -72,19 +72,20 @@ def _stations():
     return s
 
 
-def cell_days(photos_file):
-    """{(cell_lat, cell_lon): {date: [day set, am set, pm set, am words, pm words]}} from the photo file."""
+def photo_events(photos_file):
+    """Each photo with a time zone and in the years covered: (cell, local date, "r" sunrise / "s" sunset / "" other, row).
+    Shared with imagerate.py so both use the same golden-hour windows."""
     import numpy as np
     st = _stations()
     sla, slo = np.array([a for a, *_ in st]), np.array([b for _, b, _ in st]); tzs = [ZoneInfo(t) for *_, t in st]
     def nearest(la, lo):   # (distance in degrees of latitude, station index); once per cell
         d = np.hypot(sla - la, (slo - lo) * math.cos(math.radians(la))); i = int(d.argmin()); return d[i], i
-    tzc, sunc, out = {}, {}, defaultdict(dict)
+    tzc, sunc = {}, {}
     kept = dropped = 0
     for r in csv.DictReader(gzip.open(photos_file, "rt")):
-        la, lo, who = float(r["lat"]), float(r["lon"]), r["who"]
-        if not who:
+        if not r["who"]:
             continue
+        la, lo = float(r["lat"]), float(r["lon"])
         ck = (math.floor(la / CELL) * CELL, math.floor(lo / CELL) * CELL)
         if ck not in tzc:
             d, i = nearest(ck[0] + CELL / 2, ck[1] + CELL / 2)
@@ -103,14 +104,21 @@ def cell_days(photos_file):
             continue
         u = t.replace(tzinfo=tz).astimezone(dt.timezone.utc)
         dr, ds = (u - rise).total_seconds() / 60, (u - sset).total_seconds() / 60
-        e = out[ck].setdefault(day.isoformat(), [set(), set(), set(), 0, 0])
-        e[0].add(who)
-        if -45 <= dr <= 75:
-            e[1].add(who); e[3] += "s" in r["words"]
-        elif -75 <= ds <= 45:
-            e[2].add(who); e[4] += "s" in r["words"]
         kept += 1
-    log.info("photoweather: %d photos kept, %d outside station range, %d cells", kept, dropped, len(out))
+        yield ck, day.isoformat(), "r" if -45 <= dr <= 75 else "s" if -75 <= ds <= 45 else "", r
+    log.info("photoweather: %d photos kept, %d outside station range", kept, dropped)
+
+
+def cell_days(photos_file):
+    """{(cell_lat, cell_lon): {date: [day set, am set, pm set, am words, pm words]}} from the photo file."""
+    out = defaultdict(dict)
+    for ck, d, ev, r in photo_events(photos_file):
+        e = out[ck].setdefault(d, [set(), set(), set(), 0, 0]); who = r["who"]
+        e[0].add(who)
+        if ev == "r":
+            e[1].add(who); e[3] += "s" in r["words"]
+        elif ev == "s":
+            e[2].add(who); e[4] += "s" in r["words"]
     return out
 
 
