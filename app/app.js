@@ -767,8 +767,8 @@ function plannerHtml(all, tops) {
    LIST_HOLD_MS. After that the top picks keep their order for this window, filter and place while later data only
    updates their scores; when the order would change, a pill offers it. Any choice you make (window, day, filter,
    place) starts a fresh list. Display only: the ranking itself (rankFor) is unchanged. */
-const LIST_HOLD_MS = 3500;
-let __listOk = false, __pin = null, __listHold = 0;
+const LIST_HOLD_MS = 3500, LIST_NOWX_MS = 12000;
+let __listOk = false, __pin = null, __listHold = 0, __listHoldCap = 0;
 function listReady(ranked) {
   if (__listOk) return true;
   // spot tiles: wait for the tile index too (before it loads, "no tiles cover this place" looked true and the list showed early)
@@ -779,8 +779,11 @@ function listReady(ranked) {
   // late data (airport reports, calibration, HRRR) and the eager feeds (the alert line above the list) too, so neither
   // changes the cards or pushes them once shown
   const late = (typeof lateSettled !== "function" || lateSettled()) && (typeof FEED === "undefined" || FEED.eager);
-  if ((WX && WX.pts && tiles && BOOT.core && late && drivesReady(ranked || [])) || Date.now() - BOOT.t0 > LIST_HOLD_MS) __listOk = true;
-  else if (!__listHold) __listHold = setTimeout(() => { __listHold = 0; render(); }, Math.max(50, LIST_HOLD_MS - (Date.now() - BOOT.t0)));
+  // the 3.5 s cap only once the forecast is in: without it every card said "forecast loading" and grew a line when it
+  // came (first visit, forecast at 7.1 s, picks moved 110-190 px, Nov 19); with no forecast at all, the list shows at 12 s
+  const wx = !!(WX && WX.pts), cap = wx ? LIST_HOLD_MS : LIST_NOWX_MS, age = Date.now() - BOOT.t0;
+  if ((wx && tiles && BOOT.core && late && drivesReady(ranked || [])) || age > cap) __listOk = true;
+  else if (!__listHold || __listHoldCap !== cap) { clearTimeout(__listHold); __listHoldCap = cap; __listHold = setTimeout(() => { __listHold = 0; render(); }, Math.max(50, cap - age)); }
   return __listOk;
 }
 const pinKeyFor = w => [w.kind, w.start.getTime(), UI.group, locKey(), PREFS.travel, maxTravel()].join("|");
