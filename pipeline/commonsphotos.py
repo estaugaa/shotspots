@@ -20,7 +20,7 @@ Source: Wikimedia Commons contributors (dumps.wikimedia.org); only place/time fa
 
     python -m pipeline commonsphotos
 """
-import csv, gzip, io, json, math, pickle, re, subprocess, time
+import csv, gzip, io, json, math, pickle, re, subprocess, time, datetime as dt
 from .common import http, soft_fail, log, utcnow, iso, DATA, CACHE
 
 BASE = "https://dumps.wikimedia.org/commonswiki/"
@@ -139,7 +139,11 @@ def run():
             if not d:
                 continue
             y, mo, da, hh, mi = (int(x) for x in d.groups())
-            if not (1990 <= y <= 2030 and 1 <= mo <= 12 and 1 <= da <= 31 and hh < 24 and mi < 60) or (hh == 0 and mi == 0):
+            try:
+                dt.date(y, mo, da)   # real dates only (cameras write 2015:02:30 and 0000:00:00)
+            except ValueError:
+                continue
+            if not (1990 <= y <= 2030 and hh < 24 and mi < 60) or (hh == 0 and mi == 0):
                 continue   # unset camera clocks and date-only stamps carry no time of day
             nm = m.group(1).replace(b"_", b" ")
             words = "".join(k for k, r in WORD_RE if r.search(nm))

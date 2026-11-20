@@ -93,7 +93,10 @@ def photo_events(photos_file):
         tz = tzc[ck]
         if tz is None:
             dropped += 1; continue
-        t = dt.datetime.strptime(r["taken"], "%Y-%m-%d %H:%M")
+        try:
+            t = dt.datetime.strptime(r["taken"], "%Y-%m-%d %H:%M")
+        except ValueError:
+            continue   # impossible camera dates (Feb 30) in files from before the extraction checked them
         if not (Y0 <= t.year <= Y1):
             continue
         day = t.date()
