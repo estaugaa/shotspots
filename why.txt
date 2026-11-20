@@ -1,0 +1,33 @@
+[
+ {
+  "case": "Cannon Beach sunset",
+  "r": {
+   "top": [
+    "23 r22 Seaside Beach [beach/sunset] d19",
+    "20 r19 Short Sand Beach (Oswald West State Park) [undefined/sunset] d16",
+    "19 r18 Hug Point [undefined/sunset] d8",
+    "19 r18 Ecola State Park: Ecola Point & Indian Beach [undefined/sunrise] d13",
+    "19 r18 Blumenthal Falls [waterfall/overcast] d16",
+    "18 r18 Cannon Beach & Haystack Rock [undefined/sunset] d2"
+   ],
+   "Haystack Rock": [
+    "cannon-beach [undefined/sunset] score=undefined views=0 fame=- d=2 far=false grp=true fit=18 sky=q12 blk100 cc2 can0 clear ptNorth Coast cats=coast chain=app:34,live:44,sky:44,feed:38,alerts:26,access:26,extras:26,hours:18 rank=5 :: low tide 3:24 PM (1.6 ft): wet-sand reflections; flat light: long exposures of the surf and rocks; open view toward the west; the hour-by-hour model sees little colour here; low cloud deck toward the setting sun (path 17"
+   ],
+   "Ecola": [
+    "ecola [undefined/sunrise] score=undefined views=0 fame=- d=13 far=false grp=true fit=19 sky=q12 blk100 cc2 can0 clear ptHere cats=coast/vista chain=app:30,live:40,sky:40,feed:34,alerts:22,access:22,extras:22,hours:19 rank=3 :: low tide 3:24 PM (1.6 ft): wet-sand reflections; flat light: long exposures of the surf and rocks; sun behind you: warm light on the view; the hour-by-hour model sees little colour here; low cloud deck toward the setting",
+    "multnomah-creek-falls [undefined/overcast] score=undefined views=0 fame=- d=120 far=true grp=true fit=22 sky=q12 blk100 cc3 can3 clear ptWest Gorge cats=waterfall chain=app:32,live:32,sky:32,feed:32,alerts:32,access:32,extras:32,hours:22 rank=-1 :: waterfalls shoot best in daytime shade or overcast, not at sunset"
+   ],
+   "Hug Point": [
+    "hug-point [undefined/sunset] score=undefined views=0 fame=- d=8 far=false grp=true fit=19 sky=q12 blk100 cc2 can0 clear ptNorth Coast cats=coast/waterfall chain=app:42,live:52,sky:52,feed:46,alerts:34,access:34,extras:34,hours:19 rank=2 :: low tide 3:24 PM (1.6 ft): wet-sand reflections; flat light: long exposures of the surf and rocks; open view toward the west; the hour-by-hour model sees little colour here; low cloud deck toward the setting sun (path 33"
+   ],
+   "Blumenthal Falls": [
+    "seed-n4232922938 [waterfall/overcast] score=4 views=0 fame=-0.4 d=16 far=false grp=true fit=19 sky=q12 blk100 cc2 can0 clear ptNorth Coast cats=waterfall chain=app:32,live:32,sky:32,feed:32,alerts:32,access:32,extras:32,hours:19 rank=4 :: waterfalls shoot best in daytime shade or overcast, not at sunset"
+   ],
+   "Necanicum": [
+    "seed-eL164411 [hotspot/sunrise] score=8 views=0 fame=0.8 d=23 far=false grp=true fit=11 sky=q12 blk100 cc2 can0 clear ptHere cats=wildlife/birds chain=app:18,live:20,sky:20,feed:20,alerts:20,access:20,extras:20,hours:11 rank=10 :: 6 bird sightings logged here in 10 days",
+    "seed-eL1740648 [hotspot/sunrise] score=7.8 views=0 fame=0.8 d=23 far=false grp=true fit=11 sky=q12 blk100 cc2 can0 clear ptHere cats=wildlife/birds chain=app:18,live:20,sky:20,feed:20,alerts:20,access:20,extras:20,hours:11 rank=11 :: 7 bird sightings logged here in 10 days",
+    "seed-eL2344471 [hotspot/sunrise] score=7.5 views=0 fame=0.7 d=20 far=false grp=true fit=11 sky=q12 blk100 cc2 can0 clear ptHere cats=wildlife/birds chain=app:18,live:20,sky:20,feed:20,alerts:20,access:20,extras:20,hours:11 rank=9 :: 7 bird sightings logged here in 10 days"
+   ]
+  }
+ }
+]
