@@ -6,7 +6,12 @@ function ruleActive(r, d) {
   const inside = r.from <= r.to ? (md >= r.from && md <= r.to) : (md >= r.from || md <= r.to);
   return r.type === "open_only" ? !inside : inside;
 }
-function accessRules(id) { const a = fd("access_rules"); return a ? a.rules.filter(r => r.spots.includes(id)) : []; }
+// a rule covers its listed spots, and with "area" [south, west, north, east] every spot inside the box (eBird hotspots and
+// map spots have generated ids, so a road closure has to be by place: Teton Park Road, Nov 19)
+let __accById = { n: -1, m: null };
+function spotById(id) { if (__accById.n !== SPOTS.length) __accById = { n: SPOTS.length, m: new Map(SPOTS.map(x => [x.id, x])) }; return __accById.m.get(id); }
+function inArea(r, id) { if (!r.area) return false; const p = spotById(id); if (!p) return false; const [s, w, n, e] = r.area; return p.lat >= s && p.lat <= n && p.lon >= w && p.lon <= e; }
+function accessRules(id) { const a = fd("access_rules"); return a ? a.rules.filter(r => (r.spots || []).includes(id) || inArea(r, id)) : []; }
 function closedRule(id, d) { return accessRules(id).find(r => (r.type === "closed" || r.type === "open_only") && ruleActive(r, d)) || null; }
 const MD = s => { const [m, d] = s.split("-").map(Number); return new Date(2000, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric" }); };
 function reopenText(r) { return r.until ? `expected to reopen ${new Date(r.until + "T12:00").toLocaleDateString("en-US", { month: "long", year: "numeric" })}` : r.type === "open_only" ? `usually open ${MD(r.from)}–${MD(r.to)}` : `usually reopens around ${MD(r.to)}`; }

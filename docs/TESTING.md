@@ -36,6 +36,7 @@ Rules
 - Judge ranking changes on the same forecast (scorecmp), not on runs from different days.
 
 ## Latest results
+- 2026-11-19 (night): 10 walkthroughs (Washougal, Cannon Beach, Moab, Boise, Jackson, New York, Miami, Acadia, Smokies, Sedona). Found: depth.js error on load (fixed), Jenny Lake leading Jackson with Teton Park Road closed (fixed), Haystack Rock and Hug Point ranked below an unknown waterfall at Cannon Beach because hand-researched spots' quality is Commons-only (open).
 - 2026-11-17 (early): expectations 13/13, smoke test passing on both browsers, full redraw 2.1 s (was 7.7 s).
 - 2026-11-16 (evening): expectations 12/12. Top picks now lead with views everywhere tested: Grand Canyon (Mather, Yaki, Powell, Hopi), Smokies (Le Conte, Newfound Gap), Moab (arches), Badlands (overlooks), Washougal (Willamette Falls, fall-colour streets, Multnomah).
 - 2026-11-16: 30 situations, hand-scored average about 7.3/10 (from 6.3 on 11-15). Weak: Zion in rain, Cannon Beach (cloud on the sunset path), Bend (low cloud east).

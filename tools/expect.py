@@ -28,6 +28,8 @@ CASES = [
  ("Zion sunset: not taken over by birding spots", (37.189, -112.999), {"maxDrive": 30}, "all", "sunset", "max_kind", [3, ["hotspot", "refuge"], 1]),
  ("Yosemite sunset: Yosemite Valley icons in the top 5", (37.745, -119.59), {"maxDrive": 45}, "all", "sunset", "any_top", [5, ["Yosemite Fall", "El Capitan", "Tunnel View", "Glacier Point", "Half Dome", "Vernal", "Bridalveil", "Valley View", "Sentinel"]]),
  ("Grand Canyon sunrise: nothing beyond the travel limit", (36.0, -112.12), {"maxDrive": 45}, "all", "sunrise", "none_far", 10),
+ ("Jackson wildlife morning: nothing behind a closed seasonal gate in the top 5 (Nov 19: Jenny Lake led, Teton Park Road shut)", (43.48, -110.762), {"maxDrive": 60}, "life", "morning", "none_closed", 5),
+ ("Washougal: no script errors on load (Nov 19: depth.js 'ns is not defined')", (45.582, -122.353), {"maxDrive": 60}, "all", "sunrise", "no_errors", 0),
  ("Washougal sunrise: 'Why this score' layers add up to the score shown", (45.582, -122.353), {"maxDrive": 60}, "all", "sunrise", "layers_ok", 5),
 ]
 
@@ -36,7 +38,7 @@ RANK = """(async ([kind]) => {
   const all = allWindows(LOC, PLAN_HOURS), want = laYMD(new Date(Date.now() + 864e5));
   const w = all.find(x => winDay(x) === want && x.kind === kind); if (!w) return { err: "no " + kind + " window" };
   const R = rankFor(w); const layersOk = R.slice(0, 5).every(x => { const L = scoreLayers(x.s, w); return L.length && L[L.length - 1].n === x.f.n; });
-  return { wx: !!WX, layersOk, top: R.slice(0, 10).map(x => ({ n: x.s.name, k: x.s.kind || "", life: lifeLed(x.s), far: tooFar(x.s), sc: x.f.n })) }; })"""
+  return { wx: !!WX, layersOk, top: R.slice(0, 10).map(x => ({ n: x.s.name, k: x.s.kind || "", life: lifeLed(x.s), far: tooFar(x.s), sc: x.f.n, cl: typeof closedRule === "function" && !!closedRule(x.s.id, w.peak) })) }; })"""
 
 
 def judge(rule, arg, top):
@@ -49,9 +51,16 @@ def judge(rule, arg, top):
         n, kinds, k = arg; hit = [t["n"] for t in top[:n] if t["k"] in kinds]; return len(hit) <= k, hit
     if rule == "layers_ok":
         return bool(top and top[0].get("_layers_ok")), []
+    if rule == "none_closed":
+        hit = [t["n"] for t in top[:arg] if t.get("cl")]; return not hit, hit
+    if rule == "no_errors":
+        return not ERRS, list(ERRS)[:3]
     if rule == "none_far":
         hit = [t["n"] for t in top[:arg] if t["far"]]; return not hit, hit
     return False, ["unknown rule"]
+
+
+ERRS = []
 
 
 async def main():
@@ -64,6 +73,7 @@ async def main():
                   "ss2:prefs": {"units": "us", "travel": "drive", "maxDrive": 60, "maxWalk": 30, "start": "gps", **prefs}, "ss2:group": group, "ss2:welcomed": True}
             await c.add_init_script("".join(f"localStorage.setItem({json.dumps(k)}, {json.dumps(json.dumps(v))});" for k, v in st.items()))
             pg = await c.new_page()
+            ERRS.clear(); pg.on("pageerror", lambda e: ERRS.append(str(e)[:160]))
             try:
                 await pg.goto(URL); await pg.wait_for_timeout(12000)
                 r = await pg.evaluate(RANK, [kind])
