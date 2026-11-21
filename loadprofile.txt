@@ -1,0 +1,120 @@
+Load profile https://estaugaa.github.io/shotspots/ (live build ss2-v1dcf0ce1e3) at 45.582,-122.353: Chromium, 150 ms RTT, 1.6 Mbit/s, CPU x4, 375x812
+
+=== cold (first visit) ===
+first paint 1372 ms | picks shown 6880 ms | forecast 4732 ms | core data 4732 ms | picks changed 0x, moved 0x (last - ms) | other cards changed 2x | list redraws 13 | layout shift 0.005
+184 requests, 385 KB transferred (scripts 341, feed 32, other sites 40); last request done 13263 ms | long script tasks 74 totalling 17507 ms
+largest downloads: 101KB data.js (done 2471 ms); 45KB app.js (done 2193 ms); 36KB cdnjs.cloudflare.com (done 2096 ms); 15KB sky.js (done 1645 ms); 13KB feed.js (done 1533 ms); 12KB live.js (done 1496 ms); 9KB style.css (done 1330 ms); 9KB extras.js (done 1450 ms); 8KB alerts.js (done 1391 ms); 7KB shots.js (done 1339 ms)
+timeline:
+  2959ms long task 383ms
+  2986ms page height 812 -> 1474
+  4705ms long task 343ms
+  4705ms long task 664ms
+  4732ms forecast loaded
+  4732ms core data ready (BOOT.core)
+  4733ms page height 1474 -> 2575
+  6878ms long task 1490ms
+  6880ms picks shown: fallen-leaf | r-troutdale-sandy- | lacamas (first at y=637)
+  6880ms page height 2575 -> 2988
+  7543ms long task 507ms
+  8975ms long task 605ms
+  8975ms long task 590ms
+  10337ms long task 595ms
+  10337ms long task 442ms
+  10641ms long task 234ms
+  10921ms long task 203ms
+  11872ms long task 821ms
+  12506ms long task 615ms
+  13272ms long task 204ms
+  16315ms long task 710ms
+  16315ms long task 201ms
+  17497ms long task 738ms
+  18794ms long task 714ms
+  20050ms long task 705ms
+  21394ms long task 728ms
+  22678ms long task 698ms
+  23934ms long task 718ms
+layout shifts:
+  2959ms 0.004 top>topr y8->8 h36->36 'Loading weather…
+    ⚙
+    ◐'
+
+=== warm (returning, service worker) ===
+first paint 280 ms | picks shown 3141 ms | forecast 271 ms | core data 3140 ms | picks changed 0x, moved 0x (last - ms) | other cards changed 2x | list redraws 9 | layout shift 0
+167 requests, 0 KB transferred (scripts 0, feed 0, other sites 0); last request done 4743 ms | long script tasks 60 totalling 9187 ms
+largest downloads: 0KB fonts.googleapis.com (done 153 ms); 0KB cdnjs.cloudflare.com (done 112 ms); 0KB style.css (done 115 ms); 0KB astro.js (done 116 ms); 0KB data.js (done 118 ms); 0KB cdnjs.cloudflare.com (done 143 ms); 0KB app.js (done 161 ms); 0KB live.js (done 163 ms); 0KB sky.js (done 164 ms); 0KB stars.js (done 165 ms)
+timeline:
+  271ms forecast loaded
+  685ms long task 398ms
+  722ms page height 812 -> 1585
+  1431ms long task 310ms
+  1813ms page height 1672 -> 2575
+  3139ms long task 1111ms
+  3140ms core data ready (BOOT.core)
+  3141ms picks shown: fallen-leaf | r-troutdale-sandy- | lacamas (first at y=637)
+  3141ms page height 2575 -> 2988
+  3652ms long task 451ms
+  4149ms long task 466ms
+  5118ms long task 564ms
+  5828ms long task 508ms
+CPU, warm load (self time = in the function itself; total = including what it calls):
+  self    1079 ms  nearestPt app.js:206
+  self     708 ms  km app.js:79
+  self     376 ms  fitFor app.js:550
+  self     292 ms  atan2d astro.js:5
+  self     274 ms  cosd astro.js:5
+  self     267 ms  sind astro.js:5
+  self     235 ms  hourAt app.js:223
+  self     224 ms  fitFor live.js:169
+  self     205 ms  scrollIntoView
+  self     183 ms  skyAt app.js:354
+  self     175 ms  laYMD astro.js:72
+  self     170 ms  driveMin app.js:104
+  self     148 ms  (anonymous) app.js:461
+  self     140 ms  fitFor extras.js:174
+  self     133 ms  fitFor feed.js:105
+  self     130 ms  hasRecord score2.js:23
+  self     117 ms  (anonymous) access.js:14
+  self      95 ms  terrainLightDay terrainsun.js:8
+  self      94 ms  dest app.js:87
+  self      87 ms  fetch
+  self      87 ms  liveFacts live.js:158
+  self      83 ms  hourAt nowcast.js:90
+  self      81 ms  rev astro.js:4
+  self      78 ms  fitFor perf.js:9
+  self      78 ms  rankFor app.js:670
+  self      76 ms  (anonymous) extras.js:121
+  self      74 ms  tick
+  self      74 ms  topSpecies feed.js:89
+  self      73 ms  (anonymous) live.js:35
+  self      71 ms  (anonymous) app.js:679
+  total   8067 ms  rankFor app.js:670
+  total   7583 ms  fitFor perf.js:9
+  total   7580 ms  __topsOne app.js:738
+  total   7505 ms  fitFor score2.js:38
+  total   7111 ms  fitFor nowcast.js:107
+  total   6846 ms  fitFor hours.js:39
+  total   6586 ms  fitFor extras.js:174
+  total   4886 ms  fitFor access.js:22
+  total   4747 ms  fitFor alerts.js:11
+  total   4647 ms  fitFor feed.js:105
+  total   4441 ms  step app.js:744
+  total   4326 ms  renderNow confidence.js:42
+  total   4324 ms  renderNow extras.js:227
+  total   4205 ms  renderNow now.js:39
+  total   4198 ms  renderNow seed.js:69
+  total   4194 ms  renderNow camera.js:128
+  total   4187 ms  renderNow nearby.js:72
+  total   4172 ms  renderNow forms.js:84
+  total   4172 ms  renderNow alerts.js:187
+  total   4144 ms  renderNow alerts.js:56
+  total   4116 ms  renderNow shots.js:185
+  total   4115 ms  renderNow app.js:1233
+  total   4114 ms  renderNow app.js:803
+  total   3804 ms  paint perf.js:17
+  total   3804 ms  paint live.js:167
+  total   3804 ms  paint app.js:1147
+  total   3804 ms  (anonymous) app.js:1145
+  total   3565 ms  fitFor sky.js:144
+  total   3407 ms  fitFor live.js:169
+  total   3158 ms  windowTops app.js:730
+  garbage collection 284 ms
