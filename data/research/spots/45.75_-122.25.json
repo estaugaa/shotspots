@@ -1,0 +1,43 @@
+[
+ {
+  "id": "r-ed-s-trail-rock-arch-silver-star-mountain",
+  "name": "Ed's Trail rock arch (Silver Star Mountain)",
+  "region": "Silver Star \u00b7 Gifford Pinchot",
+  "cats": [
+   "geology",
+   "wildflowers",
+   "vista"
+  ],
+  "lat": 45.75501,
+  "lon": -122.2413,
+  "months": [
+   6,
+   7,
+   8,
+   9,
+   10
+  ],
+  "effort": "hike",
+  "light": "both",
+  "tip": "About 1.5 mi up Ed's Trail from the Road 4109 trailhead the path passes under a natural rock arch (locals say it looks like two robots butting heads), the one real foreground feature on the Silver Star ridge. Use it to frame the trail and the open ridge beyond, ideally with a hiker for scale; low side light near sunrise or sunset gives the rock texture, and June\u2013July adds the ridge's wildflowers. Continue to the summit for the big volcano views (see the Silver Star spot) and catch the arch on the way back in the last light.",
+  "lens": "16-50 at 16 mm from under or just behind the arch to frame the ridge; 27 mm for a hiker passing through; 70-300 from a distance to compress the arch against the ridge or Mt. St. Helens beyond.",
+  "alert": "Forest roads 41 and 4109 are in very poor condition (potholes, boulders, washouts): mid- to high-clearance vehicle. Ed's Trail has a boulder scramble near the start and unmarked junctions; carry a map. No restrooms. Snow typically closes access in winter.",
+  "park": [
+   45.761333,
+   -122.246021
+  ],
+  "sources": [
+   [
+    "Friends of the Columbia Gorge: Silver Star Mountain \u2013 Ed's Trail Loop",
+    "https://gorgefriends.org/find-a-hike/silver-star-mountain-eds-trail-loop/"
+   ],
+   [
+    "Seattle Met: Try This Trail \u2013 Ed's Trail",
+    "https://www.seattlemet.com/travel-and-outdoors/2012/06/try-this-trail-eds-trail-june-2012"
+   ]
+  ],
+  "confidence": "medium",
+  "researched": "2026-11-15",
+  "reviewed": false
+ }
+]
