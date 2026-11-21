@@ -26,6 +26,7 @@ from zoneinfo import ZoneInfo
 from .common import http, soft_fail, log, utcnow, iso, DATA, FEED
 from .sunlite import sun_times
 from .camtruth import sky_q, _spearman
+_rs = lambda a, b: (lambda x: round(x, 3) if x is not None else None)(_spearman(a, b))   # None when one side doesn't vary
 from . import commonsphotos
 
 DIR = DATA / "photoweather"
@@ -42,6 +43,7 @@ VARS = ["cloud_cover_low", "cloud_cover_mid", "cloud_cover_high", "precipitation
 UNITS_PER_CELL = math.ceil(((dt.date(Y1, 12, 31) - dt.date(Y0, 1, 1)).days + 1) / 14) * math.ceil(len(VARS) / 10)
 DAY_UNITS, HOUR_UNITS = 9000, 4500   # Open-Meteo free: 10,000 a day, 5,000 an hour
 MIN_PEOPLE = 3                       # photographers out that day for a cell-day to count
+MIN_DAYS = 10                        # cells with at least this many such days get weather (was 30: only 24 cells qualified)
 CELL = 0.25
 BUDGET_MIN = 300
 
@@ -191,8 +193,8 @@ def analyse(cd):
            "clearing": {"n": len(g := [r for r in rel if r["prev"] >= 0.5 and not r["rain"]]), "rel_share": mean([r["rel"] for r in g])}}
     for ev in ("r", "s"):
         g = [r for r in rel if r["ev"] == ev]
-        out[f"spearman_{ev}"] = round(_spearman([q(r, DEF) for r in g], [r["rel"] for r in g]), 3) if len(g) >= 30 else None
-    out["spearman"] = round(_spearman([q(r, DEF) for r in rel], [r["rel"] for r in rel]), 3)
+        out[f"spearman_{ev}"] = _rs([q(r, DEF) for r in g], [r["rel"] for r in g]) if len(g) >= 30 else None
+    out["spearman"] = _rs([q(r, DEF) for r in rel], [r["rel"] for r in rel])
     bands = defaultdict(list)
     for r in rel:
         bands[min(4, int(q(r, DEF) // 20))].append(r["rel"])
@@ -224,7 +226,7 @@ def run():
     used = st.get("units", 0) if st.get("day") == today else 0
     # busiest cells first: days with enough photographers out
     rank = sorted(((sum(len(e[0]) >= MIN_PEOPLE for e in v.values()), ck) for ck, v in cd.items()), reverse=True)
-    todo = [(n, ck) for n, ck in rank if n >= 30 and not (WX / f"{ck[0]:g}_{ck[1]:g}.json.gz").exists()]
+    todo = [(n, ck) for n, ck in rank if n >= MIN_DAYS and not (WX / f"{ck[0]:g}_{ck[1]:g}.json.gz").exists()]
     got, hour_start, hour_used = 0, time.time(), 0
     for n, ck in todo:
         if used + UNITS_PER_CELL > DAY_UNITS or left() < 20:
@@ -246,7 +248,7 @@ def run():
             json.dump(wx, f, separators=(",", ":"))
         used += UNITS_PER_CELL; hour_used += UNITS_PER_CELL; got += 1
         time.sleep(2)
-    json.dump({"day": today, "units": used, "cells_done": len(list(WX.glob("*.json.gz"))), "cells_wanted": sum(n >= 30 for n, _ in rank)}, open(STATE, "w"))
+    json.dump({"day": today, "units": used, "cells_done": len(list(WX.glob("*.json.gz"))), "cells_wanted": sum(n >= MIN_DAYS for n, _ in rank)}, open(STATE, "w"))
     res = analyse(cd)
     FEED.mkdir(parents=True, exist_ok=True); json.dump(res, open(OUT, "w"), separators=(",", ":"))
     left_cells = sum(1 for n, ck in todo) - got

@@ -19,6 +19,7 @@ from collections import defaultdict
 from .common import http, soft_fail, log, utcnow, iso, DATA, FEED
 from . import commonsphotos, photoweather
 from .camtruth import sky_q, _spearman
+_rs = lambda a, b: (lambda x: round(x, 3) if x is not None else None)(_spearman(a, b))   # None when one side doesn't vary
 
 DIR = DATA / "imagerate"
 RATED = DIR / "rated.csv.gz"
@@ -34,7 +35,8 @@ PROMPTS = {"vivid": ["a photo of a vivid colourful sunset sky", "a photo of a su
            "other": ["a photo of a building", "a photo of people", "an indoor photo"]}
 PER_RUN = 3000
 BUDGET_MIN = 150
-COLS = ["pid", "cell", "date", "event", "vivid", "aes", "dull", "fog", "night"]
+COLS = ["pid", "cell", "date", "event", "vivid", "aes", "dull", "fog", "night", "plain", "other", "words"]
+SKY_MIN = 0.5   # a sky photo: at least half the model's answer is a sky/weather prompt (vivid, plain, dull, fog)
 
 
 class Rater:
@@ -59,7 +61,7 @@ class Rater:
         by = defaultdict(float)
         for k, x in zip(self.keys, p):
             by[k] += x
-        return {"vivid": round(by["vivid"], 3), "aes": round(aes, 2), "dull": round(by["dull"], 3), "fog": round(by["fog"], 3), "night": round(by["night"], 3)}
+        return {k: round(by[k], 3) for k in ("vivid", "dull", "fog", "night", "plain", "other")} | {"aes": round(aes, 2)}
 
 
 def _rated():
@@ -101,8 +103,8 @@ def webcams(rater):
             soft_fail("imagerate: webcam thumbnail", e)
     if len(rows) < 20:
         return {"n": len(rows)}
-    return {"n": len(rows), "spearman_skywarm_vivid": round(_spearman([r["sky_warm"] for r in rows], [r["vivid"] for r in rows]), 3),
-            "spearman_skywarm_aes": round(_spearman([r["sky_warm"] for r in rows], [r["aes"] for r in rows]), 3)}
+    return {"n": len(rows), "spearman_skywarm_vivid": _rs([r["sky_warm"] for r in rows], [r["vivid"] for r in rows]),
+            "spearman_skywarm_aes": _rs([r["sky_warm"] for r in rows], [r["aes"] for r in rows])}
 
 
 def analyse(rated):
@@ -115,10 +117,13 @@ def analyse(rated):
         if not w or any(x is None for x in w[:4]):
             continue
         low, mid, high, prc, snow, code, prev = w
-        rows.append({"vivid": float(r["vivid"]), "aes": float(r["aes"]), "low": low, "mid": mid, "high": high,
+        skyp = sum(float(r[k]) for k in ("vivid", "plain", "dull", "fog")) if r.get("plain") not in (None, "") else None
+        if skyp is None or (skyp < SKY_MIN and "s" not in (r.get("words") or "")):
+            continue   # sky photos only (older ratings lack the sky scores: re-rated over time)
+        rows.append({"vivid": float(r["vivid"]) / max(skyp, 1e-6), "aes": float(r["aes"]), "low": low, "mid": mid, "high": high,
                      "rain": prc >= 0.2 or code in (61, 63, 65, 80, 81, 82, 95), "ev": r["event"]})
     if len(rows) < 100:
-        return {"n": len(rows), "note": "too few rated photos with weather yet"}
+        return {"n": len(rows), "note": "too few rated sky photos with weather yet"}
     mean = lambda xs: round(sum(xs) / len(xs), 3) if xs else None
     B = [(0, 10), (10, 30), (30, 50), (50, 70), (70, 90), (90, 101)]
     def table(key):
@@ -130,10 +135,10 @@ def analyse(rated):
         return o
     DEF = {"canvasFloor": 0.32, "lowBroken": 0.85, "lowDeck": 0.4}
     q = [sky_q(r["low"], r["mid"], r["high"], 100 if r["rain"] else 0, None, None, DEF) for r in rows]
-    return {"n": len(rows), "by": {k: table(k) for k in ("low", "mid", "high")},
+    return {"n": len(rows), "measure": "sky photos only; vivid = share of the sky answers that are 'vivid colourful sky'", "by": {k: table(k) for k in ("low", "mid", "high")},
             "rain": {str(v): {"n": len(g), "vivid": mean([r["vivid"] for r in g])} for v in (True, False) for g in [[r for r in rows if r["rain"] == v]]},
-            "spearman_formula_vivid": round(_spearman(q, [r["vivid"] for r in rows]), 3),
-            "spearman_formula_aes": round(_spearman(q, [r["aes"] for r in rows]), 3)}
+            "spearman_formula_vivid": _rs(q, [r["vivid"] for r in rows]),
+            "spearman_formula_aes": _rs(q, [r["aes"] for r in rows])}
 
 
 def run():
@@ -144,13 +149,14 @@ def run():
         return "photo file with page ids (v3) not ready yet"
     cells = {f.name[:-8] for f in photoweather.WX.glob("*.json.gz")}
     rated = _rated(); random.seed(len(rated))
-    cand = [(f"{ck[0]:g}_{ck[1]:g}", d, ev, r["pid"]) for ck, d, ev, r in photoweather.photo_events(pf)
-            if ev and r.get("pid") and f"{ck[0]:g}_{ck[1]:g}" in cells and r["pid"] not in rated]
-    random.shuffle(cand); cand = cand[:PER_RUN]
+    cand = [(f"{ck[0]:g}_{ck[1]:g}", d, ev, r["pid"], r["words"]) for ck, d, ev, r in photoweather.photo_events(pf)
+            if ev and r.get("pid") and f"{ck[0]:g}_{ck[1]:g}" in cells and (r["pid"] not in rated or not rated[r["pid"]].get("plain"))]
+    random.shuffle(cand); cand.sort(key=lambda c: "s" not in c[4])   # files named sunset/sunrise/afterglow first (stable: shuffled within)
+    cand = cand[:PER_RUN]
     rater = Rater()
     urls = _thumbs([c[3] for c in cand])
     new = 0
-    for cell, d, ev, pid in cand:
+    for cell, d, ev, pid, words in cand:
         if left() < 15:
             break
         u = urls.get(pid)
@@ -158,7 +164,7 @@ def run():
             continue
         try:
             img = http(u, headers=H, timeout=30).content
-            rated[pid] = {"pid": pid, "cell": cell, "date": d, "event": ev, **rater.rate(img)}; new += 1
+            rated[pid] = {"pid": pid, "cell": cell, "date": d, "event": ev, "words": words, **rater.rate(img)}; new += 1
         except Exception as e:
             soft_fail("imagerate: photo", e)
         time.sleep(0.5)
@@ -168,5 +174,5 @@ def run():
     res = {"gen": iso(utcnow()), "kind": "MODELED (CLIP ViT-B/32 + LAION aesthetic v1) on MEASURED photos", "photos": analyse(rated), "webcams": webcams(rater)}
     FEED.mkdir(parents=True, exist_ok=True); json.dump(res, open(OUT, "w"), separators=(",", ":"))
     p = res["photos"]
-    return (f"{new} photos rated this run ({len(rated)} in all, {p.get('n', 0)} with weather); formula vs vivid {p.get('spearman_formula_vivid')}; "
+    return (f"{new} photos rated this run ({len(rated)} in all, {p.get('n', 0)} sky photos with weather); formula vs vivid {p.get('spearman_formula_vivid')}; "
             f"webcam warm-pixel share vs vivid {res['webcams'].get('spearman_skywarm_vivid')}")
