@@ -1,0 +1,7 @@
+PASS Washougal sunrise | 41 Downtown ginkgo gold (SW Salmon & SW Alder) + Reed's heritage ginkgos; 40 Lewisville Regional Park (East Fork Lewis River); 39 Willamette Falls overlook (Hwy 99E, Oregon City)
+PASS Washougal sunset | 39 Lewisville Regional Park (East Fork Lewis River); 36 Hathaway & Schmid Family Parks (Washougal River bend); 37 Mount Tabor Park
+PASS Washougal night | 46 Steamboat Landing Park dock (Washougal); 46 Washougal riverfront sunset calendar (Marina Park, Cottonwood Beach, Steigerwald); 46 Moonset down NE 4th Ave into the Camas mill (lunar standstill)
+PASS Washougal wildlife morning | 100 Ridgefield National Wildlife Refuge; 83 Ridgefield NWR: Carty Unit; 77 Salmon Creek Greenway Trail
+PASS Grand Canyon sunrise | 32 Mather Point; 23 Grandview Point; 22 Buckey O'Neill Cabin
+PASS Yosemite sunset | 40 Lower Yosemite Fall; 40 Vernal Fall; 39 Nevada Fall
+6/6 match. If the change is intended: run scoretest.yml with mode=update (or on a branch, push a commit whose message contains [scoretest:update]).
