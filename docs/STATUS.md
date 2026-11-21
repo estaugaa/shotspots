@@ -27,6 +27,7 @@
 - Check nowcast against outing logs (verify_outcomes) as more come in; Eric's first log (Nov 16, Steamboat Landing): partly cloudy, no colour; forecast said 97% low cloud, KPDX said few low/broken mid.
 - Spot research (weekly Sunday 1:23 AM scheduled task) still uses the old Netlify app address in its prompt; harmless but update when convenient.
 - Widen deep research nationally once the test regions improve.
+- Webcam truth: colour measure v2 from Nov 21 (v1 was fooled by signs and lights); first fair review Nov 25.
 - Tune the v2 weights against outcomes (ratings from the app's outcome button, or daily sunset-photo counts); tools/predeval.py is the start (predictions vs webcam and airport truth).
 - Finer sampling of the sun-path cloud check (model grid cells of 10-25 km cause neighbouring-spot differences).
 - A "view shadows" link to ShadeMap on spot pages (confirm the link format first).

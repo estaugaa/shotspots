@@ -11,7 +11,7 @@ weights would be (grid search), and how much golden light the land gets on clear
 -> data/archive/camtruth/<month>.csv.gz (kept indefinitely), feed/camtruth.json. MEASURED (camera pixels) vs MODELED (forecast + formula).
 Caveats: cameras point along roads, not always toward the sun; overlays and headlights are cropped out roughly.
 """
-import io, json, math, time, csv, colorsys, datetime as dt
+import io, json, math, time, csv, colorsys, hashlib, datetime as dt
 from concurrent.futures import ThreadPoolExecutor
 import requests
 from .common import soft_fail, DATA, FEED, log, write_json, iso, utcnow, read_json
@@ -22,7 +22,8 @@ H = {"User-Agent": "ShotSpots/1.0 (photo-planning research; github.com/estaugaa/
 FIELDS = ["date", "cam", "src", "lat", "lon", "event", "min", "sky_warm", "land_warm", "sky_blue", "sky_grey", "sky_v",
           "low", "mid", "high", "pop", "p_low", "p_mid"]
 NUM = FIELDS[6:]
-FIELDS = FIELDS + ["t"]   # capture time (UTC), for joining with predictions
+FIELDS = FIELDS + ["t", "mv", "h"]   # capture time (UTC); colour-measure version; image hash (frozen feeds repeat it)
+MV = 2   # Nov 21: v1 counted LED signs, tail lights and street lights as sunset colour
 
 
 def _archive(rows):
@@ -64,14 +65,28 @@ def inventory(force=False):
 
 def metrics(img_bytes):
     from PIL import Image
+    from PIL import ImageFilter, ImageStat
     im = Image.open(io.BytesIO(img_bytes)).convert("RGB"); im.thumbnail((160, 120))
-    W, Hh = im.size; px = im.load()
+    st = ImageStat.Stat(im.convert("L"))
+    if st.stddev[0] < 14 or st.mean[0] > 225: return None   # blank, or an "image unavailable" placeholder
+    W, Hh = im.size; px = im.load(); pb = im.filter(ImageFilter.BoxBlur(3)).load()
+    # Does the "sky band" show sky? Road cameras often frame hills or buildings there. Sky at dawn/dusk is clearly brighter
+    # than the road (>= 25 levels) and not featureless (fog and headlight glare are, texture < 4). Nov 21: on 13 hand-checked
+    # frames this kept all 4 real sunsets and dropped 8 of 9 impostors (a desert hillside got through).
+    g = im.convert("L"); ga, gb = g.load(), g.filter(ImageFilter.BoxBlur(2)).load()
+    xs = range(int(W * 0.04), int(W * 0.96)); sr = range(int(Hh * 0.12), int(Hh * 0.40)); lr = range(int(Hh * 0.55), int(Hh * 0.86))
+    tex = sum(abs(ga[x, y] - gb[x, y]) for y in sr for x in xs) / (len(xs) * len(sr))
+    sky_minus_land = sum(ga[x, y] for y in sr for x in xs) / (len(xs) * len(sr)) - sum(ga[x, y] for y in lr for x in xs) / (len(xs) * len(lr))
+    if sky_minus_land < 25 or tex < 4: return None
+    # Sunset colour is a broad, smooth glow. Point lights, LED signs and road paint are small and sharp: a pixel counts as
+    # warm only if it is close to its blurred neighbourhood (Nov 21 review: a "WATCH FOR FLOODING" sign scored 88)
+    def smooth(x, y): a, b = px[x, y], pb[x, y]; return max(abs(a[0] - b[0]), abs(a[1] - b[1]), abs(a[2] - b[2])) < 36
     def band(y0, y1):
         warm = blue = grey = n = 0; vs = 0.0
         for y in range(int(Hh * y0), int(Hh * y1)):
             for x in range(int(W * 0.04), int(W * 0.96)):
                 r, g, b = (c / 255 for c in px[x, y]); h, s_, v = colorsys.rgb_to_hsv(r, g, b); hd = h * 360; n += 1; vs += v
-                if s_ >= 0.25 and v >= 0.2 and (hd <= 45 or hd >= 300): warm += 1
+                if 0.18 <= s_ <= 0.62 and v >= 0.4 and (8 <= hd <= 50 or 290 <= hd <= 345) and smooth(x, y): warm += 1   # lit sky glow, not red lights, neon or brown hills
                 elif s_ >= 0.2 and 180 <= hd <= 250: blue += 1
                 elif s_ < 0.12 and v >= 0.25: grey += 1
         return warm / max(1, n), blue / max(1, n), grey / max(1, n), vs / max(1, n)
@@ -143,23 +158,24 @@ def capture(max_n=400):
         try:
             r = requests.get(c["url"], headers=H, timeout=25)
             if not r.ok or not r.headers.get("content-type", "").startswith("image"): return None
-            return item, metrics(r.content), r.content
+            mt = metrics(r.content)
+            return (item, mt, r.content) if mt else None
         except Exception as e:
             soft_fail("camtruth: webcam fetch or metrics failed", e)
             return None
     with ThreadPoolExecutor(12) as ex: got = [g for g in ex.map(grab, due) if g]
-    got = [(it, mt, img) for it, mt, img in got if mt[4] >= 0.12]   # too dark to judge
+    got = [(it, mt, img) for it, mt, img in got if mt[4] >= 0.18]   # too dark to judge: past dusk, the colour is mostly artificial light
     _thumbs(got, now)
-    got = [(it, mt) for it, mt, img in got]
+    got = [(it, mt, hashlib.md5(img).hexdigest()[:10]) for it, mt, img in got]
     pts = []
-    for (c, ev, m, key), _ in got:
+    for (c, ev, m, key), _, _h in got:
         az = 120 if ev == "sunrise" else 240
         pts += [(c["lat"], c["lon"]), _toward(c["lat"], c["lon"], az)]
     fc = _forecast(pts)
     rows = []
-    for i, ((c, ev, m, key), mt) in enumerate(got):
+    for i, ((c, ev, m, key), mt, hh) in enumerate(got):
         here, probe = fc[2 * i] if 2 * i < len(fc) else (None,) * 4, fc[2 * i + 1] if 2 * i + 1 < len(fc) else (None,) * 4
-        rows.append(dict(zip(FIELDS, [now.date(), c["id"], c["src"], c["lat"], c["lon"], ev, m, *mt, here[0], here[1], here[2], here[3], probe[0], probe[1], iso(now)])))
+        rows.append(dict(zip(FIELDS, [now.date(), c["id"], c["src"], c["lat"], c["lon"], ev, m, *mt, here[0], here[1], here[2], here[3], probe[0], probe[1], iso(now), MV, hh])))
         state[key] = 1
     _archive(rows)
     for (c, ev, m, key) in due: state.setdefault(key, 0)   # tried (no image or too dark): don't retry this event
@@ -202,11 +218,15 @@ def fit():
     for r in archive.read("camtruth", str(utcnow().date() - dt.timedelta(days=30)), "date"):
         try:
             v = {k: archive.num(r.get(k)) for k in NUM}
-            if None in (v["low"], v["mid"], v["high"]): continue
+            if None in (v["low"], v["mid"], v["high"]) or r.get("mv") != str(MV): continue   # only the current colour measure
+            v["h"] = r.get("h")
             v["event"] = r["event"]; v["cam"] = r["cam"]; rows.append(v)
         except Exception as e:
             soft_fail("camtruth: webcam row skipped", e)
-    out = {"gen": iso(utcnow()), "n": len(rows)}
+    seen = {}
+    for v in rows: seen[(v["cam"], v["h"])] = seen.get((v["cam"], v["h"]), 0) + 1
+    rows = [v for v in rows if seen[(v["cam"], v["h"])] == 1]   # a frame seen twice is a frozen or dead feed
+    out = {"gen": iso(utcnow()), "n": len(rows), "measure": MV}
     if len(rows) < 30:
         write_json("camtruth.json", {**out, "note": "not enough frames yet"}); return out
     # cameras that show sky: some blue or grey sky in the sky band
