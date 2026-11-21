@@ -1,1 +1,1 @@
-{"ok":true,"kind":"MEASURED","note":"38 high spots with SNOTEL depth from 19 stations; 14 access rules","at":"2026-11-20T11:24:00Z","secs":22.8}
+{"ok":false,"kind":"MEASURED","note":"HTTPError: HTTP 503","at":"2026-11-21T11:21:20Z","secs":62.0}
