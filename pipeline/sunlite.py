@@ -19,6 +19,17 @@ def sun_times(lat, lon, day):
     return rise, sett
 
 
+
+def sun_az(lat, lon, t):
+    """Sun azimuth in degrees from north, clockwise, at UTC datetime t (same NOAA approximation as sun_times)."""
+    n = t.timetuple().tm_yday
+    g = 2 * math.pi / 365 * (n - 1 + (t.hour - 12) / 24)
+    eq = 229.18 * (0.000075 + 0.001868 * math.cos(g) - 0.032077 * math.sin(g) - 0.014615 * math.cos(2 * g) - 0.040849 * math.sin(2 * g))
+    decl = 0.006918 - 0.399912 * math.cos(g) + 0.070257 * math.sin(g) - 0.006758 * math.cos(2 * g) + 0.000907 * math.sin(2 * g) - 0.002697 * math.cos(3 * g) + 0.00148 * math.sin(3 * g)
+    ha = math.radians((t.hour * 60 + t.minute + t.second / 60 + eq + 4 * lon) / 4 - 180)
+    la = math.radians(lat)
+    return (math.degrees(math.atan2(math.sin(ha), math.cos(ha) * math.sin(la) - math.tan(decl) * math.cos(la))) + 180) % 360
+
 STATE_TZ = {"WA": "America/Los_Angeles", "OR": "America/Los_Angeles", "CA": "America/Los_Angeles", "NV": "America/Los_Angeles",
             "MT": "America/Denver", "WY": "America/Denver", "CO": "America/Denver", "UT": "America/Denver", "NM": "America/Denver", "AZ": "America/Phoenix"}
 

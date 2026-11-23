@@ -90,21 +90,62 @@ def _thumbs(pids):
     return out
 
 
-def webcams(rater):
-    """Rate the saved webcam thumbnails; their file names carry the warm-pixel share (sw<value>)."""
-    rows = []
+WEB = DIR / "webcams.csv.gz"
+WCOLS = ["file", "date", "cam", "event", "min", "sky_warm", "vivid", "aes", "dull", "fog", "night", "plain", "other"]
+
+
+def webcams(rater, limit=2000):
+    """Rate each saved road-camera thumbnail once (file names carry the warm-pixel share, sw<value>), then compare with
+    the webcam archive's forecast for the same frame: the sky formula (with its horizon-gap term) against vivid."""
+    import re as _re
+    try:
+        done = {r["file"]: r for r in csv.DictReader(gzip.open(WEB, "rt"))}
+    except Exception:
+        done = {}
+    new = 0
     for f in sorted((DATA / "camtruth" / "thumbs").glob("*/*.jpg")):
-        m = re.search(r"_(sunrise|sunset)_[-+]?\d+_sw(\d+)", f.name)
+        k = f"{f.parent.name}/{f.name}"
+        if k in done or new >= limit:
+            continue
+        m = _re.match(r"(.+)_(sunrise|sunset)_([-+]?\d+)_sw(\d+)\.jpg$", f.name)
         if not m:
             continue
         try:
-            rows.append({"sky_warm": int(m.group(2)), **rater.rate(f.read_bytes())})
+            done[k] = {"file": k, "date": f.parent.name, "cam": m.group(1), "event": m.group(2), "min": m.group(3), "sky_warm": m.group(4), **rater.rate(f.read_bytes())}; new += 1
         except Exception as e:
             soft_fail("imagerate: webcam thumbnail", e)
+    DIR.mkdir(parents=True, exist_ok=True)
+    with gzip.open(WEB, "wt", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=WCOLS, extrasaction="ignore"); w.writeheader(); w.writerows(done.values())
+    rows = [r for r in done.values() if r.get("plain") not in (None, "")]
+    out = {"n": len(rows), "rated_now": new}
     if len(rows) < 20:
-        return {"n": len(rows)}
-    return {"n": len(rows), "spearman_skywarm_vivid": _rs([r["sky_warm"] for r in rows], [r["vivid"] for r in rows]),
-            "spearman_skywarm_aes": _rs([r["sky_warm"] for r in rows], [r["aes"] for r in rows])}
+        return out
+    f = lambda r, k: float(r[k])
+    out["spearman_skywarm_vivid"] = _rs([f(r, "sky_warm") for r in rows], [f(r, "vivid") for r in rows])
+    out["spearman_skywarm_aes"] = _rs([f(r, "sky_warm") for r in rows], [f(r, "aes") for r in rows])
+    # the same frames in the webcam archive (forecast at capture time, probe point toward the sun)
+    from . import archive
+    from .camtruth import MV
+    since = min(r["date"] for r in rows)
+    arc = {}
+    for a in archive.read("camtruth", since, "date"):
+        if a.get("mv") == str(MV):
+            arc[(a["date"], _re.sub(r"[^A-Za-z0-9]", "", a["cam"]), a["event"])] = a
+    DEF = {"canvasFloor": 0.32, "lowBroken": 0.85, "lowDeck": 0.4}
+    q, v = [], []
+    for r in rows:
+        a = arc.get((r["date"], r["cam"], r["event"]))
+        skyp = sum(f(r, k) for k in ("vivid", "plain", "dull", "fog"))
+        if not a or skyp < SKY_MIN:
+            continue
+        n = {k: archive.num(a.get(k)) for k in ("low", "mid", "high", "pop", "p_low", "p_mid")}
+        if None in (n["low"], n["mid"], n["high"]):
+            continue
+        q.append(sky_q(n["low"], n["mid"], n["high"], n["pop"], n["p_low"], n["p_mid"], DEF)); v.append(f(r, "vivid") / skyp)
+    out["sky_frames_with_forecast"] = len(q)
+    out["spearman_formula_vivid"] = _rs(q, v) if len(q) >= 30 else None
+    return out
 
 
 def analyse(rated):

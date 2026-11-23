@@ -9,20 +9,27 @@ sky formula can be recomputed later with any weights (fit()).
 fit(): over the last 30 days, how well does the formula's sky score rank the real colour (Spearman), what the best
 weights would be (grid search), and how much golden light the land gets on clear vs cloudy evenings.
 -> data/archive/camtruth/<month>.csv.gz (kept indefinitely), feed/camtruth.json. MEASURED (camera pixels) vs MODELED (forecast + formula).
-Caveats: cameras point along roads, not always toward the sun; overlays and headlights are cropped out roughly.
+Caveats: road cameras point along roads, not always toward the sun; overlays and headlights are cropped out roughly.
+Since Nov 23 also ALERTCalifornia's ridge-top cameras (UC San Diego, CC BY-NC-ND 4.0, credit "ALERTCalifornia | UC San
+Diego"): they publish each camera's live heading and tilt, so only frames looking toward the sun (within 50 degrees) and
+near the horizon are taken; face = degrees between the camera's heading and the sun. Only numbers are kept from their
+frames (no thumbnails: no derivatives, and the data branch is public). Road-camera frames are all thumbnailed (14 days)
+so pipeline/imagerate.py can rate them.
 """
 import io, json, math, time, csv, colorsys, hashlib, datetime as dt
 from concurrent.futures import ThreadPoolExecutor
 import requests
 from .common import soft_fail, DATA, FEED, log, write_json, iso, utcnow, read_json
-from .sunlite import sun_times
+from .sunlite import sun_times, sun_az
 
 D = DATA / "camtruth"; INV = DATA / "cams_inventory.json"
 H = {"User-Agent": "ShotSpots/1.0 (photo-planning research; github.com/estaugaa/shotspots)"}
 FIELDS = ["date", "cam", "src", "lat", "lon", "event", "min", "sky_warm", "land_warm", "sky_blue", "sky_grey", "sky_v",
           "low", "mid", "high", "pop", "p_low", "p_mid"]
 NUM = FIELDS[6:]
-FIELDS = FIELDS + ["t", "mv", "h"]   # capture time (UTC); colour-measure version; image hash (frozen feeds repeat it)
+FIELDS = FIELDS + ["t", "mv", "h", "face"]   # capture time (UTC); colour-measure version; image hash (frozen feeds repeat it); degrees off the sun (ridge cameras)
+AC = "https://cameras.alertcalifornia.org/public-camera-data/"
+THUMB_DAYS = 14
 MV = 2   # Nov 21: v1 counted LED signs, tail lights and street lights as sunset colour
 
 
@@ -59,6 +66,13 @@ def inventory(force=False):
         except Exception as e:
             log.warning("camtruth Caltrans d%d: %s", d, e)
         time.sleep(0.5)
+    try:   # ALERTCalifornia ridge-top cameras (heading checked live at capture)
+        for f in requests.get(AC + "all_cameras-v3.json", headers=H, timeout=60).json().get("features", []):
+            pr, (lo, la) = f.get("properties") or {}, (f.get("geometry") or {}).get("coordinates", [None, None])[:2]
+            if pr.get("id") and la:
+                cams.append({"id": f"ac{pr['id']}", "src": "ac", "lat": round(float(la), 4), "lon": round(float(lo), 4), "url": f"{AC}{pr['id']}/latest-thumb.jpg"})
+    except Exception as e:
+        log.warning("camtruth ALERTCalifornia: %s", e)
     write_json(INV, {"at": iso(utcnow()), "cams": cams})
     return cams
 
@@ -96,15 +110,18 @@ def metrics(img_bytes):
 
 
 def _thumbs(got, now):
-    """Small thumbnails of ~1 in 20 frames plus every unusually warm one, so the colour measure can be checked by eye."""
-    import random, re as _re
+    """Small thumbnails of every road-camera frame (kept THUMB_DAYS), for checking by eye and for imagerate.py. None of the
+    ridge cameras' frames (their licence allows no derivatives; the data branch is public)."""
+    import re as _re, shutil
     from PIL import Image
     td = D / "thumbs" / str(now.date()); td.mkdir(parents=True, exist_ok=True)
+    for old in (D / "thumbs").glob("20*"):
+        if old.name < str(now.date() - dt.timedelta(days=THUMB_DAYS)): shutil.rmtree(old, ignore_errors=True)
     for (c, ev, m, key), mt, img in got:
-        if mt[0] >= 20 or random.random() < 0.05:
+        if c["src"] != "ac":
             try:
-                im = Image.open(io.BytesIO(img)).convert("RGB"); im.thumbnail((240, 180))
-                im.save(td / f"{_re.sub(r'[^A-Za-z0-9]', '', c['id'])}_{ev}_{m:+d}_sw{int(mt[0])}.jpg", quality=70)
+                im = Image.open(io.BytesIO(img)).convert("RGB"); im.thumbnail((200, 150))
+                im.save(td / f"{_re.sub(r'[^A-Za-z0-9]', '', c['id'])}_{ev}_{m:+d}_sw{int(mt[0])}.jpg", quality=65)
             except Exception as e:
                 log.info("thumb %s: %s", c["id"], e)
 
@@ -138,6 +155,28 @@ def _toward(lat, lon, az, km=60):
     return math.degrees(la2), math.degrees(lo2)
 
 
+def _ridge_facing(due, now):
+    """Keep ALERTCalifornia frames only where the camera looks toward the sun (within 50 degrees), near the horizon (tilt
+    -15..+10) and its picture is fresh (last frame within 15 minutes); heading and tilt are read live (the cameras pan)."""
+    try:
+        live = {f"ac{f['properties']['id']}": f["properties"] for f in requests.get(AC + "all_cameras-v3.json", headers=H, timeout=60).json().get("features", [])}
+    except Exception as e:
+        soft_fail("camtruth: ALERTCalifornia headings", e)
+        return [d for d in due if d[0]["src"] != "ac"]
+    out = []
+    for c, ev, m, key in due:
+        if c["src"] != "ac":
+            out.append((c, ev, m, key)); continue
+        p = live.get(c["id"]) or {}
+        az, tilt, ts = p.get("az_current"), p.get("tilt_current"), p.get("last_frame_ts") or 0
+        if az is None or tilt is None or not (-15 <= tilt <= 10) or now.timestamp() - ts > 900:
+            continue
+        off = abs((az - sun_az(c["lat"], c["lon"], now) + 180) % 360 - 180)
+        if off <= 50:
+            out.append((dict(c, face=round(off)), ev, m, key))
+    return out
+
+
 def capture(max_n=400):
     cams = inventory(); now = utcnow(); state = read_json(D / "state.json", {}) or {}
     due = []
@@ -151,6 +190,9 @@ def capture(max_n=400):
             ok = (-25 <= m <= 10) if ev == "sunrise" else (-5 <= m <= 25)   # colour comes before sunrise / after sunset
             key = f"{c['id']}|{t.date()}|{ev}"
             if ok and key not in state: due.append((c, ev, round(m), key))
+    if any(c["src"] == "ac" for c, *_ in due):
+        due = _ridge_facing(due, now)
+    due.sort(key=lambda d: d[0]["src"] != "ac")   # sun-facing ridge cameras first
     due = due[:max_n]
     if not due: return 0
     def grab(item):
@@ -169,13 +211,13 @@ def capture(max_n=400):
     got = [(it, mt, hashlib.md5(img).hexdigest()[:10]) for it, mt, img in got]
     pts = []
     for (c, ev, m, key), _, _h in got:
-        az = 120 if ev == "sunrise" else 240
+        az = sun_az(c["lat"], c["lon"], now)   # the probe point toward the sun (was a fixed 120 / 240 degrees)
         pts += [(c["lat"], c["lon"]), _toward(c["lat"], c["lon"], az)]
     fc = _forecast(pts)
     rows = []
     for i, ((c, ev, m, key), mt, hh) in enumerate(got):
         here, probe = fc[2 * i] if 2 * i < len(fc) else (None,) * 4, fc[2 * i + 1] if 2 * i + 1 < len(fc) else (None,) * 4
-        rows.append(dict(zip(FIELDS, [now.date(), c["id"], c["src"], c["lat"], c["lon"], ev, m, *mt, here[0], here[1], here[2], here[3], probe[0], probe[1], iso(now), MV, hh])))
+        rows.append(dict(zip(FIELDS, [now.date(), c["id"], c["src"], c["lat"], c["lon"], ev, m, *mt, here[0], here[1], here[2], here[3], probe[0], probe[1], iso(now), MV, hh, c.get("face", "")])))
         state[key] = 1
     _archive(rows)
     for (c, ev, m, key) in due: state.setdefault(key, 0)   # tried (no image or too dark): don't retry this event
@@ -220,7 +262,7 @@ def fit():
             v = {k: archive.num(r.get(k)) for k in NUM}
             if None in (v["low"], v["mid"], v["high"]) or r.get("mv") != str(MV): continue   # only the current colour measure
             v["h"] = r.get("h")
-            v["event"] = r["event"]; v["cam"] = r["cam"]; rows.append(v)
+            v["event"] = r["event"]; v["cam"] = r["cam"]; v["src"] = r.get("src") or ""; v["face"] = archive.num(r.get("face")); rows.append(v)
         except Exception as e:
             soft_fail("camtruth: webcam row skipped", e)
     seen = {}
@@ -263,8 +305,20 @@ def fit():
     bands = {}
     for q, sw in qs: bands.setdefault(min(4, int(q // 20)), []).append(sw)
     out["colour_by_score"] = {f"{b * 20}-{b * 20 + 19}": {"n": len(v), "sky_warm": round(sum(v) / len(v), 1)} for b, v in sorted(bands.items())}
+    # by camera type, and ridge cameras looking toward the sun (the closest thing to a photographer's view)
+    out["by_source"] = {src: {"n": len(g), "spearman": score(DEF, g) if len(g) >= 30 else None} for src in sorted({r["src"] for r in sky}) for g in [[r for r in sky if r["src"] == src]]}
+    face = [r for r in sky if r.get("face") is not None and r["face"] <= 50]
+    out["sun_facing"] = {"n": len(face), "spearman": score(DEF, face) if len(face) >= 30 else None,
+                         "colour_by_score": {f"{b * 20}-{b * 20 + 19}": {"n": len(v), "sky_warm": round(sum(v) / len(v), 1)} for b, v in sorted(_bands(face, DEF).items())}}
+    out["credit"] = "ridge cameras: ALERTCalifornia | UC San Diego (CC BY-NC-ND 4.0)"
     write_json("camtruth.json", out)
     return out
+
+
+def _bands(rs, prm):
+    b = {}
+    for r in rs: b.setdefault(min(4, int(sky_q(r["low"], r["mid"], r["high"], r["pop"], r["p_low"], r["p_mid"], prm) // 20)), []).append(r["sky_warm"])
+    return b
 
 
 def run():
