@@ -27,7 +27,7 @@ def serve():
 PICK = """([lat, lon]) => { const d = s => km({ lat, lon }, s), all = SPOTS.filter(s => d(s) < 60).sort((a, b) => d(a) - d(b));
   const v = all.find(s => !s.cats.includes("waterfall")), w = all.find(s => s.cats.includes("waterfall")); return [v, w].filter(Boolean).map(s => s.id); }"""
 READ = """() => { const b = document.querySelector('#sheetBody .seasbox'); if (!b) return null;
-  const c = [...b.querySelectorAll('.seascells')].map(r => [...r.children].map(i => i.className.includes('none') ? '.' : i.className.includes('fog') ? 'F' : i.className.includes('best') ? '*' : '#').join(''));
+  const c = [...b.querySelectorAll('.seascells')].map(r => [...r.children].map(i => i.className.includes('none') ? '.' : i.className.includes('fog') ? (i.className.includes('best') ? 'F' : 'f') : i.className.includes('best') ? '*' : '#').join(''));
   return { text: b.innerText, rows: c, cl: document.querySelector('#sheetBody .climoline') ? document.querySelector('#sheetBody .climoline').innerText : null }; }"""
 
 NL = chr(10)

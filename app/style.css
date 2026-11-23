@@ -452,8 +452,8 @@ details>summary{padding-top:10px;padding-bottom:10px}
 .seascells{flex:1;display:grid;grid-template-columns:repeat(52,1fr);gap:1px;height:18px}
 .seascells i{display:block;background:var(--gold);opacity:var(--a,1);border-radius:1px;cursor:pointer}
 .seascells i.none{background:var(--line);opacity:.35}
-.seascells i.fog{background:var(--muted);opacity:.8}
+.seascells i.fog{background:var(--muted)}
 .seascells i.best{outline:2px solid var(--ink);outline-offset:-1px;opacity:1}
-.seascells i.cur{box-shadow:0 3px 0 -1px var(--river)}
+.seascells i.cur{box-shadow:0 4px 0 0 var(--river)}
 .seasticks{flex:1;position:relative;height:12px;color:var(--muted)}
 .seasticks b{position:absolute;font-weight:400}
