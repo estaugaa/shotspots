@@ -39,7 +39,7 @@ RANK = """(async ([kind]) => {
   const w = all.find(x => winDay(x) === want && x.kind === kind); if (!w) return { err: "no " + kind + " window" };
   // road times for this window's own candidates, as opening it in the app would fetch (the app routes the window on
   // screen; ranking another one read straight-line estimates: North Rim spots looked 45 min from the South Rim, Nov 23)
-  for (let i = 0; i < 3; i++) { if (typeof loadDrives !== "function" || drivesFetched()) break; if (!(await loadDrives(rankFor(w).slice(0, 40).map(x => x.s.id)))) break; }
+  for (let i = 0; i < 3; i++) { if (typeof loadDrives !== "function" || drivesFetched()) break; if (!(await loadDrives(rankFor(w).slice(0, 150).map(x => x.s.id)))) break; }
   const R = rankFor(w); const layersOk = R.slice(0, 5).every(x => { const L = scoreLayers(x.s, w); return L.length && L[L.length - 1].n === x.f.n; });
   return { wx: !!WX, layersOk, top: R.slice(0, 10).map(x => ({ n: x.s.name, k: x.s.kind || "", life: lifeLed(x.s), far: tooFar(x.s), sc: x.f.n, cl: typeof closedRule === "function" && !!closedRule(x.s.id, w.peak) })) }; })"""
 
