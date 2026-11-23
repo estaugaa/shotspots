@@ -9,17 +9,24 @@ work, and mark it `done` only with the measured result. One item per session; it
 Status: `todo`, `doing (<branch>)`, `done (<date>: <result>)`, `dropped (<reason>)`.
 
 ## Phase 0: hygiene
-- 0.1 Alert settings KeyError 'aurora_kp' (swallowed each run). doing (main, Nov 23 session)
-- 0.2 Forecast check: airport 'M' values logged as errors. todo
-- 0.3 App: 26 empty catches -> noteErr() (CLAUDE.md rule). todo
-- 0.4 Smoke test: find the HTTP 429 source (WebKit). todo
-- 0.5 Nightly expectation 'Acadia sunrise: Cadillac near the top' failed Nov 23: weather or regression? todo
-- 0.6 Remove dead Flickr paths (photos, originality: no key exists). todo
+- 0.1 Alert settings KeyError 'aurora_kp' (swallowed each run). done (Nov 23: a key missing from an older form keeps its default)
+- 0.2 Forecast check: airport 'M' values logged as errors. done (Nov 23: cover without a height skipped quietly, as before)
+- 0.3 App: 26 empty catches -> noteErr() (CLAUDE.md rule). done (Nov 23: 12 that guard work now noteErr; storage/vibrate ones stay silent on purpose; scoring test 6/6)
+- 0.4 Smoke test: find the HTTP 429 source (WebKit). doing (Nov 23: smoke.py now logs failed URLs; read diag-smoke next run)
+- 0.5 Nightly expectation 'Acadia sunrise: Cadillac near the top' failed Nov 23: weather or regression? done (Nov 23: weather. Nov 24
+  sunrise overcast: 'flat light' gives surf beaches 30, summits 16; the failing run predates the 1.1 change. Also: the
+  name match hit the eBird hotspot 'Acadia NP: Cadillac Mountain' (rank 16), not the summit (rank 19); see 1.1 issues)
+- 0.6 Remove dead Flickr paths (photos, originality: no key exists). deferred (low value: both jobs skip in under a second; touches 5 files)
 
 ## Phase 1: national coverage (fixes most ties)
 - 1.1 Spot quality for all 75k spots from the Commons dump: distinct photographers within ~350 m, golden-hour share
   (learned light), busiest months; replaces photostats' API crawl and seedpop's Commons part. Metric: share of spots with
-  measured quality (19% now); scoring test top 3 sane. doing (Nov 23 session)
+  measured quality (19% now); scoring test top 3 sane. done by another session (Nov 23, 0816f544: feed/spotphotos.json,
+  22,830 spots published, app/phototime.js). Open issues (Nov 23 check, Cadillac summit): (a) one 12% golden-hour baseline
+  for sunrise and sunset, though sunrise shooting is rarer everywhere (Commons: Cadillac 18% of photo days at sunrise vs
+  ~5% typical, yet penalised for 1 of 14); (b) 'lift-adjusted' quality compares a spot with its area, so the most famous
+  spot inside a famous park reads ordinary (Cadillac summit x0.87). Fix: per-event baselines with a binomial test (only
+  act when the evidence is clear), and quality on absolute photographers with area lift as a tie-breaker. todo
 - 1.2 Curate spots by data (non-photo places out; birding hotspots to the Wildlife filter only). doing (claude/gifted-sanderson-3f3abb)
 - 1.3 National layers: GOES grid for the lower 48, airport reports nationwide, fog model trained per region, eBird
   notable + counts in tiles (needs an EBIRD_KEY secret, Eric). todo

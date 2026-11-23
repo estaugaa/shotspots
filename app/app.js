@@ -41,7 +41,7 @@ const TUNE_DEFAULT = { lowBroken: 0.85, lowDeck: 0.4, clearLight: 64, alpenglow:
    below 20°: low, raking light all day; a July noon has it at 68°) */
 function capFor(w, p) {
   if (!DAYK.has(w.kind)) return KCAP[w.kind] || 1;
-  let alt = null; try { alt = sunPos(w.peak, (p || LOC).lat, (p || LOC).lon).app; } catch (e) { }
+  let alt = null; try { alt = sunPos(w.peak, (p || LOC).lat, (p || LOC).lon).app; } catch (e) { noteErr("sun height for the window", e); }
   if (alt == null) return KCAP[w.kind] || 1;
   return alt <= 12 ? TUNE.sunLow : alt <= 25 ? TUNE.sunMid : alt <= 40 ? TUNE.sunHigh : TUNE.sunOverhead;
 }
@@ -54,7 +54,7 @@ const groupTest = { all: () => true, saved: s => !!SAVED[s.id], land: s => s.cat
 
 /* ---------- storage ---------- */
 const store = { get(k, d) { try { const v = localStorage.getItem("ss2:" + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
-  set(k, v) { try { localStorage.setItem("ss2:" + k, JSON.stringify(v)); } catch (e) { } } };
+  set(k, v) { try { localStorage.setItem("ss2:" + k, JSON.stringify(v)); } catch (e) { } } };   // storage can fail (private mode, full): ignored here and in the other localStorage/vibrate calls, on purpose
 let LOC = store.get("loc", null) || { ...HOME };
 let WX = store.get("wx", null), KP = store.get("kp", null), NWS = store.get("nws", null);
 let DRIVES = store.get("drives", {});
@@ -1079,7 +1079,7 @@ async function loadKp() {
     const night = rows.filter(x => { const h = +x.t.toLocaleString("en-US", { timeZone: TZ, hour: "numeric", hourCycle: "h23" }); return h >= 19 || h <= 4; });
     const best = night.sort((a, b) => b.kp - a.kp)[0];
     KP = { at: Date.now(), max: best ? best.kp : null, when: best ? `${dayWord(best.t)} around ${fmtT(best.t)}` : "" }; store.set("kp", KP);
-  } catch (e) { }
+  } catch (e) { noteErr("Kp forecast", e); }
 }
 // What an NWS alert means for a photographer: fog is an opportunity, the rest are cautions
 function nwsItem(f) { const p = f.properties, ev = p.event || "", until = p.ends || p.expires;
@@ -1100,7 +1100,7 @@ async function loadNws() {
   if (NWS && Date.now() - NWS.at < 30 * 60000 && NWS.key === locKey()) return;
   try { const r = await fetch(`https://api.weather.gov/alerts/active?point=${LOC.lat.toFixed(3)},${LOC.lon.toFixed(3)}`, { headers: { Accept: "application/geo+json" } });
     const j = await r.json(); NWS = { at: Date.now(), key: locKey(), items: (j.features || []).map(nwsItem) }; store.set("nws", NWS);
-  } catch (e) { }
+  } catch (e) { noteErr("NWS alerts", e); }
 }
 
 /* ---------- shell ---------- */

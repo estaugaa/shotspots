@@ -19,7 +19,7 @@ async function loadConf() {
       CONF.key = k; CONF.at = Date.now();
       if (typeof renderNow === "function" && UI.view === "now") renderNow();
     }
-  } catch (e) { } finally { CONF.busy = false; }
+  } catch (e) { noteErr("model spread", e); } finally { CONF.busy = false; }
 }
 function confAt(t) {
   if (!CONF.t || !CONF.m || CONF.m.length < 3) return null;

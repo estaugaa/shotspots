@@ -123,7 +123,7 @@ const SCORE_LAYERS = [
 function scoreLayers(s, w) {
   const out = []; let prevN = null, prevWhy = [];
   for (const [label, get] of SCORE_LAYERS) {
-    let f = null; try { f = get()(s, w); } catch (e) { }
+    let f = null; try { f = get()(s, w); } catch (e) { noteErr("why this score: a layer", e); }
     if (!f) { out.push({ label, n: null, delta: null, add: [] }); continue; }
     const add = f.why.filter(x => !prevWhy.includes(x));
     out.push({ label, n: f.n, delta: prevN == null ? null : f.n - prevN, add, mult: label.startsWith("Spot quality") && f.qm ? f.qm : null });
