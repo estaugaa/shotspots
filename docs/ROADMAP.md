@@ -26,7 +26,14 @@ Status: `todo`, `doing (<branch>)`, `done (<date>: <result>)`, `dropped (<reason
   for sunrise and sunset, though sunrise shooting is rarer everywhere (Commons: Cadillac 18% of photo days at sunrise vs
   ~5% typical, yet penalised for 1 of 14); (b) 'lift-adjusted' quality compares a spot with its area, so the most famous
   spot inside a famous park reads ordinary (Cadillac summit x0.87). Fix: per-event baselines with a binomial test (only
-  act when the evidence is clear), and quality on absolute photographers with area lift as a tie-breaker. todo
+  act when the evidence is clear), and quality on absolute photographers with area lift as a tie-breaker.
+  Found Nov 23, fixed: tz_for() defaulted every state outside 10 western ones to Pacific time, so camera times east of
+  the Rockies were read 1-3 h off (spots with 10+ photographers: median sunrise share 2%, sunset 24%). Now the nearest
+  airport station's zone (all states, split states correct), fallback table for 51; spotphotos publishes per-event
+  baselines and runs daily (job_daily, ~30 s). Next: after the Nov 24 rebuild, re-record the scoring-test data, then
+  switch phototime.js to the per-event baseline with shrinkage (tested Nov 23 on the old data: changes small, but the
+  old data can't judge it). Lift: an 'urban only' rule (300-1,000 photographers within 5 km) put Crystal Springs
+  Rhododendron Garden first at sunrise and sunset, so it was not shipped; to be fitted on data (5.1). todo
 - 1.2 Curate spots by data (non-photo places out; birding hotspots to the Wildlife filter only). doing (claude/gifted-sanderson-3f3abb)
 - 1.3 National layers: GOES grid for the lower 48, airport reports nationwide, fog model trained per region, eBird
   notable + counts in tiles (needs an EBIRD_KEY secret, Eric). todo

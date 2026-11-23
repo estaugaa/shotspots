@@ -130,10 +130,15 @@ def run():
     # A spot with no photographer in an area few people photograph says nothing: leave it out (the app treats it as
     # unknown). Kept: any photographer, or >= 20 photographers within 5 km (then none at the spot is a measurement).
     pub = {k: v for k, v in out.items() if v[0] > 0 or v[5] >= 20}
-    write_json("spotphotos.json", {"gen": iso(utcnow()), "dump": dump, "fields": ["who", "lift_x10", "am_pct", "pm_pct", "night_pct", "area_who"], "spots": pub})
+    # baselines per golden hour (median share among spots with 10+ photographers): sunrise shooting is rarer everywhere,
+    # so one shared baseline (12%) read most spots as "nobody shoots sunrise here" (Nov 23)
+    from statistics import median
+    big = [v for v in out.values() if v[0] >= 10]
+    base = {"am": median(v[2] for v in big) if big else 12, "pm": median(v[3] for v in big) if big else 12, "n": len(big)}
+    write_json("spotphotos.json", {"gen": iso(utcnow()), "dump": dump, "fields": ["who", "lift_x10", "am_pct", "pm_pct", "night_pct", "area_who"], "base": base, "spots": pub})
     log.info(f"spotphotos: {len(out):,} spots written")
     # spot check for the log: famous, odd leaders and obscure ones from the Nov 19 tests
     for s in sp:
         if any(k in s.get("name", "") for k in ("Multnomah", "Haystack", "Hug Point", "Blumenthal", "Freedom Tower", "Vista House", "Bonneville", "Control Tower", "Cadillac", "Mille Creek", "Jenny Lake", "Cape Florida")):
             log.info(f"  {s['name'][:40]:40} {s['id'][:22]:22} who/lift10/am/pm/night/area = {out.get(s['id'])}")
-    return out
+    return f"{len(pub):,} spots published of {len(out):,}; baseline golden-hour share am {base['am']}% pm {base['pm']}% ({base['n']} spots with 10+ photographers); time zones by nearest airport station"
