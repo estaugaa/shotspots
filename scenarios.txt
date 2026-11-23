@@ -1,0 +1,4165 @@
+
+######## 1 Owner in Washougal, tomorrow sunrise, drive 60 (7 > 8)
+first spot 438 ms | window=Tomorrow sunrise 7:21 AM | errors=[]
+CHECKS {"ex": {"land": {"coast": false, "mountains": true, "desert": false, "lakes": true, "plains": false}, "rain": {"nowWet": false, "at": null, "max": 0}, "sea": null, "mtn": ["Mt. Hood:true:snow5", "Mt. Adams:false:snow3", "Mt. St. Helens:true:snow27", "Mt. Rainier:false:snow3", "Mt. Jefferson:false:snow4", "Sawtooth Mountain:false:snow4"], "air": {"aod": 0.07, "dust": 0, "pm": 5.9}, "rb": null}, "routed": 0, "multnomah": [null, 40], "tz": "America/Los_Angeles", "wx": true, "wxErr": null, "wxPts": 17, "hz": 12, "chip": 41, "top": 41, "chipMatches": true, "tooFarListed": [], "leak": [], "alertline": false, "spots": 1728, "ranked": 509, "top10spread": 11, "seeing": "ok"}
+Light
+Night sky
+Calendar
+☀
+Clear now · 50°F · dry for the next few hours.
+Today
+85
+Tomorrow
+88
+Wed
+85
+Thu
+88
+Fri
+86
+Sat
+88
+Sun
+88
+Mon
+88
+Blue hour
+6:11 AM
+86
+Sunrise
+7:21 AM · ☁ soft
+41
+Morning
+8:07 AM
+79
+Midday
+11:00 AM
+77
+Afternoon
+3:00 PM
+89
+Sunset
+4:30 PM · ☁ soft
+50
+Blue hour
+4:42 PM
+90
+best
+Night
+all night
+61
+Tomorrow sunrise
+in 17 h 14 m
+
+7:21 AM · golden 6:59 AM–8:07 AM
+
+Report conditions
+
+Windy (21 mph): skip reflections, try streaking clouds
+
+thick cloud overhead (100%), patchy cloud toward the east (60%): the light may break through
+
+Cloud here: high 100%, mid 100%, low 2%, toward the light 60%
+
+Models partly disagree (71–100% cloud): typical miss about 17 points. Check again closer to the time.
+
+41
+light 36
+Multnomah Falls
+Waterfalls
+waterfalls shoot best in daytime shade or overcast, not at sunrise; soft overcast light
+40 min
+Gorge
+40
+light 66
+Crystal Springs Rhododendron Garden
+Gardens
+soft overcast light; 10 bird sightings logged here in 10 days
+34 min
+Portland
+35
+light 56
+Lewisville Regional Park (East Fork Lewis River)
+Fall color
+soft overcast light; terrain blocks the rising sun here
+35 min
+Close to home
+7 more options
+
+Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.
+
+In season now
+Bufflehead at Crystal Springs Rhododendron Garden
+Bufflehead sightings here are near their yearly high this week. Go early: dawn and the two hours after are best.
+Peak season
+American Wigeon at Ridgefield National Wildlife Refuge
+American Wigeon sightings here are near their yearly high this week. Go early: dawn and the two hours after are best.
+Peak season
+Fall colour near peak at Sandy River Delta (Thousand Acres)
+Satellite images show the trees here near peak colour (as of Nov 4). Soft overcast or the first sun brings it out best.
+Near peak
+🏔️ Mountains at tomorrow sunrise
+
+Mt. Hood ✓ · Mt. Adams ? · Mt. St. Helens ✓ · Mt. Rainier ✗ (✓ likely out, ✗ likely in cloud)
+
+❄️ Fresh snow on Mt. Hood
+
+5 cm in the last 2 days. It should be out at tomorrow sunrise: the first clear look after a storm is the classic shot.
+
+❄️ Fresh snow on Mt. St. Helens
+
+27 cm in the last 2 days. It should be out at tomorrow sunrise: the first clear look after a storm is the classic shot.
+
+Also worth knowing
+🎯 Wed, Nov 25 5:27 PM: Moon rises behind Mt. Adams
+
+from Full moon rising behind Mt. Adams from Pittock Mansion · 40 min drive
+
+🎯 Thu, Nov 26 8:07 AM: Sun rises behind Larch Mountain
+
+from Cape Horn Lookout (SR 14) · 20 min drive
+
+🎯 Thu, Dec 3 7:52 AM: Sun rises behind Vista H
+--- spot #1 page (multnomah) sections=['Seen here', 'Getting there', 'Rain, past 48 h', 'Best photos here', 'Seen here']:
+🌇 Clear at sunset this time of year: 37% of evenings (sunrise 28%) · overcast 52% · fog or mist 6% measured 209 evenings 2016–2026 at Portland - Troutdale (TTD), 23 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+Multnomah Falls
+
+Gorge · Oregon · 40 min drive · short walk
+
+89 Best next: This afternoon, 3:21 PM. Leave by 2:31 PM. live airport report (KPDX, 12:53 PM): broken cloud below 12,000 ft (forecast said 100%)
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+Best photos here
+Ian Sane from Oregon, USA · CC BY 2.0
+adrian aows · CC0
+adrian aows · CC0
+RCHop · CC BY 3.0
+RCHop · CC BY 3.0
+RCHop · CC BY 3.0
+runt35 · CC BY 3.0
+RCHop · CC BY 3.0
+
+Wikimedia Commons. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.
+
+2pm
+⛅
+46°
+3pm
+⛅
+45°
+4pm
+☁️
+43°
+5pm
+☁️
+42°
+6pm
+☁️
+41°
+7pm
+☁️
+41°
+8pm
+☁️
+41°
+9pm
+☁️
+40°
+💧31%
+10pm
+☁️
+40°
+💧42%
+11pm
+☁️
+40°
+💧40%
+12am
+☁️
+40°
+💧49%
+1am
+☁️
+40°
+💧43%
+
+💧 chance of rain that hour
+
+Scores here, every window
+
+Today
+Midday
+51
+11:00 AM
+Today
+Afternoon
+89
+3:00 PM
+Today
+Sunset
+41
+4:30 PM
+Today
+PM blue
+80
+4:42 PM
+Tonight
+Night
+–
+6:15 PM
+Tmrw
+AM blue
+80
+6:11 AM
+Tmrw
+Sunrise
+41
+7:20 AM
+Tmrw
+Morning
+79
+8:06 AM
+Tmrw
+Midday
+77
+11:00 AM
+Tmrw
+Afternoon
+89
+3:00 PM
+Tmrw
+Sunset
+41
+4:30 PM
+Tmrw
+PM blue
+80
+4:41 PM
+Tmrw
+Night
+–
+6:15 PM
+How to shoot it
+
+The most photographed place in Oregon, so the standard frame from the lower plaza has been made a million times. My rule at icons: either come when nobody else can (night, ice, 7 AM on a January weekday) or shoot something only you'd notice there.
+
+An overcast-day spot, best Oct–May. A short walk, so you can wait for the forecast and still make it.
+
+Landscape: After four or more days below 
+--- spot #2 page (crystal-springs) sections=['Seen here', 'Getting there', 'Best photos here', 'Seen here']:
+🌇 Clear at sunset this time of year: 20% of evenings (sunrise 10%) · overcast 46% · fog or mist 6% measured 209 evenings 2016–2026 at PORTLAND INTL ARPT (PDX), 13 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+Crystal Springs Rhododendron Garden
+
+Portland · 34 min drive · short walk
+
+56 Best next: This afternoon, 3:23 PM. Leave by 2:39 PM. live airport report (KPDX, 12:53 PM): broken cloud below 12,000 ft (forecast said 100%)
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+Best photos here
+Cheyenne · CC BY-NC
+Maureen McHale · CC BY-NC
+roegoo · CC BY-NC
+Emily Cathcart · CC BY-NC
+anniehrb · CC BY-NC
+looknatstuff · CC BY-NC
+Another Believer · CC BY-SA 4.0
+Another Believer · CC BY-SA 4.0
+
+iNaturalist, Wikimedia Commons. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.
+
+2pm
+⛅
+49°
+3pm
+⛅
+48°
+4pm
+⛅
+45°
+5pm
+☁️
+44°
+6pm
+☁️
+44°
+7pm
+☁️
+44°
+8pm
+☁️
+43°
+💧36%
+9pm
+☁️
+43°
+💧43%
+10pm
+🌧
+43°
+💧50%
+11pm
+☁️
+43°
+💧45%
+12am
+☁️
+43°
+💧46%
+1am
+☁️
+43°
+💧31%
+
+💧 chance of rain that hour
+
+Scores here, every window
+
+Today
+Midday
+32
+11:00 AM
+Today
+Afternoon
+56
+3:00 PM
+Today
+Sunset
+44
+4:33 PM
+Today
+PM blue
+26
+4:44 PM
+Tonight
+Night
+–
+6:17 PM
+Tmrw
+AM blue
+26
+6:13 AM
+Tmrw
+Sunrise
+40
+7:22 AM
+Tmrw
+Morning
+44
+8:08 AM
+Tmrw
+Midday
+49
+11:00 AM
+Tmrw
+Afternoon
+49
+3:00 PM
+Tmrw
+Sunset
+40
+4:32 PM
+Tmrw
+PM blue
+19
+4:43 PM
+Tmrw
+Night
+–
+6:17 PM
+
+A spring-fed lake wraps the garden, with many nesting and feeding waterfowl and small waterfalls built from Mt. Hood and Mt. Adams rock. Rhododendrons and azaleas peak from the early show (first weekend of April) through Mother's Day; in fall the companion trees turn. Open 10–5:30 (Wed from 1); gates lock at 5:30.
+
+Lens: the 5× (then crop in) for
+
+######## 3 Cannon Beach, tomorrow sunset, drive 30 (4 > 7)
+first spot 900 ms | window=Tomorrow sunset 4:36 PM | errors=[]
+CHECKS {"ex": {"land": {"coast": true, "mountains": true, "desert": false, "lakes": true, "plains": false}, "rain": {"nowWet": false, "at": "2026-11-24 00:15:00+00:00", "max": 0.2}, "sea": "Cannon Beach & Haystack Rock", "mtn": ["Mt. St. Helens:false:snow27"], "air": {"aod": 0.17, "dust": 0, "pm": 10.5}, "rb": null}, "routed": 151, "multnomah": [null, 119], "tz": "America/Los_Angeles", "wx": true, "wxErr": null, "wxPts": 16, "hz": 12, "chip": 35, "top": 35, "chipMatches": true, "tooFarListed": [], "leak": [], "alertline": false, "spots": 1239, "ranked": 19, "top10spread": 19, "seeing": "ok"}
+Light
+Night sky
+Calendar
+☁
+Overcast now · 52°F · rain likely from about 4:30 PM.
+Today
+66
+Tomorrow
+71
+Wed
+78
+Thu
+74
+Fri
+68
+Sat
+66
+Sun
+74
+Mon
+60
+Blue hour
+6:18 AM
+68
+Sunrise
+7:28 AM · ☁ soft
+31
+Morning
+8:15 AM
+63
+Midday
+11:00 AM
+72
+Afternoon
+3:00 PM
+81
+best
+Sunset
+4:36 PM · ☁ soft
+35
+Blue hour
+4:48 PM
+74
+Night
+all night
+12
+Tomorrow sunset
+in 26 h 3 m
+
+4:36 PM · golden 3:49 PM–4:48 PM
+
+Report conditions
+
+Little sunset color likely. The score is for soft overcast light: waterfalls, forest and birds
+
+thick cloud overhead (100%), 100% low cloud, cloud 25 mi west (100%) will likely block the light
+
+Cloud here: high 100%, mid 100%, low 100%, toward the light 100%
+
+Models agree on the sky (100–100% cloud): this forecast is usually within about 3 points.
+
+35
+light 38
+Seaside Beach
+Coast
+flat light: long exposures of the surf and rocks; windy: no glassy wet-sand reflections
+19 min
+Beach
+28
+light 40
+Blumenthal Falls
+Waterfalls
+0.5 in of rain in 2 days: falls running big; waterfalls shoot best in daytime shade or overcast, not at sunset
+16 min
+Waterfall
+23
+light 33
+Arch Cape View
+Overlooks
+flat light: moody, even light on the view; open view toward the west
+22 min
+Viewpoint
+7 more options
+
+Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.
+
+🌦️ Rain on the way
+
+Starting around 4:15 PM. 15-minute forecast, updated hourly from radar.
+
+🏔️ Mountains at tomorrow sunset
+
+Mt. St. Helens ✗ (✓ likely out, ✗ likely in cloud)
+
+🌈 Rainbow chance wed 9:16 AM–10:31 AM
+
+Sun on you with showers about 10 miles to the northwest, sun 13° up. Face northwest, away from the sun: the bow sits 42° around the shadow of your head. Checked every 15 minutes.
+
+❄️ Fresh snow on Mt. St. Helens
+
+27 cm in the last 2 days. Watch for the first clear window: that's the shot.
+
+🌊 Big surf wed
+
+Waves up to 5.3 m near Cannon Beach & Haystack Rock around 7:46 AM. Headlands and jetties make the shot; sneaker waves are real, so stay well back.
+
+Also worth knowing
+☔ Rainy-day ideas for Tomorrow
+
+Waterfalls run biggest now; Short Sand Beach (Oswald West State Park) is your best bet. Use 1/4–1 s and wipe the lens between frames. Mushroom season: look on mossy logs along shaded trails. The 70–300 focuses close enough for raindrop details. When the rain lifts, mist often hangs on hills and over water: the half hour after a shower is worth being out.
+
+🌊 Coastal Flood Advisory until 10:00 PM
+
+Big surf and king-tide water: dramatic waves, but stay well back from the water's edge and off jetties and logs.
+
+🌊 Coastal Fl
+--- spot #1 page (seed-w27460353) sections=['Seen here', 'Tides', 'Weather alerts here', 'Night sky here', 'Best photos here', 'Seen here']:
+🌇 Clear at sunset this time of year: 36% of evenings (sunrise 31%) · overcast 50% · fog or mist 14% measured 199 evenings 2016–2026 at ASTORIA/CLATSOP (AST), 18 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Seaside Beach
+
+Beach · starter spot · 19 min drive · short walk
+
+60 Best next: Tomorrow blue hour, 6:55 AM. Leave by 6:26 AM. low tide 6:11 AM (2.8 ft): wet-sand reflections
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+Best photos here
+Ian Sane from Oregon, USA · CC BY 2.0
+Tony Webster from Minneapolis, Minnesota · CC BY-SA 2.0
+Ian Sane from Oregon, USA · CC BY 2.0
+Tony Webster from Portland, Oregon · CC BY 2.0
+Tony Webster from Minneapolis, Minnesota · CC BY 2.0
+Tony Webster from Minneapolis, Minnesota, United States · CC BY 2.0
+Zack Knowles · CC BY-SA 3.0
+Zack Knowles · CC BY-SA 3.0
+
+Wikimedia Commons. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.
+
+2pm
+☁️
+51°
+3pm
+🌧
+51°
+💧56%
+4pm
+🌧
+50°
+💧67%
+5pm
+🌧
+49°
+💧92%
+6pm
+🌧
+49°
+💧84%
+7pm
+🌧
+49°
+💧86%
+8pm
+🌧
+49°
+💧89%
+9pm
+🌧
+49°
+💧87%
+10pm
+🌧
+49°
+💧83%
+11pm
+🌧
+50°
+💧94%
+12am
+🌧
+50°
+💧76%
+1am
+🌧
+51°
+💧89%
+
+💧 chance of rain that hour
+
+Scores here, every window
+
+Today
+Midday
+40
+11:00 AM
+Today
+Afternoon
+47
+3:00 PM
+Today
+Sunset
+15
+4:36 PM
+Today
+PM blue
+36
+4:48 PM
+Tonight
+Night
+0
+6:22 PM
+Tmrw
+AM blue
+60
+6:19 AM
+Tmrw
+Sunrise
+31
+7:28 AM
+Tmrw
+Morning
+40
+8:16 AM
+Tmrw
+Midday
+32
+11:00 AM
+Tmrw
+Afternoon
+36
+3:00 PM
+Tmrw
+Sunset
+35
+4:36 PM
+Tmrw
+PM blue
+57
+4:47 PM
+Tmrw
+Night
+0
+6:21 PM
+How to shoot it
+
+A sunset spot, best any month. A short walk, so you can wait for the forecast and still make it.
+
+Landscape
+--- spot #2 page (seed-n4232922938) sections=['Weather alerts here', 'Rain, past 48 h']:
+🌇 Clear at sunset this time of year: 29% of evenings (sunrise 25%) · overcast 52% · fog or mist 8% measured 207 evenings 2016–2026 at Tillamook (TMK), 40 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Blumenthal Falls
+
+Waterfall · starter spot · 16 min drive · short walk
+
+68 Best next: Tomorrow afternoon, 3:24 PM. Leave by 2:58 PM. 0.5 in of rain in 2 days: falls running big
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+2pm
+☁️
+51°
+3pm
+🌧
+51°
+💧56%
+4pm
+🌧
+50°
+💧67%
+5pm
+🌧
+49°
+💧93%
+6pm
+🌧
+49°
+💧85%
+7pm
+🌧
+49°
+💧87%
+8pm
+🌧
+49°
+💧90%
+9pm
+🌧
+49°
+💧88%
+10pm
+🌧
+49°
+💧84%
+11pm
+🌧
+49°
+💧93%
+12am
+🌧
+50°
+💧76%
+1am
+🌧
+50°
+💧88%
+
+💧 chance of rain that hour
+
+Scores here, every window
+
+Today
+Midday
+58
+11:00 AM
+Today
+Afternoon
+66
+3:00 PM
+Today
+Sunset
+25
+4:37 PM
+Today
+PM blue
+17
+4:49 PM
+Tonight
+Night
+–
+6:22 PM
+Tmrw
+AM blue
+17
+6:18 AM
+Tmrw
+Sunrise
+25
+7:27 AM
+Tmrw
+Morning
+54
+8:15 AM
+Tmrw
+Midday
+59
+11:00 AM
+Tmrw
+Afternoon
+68
+3:00 PM
+Tmrw
+Sunset
+28
+4:36 PM
+Tmrw
+PM blue
+17
+4:48 PM
+Tmrw
+Night
+–
+6:22 PM
+
+Best under soft overcast or in shade so the highlights don't blow out. A slow shutter (1/4–1 s on a tripod) smooths the water; flow peaks after rain and snowmelt.
+
+Starter spot From OpenStreetMap. The tip is general and the pin isn't checked yet; ShotSpots researches the most notable starter spots first. Scores, light and drive times work the same as for any spot.
+
+Weather alerts here
+🌊 Coastal Flood Advisory until 10:00 PM. Big surf and king-tide water: dramatic waves, but stay well back from the water's edge and off jetties and logs.
+🌊 Coastal Flood Warning until 4:00 AM. Big surf and king-tide water: dramatic waves, but stay well back from the water
+
+######## 5 Denver, tomorrow sunset, drive 90 (5 > 6)
+first spot 1204 ms | window=Tomorrow sunset 4:38 PM | errors=[]
+CHECKS {"ex": {"land": {"coast": false, "mountains": true, "desert": false, "lakes": true, "plains": false}, "rain": {"nowWet": false, "at": null, "max": 0}, "sea": null, "mtn": ["Mt. Blue Sky:true:snow0", "Parry Peak:true:snow0", "North Arapaho Peak:true:snow0", "Bard Peak:true:snow0", "Mount Audubon:true:snow0", "Engelmann Peak:true:snow0"], "air": {"aod": 0.03, "dust": 0, "pm": 10.6}, "rb": null}, "routed": 333, "multnomah": [null, 1130], "tz": "America/Denver", "wx": true, "wxErr": null, "wxPts": 9, "hz": 14, "chip": 71, "top": 71, "chipMatches": true, "tooFarListed": [], "leak": [], "alertline": false, "spots": 1370, "ranked": 491, "top10spread": 24, "seeing": "ok"}
+Light
+Night sky
+Calendar
+☁
+Overcast now · 40°F · dry for the next few hours.
+Today
+68
+Tomorrow
+74
+Wed
+82
+Thu
+70
+Fri
+77
+Sat
+100
+Sun
+100
+Mon
+68
+Blue hour
+5:52 AM
+73
+Sunrise
+6:54 AM
+31
+Morning
+7:35 AM
+46
+Midday
+11:00 AM
+26
+Afternoon
+3:00 PM
+49
+Sunset
+4:38 PM
+71
+Blue hour
+4:48 PM
+77
+best
+Night
+all night
+62
+544 starter spots near you (what's that?)
+Tomorrow sunset
+in 25 h 10 m
+
+4:38 PM · golden 3:57 PM–4:48 PM
+
+Report conditions
+
+Clear: clean light, peaks and alignments
+
+mostly clear overhead (0%), clear gap toward the west: light can get under the clouds
+
+Cloud here: high 0%, mid 0%, low 0%, toward the light 0%
+
+Models agree on the sky (0–0% cloud): this forecast is usually within about 3 points.
+
+71
+light 78
+Berthoud Pass
+Mountain views
+peaks likely out; clear: alpenglow on the peaks after sunset
+1 h 25 m
+Mountain pass
+59
+light 70
+Loveland Pass
+Overlooks
+clear: warm, low light across the land; sun behind you: warm light on the view
+1 h 29 m
+Viewpoint
+50
+light 54
+Point of Geological Interest
+Overlooks
+clear: warm, low light across the land; hills block the low sun here
+21 min
+Viewpoint
+7 more options
+
+Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.
+
+Also worth knowing
+🛰 Right now (GOES-18, 13 min ago) measured
+
+No fog or low cloud near you. The Map tab shows the satellite fog layer.
+--- spot #1 page (seed-n177153229) sections=['Weather alerts here', 'Night sky here']:
+🌇 Clear at sunset this time of year: 53% of evenings (sunrise 51%) · overcast 36% · fog or mist 22% measured 137 evenings 2017–2026 at Berthoud Pass (0CO), 1 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Berthoud Pass
+
+Mountain pass · starter spot · 1 h 25 m drive · roadside
+
+71 Best next: Tomorrow sunset, 4:41 PM. Leave by 3:14 PM. peaks likely out
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+3pm
+☁️
+31°
+4pm
+⛅
+29°
+5pm
+☁️
+24°
+💧32%
+6pm
+☁️
+21°
+💧34%
+7pm
+🌫
+19°
+💧32%
+8pm
+☁️
+16°
+9pm
+☁️
+16°
+10pm
+☁️
+19°
+11pm
+☁️
+19°
+12am
+☁️
+15°
+1am
+☁️
+15°
+2am
+🌫
+18°
+
+💧 chance of rain that hour
+
+Scores here, every window
+
+Today
+Midday
+20
+11:00 AM
+Today
+Afternoon
+24
+3:00 PM
+Today
+Sunset
+60
+4:41 PM
+Today
+PM blue
+41
+4:52 PM
+Tonight
+Night
+6
+6:16 PM
+Tmrw
+AM blue
+59
+5:55 AM
+Tmrw
+Sunrise
+16
+6:58 AM
+Tmrw
+Morning
+34
+7:39 AM
+Tmrw
+Midday
+24
+11:00 AM
+Tmrw
+Afternoon
+44
+3:00 PM
+Tmrw
+Sunset
+71
+4:41 PM
+Tmrw
+PM blue
+59
+4:51 PM
+Tmrw
+Night
+67
+6:16 PM
+Wed
+AM blue
+26
+5:56 AM
+Wed
+Sunrise
+52
+6:59 AM
+
+Terrain hides the low sun: best for warm light on the scene, or in soft light.
+
+Starter spot From OpenStreetMap and Wikidata. The tip is general and the pin isn't checked yet; ShotSpots researches the most notable starter spots first. Scores, light and drive times work the same as for any spot.
+
+How to shoot it
+
+A flexible spot, best any month. It's roadside, so it works on short notice when conditions line up.
+
+Landscape: Watch the peak's shadow side too: pink snow next to blue shadow is the color contrast. Long glass (300 mm or more) makes a distant volcano loom over a foreground, but only if the foreground is far away too. Arrive 45 minutes early and shoot bl
+--- spot #2 page (seed-n1867660938) sections=['Weather alerts here', 'Night sky here', 'Best photos here']:
+🌇 Clear at sunset this time of year: 53% of evenings (sunrise 51%) · overcast 36% · fog or mist 22% measured 137 evenings 2017–2026 at Berthoud Pass (0CO), 17 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Loveland Pass
+
+Viewpoint · starter spot · 1 h 29 m drive · roadside
+
+72 Best next: Tomorrow night, 6:16 PM. Leave by 4:45 PM. bright moon: moonlit landscape with stars
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+Best photos here
+Evan Clark evanrclark · CC0
+Famartin · CC BY-SA 4.0
+Famartin · CC BY-SA 4.0
+Famartin · CC BY-SA 4.0
+Famartin · CC BY-SA 4.0
+Famartin · CC BY-SA 4.0
+Famartin · CC BY-SA 4.0
+Famartin · CC BY-SA 4.0
+
+Wikimedia Commons. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.
+
+3pm
+☁️
+31°
+4pm
+⛅
+29°
+5pm
+☁️
+24°
+💧32%
+6pm
+☁️
+21°
+💧34%
+7pm
+🌫
+19°
+💧32%
+8pm
+☁️
+16°
+9pm
+☁️
+16°
+10pm
+☁️
+19°
+11pm
+☁️
+19°
+12am
+☁️
+15°
+1am
+☁️
+15°
+2am
+🌫
+18°
+
+💧 chance of rain that hour
+
+Scores here, every window
+
+Today
+Midday
+17
+11:00 AM
+Today
+Afternoon
+20
+3:00 PM
+Today
+Sunset
+54
+4:42 PM
+Today
+PM blue
+38
+4:52 PM
+Tonight
+Night
+11
+6:17 PM
+Tmrw
+AM blue
+55
+5:55 AM
+Tmrw
+Sunrise
+23
+6:58 AM
+Tmrw
+Morning
+33
+7:39 AM
+Tmrw
+Midday
+22
+11:00 AM
+Tmrw
+Afternoon
+41
+3:00 PM
+Tmrw
+Sunset
+59
+4:42 PM
+Tmrw
+PM blue
+55
+4:52 PM
+Tmrw
+Night
+72
+6:16 PM
+Wed
+AM blue
+25
+5:56 AM
+Wed
+Sunrise
+51
+6:59 AM
+How to shoot it
+
+A flexible spot, best any month. It's roadside, so it works on short notice when conditions line up.
+
+Landscape: Commit to a time first, then a place. Layers sell scale, so give the frame three to five overlapping ridgelines and compress them at 150–300 mm.
+
+
+
+######## 6 Moab, tomorrow sunrise, drive 60 (6 > 5)
+first spot 1800 ms | window=Tomorrow sunrise 7:09 AM | errors=[]
+CHECKS {"ex": {"land": {"coast": false, "mountains": true, "desert": true, "lakes": false, "plains": false}, "rain": {"nowWet": false, "at": null, "max": 0}, "sea": null, "mtn": ["Mount Waas:true:snow1", "Mount Mellenthin:true:snow2"], "air": {"aod": 0.04, "dust": 0, "pm": 1.7}, "rb": null}, "routed": 349, "multnomah": [null, 953], "tz": "America/Denver", "wx": true, "wxErr": null, "wxPts": 8, "hz": 14, "chip": 83, "top": 83, "chipMatches": true, "tooFarListed": [], "leak": [], "alertline": false, "spots": 1404, "ranked": 131, "top10spread": 7, "seeing": "ok"}
+Light
+Night sky
+Calendar
+☀
+Clear now · 50°F · dry for the next few hours.
+Today
+69
+Tomorrow
+83
+Wed
+89
+Thu
+80
+Fri
+89
+Sat
+67
+★ Sun
+96
+Mon
+80
+Blue hour
+6:08 AM
+31
+Sunrise
+7:09 AM
+83
+best
+Morning
+7:50 AM
+45
+Midday
+11:00 AM
+39
+Afternoon
+3:00 PM
+48
+Sunset
+4:59 PM
+70
+Blue hour
+5:09 PM
+77
+Night
+all night
+65
+Tomorrow sunrise
+in 16 h 3 m
+
+7:09 AM · golden 6:51 AM–7:50 AM
+
+Report conditions
+
+Strong color odds
+
+thin high cloud overhead (89%): it can glow if the light gets under it, clear gap toward the east: light can get under the clouds
+
+Cloud here: high 89%, mid 0%, low 0%, toward the light 0%
+
+Models disagree (3–89% cloud): the sky could go either way. Check again the evening before you commit to a long drive.
+
+83
+light 91
+Park Avenue Viewpoint
+Overlooks
+sun behind you: warm light on the view; sun clears the ridge at 7:32 AM
+17 min
+Viewpoint
+84
+light 83
+Cove of Caves Viewpoint Trail
+Overlooks
+faces west: a sunset spot; Mount Waas should be out (summit 0% cloud)
+35 min
+Viewpoint
+81
+light 89
+Ribbon Arch
+Rock & desert
+open view toward the east
+35 min
+Arch
+7 more options
+
+Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.
+
+Also worth knowing
+🛰 Right now (GOES-18, 14 min ago) measured
+
+No fog or low cloud near you. The Map tab shows the satellite fog layer.
+--- spot #1 page (seed-n298848056) sections=['Seen here', 'Getting there', 'Night sky here', 'Seen here']:
+🌇 Clear at sunset this time of year: 77% of evenings (sunrise 79%) · overcast 17% · fog or mist 0% measured 209 evenings 2016–2026 at MOAB/CANYONLANDS (CNY), 20 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Park Avenue Viewpoint
+
+Viewpoint · starter spot · 17 min drive · roadside
+
+83 Best next: Tomorrow sunrise, 7:10 AM. Leave by 6:51 AM. sun behind you: warm light on the view
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+3pm
+☀️
+50°
+4pm
+☀️
+50°
+5pm
+🌙
+45°
+6pm
+🌙
+42°
+7pm
+🌙
+41°
+8pm
+🌙
+39°
+9pm
+🌙
+38°
+10pm
+🌙
+37°
+11pm
+🌙
+37°
+12am
+🌙
+36°
+1am
+🌙
+36°
+2am
+🌙
+35°
+
+Scores here, every window
+
+Today
+Midday
+23
+11:00 AM
+Today
+Afternoon
+36
+3:00 PM
+Today
+Sunset
+64
+5:00 PM
+Today
+PM blue
+64
+5:10 PM
+Tonight
+Night
+53
+6:33 PM
+Tmrw
+AM blue
+29
+6:09 AM
+Tmrw
+Sunrise
+83
+7:10 AM
+Tmrw
+Morning
+25
+7:50 AM
+Tmrw
+Midday
+23
+11:00 AM
+Tmrw
+Afternoon
+42
+3:00 PM
+Tmrw
+Sunset
+64
+4:59 PM
+Tmrw
+PM blue
+77
+5:09 PM
+Tmrw
+Night
+65
+6:32 PM
+Wed
+AM blue
+29
+6:10 AM
+How to shoot it
+
+A flexible spot, best any month. It's roadside, so it works on short notice when conditions line up.
+
+Landscape: The light at a Gorge overlook changes faster in the 20 minutes after sunrise than in the next three hours. Arrive 45 minutes early and shoot blue hour too: the river holds color after the sky goes flat.
+
+Birds & wildlife: Turkey Vultures, Red-tailed Hawks and in autumn Golden Eagles ride the updrafts along cliff faces, often below you.
+
+Why this score
+
+Data behind it 
+
+Measured: terrain horizon from 10 m elevation, facing from fine terrain, photo / Wikipedia record, routed drive time.
+
+83 for Sunrise = light and weather 91 × spot 0.93
+
+Spot 0.93 (0.50 least to 1.12 most photogra
+--- spot #2 page (seed-n720334011) sections=['Seen here', 'Night sky here', 'Best photos here', 'Seen here']:
+🌇 Clear at sunset this time of year: 77% of evenings (sunrise 79%) · overcast 17% · fog or mist 0% measured 209 evenings 2016–2026 at MOAB/CANYONLANDS (CNY), 20 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Cove of Caves Viewpoint Trail
+
+Viewpoint · starter spot · 35 min drive · roadside
+
+84 Best next: Tomorrow sunrise, 7:10 AM. Leave by 6:33 AM. faces west: a sunset spot
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+Best photos here
+Quality
+Ymaup · CC BY-SA 3.0
+m01229 from USA · CC BY-SA 2.0
+m01229 from USA · CC BY-SA 2.0
+m01229 from USA · CC BY-SA 2.0
+m01229 from USA · CC BY-SA 2.0
+m01229 from USA · CC BY-SA 2.0
+m01229 from USA · CC BY-SA 2.0
+m01229 from USA · CC BY-SA 2.0
+
+Wikimedia Commons. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.
+
+3pm
+☀️
+50°
+4pm
+☀️
+50°
+5pm
+🌙
+45°
+6pm
+🌙
+42°
+7pm
+🌙
+41°
+8pm
+🌙
+39°
+9pm
+🌙
+38°
+10pm
+🌙
+37°
+11pm
+🌙
+37°
+12am
+🌙
+36°
+1am
+🌙
+36°
+2am
+🌙
+35°
+
+Scores here, every window
+
+Today
+Midday
+24
+11:00 AM
+Today
+Afternoon
+38
+3:00 PM
+Today
+Sunset
+62
+4:59 PM
+Today
+PM blue
+66
+5:09 PM
+Tonight
+Night
+52
+6:32 PM
+Tmrw
+AM blue
+24
+6:09 AM
+Tmrw
+Sunrise
+84
+7:10 AM
+Tmrw
+Morning
+27
+7:50 AM
+Tmrw
+Midday
+24
+11:00 AM
+Tmrw
+Afternoon
+43
+3:00 PM
+Tmrw
+Sunset
+62
+4:59 PM
+Tmrw
+PM blue
+66
+5:09 PM
+Tmrw
+Night
+64
+6:32 PM
+Wed
+AM blue
+24
+6:10 AM
+
+A mapped viewpoint. Check which way it faces: east for sunrise, west for sunset. Arrive 30 minutes early to scout foreground.
+
+Starter spot From OpenStreetMap. The tip is general and the pin isn't checked yet; ShotSpots researches the most notable starter spots first. Scores, light and drive tim
+
+######## 7 Hood River, tomorrow sunrise, drive 45 (7 > 7)
+first spot 104 ms | window=Tomorrow sunrise 7:18 AM | errors=[]
+CHECKS {"ex": {"land": {"coast": false, "mountains": true, "desert": true, "lakes": true, "plains": false}, "rain": {"nowWet": false, "at": null, "max": 0}, "sea": null, "mtn": ["Mt. Hood:false:snow5", "Mt. Adams:false:snow3", "Sawtooth Mountain:false:snow4", "Mt. Rainier:false:snow3", "Mt. St. Helens:false:snow27", "Gilbert Peak:false:snow3"], "air": {"aod": 0.09, "dust": 0, "pm": 2.8}, "rb": null}, "routed": 332, "multnomah": [46, 46], "tz": "America/Los_Angeles", "wx": true, "wxErr": null, "wxPts": 16, "hz": 12, "chip": 28, "top": 28, "chipMatches": true, "tooFarListed": [], "leak": ["Gorge", "Columbia"], "alertline": false, "spots": 1872, "ranked": 159, "top10spread": 7, "seeing": "ok"}
+Light
+Night sky
+Calendar
+☀
+Clear now · 44°F · dry for the next few hours.
+Today
+72
+Tomorrow
+72
+Wed
+70
+Thu
+68
+Fri
+68
+Sat
+70
+Sun
+73
+Mon
+59
+Blue hour
+6:08 AM
+79
+Sunrise
+7:18 AM · ☁ soft
+28
+Morning
+8:05 AM
+65
+Midday
+11:00 AM
+72
+Afternoon
+3:00 PM
+81
+best
+Sunset
+4:27 PM · ☁ soft
+33
+Blue hour
+4:38 PM
+66
+Night
+all night
+48
+Tomorrow sunrise
+in 17 h 8 m
+
+7:18 AM · golden 6:56 AM–8:05 AM
+
+Report conditions
+
+Little sunrise color likely. The score is for soft overcast light: waterfalls, forest and birds
+
+thick cloud overhead (100%), patchy cloud toward the east (60%): the light may break through
+
+Cloud here: high 100%, mid 100%, low 0%, toward the light 60%
+
+Models partly disagree (66–100% cloud): typical miss about 17 points. Check again closer to the time.
+
+28
+light 37
+Bridge of the Gods (Cascade Locks)
+Overlooks
+flat light: moody, even light on the view; soft overcast light
+29 min
+Gorge
+25
+light 36
+Lower Labyrinth Falls
+Waterfalls
+waterfalls shoot best in daytime shade or overcast, not at sunrise; soft overcast light
+17 min
+Waterfall
+20
+light 30
+Bonneville Fish Hatchery
+Wildlife
+🐟 Fall Chinook & coho run in season (better at another time of day); sun clears the ridge at 9:28 AM
+33 min
+Gorge
+7 more options
+
+Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.
+
+Also worth knowing
+🐟 Chum salmon spawning below Bonneville: peak now
+
+One of the Columbia's last chum salmon strongholds spawns in Hamilton Creek and Hamilton Springs.
+
+🐦 Notable birds nearby (last 4 days)
+Cocos Booby
+ · Bonneville Dam (Skamania Co.) · Nov 21
+Flagged as rare here by eBird
+Black-legged Kittiwake
+ · Bradford Island Recreation Area · Nov 21
+Flagged as rare here by eBird
+🛰 Fog and cloud right now
+high cloud hides the view
+--- spot #1 page (bridge-of-gods) sections=['Getting there', 'Night sky here']:
+🌇 Clear at sunset this time of year: 32% of evenings (sunrise 16%) · overcast 50% · fog or mist 3% measured 193 evenings 2017–2026 at Hood River (4S2), 28 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+Bridge of the Gods (Cascade Locks)
+
+Gorge · Oregon · 29 min drive · roadside
+
+81 Best next: Tomorrow afternoon, 3:20 PM. Leave by 2:49 PM. wet or overcast leaves glow
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+2pm
+⛅
+46°
+3pm
+⛅
+45°
+4pm
+☁️
+43°
+5pm
+☁️
+42°
+6pm
+☁️
+41°
+7pm
+☁️
+41°
+8pm
+☁️
+41°
+9pm
+☁️
+40°
+💧31%
+10pm
+☁️
+40°
+💧42%
+11pm
+☁️
+40°
+💧40%
+12am
+☁️
+40°
+💧49%
+1am
+☁️
+40°
+💧43%
+
+💧 chance of rain that hour
+
+Scores here, every window
+
+Today
+Midday
+54
+11:00 AM
+Today
+Afternoon
+78
+3:00 PM
+Today
+Sunset
+28
+4:29 PM
+Today
+PM blue
+75
+4:41 PM
+Tonight
+Night
+2
+6:14 PM
+Tmrw
+AM blue
+79
+6:10 AM
+Tmrw
+Sunrise
+28
+7:19 AM
+Tmrw
+Morning
+65
+8:06 AM
+Tmrw
+Midday
+72
+11:00 AM
+Tmrw
+Afternoon
+81
+3:00 PM
+Tmrw
+Sunset
+33
+4:28 PM
+Tmrw
+PM blue
+66
+4:40 PM
+Tmrw
+Night
+2
+6:14 PM
+How to shoot it
+
+A sunrise spot, best any month. It's roadside, so it works on short notice when conditions line up.
+
+Landscape: Arrive 45 minutes early and shoot blue hour too: the river holds color after the sky goes flat. Haze is your friend for layering, not your enemy. The context of the landscape helps tell when and why they were built.
+
+Birds & wildlife: Shoot down on a soaring bird with the river as the background for a frame most people never get.
+
+Why this score
+
+Data behind it 
+
+Measured: terrain hand-researched, facing hand-researched, photo / Wikipedia record, routed drive time.
+
+28 for Sunrise = light and weather 37 × spot 0.85
+
+Spot 0.85 (0.50 least to 1.12 most photographed): 3 photographers' positions. In the list, distance trims up to 10% (× 0.94 here).
+
+44 Light and weath
+--- spot #2 page (seed-n4735521246) sections=['Best photos here']:
+🌇 Clear at sunset this time of year: 32% of evenings (sunrise 16%) · overcast 50% · fog or mist 3% measured 193 evenings 2017–2026 at Hood River (4S2), 12 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Lower Labyrinth Falls
+
+Waterfall · starter spot · 17 min drive · short walk
+
+59 Best next: Tomorrow afternoon, 3:19 PM. Leave by 2:52 PM. overcast: no harsh highlights on the water
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+Best photos here
+Mattsjc · CC BY 4.0
+Mattsjc · CC BY 4.0
+Jhorthos · CC BY 4.0
+Jerry Huddleston from Hampton, Minnesota, US · CC BY 2.0
+
+Wikimedia Commons. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.
+
+2pm
+⛅
+43°
+3pm
+⛅
+42°
+4pm
+⛅
+40°
+5pm
+☁️
+39°
+6pm
+🌙
+37°
+7pm
+☁️
+37°
+8pm
+☁️
+36°
+9pm
+☁️
+36°
+10pm
+☁️
+36°
+11pm
+☁️
+36°
+12am
+☁️
+36°
+💧36%
+1am
+☁️
+36°
+💧41%
+
+💧 chance of rain that hour
+
+Scores here, every window
+
+Today
+Midday
+51
+11:00 AM
+Today
+Afternoon
+39
+3:00 PM
+Today
+Sunset
+25
+4:27 PM
+Today
+PM blue
+17
+4:39 PM
+Tonight
+Night
+–
+6:12 PM
+Tmrw
+AM blue
+17
+6:08 AM
+Tmrw
+Sunrise
+25
+7:17 AM
+Tmrw
+Morning
+48
+8:04 AM
+Tmrw
+Midday
+51
+11:00 AM
+Tmrw
+Afternoon
+59
+3:00 PM
+Tmrw
+Sunset
+25
+4:26 PM
+Tmrw
+PM blue
+17
+4:38 PM
+Tmrw
+Night
+–
+6:12 PM
+
+Best under soft overcast or in shade so the highlights don't blow out. A slow shutter (1/4–1 s on a tripod) smooths the water; flow peaks after rain and snowmelt.
+
+Starter spot From OpenStreetMap. The tip is general and the pin isn't checked yet; ShotSpots researches the most notable starter spots first. Scores, light and drive times work the same as for any spot.
+
+How to shoot it
+
+An overcast-d
+
+######## 8 Boise stargazer, drive 90 (4 > 5)
+first spot -1 ms | window=Tonight 12:31 AM | errors=[]
+CHECKS {"ex": {"land": {"coast": false, "mountains": false, "desert": false, "lakes": true, "plains": false}, "rain": {"nowWet": false, "at": null, "max": 0}, "sea": null, "mtn": [], "air": {"aod": 0.05, "dust": 0, "pm": 5.1}, "rb": null}, "routed": 239, "multnomah": [null, 387], "tz": "America/Denver", "wx": true, "wxErr": null, "wxPts": 10, "hz": 14, "chip": 46, "top": 46, "chipMatches": true, "tooFarListed": [], "leak": [], "alertline": false, "spots": 1370, "ranked": 1, "top10spread": 0, "seeing": "ok"}
+Light
+Night sky
+Calendar
+☀
+Clear now · 44°F · dry for the next few hours.
+Today
+55
+Tomorrow
+44
+Wed
+41
+Thu
+52
+Fri
+51
+Sat
+27
+Sun
+58
+Mon
+34
+Midday
+now
+–
+Afternoon
+3:00 PM
+29
+Sunset
+5:13 PM
+38
+Blue hour
+5:24 PM
+39
+Night
+all night
+46
+best
+
+Showing only night sky spots
+Show all
+
+361 starter spots near you (what's that?)
+Tonight
+in 4 h 4 m
+
+Moon 100% all night
+
+Report conditions
+
+Clear and dark enough for stars
+
+Night sky details: Milky Way, moon, planets ›
+46
+ 
+Skinny Dipper's Hot Springs
+Night sky
+clear; Bortle 1 sky
+1 h 17 m
+leave 4:52 PM
+
+Models disagree (6–98% cloud): the sky could go either way. Check again the evening before you commit to a long drive.
+
+Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.
+
+Also worth knowing
+🛰 Right now (GOES-18, 16 min ago) measured
+
+No fog or low cloud near you. The Map tab shows the satellite fog layer.
+
+Ground reports (airport weather stations)
+
+Caldwell Ind
+: 10+ mi visibility, no low ceiling
+--- spot #1 page (seed-n11686887924) sections=['Night sky here']:
+🌇 Clear at sunset this time of year: 60% of evenings (sunrise 57%) · overcast 27% · fog or mist 2% measured 210 evenings 2016–2026 at BOISE MUNICIPAL (BOI), 60 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Skinny Dipper's Hot Springs
+
+Hot spring · starter spot · 1 h 17 m drive · hike
+
+46 Best next: Tonight, 6:52 PM. Leave by 5:05 PM. clear
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+3pm
+☁️
+33°
+4pm
+☀️
+33°
+5pm
+☀️
+31°
+6pm
+🌙
+31°
+7pm
+🌙
+30°
+8pm
+🌙
+30°
+9pm
+🌙
+30°
+10pm
+🌙
+30°
+11pm
+🌙
+30°
+12am
+🌙
+30°
+1am
+🌙
+28°
+2am
+🌙
+28°
+
+Scores here, every window
+
+Today
+Midday
+–
+11:00 AM
+Today
+Afternoon
+–
+3:00 PM
+Today
+Sunset
+3
+5:11 PM
+Today
+PM blue
+31
+5:22 PM
+Tonight
+Night
+46
+6:52 PM
+Tmrw
+AM blue
+18
+6:44 AM
+Tmrw
+Sunrise
+5
+7:51 AM
+Tmrw
+Morning
+–
+8:36 AM
+Tmrw
+Midday
+–
+11:00 AM
+Tmrw
+Afternoon
+–
+3:00 PM
+Tmrw
+Sunset
+4
+5:10 PM
+Tmrw
+PM blue
+18
+5:21 PM
+Tmrw
+Night
+2
+6:52 PM
+Wed
+AM blue
+18
+6:45 AM
+
+Steam reads best in cold air at first light. Check access rules; many springs are on private or tribal land.
+
+Starter spot From OpenStreetMap. The tip is general and the pin isn't checked yet; ShotSpots researches the most notable starter spots first. Scores, light and drive times work the same as for any spot.
+
+How to shoot it
+
+A night spot, best any month. It's a real hike: commit only when the forecast is solid and allow time to get there before the light.
+
+Landscape: Focus on a bright star at full magnification. 15–20 s is a starting point for the 16 mm.
+
+Birds & wildlife: Shoot their silhouettes against twilight sky rather than using a flash at night.
+
+Why this score
+
+Data behind it 
+
+Measured: photo / Wikipedia record, routed drive time. Estima
+
+######## 9 Jackson wildlife, tomorrow morning, drive 60 (3 > 7)
+first spot 900 ms | window=Tomorrow morning 9:36 AM | errors=[]
+CHECKS {"ex": {"land": {"coast": false, "mountains": true, "desert": false, "lakes": true, "plains": false}, "rain": {"nowWet": false, "at": null, "max": 0}, "sea": null, "mtn": ["Rendezvous Peak:true:snow0", "Rendezvous Mountain:true:snow0", "Grand Teton:true:snow1", "Sheep Mountain:true:snow1", "Housetop Mountain:true:snow0", "Doubletop Peak:true:snow1"], "air": {"aod": 0.03, "dust": 0, "pm": 1}, "rb": null}, "routed": 597, "multnomah": [null, 687], "tz": "America/Denver", "wx": true, "wxErr": null, "wxPts": 9, "hz": 14, "chip": 66, "top": 66, "chipMatches": true, "tooFarListed": [], "leak": [], "alertline": false, "spots": 1818, "ranked": 28, "top10spread": 16, "seeing": "ok"}
+Light
+Night sky
+Calendar
+⛅
+Partly cloudy now · 32°F · dry for the next few hours.
+Today
+69
+Tomorrow
+80
+Wed
+80
+Thu
+80
+Fri
+41
+Sat
+55
+Sun
+60
+Mon
+41
+Blue hour
+6:21 AM
+45
+Sunrise
+7:28 AM
+83
+best
+Morning
+8:12 AM
+66
+Midday
+11:00 AM
+46
+Afternoon
+3:00 PM
+60
+Sunset
+4:51 PM
+68
+Blue hour
+5:02 PM
+45
+Night
+all night
+–
+
+Showing only birds & wildlife spots
+Show all
+
+Tomorrow morning
+in 17 h 22 m
+
+8:12 AM–11:00 AM
+
+Report conditions
+
+Clear: crisp side light, long shadows
+
+mostly clear (0%)
+
+Cloud here: high 0%, mid 0%, low 0%, toward the light 0%
+
+Models disagree (0–95% cloud): the sky could go either way. Check again the evening before you commit to a long drive.
+
+66
+ 
+Grand Teton NP: Blacktail Ponds Overlook
+Wildlife
+mule deer seen here 1× this month, plus moose; morning: birds still active
+23 min
+Birding hotspot
+64
+ 
+Grand Teton NP: Craig Thomas Discovery Center
+Wildlife
+mule deer seen here 1× this month; morning: birds still active
+23 min
+Birding hotspot
+58
+ 
+Emily Stevens Park
+Wildlife
+beaver seen here 1× this month; morning: birds still active
+11 min
+Birding hotspot
+7 more options
+
+Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.
+
+Also worth knowing
+🛰 Right now (GOES-18, 17 min ago) measured
+
+No fog or low cloud near you. The Map tab shows the satellite fog layer.
+--- spot #1 page (seed-eL3240226) sections=['Seen here', 'Best photos here', 'Seen here']:
+🌇 Clear at sunset this time of year: 50% of evenings (sunrise 42%) · overcast 39% · fog or mist 6% measured 199 evenings 2016–2026 at JACKSON HOLE (AWOS) (JAC), 7 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Grand Teton NP: Blacktail Ponds Overlook
+
+Birding hotspot · starter spot · 23 min drive · short walk
+
+83 Best next: Tomorrow sunrise, 7:28 AM. Leave by 6:55 AM. mule deer seen here 1× this month, plus moose
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+Best photos here
+Sean Salazar · CC BY-NC
+Susan Elliott · CC BY-NC
+Carol Blaney · CC BY-NC
+stpetevol · CC BY-NC
+argyl1 · CC BY-NC
+no rights reserved · CC0
+Sheila Sund from Salem, United States · CC BY 2.0
+inkknife_2000 (7.5 million views +) · CC BY-SA 2.0
+
+iNaturalist, Wikimedia Commons. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.
+
+3pm
+☁️
+33°
+4pm
+⛅
+33°
+5pm
+☁️
+30°
+6pm
+🌙
+28°
+7pm
+🌙
+27°
+8pm
+🌙
+26°
+9pm
+🌙
+25°
+10pm
+🌙
+24°
+11pm
+🌙
+24°
+12am
+🌙
+23°
+1am
+🌙
+23°
+2am
+🌙
+21°
+
+Scores here, every window
+
+Today
+Midday
+33
+11:00 AM
+Today
+Afternoon
+48
+3:00 PM
+Today
+Sunset
+72
+4:50 PM
+Today
+PM blue
+45
+5:01 PM
+Tonight
+Night
+–
+6:32 PM
+Tmrw
+AM blue
+45
+6:21 AM
+Tmrw
+Sunrise
+83
+7:28 AM
+Tmrw
+Morning
+66
+8:13 AM
+Tmrw
+Midday
+46
+11:00 AM
+Tmrw
+Afternoon
+60
+3:00 PM
+Tmrw
+Sunset
+68
+4:50 PM
+Tmrw
+PM blue
+45
+5:01 PM
+Tmrw
+Night
+–
+6:31 PM
+Wed
+AM blue
+45
+6:22 AM
+
+eBird birding hotspot with 153 species recorded. Birds are most active in the first two hours after sunrise; recent sightings at ebird.org/hotspot/L3240226.
+
+Starter spot From OpenStreetMap. The tip is general and the pin isn't checked yet; ShotSpots r
+--- spot #2 page (seed-eL2880474) sections=['Seen here', 'Best photos here', 'Seen here']:
+🌇 Clear at sunset this time of year: 50% of evenings (sunrise 42%) · overcast 39% · fog or mist 6% measured 199 evenings 2016–2026 at JACKSON HOLE (AWOS) (JAC), 5 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Grand Teton NP: Craig Thomas Discovery Center
+
+Birding hotspot · starter spot · 23 min drive · short walk
+
+81 Best next: Tomorrow sunrise, 7:28 AM. Leave by 6:55 AM. mule deer seen here 1× this month
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+Best photos here
+George Chrisman · CC BY-NC
+Jared Gorrell · CC BY-NC
+Thomas Bigelow · CC BY-NC
+phillyphantailphan · CC BY-NC
+sequoiaak · CC BY-NC
+John Rosford · CC BY
+Acroterion · CC BY-SA 4.0
+Tony Hisgett from Birmingham, UK · CC BY 2.0
+
+iNaturalist, Wikimedia Commons. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.
+
+3pm
+☁️
+33°
+4pm
+⛅
+33°
+5pm
+☁️
+30°
+6pm
+🌙
+28°
+7pm
+🌙
+27°
+8pm
+🌙
+26°
+9pm
+🌙
+25°
+10pm
+🌙
+24°
+11pm
+🌙
+24°
+12am
+🌙
+23°
+1am
+🌙
+23°
+2am
+🌙
+21°
+
+Scores here, every window
+
+Today
+Midday
+31
+11:00 AM
+Today
+Afternoon
+46
+3:00 PM
+Today
+Sunset
+70
+4:50 PM
+Today
+PM blue
+43
+5:01 PM
+Tonight
+Night
+–
+6:32 PM
+Tmrw
+AM blue
+43
+6:21 AM
+Tmrw
+Sunrise
+81
+7:28 AM
+Tmrw
+Morning
+64
+8:13 AM
+Tmrw
+Midday
+44
+11:00 AM
+Tmrw
+Afternoon
+58
+3:00 PM
+Tmrw
+Sunset
+66
+4:50 PM
+Tmrw
+PM blue
+43
+5:01 PM
+Tmrw
+Night
+–
+6:31 PM
+Wed
+AM blue
+43
+6:22 AM
+
+eBird birding hotspot with 144 species recorded. Birds are most active in the first two hours after sunrise; recent sightings at ebird.org/hotspot/L2880474.
+
+Starter spot From OpenStreetMap. The tip is general and the pin isn't checked yet; ShotSpots researches the most notab
+
+######## 12 New York birder, tomorrow morning, drive 60 (was 2)
+first spot 1300 ms | window=Tomorrow morning 9:17 AM | errors=[]
+CHECKS {"ex": {"land": {"coast": true, "mountains": true, "desert": false, "lakes": true, "plains": false}, "rain": {"nowWet": false, "at": null, "max": 0}, "sea": "Maxwell Place Beach", "mtn": ["Ashokan High Point:false:snow0"], "air": {"aod": 0.03, "dust": 0, "pm": 3.4}, "rb": null}, "routed": 306, "multnomah": [null, 2831], "tz": "America/New_York", "wx": true, "wxErr": null, "wxPts": 9, "hz": 14, "chip": 62, "top": 62, "chipMatches": true, "tooFarListed": [], "leak": [], "alertline": false, "spots": 2008, "ranked": 51, "top10spread": 12, "seeing": "ok"}
+Light
+Night sky
+Calendar
+☀
+Clear now · 60°F · dry for the next few hours.
+Today
+40
+Tomorrow
+66
+Wed
+70
+Thu
+66
+Fri
+64
+Sat
+66
+Sun
+66
+Mon
+68
+Blue hour
+5:50 AM
+41
+Sunrise
+6:53 AM
+67
+best
+Morning
+7:35 AM
+62
+Midday
+11:00 AM
+38
+Afternoon
+3:00 PM
+56
+Sunset
+4:31 PM
+66
+Blue hour
+4:42 PM
+41
+Night
+all night
+–
+
+Showing only birds & wildlife spots
+Show all
+
+732 starter spots near you (what's that?)
+Tomorrow morning
+in 14 h 43 m
+
+7:35 AM–11:00 AM
+
+Report conditions
+
+Clear: crisp side light, long shadows
+
+mostly clear (0%)
+
+Cloud here: high 0%, mid 0%, low 0%, toward the light 0%
+
+Models agree on the sky (0–0% cloud): this forecast is usually within about 3 points.
+
+62
+ 
+Hallett Nature Sanctuary
+Wildlife
+morning: birds still active; 28 bird sightings logged here in 10 days
+16 min
+Refuge
+60
+ 
+Prospect Park
+Wildlife
+morning: birds still active; 11 bird sightings logged here in 10 days
+14 min
+Birding hotspot
+60
+ 
+Central Park
+Wildlife
+morning: birds still active; 29 bird sightings logged here in 10 days
+19 min
+Birding hotspot
+7 more options
+
+Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.
+
+Also worth knowing
+🛰 Right now (GOES-18, 18 min ago) measured
+
+No fog or low cloud near you. The Map tab shows the satellite fog layer.
+--- spot #1 page (seed-w385442738) sections=['Seen here', 'Best photos here', 'Seen here']:
+🌇 Clear at sunset this time of year: 59% of evenings (sunrise 59%) · overcast 34% · fog or mist 6% measured 207 evenings 2016–2026 at NEW YORK CITY (NYC), 1 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Hallett Nature Sanctuary
+
+Refuge · starter spot · 16 min drive · short walk
+
+63 Best next: Wednesday sunrise, 6:54 AM. Leave by 6:28 AM. 28 bird sightings logged here in 10 days
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+Best photos here
+Featured
+King of Hearts · CC BY-SA 3.0
+Quality
+King of Hearts · CC BY-SA 4.0
+Quality
+King of Hearts · CC BY-SA 4.0
+Quality
+Rhododendrites · CC BY-SA 4.0
+♥ 4
+Andrew Cannon · CC BY-NC
+♥ 3
+Matt Parr · CC BY-NC
+Walter Welss · CC BY-NC
+carbenoid · CC BY
+
+Wikimedia Commons, iNaturalist. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.
+
+5pm
+☁️
+59°
+6pm
+☁️
+56°
+7pm
+☁️
+54°
+8pm
+☁️
+53°
+9pm
+☁️
+52°
+10pm
+☁️
+50°
+11pm
+☁️
+48°
+12am
+☁️
+49°
+1am
+☁️
+48°
+2am
+🌙
+46°
+3am
+🌙
+44°
+4am
+🌙
+41°
+
+Scores here, every window
+
+Today
+PM blue
+41
+4:42 PM
+Tonight
+Night
+–
+6:08 PM
+Tmrw
+AM blue
+41
+5:50 AM
+Tmrw
+Sunrise
+60
+6:53 AM
+Tmrw
+Morning
+62
+7:35 AM
+Tmrw
+Midday
+38
+11:00 AM
+Tmrw
+Afternoon
+56
+3:00 PM
+Tmrw
+Sunset
+59
+4:31 PM
+Tmrw
+PM blue
+41
+4:42 PM
+Tmrw
+Night
+–
+6:08 PM
+Wed
+AM blue
+41
+5:51 AM
+Wed
+Sunrise
+63
+6:54 AM
+Wed
+Morning
+62
+7:36 AM
+
+Wildlife is most active in the first two hours after sunrise. Stay on trails, use your car as a blind on auto routes and give animals space.
+
+Starter spot From OpenStreetMap and Wikidata. The tip is general and the pin isn't checked yet; ShotSpots researches the most notable starter spots first. Sc
+--- spot #2 page (seed-eL109516) sections=['Seen here', 'Best photos here', 'Seen here']:
+🌇 Clear at sunset this time of year: 57% of evenings (sunrise 56%) · overcast 36% · fog or mist 2% measured 189 evenings 2016–2026 at Manhattan - Wall Street (JRB), 6 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Prospect Park
+
+Birding hotspot · starter spot · 14 min drive · short walk
+
+71 Best next: Wednesday sunrise, 6:54 AM. Leave by 6:30 AM. 11 bird sightings logged here in 10 days
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+Best photos here
+Featured
+Rhododendrites · CC BY-SA 4.0
+Featured
+Rhododendrites · CC BY-SA 4.0
+Quality
+Rhododendrites · CC BY-SA 4.0
+Quality
+Rhododendrites · CC BY-SA 4.0
+Quality
+Rhododendrites · CC BY-SA 4.0
+Quality
+Rhododendrites · CC BY-SA 4.0
+Quality
+Rhododendrites · CC BY-SA 4.0
+Quality
+Rhododendrites · CC BY-SA 4.0
+
+Wikimedia Commons. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.
+
+5pm
+☁️
+59°
+6pm
+☁️
+56°
+7pm
+☁️
+54°
+8pm
+☁️
+53°
+9pm
+☁️
+52°
+10pm
+☁️
+50°
+11pm
+☁️
+48°
+12am
+☁️
+49°
+1am
+☁️
+48°
+2am
+🌙
+46°
+3am
+🌙
+44°
+4am
+🌙
+41°
+
+Scores here, every window
+
+Today
+PM blue
+40
+4:42 PM
+Tonight
+Night
+–
+6:08 PM
+Tmrw
+AM blue
+40
+5:49 AM
+Tmrw
+Sunrise
+67
+6:52 AM
+Tmrw
+Morning
+60
+7:34 AM
+Tmrw
+Midday
+37
+11:00 AM
+Tmrw
+Afternoon
+55
+3:00 PM
+Tmrw
+Sunset
+66
+4:31 PM
+Tmrw
+PM blue
+40
+4:42 PM
+Tmrw
+Night
+–
+6:08 PM
+Wed
+AM blue
+40
+5:50 AM
+Wed
+Sunrise
+71
+6:54 AM
+Wed
+Morning
+60
+7:35 AM
+
+eBird birding hotspot with 296 species recorded. Birds are most active in the first two hours after sunrise; recent sightings at ebird.org/hotspot/L109516.
+
+Starter spot From OpenStreetMap. The tip is general and the pin isn't checked yet; ShotSpo
+
+######## 14 Miami sunrise, drive 45 (new)
+first spot -1 ms | window=Tomorrow sunrise 6:45 AM | errors=[]
+CHECKS {"ex": {"land": {"coast": true, "mountains": false, "desert": false, "lakes": true, "plains": false}, "rain": {"nowWet": false, "at": null, "max": 0}, "sea": "Hobie Island Beach", "mtn": [], "air": {"aod": 0.11, "dust": 0, "pm": 6.2}, "rb": null}, "routed": 102, "multnomah": [null, 3145], "tz": "America/New_York", "wx": true, "wxErr": null, "wxPts": 1, "hz": 2, "chip": 35, "top": 35, "chipMatches": true, "tooFarListed": [], "leak": [], "alertline": false, "spots": 676, "ranked": 53, "top10spread": 11, "seeing": "ok"}
+Light
+Night sky
+Calendar
+☁
+Overcast now · 73°F · dry for the next few hours.
+Today
+82
+Tomorrow
+76
+Wed
+66
+Thu
+85
+★ Fri
+100
+Sat
+66
+Sun
+66
+Mon
+62
+Blue hour
+5:52 AM
+64
+Sunrise
+6:45 AM · ☁ soft
+35
+Morning
+7:18 AM
+41
+Midday
+11:00 AM
+48
+Afternoon
+3:00 PM
+51
+Sunset
+5:29 PM · ☁ soft
+53
+Blue hour
+5:38 PM
+76
+best
+Night
+all night
+55
+Tomorrow sunrise
+in 13 h 36 m
+
+6:45 AM · golden 6:29 AM–7:18 AM
+
+Report conditions
+
+Little sunrise color likely. The score is for soft overcast light: waterfalls, forest and birds
+
+thick cloud overhead (100%), patchy cloud toward the east (60%): the light may break through
+
+Cloud here: high 100%, mid 100%, low 8%, toward the light 60%
+
+Models disagree (8–100% cloud): the sky could go either way. Check again the evening before you commit to a long drive.
+
+35
+light 34
+Sandy's Beach
+Coast
+flat light: long exposures of the surf and rocks; open view toward the east
+12 min
+Beach
+24
+light 30
+The Torch of Friendship
+Landmarks
+open view toward the east; few photographers shoot here at sunrise (0% of 69, measured)
+2 min
+Landmark
+25
+light 29
+Viewpoint P7
+Overlooks
+flat light: moody, even light on the view; open view toward the east
+25 min
+Viewpoint
+7 more options
+
+Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.
+
+🌈 Rainbow chance tomorrow 2:23 PM–2:38 PM
+
+Sun on you with showers about 10 miles to the northeast, sun 33° up. Face northeast, away from the sun: the bow sits 42° around the shadow of your head. Checked every 15 minutes.
+
+⛈️ Storms building tomorrow afternoon
+
+Unstable air (CAPE 1110) from about 2:53 PM: towering clouds, shafts of rain, maybe lightning. Shoot from a distance.
+
+Also worth knowing
+🌊 Flood Watch until 1:00 AM
+
+Flooding: waterfalls will be huge, but trails and roads near rivers may be closed.
+
+🌊 Coastal Flood Statement until 7:00 AM
+
+Big surf and king-tide water: dramatic waves, but stay well back from the water's edge and off jetties and logs.
+
+🛰 Fog and cloud right now
+no fog near you
+--- spot #1 page (seed-n11492748104) sections=['Seen here', 'Tides', 'Weather alerts here', 'Best photos here', 'Seen here']:
+🌇 Clear at sunset this time of year: 29% of evenings (sunrise 34%) · overcast 13% · fog or mist 4% measured 209 evenings 2016–2026 at MIAMI INTL AIRPORT (MIA), 19 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Sandy's Beach
+
+Beach · starter spot · 12 min drive · short walk
+
+82 Best next: This sunset, 5:29 PM. Leave by 5:07 PM. live airport report (KMIA, 12:53 PM): a few clouds below 12,000 ft (forecast said 80%)
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+Best photos here
+Anthony Quintano from Westminster, United States · CC BY 2.0
+Machvee · CC BY-SA 2.0
+Dough4872 · CC BY-SA 4.0
+Dough4872 · CC BY-SA 4.0
+Dough4872 · CC BY-SA 4.0
+Dough4872 · CC BY-SA 4.0
+Dough4872 · CC BY-SA 4.0
+Thank You (23 Millions+) views · CC BY 2.0
+
+Wikimedia Commons. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.
+
+5pm
+⛅
+73°
+6pm
+☁️
+70°
+7pm
+☁️
+69°
+8pm
+☁️
+68°
+9pm
+☁️
+67°
+10pm
+☁️
+67°
+11pm
+☁️
+66°
+12am
+☁️
+66°
+1am
+☁️
+66°
+2am
+☁️
+66°
+3am
+☁️
+65°
+4am
+☁️
+65°
+
+Scores here, every window
+
+Today
+Afternoon
+57
+3:00 PM
+Today
+Sunset
+82
+5:29 PM
+Today
+PM blue
+64
+5:38 PM
+Tonight
+Night
+–
+6:49 PM
+Tmrw
+AM blue
+64
+5:52 AM
+Tmrw
+Sunrise
+35
+6:45 AM
+Tmrw
+Morning
+41
+7:18 AM
+Tmrw
+Midday
+48
+11:00 AM
+Tmrw
+Afternoon
+49
+3:00 PM
+Tmrw
+Sunset
+53
+5:29 PM
+Tmrw
+PM blue
+76
+5:37 PM
+Tmrw
+Night
+–
+6:49 PM
+Wed
+AM blue
+32
+5:53 AM
+Wed
+Sunrise
+17
+6:45 AM
+Wed
+Morning
+27
+7:19 AM
+How to shoot it
+
+Works at sunrise or sunset, best any month. A short walk, so you can wait for the forecast and still make it.
+
+Landscape: Plan around tides first, then light. Watch the wave cycle: the seventh or so wave is
+--- spot #2 page (seed-n4595581949) sections=['Seen here', 'Weather alerts here', 'Seen here']:
+🌇 Clear at sunset this time of year: 29% of evenings (sunrise 34%) · overcast 13% · fog or mist 4% measured 209 evenings 2016–2026 at MIAMI INTL AIRPORT (MIA), 13 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+The Torch of Friendship
+
+Landmark · starter spot · 2 min drive · short walk
+
+41 Best next: This sunset, 5:29 PM. Leave by 5:17 PM. live airport report (KMIA, 12:53 PM): a few clouds below 12,000 ft (forecast said 80%)
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+5pm
+⛅
+73°
+6pm
+☁️
+70°
+7pm
+☁️
+69°
+8pm
+☁️
+68°
+9pm
+☁️
+67°
+10pm
+☁️
+67°
+11pm
+☁️
+66°
+12am
+☁️
+66°
+1am
+☁️
+66°
+2am
+☁️
+66°
+3am
+☁️
+65°
+4am
+☁️
+65°
+
+Scores here, every window
+
+Today
+Afternoon
+20
+3:00 PM
+Today
+Sunset
+41
+5:29 PM
+Today
+PM blue
+19
+5:38 PM
+Tonight
+Night
+–
+6:50 PM
+Tmrw
+AM blue
+25
+5:52 AM
+Tmrw
+Sunrise
+24
+6:45 AM
+Tmrw
+Morning
+12
+7:18 AM
+Tmrw
+Midday
+14
+11:00 AM
+Tmrw
+Afternoon
+17
+3:00 PM
+Tmrw
+Sunset
+25
+5:29 PM
+Tmrw
+PM blue
+19
+5:38 PM
+Tmrw
+Night
+–
+6:50 PM
+Wed
+AM blue
+25
+5:53 AM
+Wed
+Sunrise
+22
+6:45 AM
+Wed
+Morning
+12
+7:19 AM
+How to shoot it
+
+A sunrise spot, best any month. A short walk, so you can wait for the forecast and still make it.
+
+Why this score
+
+Data behind it 
+
+Measured: photo / Wikipedia record, routed drive time. Estimated: terrain not checked, facing guessed from coarse terrain.
+
+24 for Sunrise = light and weather 30 × spot 0.97
+
+Spot 0.97 (0.50 least to 1.12 most photographed): 2k Wikipedia views a year, Wikipedia/Wikidata links, 3 photographers' positions, buildings count 25% less. In the list, distance trims up to 10% (× 1.00 here).
+
+30 Light and weather for this kind of spot
+open view toward the east
+29 Spot quality (photographers here)
+
+######## 16 Acadia (Bar Harbor), tomorrow sunrise, drive 30
+first spot 1200 ms | window=Tomorrow sunrise 6:40 AM | errors=[]
+CHECKS {"ex": {"land": {"coast": true, "mountains": false, "desert": true, "lakes": true, "plains": false}, "rain": {"nowWet": false, "at": null, "max": 0}, "sea": "Egg Rock Light Station", "mtn": [], "air": {"aod": 0.02, "dust": 0, "pm": 0.4}, "rb": null}, "routed": 153, "multnomah": [null, 3034], "tz": "America/New_York", "wx": true, "wxErr": null, "wxPts": 1, "hz": 2, "chip": 26, "top": 26, "chipMatches": true, "tooFarListed": [], "leak": [], "alertline": false, "spots": 1444, "ranked": 45, "top10spread": 10, "seeing": "ok"}
+Light
+Night sky
+Calendar
+☀
+Clear now · 56°F · dry for the next few hours.
+Today
+53
+Tomorrow
+65
+Wed
+75
+★ Thu
+81
+Fri
+48
+Sat
+48
+Sun
+58
+Mon
+51
+Blue hour
+5:33 AM
+58
+Sunrise
+6:40 AM
+26
+Morning
+7:25 AM
+36
+Midday
+11:00 AM
+33
+Afternoon
+2:42 PM
+47
+Sunset
+3:58 PM
+75
+best
+Blue hour
+4:09 PM
+66
+Night
+all night
+66
+523 starter spots near you (what's that?)
+Tomorrow sunrise
+in 13 h 26 m
+
+6:40 AM · golden 6:19 AM–7:25 AM
+
+Report conditions
+
+Clear: clean light, peaks and alignments
+
+mostly clear overhead (0%), cloud 162 mi east (100%) will likely block the light
+
+Cloud here: high 0%, mid 0%, low 0%, toward the light 100%
+
+Models agree on the sky (0–3% cloud): this forecast is usually within about 3 points.
+
+26
+light 30
+Sand Beach
+Coast
+flat light: long exposures of the surf and rocks; sun behind you: warm light on the view
+12 min
+Beach
+19
+light 20
+Hawk Watch
+Overlooks
+flat light: moody, even light on the view; few photographers shoot here at sunrise (8% of 13, measured)
+17 min
+Viewpoint
+17
+light 32
+Duck Brook Waterfall
+Waterfalls
+1.2 in of rain in 2 days: falls running big; waterfalls shoot best in daytime shade or overcast, not at sunrise
+8 min
+Waterfall
+7 more options
+
+Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.
+
+Also worth knowing
+🛰 Right now (GOES-18, 20 min ago) measured
+
+No fog or low cloud near you. The Map tab shows the satellite fog layer.
+--- spot #1 page (seed-w128573658) sections=['Seen here', 'Tides', 'Getting there', 'Night sky here', 'Seen here']:
+🌇 Clear at sunset this time of year: 40% of evenings (sunrise 48%) · overcast 48% · fog or mist 8% measured 193 evenings 2016–2026 at Bar Habor (BHB), 20 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Sand Beach
+
+Beach · starter spot · 12 min drive · short walk
+
+75 Best next: Tomorrow sunset, 3:58 PM. Leave by 3:36 PM. low tide 4:05 PM (-1.3 ft): wet-sand reflections
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+5pm
+☁️
+56°
+6pm
+☁️
+55°
+7pm
+☁️
+52°
+8pm
+🌙
+49°
+9pm
+🌙
+46°
+10pm
+🌙
+45°
+11pm
+🌙
+43°
+12am
+🌙
+41°
+1am
+🌙
+39°
+2am
+🌙
+37°
+3am
+☁️
+36°
+4am
+🌙
+34°
+
+Scores here, every window
+
+Today
+PM blue
+66
+4:10 PM
+Tonight
+Night
+54
+5:41 PM
+Tmrw
+AM blue
+56
+5:33 AM
+Tmrw
+Sunrise
+26
+6:40 AM
+Tmrw
+Morning
+29
+7:25 AM
+Tmrw
+Midday
+33
+11:00 AM
+Tmrw
+Afternoon
+47
+2:42 PM
+Tmrw
+Sunset
+75
+3:58 PM
+Tmrw
+PM blue
+66
+4:09 PM
+Tmrw
+Night
+66
+5:40 PM
+Wed
+AM blue
+56
+5:34 AM
+Wed
+Sunrise
+55
+6:41 AM
+Wed
+Morning
+29
+7:27 AM
+How to shoot it
+
+A flexible spot, best any month. A short walk, so you can wait for the forecast and still make it.
+
+Landscape: A falling tide two hours after high exposes wet sand for reflections of sea stacks. Watch the wave cycle: the seventh or so wave is bigger, and its backwash makes lines toward the lens at 0.3–0.5 s. Expose for the sky; the reflection is about a stop darker and you can lift it in post.
+
+Birds & wildlife: Tufted Puffins nest on Haystack Rock in late spring and summer; the best viewing is early morning at low tide.
+
+Why this score
+
+Data behind it 
+
+Measured: terrain horizon from 10 m elevation, facing from fine terrain, photo / Wikipedia record, routed drive time.
+
+26 for Sunrise = light and weather 30 × spot 0.99
+
+Spot 0
+--- spot #2 page (seed-n12918349504) sections=['Seen here', 'Night sky here', 'Best photos here', 'Seen here']:
+🌇 Clear at sunset this time of year: 40% of evenings (sunrise 48%) · overcast 48% · fog or mist 8% measured 193 evenings 2016–2026 at Bar Habor (BHB), 15 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Hawk Watch
+
+Viewpoint · starter spot · 17 min drive · roadside
+
+65 Best next: Tomorrow night, 5:41 PM. Leave by 5:22 PM. bright moon: moonlit landscape with stars
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+Best photos here
+Wrhoden2016 · CC BY-SA 4.0
+Mathieu Carbou · CC BY 4.0
+Mathieu Carbou · CC BY 4.0
+Asaf R asafyrov · CC0
+Christian Collins · CC BY-SA 2.0
+Mathieu Carbou · CC BY 4.0
+Christian Collins · CC BY-SA 2.0
+Aaron Zhu · CC BY-SA 3.0
+
+Wikimedia Commons. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.
+
+5pm
+☁️
+56°
+6pm
+☁️
+55°
+7pm
+☁️
+52°
+8pm
+🌙
+49°
+9pm
+🌙
+46°
+10pm
+🌙
+45°
+11pm
+🌙
+43°
+12am
+🌙
+41°
+1am
+🌙
+39°
+2am
+🌙
+37°
+3am
+☁️
+36°
+4am
+🌙
+34°
+
+Scores here, every window
+
+Today
+PM blue
+20
+4:10 PM
+Tonight
+Night
+53
+5:41 PM
+Tmrw
+AM blue
+49
+5:33 AM
+Tmrw
+Sunrise
+19
+6:40 AM
+Tmrw
+Morning
+36
+7:26 AM
+Tmrw
+Midday
+24
+11:00 AM
+Tmrw
+Afternoon
+45
+2:43 PM
+Tmrw
+Sunset
+48
+3:58 PM
+Tmrw
+PM blue
+49
+4:09 PM
+Tmrw
+Night
+65
+5:41 PM
+Wed
+AM blue
+49
+5:34 AM
+Wed
+Sunrise
+48
+6:41 AM
+Wed
+Morning
+36
+7:27 AM
+How to shoot it
+
+Works at sunrise or sunset, best any month. It's roadside, so it works on short notice when conditions line up.
+
+Landscape: Commit to a time first, then a place. Haze is your friend for layering, not your enemy.
+
+Birds & wildlife: Turkey Vultures, Red-tailed Hawks and in autumn Golden Eagles ride the updrafts along cliff faces, often below you
+
+######## 17 Smoky Mountains (Gatlinburg), tomorrow sunrise, drive 45
+first spot 2919 ms | window=Tomorrow sunrise 7:18 AM | errors=[]
+CHECKS {"ex": {"land": {"coast": false, "mountains": true, "desert": false, "lakes": false, "plains": false}, "rain": {"nowWet": false, "at": "2026-11-23 23:30:00+00:00", "max": 0.2}, "sea": null, "mtn": ["Mount Kephart:true:snow0", "Mount Collins:true:snow0", "Silers Bald:true:snow0", "Mount Chapman:true:snow0", "Old Black:true:snow0", "Mount Sterling:false:snow0"], "air": {"aod": 0.06, "dust": 0, "pm": 7.5}, "rb": null}, "routed": 445, "multnomah": [null, 2481], "tz": "America/New_York", "wx": true, "wxErr": null, "wxPts": 4, "hz": 8, "chip": 27, "top": 27, "chipMatches": true, "tooFarListed": [], "leak": [], "alertline": false, "spots": 2857, "ranked": 35, "top10spread": 9, "seeing": "ok"}
+Light
+Night sky
+Calendar
+☁
+Overcast now · 55°F · rain likely from about 6:45 PM.
+Today
+25
+Tomorrow
+76
+Wed
+51
+Thu
+49
+Fri
+48
+Sat
+76
+Sun
+76
+Mon
+65
+Blue hour
+6:20 AM
+63
+Sunrise
+7:18 AM
+27
+Morning
+7:57 AM
+36
+Midday
+11:00 AM
+26
+Afternoon
+3:00 PM
+48
+Sunset
+5:22 PM
+34
+Blue hour
+5:32 PM
+75
+best
+Night
+all night
+16
+Tomorrow sunrise
+in 14 h 6 m
+
+7:18 AM · golden 7:00 AM–7:57 AM
+
+Report conditions
+
+Clear: clean light, peaks and alignments
+
+mostly clear overhead (1%), cloud 50 mi east (100%) will likely block the light
+
+Cloud here: high 0%, mid 0%, low 1%, toward the light 100%
+
+Models partly disagree (0–37% cloud): typical miss about 17 points. Check again closer to the time.
+
+27
+light 31
+Newfound Gap
+Mountain views
+peaks likely out; flat light: moody, even light on the view
+38 min
+Mountain pass
+24
+light 32
+Cataract Falls
+Waterfalls
+waterfalls shoot best in daytime shade or overcast, not at sunrise; few photographers shoot here at sunrise (0% of 5, measured)
+8 min
+Waterfall
+20
+light 25
+Tulip Tower
+Overlooks
+peaks likely out; flat light: moody, even light on the view
+5 min
+Lookout tower
+7 more options
+
+Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.
+
+Also worth knowing
+🛰 Right now (GOES-18, 21 min ago) measured
+
+No fog or low cloud near you. The Map tab shows the satellite fog layer.
+--- spot #1 page (seed-n2454879838) sections=['Seen here', 'Night sky here', 'Seen here']:
+🌇 Clear at sunset this time of year: 63% of evenings (sunrise 51%) · overcast 29% · fog or mist 6% measured 202 evenings 2016–2026 at Sevierville (GKT), 29 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Newfound Gap
+
+Mountain pass · starter spot · 38 min drive · roadside
+
+81 Best next: Tomorrow blue hour, 5:49 PM. Leave by 5:09 PM. 100% moon rises 5:12 PM, ENE
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+5pm
+☁️
+54°
+6pm
+☁️
+53°
+7pm
+☁️
+51°
+8pm
+☁️
+50°
+9pm
+☁️
+49°
+10pm
+☁️
+48°
+11pm
+☁️
+48°
+12am
+☁️
+48°
+1am
+☁️
+47°
+2am
+☁️
+46°
+3am
+☁️
+46°
+4am
+🌙
+43°
+
+Scores here, every window
+
+Today
+Sunset
+28
+5:22 PM
+Today
+PM blue
+25
+5:32 PM
+Tonight
+Night
+6
+6:51 PM
+Tmrw
+AM blue
+68
+6:19 AM
+Tmrw
+Sunrise
+27
+7:18 AM
+Tmrw
+Morning
+39
+7:56 AM
+Tmrw
+Midday
+28
+11:00 AM
+Tmrw
+Afternoon
+51
+3:00 PM
+Tmrw
+Sunset
+34
+5:22 PM
+Tmrw
+PM blue
+81
+5:31 PM
+Tmrw
+Night
+16
+6:51 PM
+Wed
+AM blue
+31
+6:20 AM
+Wed
+Sunrise
+27
+7:19 AM
+Wed
+Morning
+43
+7:57 AM
+
+Terrain hides the low sun: best for warm light on the scene, or in soft light.
+
+Starter spot From OpenStreetMap and Wikidata. The tip is general and the pin isn't checked yet; ShotSpots researches the most notable starter spots first. Scores, light and drive times work the same as for any spot.
+
+How to shoot it
+
+A flexible spot, best any month. It's roadside, so it works on short notice when conditions line up.
+
+Landscape: At sunrise the alpenglow on the peak comes 10–15 minutes before the sun reaches you, so be set up and composed by then. Watch the peak's shadow side too: pink snow next to blue shadow is the color contrast. Layers sell scale, so give the frame three to five overlapping ridgelines and compress them at 1
+--- spot #2 page (seed-n2313739534) sections=['Seen here', 'Rain, past 48 h', 'Best photos here', 'Seen here']:
+🌇 Clear at sunset this time of year: 63% of evenings (sunrise 51%) · overcast 29% · fog or mist 6% measured 202 evenings 2016–2026 at Sevierville (GKT), 19 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Cataract Falls
+
+Waterfall · starter spot · 8 min drive · short walk
+
+38 Best next: Tomorrow afternoon, 3:52 PM. Leave by 3:34 PM. patchy sun: wait for a cloud
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+Best photos here
+Missvain · CC0
+Own work · Public domain
+Great Smoky Mountains National Park from Gatlinburg, TN · Public domain
+Great Smoky Mountains National Park from Gatlinburg, TN · Public domain
+Great Smoky Mountains National Park from Gatlinburg, TN · Public domain
+Great Smoky Mountains National Park from Gatlinburg, TN · Public domain
+Great Smoky Mountains National Park from Gatlinburg, TN · Public domain
+Great Smoky Mountains National Park from Gatlinburg, TN · Public domain
+
+Wikimedia Commons. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.
+
+5pm
+☁️
+54°
+6pm
+☁️
+53°
+7pm
+☁️
+51°
+8pm
+☁️
+50°
+9pm
+☁️
+49°
+10pm
+☁️
+48°
+11pm
+☁️
+48°
+12am
+☁️
+48°
+1am
+☁️
+47°
+2am
+☁️
+46°
+3am
+☁️
+46°
+4am
+🌙
+43°
+
+Scores here, every window
+
+Today
+Sunset
+32
+5:22 PM
+Today
+PM blue
+19
+5:32 PM
+Tonight
+Night
+–
+6:52 PM
+Tmrw
+AM blue
+19
+6:20 AM
+Tmrw
+Sunrise
+24
+7:19 AM
+Tmrw
+Morning
+19
+7:57 AM
+Tmrw
+Midday
+18
+11:00 AM
+Tmrw
+Afternoon
+38
+3:00 PM
+Tmrw
+Sunset
+28
+5:22 PM
+Tmrw
+PM blue
+19
+5:32 PM
+Tmrw
+Night
+–
+6:52 PM
+Wed
+AM blue
+19
+6:21 AM
+Wed
+Sunrise
+27
+7:20 AM
+Wed
+Morning
+19
+7:58 AM
+
+Best under soft overcast or in shade so the highlights don't blow out. A slow shutt
+
+######## 19 Sedona, tomorrow sunset, drive 30
+first spot -1 ms | window=Tomorrow sunset 5:17 PM | errors=[]
+CHECKS {"ex": {"land": {"coast": false, "mountains": true, "desert": true, "lakes": true, "plains": false}, "rain": {"nowWet": false, "at": null, "max": 0}, "sea": null, "mtn": ["Humphreys Peak:true:snow0"], "air": {"aod": 0.02, "dust": 0, "pm": 0.9}, "rb": null}, "routed": 134, "multnomah": [null, 1085], "tz": "America/Phoenix", "wx": true, "wxErr": null, "wxPts": 1, "hz": 2, "chip": 71, "top": 71, "chipMatches": true, "tooFarListed": [], "leak": [], "alertline": false, "spots": 876, "ranked": 41, "top10spread": 33, "seeing": "ok"}
+Light
+Night sky
+Calendar
+☀
+Clear now · 55°F · dry for the next few hours.
+Today
+68
+Tomorrow
+68
+Wed
+65
+Thu
+65
+Fri
+83
+Sat
+82
+Sun
+82
+Mon
+58
+Blue hour
+6:12 AM
+61
+Sunrise
+7:10 AM
+53
+Morning
+7:47 AM
+38
+Midday
+11:00 AM
+23
+Afternoon
+3:00 PM
+40
+Sunset
+5:17 PM
+71
+best
+Blue hour
+5:26 PM
+57
+Night
+all night
+48
+239 starter spots near you (what's that?)
+Tomorrow sunset
+in 25 h 43 m
+
+5:17 PM · golden 4:39 PM–5:26 PM
+
+Report conditions
+
+Clear: clean light, peaks and alignments
+
+mostly clear overhead (0%), clear gap toward the west: light can get under the clouds
+
+Cloud here: high 0%, mid 0%, low 0%, toward the light 0%
+
+Models agree on the sky (0–0% cloud): this forecast is usually within about 3 points.
+
+71
+light 71
+Sedona Airport Overlook
+Overlooks
+clear: warm, low light across the land; open view toward the west
+7 min
+Viewpoint
+66
+light 67
+Oak Creek Vista
+Overlooks
+clear: warm, low light across the land; sun behind you: warm light on the view
+4 min
+Viewpoint
+67
+light 71
+Cathedral Rock Viewpoint
+Overlooks
+clear: warm, low light across the land; open view toward the west
+12 min
+Viewpoint
+7 more options
+
+Scores compare across windows: a midday 50 is a decent midday, a sunset 50 is a weak sunset. Days 3–7 use fewer forecast models, so treat them as rough.
+
+🏔️ Mountains at tomorrow sunset
+
+Humphreys Peak ✓ (✓ likely out, ✗ likely in cloud)
+
+🌄 Alpenglow on Humphreys Peak
+
+With the summit clear, it can turn pink for about 10 minutes after sunset. Shoot it from a spot that faces it, not the sunset.
+
+Also worth knowing
+🛰 Right now (GOES-18, 22 min ago) measured
+
+No fog or low cloud near you. The Map tab shows the satellite fog layer.
+--- spot #1 page (seed-n4409616232) sections=['Seen here', 'Night sky here', 'Best photos here', 'Seen here']:
+🌇 Clear at sunset this time of year: 78% of evenings (sunrise 80%) · overcast 11% · fog or mist 1% measured 188 evenings 2016–2026 at Sedona (SEZ), 1 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Sedona Airport Overlook
+
+Viewpoint · starter spot · 7 min drive · roadside
+
+71 Best next: This sunset, 5:17 PM. Leave by 5:08 PM. live airport report (KSEZ, 1:15 PM): clear below 12,000 ft (forecast said 0%)
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+Best photos here
+Kirt Edblom · CC BY-SA 2.0
+Letthesunshinein6 · CC BY 4.0
+A125125125 · CC BY-SA 4.0
+Chris J from Phoenix, USA · CC BY-SA 2.0
+Graham Tiller · CC BY-SA 4.0
+November Masinelli · CC BY-SA 4.0
+Alleravis · CC BY-SA 3.0
+Ken Thomas · Public domain
+
+Wikimedia Commons. Featured and Quality photos were picked by Commons reviewers; ♥ counts are iNaturalist faves. Tap a photo to see it large with its credit.
+
+3pm
+☀️
+55°
+4pm
+☀️
+55°
+5pm
+☀️
+53°
+6pm
+🌙
+50°
+7pm
+🌙
+49°
+8pm
+🌙
+46°
+9pm
+🌙
+45°
+10pm
+🌙
+45°
+11pm
+🌙
+45°
+12am
+🌙
+44°
+1am
+🌙
+44°
+2am
+🌙
+44°
+
+Scores here, every window
+
+Today
+Midday
+26
+11:00 AM
+Today
+Afternoon
+38
+3:00 PM
+Today
+Sunset
+71
+5:17 PM
+Today
+PM blue
+60
+5:27 PM
+Tonight
+Night
+54
+6:46 PM
+Tmrw
+AM blue
+55
+6:12 AM
+Tmrw
+Sunrise
+43
+7:10 AM
+Tmrw
+Morning
+34
+7:47 AM
+Tmrw
+Midday
+23
+11:00 AM
+Tmrw
+Afternoon
+38
+3:00 PM
+Tmrw
+Sunset
+71
+5:17 PM
+Tmrw
+PM blue
+26
+5:27 PM
+Tmrw
+Night
+2
+6:46 PM
+Wed
+AM blue
+20
+6:13 AM
+Wed
+Sunrise
+56
+7:11 AM
+How to shoot it
+
+A sunset spot, best any month. It's roadside, so it works on short notice when conditions line up.
+
+Landscape: The light at a Gorge overlook changes faster in the 20 minutes after sunrise than in the next three hours. Layers sell scale
+--- spot #2 page (seed-n4529352193) sections=['Seen here', 'River now', 'Night sky here', 'Seen here']:
+🌇 Clear at sunset this time of year: 78% of evenings (sunrise 80%) · overcast 11% · fog or mist 1% measured 188 evenings 2016–2026 at Sedona (SEZ), 6 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds)
+
+From OpenStreetMap, not yet researched: the tip is general and the pin is unchecked. See it on OpenStreetMap.
+Oak Creek Vista
+
+Viewpoint · starter spot · 4 min drive · roadside
+
+70 Best next: Wednesday sunrise, 7:10 AM. Leave by 7:04 AM. sun behind you: warm light on the view
+
+Directions
+☆ Save
+📷 Log outing
+Report conditions
+Copy coordinates
+3pm
+☀️
+55°
+4pm
+☀️
+55°
+5pm
+☀️
+53°
+6pm
+🌙
+50°
+7pm
+🌙
+49°
+8pm
+🌙
+46°
+9pm
+🌙
+45°
+10pm
+🌙
+45°
+11pm
+🌙
+45°
+12am
+🌙
+44°
+1am
+🌙
+44°
+2am
+🌙
+44°
+
+Scores here, every window
+
+Today
+Midday
+25
+11:00 AM
+Today
+Afternoon
+38
+3:00 PM
+Today
+Sunset
+66
+5:17 PM
+Today
+PM blue
+59
+5:27 PM
+Tonight
+Night
+66
+6:46 PM
+Tmrw
+AM blue
+59
+6:12 AM
+Tmrw
+Sunrise
+53
+7:10 AM
+Tmrw
+Morning
+34
+7:47 AM
+Tmrw
+Midday
+22
+11:00 AM
+Tmrw
+Afternoon
+38
+3:00 PM
+Tmrw
+Sunset
+66
+5:17 PM
+Tmrw
+PM blue
+25
+5:26 PM
+Tmrw
+Night
+6
+6:45 PM
+Wed
+AM blue
+25
+6:12 AM
+Wed
+Sunrise
+70
+7:10 AM
+How to shoot it
+
+A flexible spot, best any month. It's roadside, so it works on short notice when conditions line up.
+
+Landscape: Layers sell scale, so give the frame three to five overlapping ridgelines and compress them at 150–300 mm. Haze is your friend for layering, not your enemy.
+
+Birds & wildlife: Shoot down on a soaring bird with the river as the background for a frame most people never get.
+
+Why this score
+
+Data behind it 
+
+Measured: terrain horizon from 10 m elevation, facing from fine terrain, photo / Wikipedia record, routed drive time.
+
+66 for Sunset = light and weather 67 × spot 0.90
+
+Spot 0.90 (0.50 least to 1.12 most photographed): 18 Wikimedia photos, Wikipedia/Wikidata links, 4 phot
