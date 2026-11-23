@@ -43,7 +43,10 @@ VARS = ["cloud_cover_low", "cloud_cover_mid", "cloud_cover_high", "precipitation
 UNITS_PER_CELL = math.ceil(((dt.date(Y1, 12, 31) - dt.date(Y0, 1, 1)).days + 1) / 14) * math.ceil(len(VARS) / 10)
 DAY_UNITS, HOUR_UNITS = 9000, 4500   # Open-Meteo free: 10,000 a day, 5,000 an hour
 MIN_PEOPLE = 3                       # photographers out that day for a cell-day to count
-MIN_DAYS = 10                        # cells with at least this many such days get weather (was 30: only 24 cells qualified)
+MIN_GOLDEN = 20                      # cells with at least this many golden-hour photographers (summed over days) get weather
+WXV = 2                              # weather file version: 2 = every day with a golden-hour photo or >= MIN_PEOPLE out
+# (v1 had only the >= 3 days, so 7 in 8 rated photos had no weather; Nov 23). Ranked by golden-hour photographers:
+# the busy-day rule (>= 10 days with 3 out) ran out at 58 cells
 CELL = 0.25
 BUDGET_MIN = 300
 
@@ -225,8 +228,9 @@ def run():
     st = _read(STATE, {}); today = utcnow().date().isoformat()
     used = st.get("units", 0) if st.get("day") == today else 0
     # busiest cells first: days with enough photographers out
-    rank = sorted(((sum(len(e[0]) >= MIN_PEOPLE for e in v.values()), ck) for ck, v in cd.items()), reverse=True)
-    todo = [(n, ck) for n, ck in rank if n >= MIN_DAYS and not (WX / f"{ck[0]:g}_{ck[1]:g}.json.gz").exists()]
+    rank = sorted(((sum(len(e[1]) + len(e[2]) for e in v.values()), ck) for ck, v in cd.items()), reverse=True)
+    have = lambda ck: _read(WX / f"{ck[0]:g}_{ck[1]:g}.json.gz", {}).get("_v") == WXV
+    todo = [(n, ck) for n, ck in rank if n >= MIN_GOLDEN and not have(ck)]
     got, hour_start, hour_used = 0, time.time(), 0
     for n, ck in todo:
         if used + UNITS_PER_CELL > DAY_UNITS or left() < 20:
@@ -236,7 +240,7 @@ def run():
             if wait > 0 and left() > wait / 60 + 20:
                 time.sleep(wait)
             hour_start, hour_used = time.time(), 0
-        dates = [d for d, e in cd[ck].items() if len(e[0]) >= MIN_PEOPLE]
+        dates = [d for d, e in cd[ck].items() if len(e[0]) >= MIN_PEOPLE or e[1] or e[2]]
         try:
             wx = _fetch(ck, dates)
         except Exception as e:
@@ -245,10 +249,10 @@ def run():
                 break
             continue
         with gzip.open(WX / f"{ck[0]:g}_{ck[1]:g}.json.gz", "wt") as f:
-            json.dump(wx, f, separators=(",", ":"))
+            json.dump({**wx, "_v": WXV}, f, separators=(",", ":"))
         used += UNITS_PER_CELL; hour_used += UNITS_PER_CELL; got += 1
         time.sleep(2)
-    json.dump({"day": today, "units": used, "cells_done": len(list(WX.glob("*.json.gz"))), "cells_wanted": sum(n >= MIN_DAYS for n, _ in rank)}, open(STATE, "w"))
+    json.dump({"day": today, "units": used, "cells_done": len(list(WX.glob("*.json.gz"))), "cells_wanted": sum(n >= MIN_GOLDEN for n, _ in rank)}, open(STATE, "w"))
     res = analyse(cd)
     FEED.mkdir(parents=True, exist_ok=True); json.dump(res, open(OUT, "w"), separators=(",", ":"))
     left_cells = sum(1 for n, ck in todo) - got
