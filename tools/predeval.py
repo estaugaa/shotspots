@@ -10,6 +10,10 @@
 Reports Spearman rank correlation between the predicted score (and the first layer, light and weather alone) and each
 truth, pooled over every spot with truth nearby, plus "night level": does a case's best score track how good that
 window turned out (mean truth over the case)? Expected signs: webcam colour +, low cloud -, fog -.
+Webcam points (data/archive/predcams): the app's sky colour score at each camera vs that camera's colour, overall, per
+camera relative to its own median, by sunrise/sunset and by lead time.
+One prediction per window (the last made before it started: the nightly check can run more than once a day); webcam
+frames with the current colour measure only (camtruth column mv).
 Small samples are reported as such: n < 30 means no conclusion. Output: stdout and ux/predeval.txt (diag.yml).
 
     python tools/predeval.py [days]     (default: all logged predictions)
@@ -46,9 +50,30 @@ def ts(s):
     return dt.datetime.fromisoformat(s[:19]).replace(tzinfo=dt.timezone.utc)   # every logged time is UTC
 
 
-def truth_sources(since):
+def latest(preds, key, start):
+    """One prediction per window: the last one made before the window started (the nightly check can run more than once a
+    day). Each keeps its lead time in hours (lead_h)."""
+    best = {}
+    for p in preds:
+        s = start(p)
+        if not s or p["at"] >= s: continue
+        k = key(p)
+        if k not in best or p["at"] > best[k]["at"]: best[k] = p
+    for p in best.values(): p["lead_h"] = round((ts(start(p)) - ts(p["at"])).total_seconds() / 3600, 1)
+    return list(best.values())
+
+
+def cam_frames(since):
+    """Webcam frames that show sky, current colour measure only (camtruth marks it in column mv; older measures counted
+    LED signs and tail lights)."""
     num = archive.num
-    cam = [r for r in archive.read("camtruth", since[:10], "date") if (num(r.get("sky_blue")) or 0) + (num(r.get("sky_grey")) or 0) >= 25]
+    rows = [r for r in archive.read("camtruth", since[:10], "date") if (num(r.get("sky_blue")) or 0) + (num(r.get("sky_grey")) or 0) >= 25]
+    mv = max((r.get("mv") or "" for r in rows), default="")
+    return [r for r in rows if (r.get("mv") or "") == mv]
+
+
+def truth_sources(since):
+    cam = cam_frames(since)
     sk = archive.read("skill", since[:10], "date")
     ob = archive.read("obs", since[:13], "t")
     return cam, sk, ob
@@ -75,10 +100,14 @@ def truth_for(spot, rec, src):
 
 def main(days=None):
     since = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=days)).isoformat() if days else ""
-    preds = [p for p in archive.read_jsonl("predictions", since) if not p.get("err") and p.get("top") and p.get("at", "") >= since]
-    lines = [f"Prediction log: {len(preds)} windows ranked, {len({p['at'][:10] for p in preds})} nights, "
-             f"{len({p['case'] for p in preds})} places (since {since[:10] or 'the start'})."]
+    raw = [p for p in archive.read_jsonl("predictions", since) if not p.get("err") and p.get("top") and p.get("at", "") >= since]
+    preds = latest(raw, lambda p: (p["case"], p["kind"], p["window"]["peak"][:13]), lambda p: p["window"]["start"])
+    leads = sorted(p["lead_h"] for p in preds)
+    lines = [f"Prediction log: {len(preds)} windows ranked ({len(raw)} logged; the last one before each window is used), "
+             f"{len({p['at'][:10] for p in preds})} nights, {len({p['case'] for p in preds})} places (since {since[:10] or 'the start'})."
+             + (f" Lead time {leads[0]}-{leads[-1]} h, median {statistics.median(leads)} h." if leads else "")]
     now = dt.datetime.now(dt.timezone.utc)
+    cams_eval(lines, since, now)
     done = [p for p in preds if ts(p["window"]["end"]) < now - dt.timedelta(hours=2)]
     lines.append(f"{len(done)} windows are over (truth can exist); {len(preds) - len(done)} still ahead.")
     if not done:
@@ -112,6 +141,39 @@ def main(days=None):
             lines.append(f"      {w:40s} best score {a:5.1f}  {k} {b:.2f}")
     out = "\n".join(lines); print(out); _save(out)
     return 0
+
+
+def cams_eval(lines, since, now):
+    """The app's sky model at each webcam (data/archive/predcams, forecast at the camera) vs that camera's measured colour
+    at the same sunrise/sunset. Also relative to each camera's own median (tinted lenses, cameras that never see the
+    horizon cancel out), as camtruth.fit does."""
+    num = archive.num
+    flat = [{**r, "at": rec["at"]} for rec in archive.read_jsonl("predcams", since) for r in rec.get("rows") or []]
+    preds = latest(flat, lambda r: (r["cam"], r["kind"], r["peak"][:13]), lambda r: r["start"])
+    preds = [r for r in preds if ts(r["peak"]) < now - dt.timedelta(hours=2)]
+    lines.append("")
+    lines.append(f"Webcam points: {len(preds)} camera windows predicted and over (sky model, forecast at the camera).")
+    if not preds: return
+    frames = {}
+    for r in cam_frames(min(r["start"] for r in preds)):
+        if r.get("t"): frames.setdefault((r["cam"], r["event"]), []).append((ts(r["t"]), num(r["sky_warm"])))
+    pairs = []
+    for p in preds:
+        pk = ts(p["peak"])
+        got = [v for t, v in frames.get((p["cam"], p["kind"]), []) if abs((t - pk).total_seconds()) <= 5400 and v is not None]
+        if got and p["sk"].get("q") is not None: pairs.append((p["cam"], p["kind"], p["sk"]["q"], statistics.fmean(got), p["lead_h"]))
+    med = {}
+    for c, _, _, v, _ in pairs: med.setdefault(c, []).append(v)
+    rel = [(q, v - statistics.median(med[c])) for c, _, q, v, _ in pairs if len(med[c]) >= 3]
+    tag = lambda n: "  n<30: no conclusion" if n < 30 else ""
+    lines.append(f"  sky colour score vs measured colour  n={len(pairs):4d}  rho={spearman([x[2] for x in pairs], [x[3] for x in pairs])}  (good if +){tag(len(pairs))}")
+    lines.append(f"  same, each camera vs its own median  n={len(rel):4d}  rho={spearman([a for a, _ in rel], [b for _, b in rel])}{tag(len(rel))}")
+    for kind in ("sunrise", "sunset"):
+        ps = [x for x in pairs if x[1] == kind]
+        lines.append(f"  {kind:8s}                             n={len(ps):4d}  rho={spearman([x[2] for x in ps], [x[3] for x in ps])}{tag(len(ps))}")
+    for lo, hi in ((0, 12), (12, 48)):
+        ps = [x for x in pairs if lo <= x[4] < hi]
+        lines.append(f"  made {lo:2d}-{hi:2d} h ahead                   n={len(ps):4d}  rho={spearman([x[2] for x in ps], [x[3] for x in ps])}{tag(len(ps))}")
 
 
 def _save(text):

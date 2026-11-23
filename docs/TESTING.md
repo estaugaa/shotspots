@@ -21,8 +21,8 @@ All of these run on GitHub Actions against the live site. Run one with
 | Webcam truth: real sunrise/sunset colour vs the sky formula | camtruth.yml (after every GOES run) -> feed/camtruth.json | continuous |
 | Sky climatology aggregation (report nearest sunrise/sunset, week of year, sky classes) | `pytest tests/test_climonat.py` | with the unit tests |
 | Forecast vs reality (cloud at sunrise/sunset, nationwide) | job=skill -> feed/calib.json `skill` | daily |
-| Prediction log: live site ranks the next sunrise/sunset for 8 places, top 20 + layers archived | `tools/scoretest.py --live` -> data/archive/predictions | nightly (regress.yml) |
-| Predictions vs truth (webcam colour, airport low cloud and fog; Spearman, spot and night level) | diag.yml `tools/predeval.py [days]` -> branch `diag-predeval` | weekly, once windows are over |
+| Prediction log: live site ranks the next sunrise/sunset for 8 places (top 20, layers, sky inputs), and the sky model at ~540 webcams | `tools/scoretest.py --live` -> data/archive/predictions, predcams | nightly (regress.yml) |
+| Predictions vs truth (webcam colour, airport low cloud and fog; Spearman, spot and night level; webcam points by camera, event, lead time) | diag.yml `tools/predeval.py [days]` -> branch `diag-predeval` | weekly, once windows are over |
 | Archive (append, de-dup, monthly files, readers' windows, old-file migration) | `pytest tests/test_archive.py` | every pipeline push |
 
 Weights: open the app with `#tune` for sliders (this device only; Reset restores defaults).

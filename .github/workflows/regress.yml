@@ -8,7 +8,7 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-24.04   # Playwright can't install its browser deps on 26.04 yet
-    timeout-minutes: 50
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/data
@@ -23,10 +23,10 @@ jobs:
       - name: Expectations (pass/fail on real situations)
         if: always()
         run: python tools/expect.py
-      - name: Prediction log (live site ranks the next sunrise and sunset; data/archive/predictions)
+      - name: Prediction log (live site ranks the next sunrise and sunset, and scores the sky at every recent webcam; data/archive/predictions, predcams)
         if: always()
         continue-on-error: true
-        timeout-minutes: 15
+        timeout-minutes: 25
         run: python tools/scoretest.py --live
       - name: Save the result to the test history and the prediction log (data branch)
         if: always()
