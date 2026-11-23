@@ -29,9 +29,28 @@ function medianQuality() {
   const qs = SPOTS.filter(s => hasRecord(s) && !tooFar(s)).map(s => clamp((viewFame(s) + 2) / 12, 0, 1)).sort((a, b) => a - b);
   __qMed = { k, v: qs.length >= 20 ? Math.round(qs[qs.length >> 1] * 100) / 100 : 0.3, n: qs.length }; return __qMed.v;
 }
+// Photographers (feed/spotphotos.json, pipeline/spotphotos.py): distinct Commons photographers within 500 m (900 m for peaks),
+// counted the same way for every spot. ~30 is fully famous (Multnomah 29, Vista House 24, Haystack Rock 18); city spots
+// count fully only if they stand out from their surroundings (lift >= 15x the 5 km ring), so Times Square and a convention
+// centre don't win on crowds. Not in the feed = nobody photographs the area: unknown, median of measured spots nearby.
+// undefined: feed not loaded (old measure); null: unknown here; else 0..1. (Nov 23: replaced the hand-spot-only Commons
+// counts, which put Haystack Rock level with an unknown waterfall.)
+function photoQ(s) {
+  const f = fd("spotphotos"); if (!f || !f.spots) return undefined;
+  const v = f.spots[s.id]; if (!v) return null;
+  const eff = v[0] * Math.min(1, v[1] / 150);
+  return v[0] ? clamp(Math.log2(1 + eff) / Math.log2(31), 0.1, 1) : 0.05;
+}
+let __pqMed = { k: "", v: 0.3, n: 0 };
+function photoMedian() {
+  const k = LOC ? LOC.lat.toFixed(1) + "," + LOC.lon.toFixed(1) : ""; if (__pqMed.k === k && __pqMed.n >= 200) return __pqMed.v;
+  const qs = SPOTS.filter(s => !tooFar(s)).map(photoQ).filter(q => q != null).sort((a, b) => a - b);
+  __pqMed = { k, v: qs.length >= 20 ? Math.round(qs[qs.length >> 1] * 100) / 100 : 0.3, n: qs.length }; return __pqMed.v;
+}
 function spotQuality(s) {
   if (!s.seed && s.pop == null) setHandPop(s);
-  const q = hasRecord(s) ? clamp((viewFame(s) + 2) / 12, 0, 1) : medianQuality();
+  const pq = photoQ(s);
+  const q = pq === undefined ? (hasRecord(s) ? clamp((viewFame(s) + 2) / 12, 0, 1) : medianQuality()) : pq === null ? photoMedian() : pq;
   return /landmark|bridge/.test(s.kind || "") ? q * 0.75 : q;   // Wikipedia-famous buildings are not automatically photo spots
 }
 const _fitV1 = fitFor;
@@ -98,7 +117,8 @@ const SCORE_LAYERS = [
   ["Smoke, haze, surf, peaks hidden", () => _fitHours],
   ["Opening hours", () => _fitNC],
   ["Live airport report", () => _fitV1],
-  ["Spot quality (photos, Wikipedia, photographers)", () => fitFor],
+  ["Spot quality (photographers here)", () => _fitQ],
+  ["When photographers shoot here", () => fitFor],
 ];
 function scoreLayers(s, w) {
   const out = []; let prevN = null, prevWhy = [];
