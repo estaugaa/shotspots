@@ -35,6 +35,8 @@ jobs:
           # a ranking change fails at once; only "unstable" (the test's own runs disagreeing) gets one more try
           if [ $rc -ne 0 ] && grep -q "unstable" scoretest.txt && ! grep -q "ranking changed" scoretest.txt; then
             echo "--- unstable: one retry ---" | tee -a scoretest.txt
+            # a pass after a retry still means the replay is flaky: say so where it is seen (run page, diag-publish)
+            echo "::warning title=Scoring test unstable::runs on the same data disagreed; passed only on the retry (see diag-publish)"
             python -u tools/scoretest.py 2>&1 | tee -a scoretest.txt; rc=${PIPESTATUS[0]}
           fi
           exit $rc
@@ -42,8 +44,13 @@ jobs:
         if: always()
         run: |
           [ -f scoretest.txt ] || echo "scoring test did not run" > scoretest.txt
-          mkdir -p out && cp scoretest.txt out/ && cd out && git init -q && git checkout -q -b diag-publish && git add -A
-          git -c user.name=diag -c user.email=diag@users.noreply.github.com commit -qm "publish ${{ github.sha }} ${{ job.status }}"
+          mkdir -p out && cp scoretest.txt out/
+          # history.txt keeps one line per publish check (the force-push below replaces scoretest.txt), so a retried flake stays visible
+          git fetch -q --depth=1 origin diag-publish 2>/dev/null && git show FETCH_HEAD:history.txt > out/history.txt 2>/dev/null || true
+          R=$(grep -q "unstable: one retry" scoretest.txt && echo "RETRIED after unstable" || echo "first try")
+          echo "$(date -u +%FT%TZ) ${{ github.sha }} ${{ job.status }} $R" >> out/history.txt; tail -n 300 out/history.txt > out/h && mv out/h out/history.txt
+          cd out && git init -q && git checkout -q -b diag-publish && git add -A
+          git -c user.name=diag -c user.email=diag@users.noreply.github.com commit -qm "publish ${{ github.sha }} ${{ job.status }} ($R)"
           git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" diag-publish
       - name: Mark this app as checked (publish.yml takes app/ from the app-verified branch)
         run: git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:refs/heads/app-verified
