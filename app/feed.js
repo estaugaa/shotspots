@@ -60,13 +60,19 @@ function climoLoad(s) {
   return CLIMO.p.then(() => Promise.all(climoKeys(s).map(k => CLIMO.tiles[k] = CLIMO.tiles[k] ||
     fetch(`feed/climo/${k}.json`).then(r => r.ok ? r.json() : null).catch(e => noteErr("sky climatology", e)).then(j => { CLIMO.got[k] = j || { stations: {} }; }))));
 }
+// nearest station within 80 km of s: [id, station, km], or undefined while tiles load (starts loading), null if none
+function climoNear(s) {
+  if (!CLIMO.idx) { if (!CLIMO.p) climoLoad(s); return undefined; } const keys = climoKeys(s); if (keys.some(k => !CLIMO.got[k])) { climoLoad(s); return undefined; }
+  let best = null, bd = 80;
+  for (const k of keys) for (const [id, v] of Object.entries(CLIMO.got[k].stations || {})) { const d = km(s, v); if (d < bd) { bd = d; best = [id, v, d]; } }
+  return best;
+}
+// a station's counts [n, clear, bkn, ovc, fog] for week wk (0-51) of event ev ("r"/"s"), pooled with the weeks either side
+function climoPool(v, ev, wk) { const nc = (CLIMO.idx.cols || []).length || 5, sum = [0, 0, 0, 0, 0];
+  for (const w of [wk - 1, wk, wk + 1]) { const i = ((w + 52) % 52) * nc; for (let j = 0; j < 5; j++) sum[j] += (v[ev] || [])[i + j] || 0; } return sum; }
 // nearest station within 80 km with its data for the week of t (pooled with the weeks either side), or null; starts loading if needed
 function climoWeek(s, t, ev) {
-  if (!CLIMO.idx) { if (!CLIMO.p) climoLoad(s); return null; } const keys = climoKeys(s); if (keys.some(k => !CLIMO.got[k])) { climoLoad(s); return null; }
-  let best = null, bd = 80;
-  for (const k of keys) for (const [id, v] of Object.entries(CLIMO.got[k].stations || {})) { const d = km(s, v); if (d < bd) { bd = d; best = [id, v]; } }
-  if (!best) return null; const [id, v] = best, nc = (CLIMO.idx.cols || []).length || 5, wk = weekIdx(t), sum = [0, 0, 0, 0, 0];
-  for (const w of [wk - 1, wk, wk + 1]) { const i = ((w + 52) % 52) * nc; for (let j = 0; j < 5; j++) sum[j] += v[ev][i + j] || 0; }
+  const b = climoNear(s); if (!b) return null; const [id, v, bd] = b, sum = climoPool(v, ev, weekIdx(t));
   if (sum[0] < 20) return null; const pc = x => Math.round(x / sum[0] * 100);
   return { id, name: v.name, km: bd, y: v.y, n: sum[0], clear: pc(sum[1]), bkn: pc(sum[2]), ovc: pc(sum[3]), fog: pc(sum[4]) };
 }
