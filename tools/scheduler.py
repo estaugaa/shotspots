@@ -15,8 +15,9 @@ JOBS = [
     ("photo weather", 8, ("status", "photoweather"), ["job.yml", "-f", "job=photoweather"]),   # daily until every busy cell has its weather (~35 a day)
     ("image rating", 13, ("status", "imagerate"), ["job.yml", "-f", "job=imagerate"]),   # ~3,000 golden-hour photos a day, after photo weather
     ("commons photos", 7, ("status", "commonsphotos"), ["job.yml", "-f", "job=commonsphotos"]),   # bulk validation history; chains itself
+    ("starter clean", 14, ("status", "seedclean"), ["job.yml", "-f", "job=seedclean"]),   # current rules on the starter tiles (control towers, borrowed fame); newly seeded states too
 ]
-EVERY_DAYS = {"commons photos": 30}   # jobs not run daily: due again this many days after their last run
+EVERY_DAYS = {"commons photos": 30, "starter clean": 30}   # jobs not run daily: due again this many days after their last run
 def last_run(kind, ref):
     try:
         if kind == "history":

@@ -13,7 +13,7 @@ tips; nightly research (RESEARCH.md, reach mode) then promotes the highest-ranke
 import json, math, re, time
 from pathlib import Path
 from collections import defaultdict
-from .common import secret, http, spots, write_json, FEED, log, utcnow, iso, km, read_json
+from .common import secret, http, spots, write_json, FEED, DATA, log, utcnow, iso, km, read_json, soft_fail
 
 OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass.private.coffee/api/interpreter"]
 STATES = {k: "US-" + k for k in "AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY".split()}
@@ -21,6 +21,10 @@ PER_TILE = 200
 TIMEOUT = 600     # per request; pieces use a shorter one
 FAILED = set()    # (state, tile) pieces that failed this run: keep what those tiles had before
 KIND_FLOOR = 20   # every kind keeps its best few per tile, so peaks can't crowd out viewpoints, lakes and birding spots
+
+# Air-traffic control towers are often mapped tower:type=observation (Denver's old Stapleton tower led sunset lists, Nov 16-23):
+# a working or closed building, not a lookout. "Fire control towers" (coastal artillery spotting towers) are real lookouts.
+NOT_LOOKOUT = re.compile(r"(?<!fire )control tower|air traffic|\bATCT\b", re.I)
 
 # [key, test, cats, light, effort, base score, tip]
 TYPES = [
@@ -36,7 +40,7 @@ TYPES = [
      "Steam reads best in cold air at first light. Check access rules; many springs are on private or tribal land."),
     ("refuge", lambda t: t.get("leisure") in ("nature_reserve", "bird_hide") or re.search(r"wildlife|refuge|bird", t.get("protection_title", ""), re.I) or t.get("protect_class") in ("4",) or "wildlife" in t.get("name", "").lower() and t.get("boundary") == "protected_area",
      ["wildlife", "birds"], "sunrise", "short", 3, "Wildlife is most active in the first two hours after sunrise. Stay on trails, use your car as a blind on auto routes and give animals space."),
-    ("lookout", lambda t: t.get("man_made") == "tower" and re.search(r"observation|fire", t.get("tower:type", "") + " " + t.get("name", ""), re.I), ["vista", "mountain"], "both", "hike", 4,
+    ("lookout", lambda t: t.get("man_made") == "tower" and re.search(r"observation|fire", t.get("tower:type", "") + " " + t.get("name", ""), re.I) and not NOT_LOOKOUT.search(t.get("name", "")),["vista", "mountain"], "both", "hike", 4,
      "A lookout tower or fire lookout: a full-circle view, so it works at sunrise and sunset. Many are staffed in summer and some can be rented."),
     ("pass", lambda t: t.get("mountain_pass") == "yes", ["mountain", "vista"], "both", "road", 2,
      "A mountain pass: easy high ground by car. Fog often fills the valleys on either side at sunrise; check winter road conditions."),
@@ -115,7 +119,7 @@ def _wanted(typ, t):
     if t.get("natural") == "beach" and has("name"): return True
     if t.get("natural") == "water" and has("name", "wikidata"): return True
     if typ == "n" and t.get("mountain_pass") == "yes" and has("name"): return True
-    if t.get("man_made") == "tower" and re.search(r"observation|fire", t.get("tower:type", ""), re.I) and has("name"): return True
+    if t.get("man_made") == "tower" and re.search(r"observation|fire", t.get("tower:type", ""), re.I) and has("name") and not NOT_LOOKOUT.search(t["name"]): return True
     if typ == "w" and (t.get("man_made") == "bridge" or t.get("bridge")) and has("name", "wikidata"): return True
     if re.match(r"^(castle|fort|monument|ruins|ship|mine)$", t.get("historic", "")) and has("name", "wikidata"): return True
     if t.get("tourism") == "attraction" and has("name", "wikidata"): return True
@@ -203,25 +207,131 @@ def query(state):
 
 
 def wikidata(ids):
-    """sitelinks count and whether there's an image, for notability."""
+    """sitelinks count and whether there's an image, for notability; plus where the item is (P625) and what it is (P31),
+    so fame borrowed from another item can be told apart (_borrowed)."""
     out = {}
     ids = sorted(set(i for i in ids if i and i.startswith("Q")))
     for k in range(0, len(ids), 250):
         chunk = ids[k:k + 250]
-        sparql = "SELECT ?i ?n ?img WHERE { VALUES ?i { " + " ".join("wd:" + i for i in chunk) + " } ?i wikibase:sitelinks ?n . OPTIONAL { ?i wdt:P18 ?img } }"
+        sparql = "SELECT ?i ?n ?img ?c ?cl ?lab WHERE { VALUES ?i { " + " ".join("wd:" + i for i in chunk) + " } ?i wikibase:sitelinks ?n . OPTIONAL { ?i wdt:P18 ?img } OPTIONAL { ?i wdt:P625 ?c } OPTIONAL { ?i wdt:P31 ?cl } OPTIONAL { ?i rdfs:label ?lab FILTER(lang(?lab) = 'en') } }"
         for attempt in range(3):
             try:
-                j = http("https://query.wikidata.org/sparql", params={"query": sparql, "format": "json"},
+                j = http("https://query.wikidata.org/sparql", method="POST", data={"query": sparql, "format": "json"},
                          headers={"User-Agent": "ShotSpots/1.0 (https://github.com/estaugaa/shotspots)", "Accept": "application/sparql-results+json"}, timeout=90, tries=1).json()
                 for b in j["results"]["bindings"]:
                     q = b["i"]["value"].rsplit("/", 1)[1]
-                    out[q] = {"n": int(b["n"]["value"]), "img": "img" in b}
+                    o = out.setdefault(q, {"n": int(b["n"]["value"]), "img": False, "c": None, "cl": [], "lab": None})
+                    if "lab" in b: o["lab"] = b["lab"]["value"]
+                    o["img"] = o["img"] or "img" in b
+                    m = "c" in b and re.match(r"Point\(([-\d.eE]+) ([-\d.eE]+)\)", b["c"]["value"])
+                    if m and not o["c"]: o["c"] = (float(m.group(2)), float(m.group(1)))
+                    cl = "cl" in b and b["cl"]["value"].rsplit("/", 1)[1]
+                    if cl and cl not in o["cl"]: o["cl"].append(cl)
                 break
             except Exception as e:
                 log.warning("wikidata: %s", e)
                 time.sleep(10 * (attempt + 1))
         time.sleep(1)
     return out
+
+
+def _score(kind, base, t, w):
+    """How notable a starter spot is. w: its Wikidata record, or None when that fame belongs to something else (_borrowed)."""
+    w = w or {}
+    score = base + 3 * math.log2(1 + w.get("n", 0)) + (2 if w.get("img") else 0) + (2 if t.get("wikipedia") and w else 0) \
+        + (1 if t.get("direction") or t.get("height") or t.get("prominence") else 0) + (1 if t.get("tourism") == "viewpoint" and t.get("name") else 0)
+    if kind == "peak":
+        try:
+            score += min(4, float(str(t.get("prominence", "0")).split()[0]) / 400)
+        except ValueError:
+            pass
+    if t.get("access") in ("private", "no"):
+        score -= 4
+    return score
+
+
+# Borrowed fame: an OSM object tagged with the Wikidata item of something else. Denver's old Stapleton control tower carried
+# the whole airport's item (110k Wikipedia views a year) and led Denver sunsets; memorial tanks carry the tank model's item.
+# The spot stays; only the fame (sitelinks, image, Wikipedia views) goes. Measured on every seed spot: docs/DECISIONS.md.
+# Natural features (lakes, peaks, falls, refuges...) are what their item is about even when the item has no point or a far one
+# (a big park's point is its middle): the location rules apply to man-made kinds only, and not to mapped areas (relations).
+MADE_KINDS = {"landmark", "bridge", "lookout", "viewpoint", "lighthouse"}
+FAR_KM = 50   # under ~30 km it is the same thing with a rough point (covered bridges, Badwater); past 50 km always another (the other Disney park's ride)
+# Wikidata classes (P31, direct) that are no place to photograph a view from, picked from every class the seed items use (Nov 23).
+# Museum ships, mines, memorials, museums and plain "power station" (Crystal Mill) stay: often photographed. Subclasses are listed, not inferred.
+NOT_A_VIEW = {
+    **dict.fromkeys(["Q1144661", "Q208322", "Q1934961", "Q1139917", "Q2870166", "Q512504", "Q50348261", "Q1412219", "Q177002", "Q1454206"], "amusement ride"),
+    **dict.fromkeys(["Q204832", "Q2389789", "Q973560", "Q1640829", "Q627421", "Q7465804", "Q517842", "Q3080599", "Q112769012", "Q42178109", "Q689709",
+                     "Q1265865", "Q358738", "Q1414671", "Q2516297", "Q1476801", "Q1130875", "Q3322352", "Q2791298", "Q923991"], "roller coaster"),
+    **dict.fromkeys(["Q132241", "Q868557", "Q2699757", "Q11483816", "Q18608583", "Q40244", "Q51404"], "event"),
+    **dict.fromkeys(["Q43229", "Q163740", "Q1899015", "Q4830453", "Q18325436", "Q5341295", "Q742421", "Q134884827", "Q18534542"], "organisation"),
+    **dict.fromkeys(["Q5"], "person"), **dict.fromkeys(["Q16521", "Q113828342"], "species"),
+    **dict.fromkeys(["Q100709275", "Q100710213", "Q137188255", "Q15056993", "Q15056995", "Q3231690", "Q42889", "Q20650761", "Q753779", "Q917028", "Q2070019"], "vehicle model"),
+    **dict.fromkeys(["Q1248784", "Q644371", "Q695850", "Q6981985"], "airport"),
+    **dict.fromkeys(["Q16917", "Q64578911", "Q2387974"], "hospital"), **dict.fromkeys(["Q3914", "Q1244442"], "school"), **dict.fromkeys(["Q40357", "Q683992"], "prison"),
+    **dict.fromkeys(["Q27686", "Q63099748", "Q133215", "Q7338100"], "hotel or casino"), **dict.fromkeys(["Q1021645"], "office building"),
+    **dict.fromkeys(["Q11315", "Q213441", "Q11707", "Q205495", "Q1426795", "Q97495053"], "shop or restaurant"),
+    **dict.fromkeys(["Q134447", "Q15911738", "Q2298412"], "power station"), **dict.fromkeys(["Q12366139"], "fish hatchery"),
+}
+
+
+def _words(x):
+    return set(re.findall(r"[a-z0-9]{3,}", (x or "").lower())) - {"the", "and", "former", "historic", "old"}
+
+
+def _owners(items, wd):
+    """{item: spot id} for items several spots carry: the spot whose name matches the item's label best keeps the fame,
+    then the one nearest the item's own point (the airport's item stays with the airport, not its control tower)."""
+    by = defaultdict(list)
+    for sid, lat, lon, name, q in items:
+        w = wd.get(q) or {}
+        if q and lat is not None and "cl" in w:
+            lw, nw = _words(w.get("lab")), _words(name)
+            match = len(lw & nw) / max(1, len(lw | nw))
+            by[q].append((-round(match, 2), km(lat, lon, *w["c"]) if w.get("c") else 0, sid))
+    return {q: min(v)[2] for q, v in by.items() if len(v) > 1}
+
+
+def _borrowed(sid, kind, lat, lon, w, owner):
+    """Why this spot's Wikidata fame is another item's, or None."""
+    if not w or "cl" not in w:
+        return None
+    if kind in MADE_KINDS and not sid.startswith("seed-r"):
+        if not w.get("c"):
+            if kind != "lookout":   # lookouts without a point were all real towers with their own item
+                return "Wikidata item has no location (a model, animal, person or organisation)"
+        elif (d := km(lat, lon, *w["c"])) > FAR_KM:
+            return f"Wikidata item is {d:.0f} km away"
+    bad = [NOT_A_VIEW[c] for c in w["cl"] if c in NOT_A_VIEW and (NOT_A_VIEW[c] != "organisation" or kind in MADE_KINDS - {"lookout"})]   # parks and lookouts are often filed as organisations
+    if bad:
+        return f"Wikidata item is a{'n' if bad[0][0] in 'aeiou' else ''} {bad[0]}"
+    if owner and owner != sid:
+        return "Wikidata item belongs to another spot"
+    return None
+
+
+RIDE_KM = 0.6   # a tower this close to an operating amusement park's point is one of its rides (Elitch Gardens' led Denver sunsets, Nov 23)
+
+
+def _parks():
+    """Points of US amusement and theme parks still open (Wikidata: no dissolved date), for _rides."""
+    sparql = ("SELECT DISTINCT ?c WHERE { VALUES ?k { wd:Q194195 wd:Q2416723 wd:Q60990 } ?p wdt:P31 ?k ; wdt:P17 wd:Q30 ; wdt:P625 ?c . "
+              "FILTER NOT EXISTS { ?p wdt:P576 ?x } }")
+    try:
+        j = http("https://query.wikidata.org/sparql", method="POST", data={"query": sparql, "format": "json"},
+                 headers={"User-Agent": "ShotSpots/1.0 (https://github.com/estaugaa/shotspots)", "Accept": "application/sparql-results+json"}, timeout=120).json()
+    except Exception as e:
+        soft_fail("seed theme parks", e); return []
+    out = []
+    for b in j["results"]["bindings"]:
+        m = re.match(r"Point\(([-\d.eE]+) ([-\d.eE]+)\)", b["c"]["value"])
+        if m: out.append((float(m.group(2)), float(m.group(1))))
+    return out
+
+
+def _rides(spots, parks):
+    """Ids of lookouts that are amusement-park rides."""
+    return {s["id"] for s in spots if s.get("kind") == "lookout" and any(km(s["lat"], s["lon"], a, b) < RIDE_KM for a, b in parks)}
 
 
 def _tip(kind, t, base):
@@ -269,6 +379,8 @@ def build(state):
                         return True
         return False
 
+    owners = _owners([(f"seed-{e['type'][0]}{e['id']}", e.get("lat", (e.get("center") or {}).get("lat")), e.get("lon", (e.get("center") or {}).get("lon")),
+                       e.get("tags", {}).get("name"), e.get("tags", {}).get("wikidata")) for e in els], wd)
     out, seen = [], set()
     for e in els:
         t = e.get("tags", {})
@@ -291,18 +403,14 @@ def build(state):
         if key in seen or dup(lat, lon, t.get("name")):
             continue
         seen.add(key)
-        w = wd.get(t.get("wikidata"), {})
-        score = base + 3 * math.log2(1 + w.get("n", 0)) + (2 if w.get("img") else 0) + (2 if t.get("wikipedia") else 0) \
-            + (1 if t.get("direction") or t.get("height") or t.get("prominence") else 0) + (1 if t.get("tourism") == "viewpoint" and t.get("name") else 0)
-        if kind == "peak":
-            try:
-                score += min(4, float(str(t.get("prominence", "0")).split()[0]) / 400)
-            except ValueError:
-                pass
-        if t.get("access") in ("private", "no"):
-            score -= 4
-        out.append({"id": f"seed-{e['type'][0]}{e['id']}", "name": name, "lat": round(lat, 5), "lon": round(lon, 5), "cats": cats, "light": light, "effort": effort,
-                    "tip": _tip(kind, t, tip), "kind": kind, "score": round(score, 1), "osm": f"{e['type']}/{e['id']}", "wd": t.get("wikidata"), "state": state})
+        sid = f"seed-{e['type'][0]}{e['id']}"
+        why = _borrowed(sid, kind, lat, lon, wd.get(t.get("wikidata")), owners.get(t.get("wikidata")))
+        score = _score(kind, base, t, None if why else wd.get(t.get("wikidata"), {}))
+        extra = {"wdx": t.get("wikidata"), "nofame": why} if why else {}
+        out.append({**extra, "id": sid, "name": name, "lat": round(lat, 5), "lon": round(lon, 5), "cats": cats, "light": light, "effort": effort,
+                    "tip": _tip(kind, t, tip), "kind": kind, "score": round(score, 1), "osm": f"{e['type']}/{e['id']}", "wd": None if why else t.get("wikidata"), "state": state})
+    rides = _rides(out, _parks())
+    out = [s for s in out if s["id"] not in rides]
     out = _hotspots(state, out, dup)
     _shore_pins(out)
     tiles = defaultdict(list)
@@ -415,6 +523,78 @@ def run(states):
     idx["gen"] = iso(utcnow())
     (sdir / "index.json").write_text(json.dumps(idx, separators=(",", ":")))
     return ", ".join(f"{k}: {v['spots']} spots" for k, v in idx["states"].items())
+
+
+def _osm_tags(refs):
+    """{"node/123": tags} from the OSM API, 100 at a time per element type."""
+    out, by = {}, defaultdict(list)
+    for r in refs:
+        typ, _, i = (r or "").partition("/")
+        if typ in ("node", "way", "relation") and i.isdigit(): by[typ].append(i)
+    for typ, ids in by.items():
+        for k in range(0, len(ids), 100):
+            try:
+                j = http(f"https://api.openstreetmap.org/api/0.6/{typ}s.json", params={typ + "s": ",".join(ids[k:k + 100])},
+                         headers={"User-Agent": "ShotSpots/1.0 (https://github.com/estaugaa/shotspots)"}, timeout=90).json()
+                for e in j.get("elements", []): out[f"{typ}/{e['id']}"] = e.get("tags", {})
+            except Exception as e:
+                soft_fail("seedclean osm tags", e)   # those spots fall back to subtracting the Wikidata terms
+            time.sleep(1)
+    return out
+
+
+def clean():
+    """Apply the current rules to the starter spots already in feed/seed, in place, keeping what later jobs added
+    (terrain horizons, facing): lookouts that are control towers or amusement-park rides go; fame borrowed from another Wikidata item goes
+    (score recomputed from the OSM tags, Wikipedia views dropped). Run monthly by the scheduler, so newly seeded
+    states get it too; a full re-seed applies the same rules in build(). Report: data/seedclean.json."""
+    sdir = FEED / "seed"
+    tiles = {f: read_json(f, {"spots": []}) for f in sorted(sdir.glob("*_*.json"))}
+    allsp = [s for j in tiles.values() for s in j.get("spots", [])]
+    wd = wikidata([s.get("wd") for s in allsp])
+    owners = _owners([(s["id"], s["lat"], s["lon"], s["name"], s.get("wd")) for s in allsp], wd)
+    hit = {}
+    for s in allsp:
+        if s.get("wd"):
+            why = _borrowed(s["id"], s.get("kind"), s["lat"], s["lon"], wd.get(s["wd"]), owners.get(s["wd"]))
+            if why: hit[s["id"]] = why
+    rides = _rides(allsp, _parks())
+    tags = _osm_tags([s.get("osm") for s in allsp if s["id"] in hit])
+    base = {x[0]: x[5] for x in TYPES}
+    rep, dropped = [], []
+    for f, j in tiles.items():
+        keep, dirty = [], False
+        for s in j.get("spots", []):
+            if s.get("kind") == "lookout" and (NOT_LOOKOUT.search(s.get("name", "")) or s["id"] in rides):
+                dropped.append({"id": s["id"], "name": s["name"], "state": s.get("state"), "score": s.get("score")}); dirty = True; continue
+            if s["id"] in hit:
+                t, w, old = tags.get(s.get("osm")), wd.get(s["wd"]) or {}, s["score"]
+                if t is not None and s.get("kind") in base:
+                    s["score"] = round(_score(s["kind"], base[s["kind"]], t, None), 1)
+                else:   # no tags: take the Wikidata terms off (the +2 for a Wikipedia tag assumed, as almost all of them have one)
+                    s["score"] = round(old - 3 * math.log2(1 + w.get("n", 0)) - (2 if w.get("img") else 0) - 2, 1)
+                s["wdx"], s["wd"], s["nofame"] = s["wd"], None, hit[s["id"]]; dirty = True
+                rep.append({"id": s["id"], "name": s["name"], "kind": s.get("kind"), "state": s.get("state"), "score": old, "now": s["score"], "why": hit[s["id"]]})
+            keep.append(s)
+        if dirty:
+            keep.sort(key=lambda x: -x["score"])
+            j["spots"] = keep; f.write_text(json.dumps(j, separators=(",", ":")))
+    gone = set(hit) | {d["id"] for d in dropped}
+    vdir = FEED / "seedviews"
+    for f in vdir.glob("*_*.json"):   # Wikipedia views belong to the item, so they go with it
+        v = read_json(f, {}) or {}
+        if gone & set(v):
+            f.write_text(json.dumps({k: x for k, x in v.items() if k not in gone}, separators=(",", ":")))
+    idx = read_json(sdir / "index.json", {"tiles": {}})
+    for f, j in tiles.items():
+        if f.stem in idx.get("tiles", {}): idx["tiles"][f.stem] = len(j.get("spots", []))
+    (sdir / "index.json").write_text(json.dumps(idx, separators=(",", ":")))
+    why = defaultdict(int)
+    for r in rep: why[re.sub(r"\d+ km", "N km", r["why"])] += 1
+    DATA.mkdir(exist_ok=True); (DATA / "seedclean.json").write_text(json.dumps({"at": iso(utcnow()), "spots": len(allsp), "with_wikidata": sum(1 for s in allsp if s.get("wd")),
+                                          "fame_removed": len(rep), "by_reason": dict(why), "dropped_lookouts": dropped, "rides": len(rides),
+                                          "fame_removed_top": sorted(rep, key=lambda r: -(r["score"] - r["now"]))[:300]}, indent=0))
+    return f"{len(allsp)} spots: Wikidata fame removed from {len(rep)} ({', '.join(f'{k}: {v}' for k, v in why.items())}); {len(dropped)} control towers and park rides dropped"
 
 
 def candidates(lat, lon, radius_km, limit=15):

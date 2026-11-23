@@ -1,6 +1,7 @@
 # Status (update at the end of every work session)
 
 ## Running
+- 2026-11-23 Starter clean (job.yml job=seedclean; scheduler, every 30 days): drops control towers and amusement-park ride towers from the live tiles and removes fame borrowed from another Wikidata item (measured: 19 + 13 dropped, 785 lose fame). First run after merge; check data/seedclean.json, then the Denver and Hood River expectations. (Nov 16 weak spots: Denver's Stapleton tower; Hood River's hatchery had already left the top 20 under v2.)
 - 2026-11-20 Commons photo history (job.yml job=commonsphotos; scheduler, every 30 days, chains itself): streams the Commons dumps and writes data/archive/commons/photos_<dump>.csv.gz (US photos: place, capture time, EV, name words) for the validation set. Done Nov 20: 3.08 M photos.
 - 2026-11-20 Photo history vs weather (job.yml job=photoweather; scheduler daily): first run re-extracts the photos with uploader numbers (~90 min), then fetches ERA5 weather for ~35 of the busiest cells a day and writes feed/photoweather.json (sky formula vs share of photographers out at sunrise/sunset). Read it after a few days, then decide weight changes.
 - 2026-11-20 Image rating (job.yml job=imagerate; scheduler daily 13 UTC): CLIP + LAION aesthetic scores for ~3,000 golden-hour Commons photos a day and the webcam thumbnails -> feed/imagerate.json. Needs the v3 photo file (page ids), which the Nov 21 photo-weather run extracts; first real ratings Nov 21. First run Nov 21 OK (2,999 rated). Nov 21: sky photos only; check whether formula vs vivid rises above the 0.05 of all photos. Nov 23: webcam set grown (ALERTCalifornia sun-facing ridge cameras, numbers only; every road frame thumbnailed and rated). Check camtruth.json sun_facing and imagerate.json webcams.spearman_formula_vivid after ~a week, then fit the cloud-canvas curve on photos + webcams (held-out days).
@@ -33,6 +34,6 @@
 - A "view shadows" link to ShadeMap on spot pages (confirm the link format first).
 
 ## Known weak spots
-- Hood River sunrise: Bonneville Fish Hatchery leads (salmon season event); Cannon Beach: Haystack Rock outside the top 4.
-- Denver sunset: an old airport control tower ranks first.
+- Cannon Beach: Haystack Rock outside the top 4.
+- Starter tiles keep orphan entries for dropped spots in feed/seedpop, feed/deep (harmless: keyed by id).
 - Displayed scores are lower under v2 (unknown spots show about half their light score).
