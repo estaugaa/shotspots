@@ -38,7 +38,7 @@ function seasonHtml(s, b) {
   const y = v.y || [], ns = rows.map(x => x.s && x.s.n).filter(Boolean), el = spotElev(s.id), elNote = el != null && v.el != null && el - v.el > 600 ? ` The station is ${Math.round(el - v.el)} m lower than the spot: valley cloud there may be below you.` : el != null && v.el != null && v.el - el > 600 ? ` The station is ${Math.round(v.el - el)} m higher than the spot.` : "";
   const farNote = dk > 40 ? ` The station is ${Math.round(dk)} km away, so local cloud (mountains, coast, valleys) can differ.` : "";
   return `<details open class="seasbox"><summary>Clear-sky odds by week <span class="prov p-measured" title="Counted from 10 years of airport reports, not modeled">measured</span></summary>
-    <div class="seas" data-spot="${esc(s.id)}">
+    <div class="seas">
       <div class="seasrow"><span>Sunrise</span><div class="seascells">${rows.map(x => cell(x, "r")).join("")}</div></div>
       <div class="seasrow"><span>Sunset</span><div class="seascells">${rows.map(x => cell(x, "s")).join("")}</div></div>
       ${fogRow}<div class="seasrow"><span></span><div class="seasticks">${ticks}</div></div>
@@ -53,7 +53,7 @@ function seasonDetail(box, b, w) {
   if (p) p.innerHTML = `<b>Week of ${seasonFmt(seasonWeekDate(w))}</b>: ${f(s, "sunset")}; ${f(r, "sunrise")}.`;
 }
 let __seasOpen = null, __seasSt = null;
-// one delegated listener: other spot-page layers rewrite the sheet's HTML, which drops listeners on its elements
+// one delegated listener for the strip (no data-spot on it: app.js opens the spot again on any [data-spot] click)
 document.addEventListener("click", e => { const c = e.target.closest && e.target.closest(".seas i[data-w]"); if (c && __seasSt) seasonDetail(c.closest(".seas"), __seasSt, +c.dataset.w); });
 function seasonPlanner(s) {
   __seasOpen = s.id;

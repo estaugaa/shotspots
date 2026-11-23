@@ -30,12 +30,6 @@ READ = """() => { const b = document.querySelector('#sheetBody .seasbox'); if (!
   const c = [...b.querySelectorAll('.seascells')].map(r => [...r.children].map(i => i.className.includes('none') ? '.' : i.className.includes('fog') ? (i.className.includes('best') ? 'F' : 'f') : i.className.includes('best') ? '*' : '#').join(''));
   return { text: b.innerText, rows: c, cl: document.querySelector('#sheetBody .climoline') ? document.querySelector('#sheetBody .climoline').innerText : null }; }"""
 
-DBG = """() => { const r = { seas: document.querySelectorAll('.seas').length, st: typeof __seasSt === 'undefined' ? 'undef' : !!__seasSt };
-  try { const c = document.querySelector('#sheetBody .seas i[data-w="27"]'); r.cell = !!c; let got = 0; const h = () => got++;
-    document.addEventListener('click', h); c.dispatchEvent(new MouseEvent('click', { bubbles: true })); document.removeEventListener('click', h); r.bubbled = got;
-    r.after = document.querySelector('.seasdetail').innerText.slice(0, 80);
-    seasonDetail(c.closest('.seas'), __seasSt, 27); r.direct = document.querySelector('.seasdetail').innerText.slice(0, 120); } catch (e) { r.err = String(e); }
-  return r; }"""
 NL = chr(10)
 
 
@@ -57,7 +51,6 @@ async def place(c, base, name, lat, lon, out):
         if not r: out.append(f"{i}: NO PLANNER"); bad += 1; continue
         out.append(f"--- {i}" + NL + NL.join(r["rows"]) + NL + r["text"] + NL + f"(spot line: {r['cl']})")
         await pg.evaluate("document.querySelector('#sheetBody .seas i[data-w=\"26\"]').click()")
-        out.append("debug: " + json.dumps(await pg.evaluate(DBG)))
         out.append("tap week 26: " + await pg.evaluate("[...document.querySelectorAll('.seasdetail')].map(x => x.innerText).join(' | ')"))
         el = await pg.query_selector("#sheetBody .seasbox"); await el.scroll_into_view_if_needed()
         await el.screenshot(path=f"ux/season_{name.split()[0]}_{i[:30]}.png"); n += 1
