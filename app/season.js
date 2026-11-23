@@ -52,15 +52,16 @@ function seasonDetail(box, b, w) {
   const f = (x, word) => x[0] >= SEASON_MIN_N ? `${word} clear ${Math.round(x[1] / x[0] * 100)}%, overcast ${Math.round(x[3] / x[0] * 100)}%, fog or mist ${Math.round(x[4] / x[0] * 100)}% (${x[0]} days)` : `${word}: under ${SEASON_MIN_N} days of reports`;
   if (p) p.innerHTML = `<b>Week of ${seasonFmt(seasonWeekDate(w))}</b>: ${f(s, "sunset")}; ${f(r, "sunrise")}.`;
 }
-let __seasOpen = null;
+let __seasOpen = null, __seasSt = null;
+// one delegated listener: other spot-page layers rewrite the sheet's HTML, which drops listeners on its elements
+document.addEventListener("click", e => { const c = e.target.closest && e.target.closest(".seas i[data-w]"); if (c && __seasSt) seasonDetail(c.closest(".seas"), __seasSt, +c.dataset.w); });
 function seasonPlanner(s) {
   __seasOpen = s.id;
   climoLoad(s).then(() => {
     const body = $("#sheetBody"); if (__seasOpen !== s.id || !body || body.querySelector(".seasbox")) return;
     const b = climoNear(s); if (!b) return; const h = seasonHtml(s, b); if (!h) return;
     const anchor = body.querySelector("details"); anchor ? anchor.insertAdjacentHTML("beforebegin", h) : body.insertAdjacentHTML("beforeend", h);
-    const box = body.querySelector(".seas");
-    box.addEventListener("click", e => { const c = e.target.closest("i[data-w]"); if (c) seasonDetail(box, b, +c.dataset.w); });
+    __seasSt = b;
   }).catch(e => noteErr("seasonal planner", e));
 }
 const _openSeason = openSpot;

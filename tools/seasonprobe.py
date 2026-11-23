@@ -51,7 +51,7 @@ async def place(c, base, name, lat, lon, out):
         if not r: out.append(f"{i}: NO PLANNER"); bad += 1; continue
         out.append(f"--- {i}" + NL + NL.join(r["rows"]) + NL + r["text"] + NL + f"(spot line: {r['cl']})")
         await pg.evaluate("document.querySelector('#sheetBody .seas i[data-w=\"26\"]').click()")
-        out.append("tap week 26: " + await pg.evaluate("document.querySelector('#sheetBody .seasdetail').innerText"))
+        out.append("tap week 26: " + await pg.evaluate("[...document.querySelectorAll('.seasdetail')].map(x => x.innerText).join(' | ')"))
         el = await pg.query_selector("#sheetBody .seasbox"); await el.scroll_into_view_if_needed()
         await el.screenshot(path=f"ux/season_{name.split()[0]}_{i[:30]}.png"); n += 1
         await pg.evaluate("typeof closeSheet === 'function' && closeSheet()"); await pg.wait_for_timeout(400)
