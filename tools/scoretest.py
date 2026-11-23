@@ -41,6 +41,9 @@ RANK = """(async ([kind]) => {
   if (!WX) return { err: "no forecast loaded" };
   const all = allWindows(LOC, PLAN_HOURS), want = laYMD(new Date(Date.now() + 864e5));
   const w = all.find(x => winDay(x) === want && x.kind === kind); if (!w) return { err: "no " + kind + " window" };
+  // road times for this window's own candidates, as opening it in the app would fetch (the app routes the window on
+  // screen; ranking another one read straight-line estimates: North Rim spots looked 45 min from the South Rim, Nov 23)
+  for (let i = 0; i < 3; i++) { if (typeof loadDrives !== "function" || drivesFetched()) break; if (!(await loadDrives(rankFor(w).slice(0, 40).map(x => x.s.id)))) break; }
   const R = rankFor(w);
   return { top: R.slice(0, 10).map((x, i) => {
     const o = { name: x.s.name, score: x.f.n };
