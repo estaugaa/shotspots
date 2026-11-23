@@ -10,6 +10,8 @@ CASES = [
  ("La Jolla", 32.847, -117.273, 30, "sunset", ["La Jolla Cove", "Sunset Cliffs", "Windansea", "Scripps", "USS Midway", "Plaza de las Armas", "Windansea", "Torrey Pines"]),
  ("Springdale", 37.189, -112.999, 30, "sunset", ["Watchman", "Canyon Overlook", "Court of the Patriarchs", "Grafton", "Johnson Mountain", "Observation Point", "Towers of the Virgin"]),
  ("Seattle", 47.606, -122.332, 60, "sunrise", ["Kerry Park", "Gas Works", "Gratias Agimus", "Control Tower", "Space Needle", "Alki", "Discovery Park"]),
+ ("Denver", 39.739, -104.99, 90, "sunset", ["Stapleton", "Control Tower", "Red Rocks", "Lookout Mountain", "Mount Falcon", "Genesee", "Sloan", "Evergreen"]),
+ ("Hood River", 45.709, -121.521, 45, "sunrise", ["Bonneville Fish Hatchery", "Hatchery", "Rowena", "Panorama Point", "Vista House", "Crown Point", "Lost Lake", "Wind Mountain", "Mosier"]),
  ("Acadia", 44.388, -68.204, 30, "sunrise", ["Cadillac", "Otter", "Sand Beach", "Jordan Pond", "Beech Mountain", "Bass Harbor"]),
 ]
 JS = """(([kind, names]) => { const t0 = Date.now(), tom = laYMD(new Date(t0 + 864e5));
