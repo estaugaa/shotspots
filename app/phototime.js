@@ -6,6 +6,7 @@
 "use strict";
 const _fitQ = fitFor;
 function photoTiming(s, w) {
+  if (PHOTOQ_OFF) return null;
   const f = fd("spotphotos"), v = f && f.spots && f.spots[s.id];
   if (!v || v[0] < 3 || !/sunrise|sunset|morning|evening/.test(w.kind || "")) return null;
   const am = /sunrise|morning/.test(w.kind), g = (am ? v[2] : v[3]) / 100;

@@ -35,7 +35,9 @@ function medianQuality() {
 // centre don't win on crowds. Not in the feed = nobody photographs the area: unknown, median of measured spots nearby.
 // undefined: feed not loaded (old measure); null: unknown here; else 0..1. (Nov 23: replaced the hand-spot-only Commons
 // counts, which put Haystack Rock level with an unknown waterfall.)
+let PHOTOQ_OFF = false; try { PHOTOQ_OFF = localStorage.getItem("ss2:photoq") === "0"; } catch (e) { }   // A/B: "0" = old quality measure
 function photoQ(s) {
+  if (PHOTOQ_OFF) return undefined;
   const f = fd("spotphotos"); if (!f || !f.spots) return undefined;
   const v = f.spots[s.id]; if (!v) return null;
   const eff = v[0] * Math.min(1, v[1] / 150);
