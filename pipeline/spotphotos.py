@@ -127,7 +127,10 @@ def run():
             soft_fail(f"spotphotos {s.get('id')}", e)
         if i % 10000 == 0:
             log.info(f"spotphotos: {i:,}/{len(sp):,}")
-    write_json("spotphotos.json", {"gen": iso(utcnow()), "dump": dump, "fields": ["who", "lift_x10", "am_pct", "pm_pct", "night_pct", "area_who"], "spots": out})
+    # A spot with no photographer in an area few people photograph says nothing: leave it out (the app treats it as
+    # unknown). Kept: any photographer, or >= 20 photographers within 5 km (then none at the spot is a measurement).
+    pub = {k: v for k, v in out.items() if v[0] > 0 or v[5] >= 20}
+    write_json("spotphotos.json", {"gen": iso(utcnow()), "dump": dump, "fields": ["who", "lift_x10", "am_pct", "pm_pct", "night_pct", "area_who"], "spots": pub})
     log.info(f"spotphotos: {len(out):,} spots written")
     # spot check for the log: famous, odd leaders and obscure ones from the Nov 19 tests
     for s in sp:
