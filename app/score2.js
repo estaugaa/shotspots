@@ -32,27 +32,25 @@ function medianQuality() {
 // Photographers (feed/spotphotos.json, pipeline/spotphotos.py): distinct Commons photographers within 500 m (900 m for peaks),
 // counted the same way for every spot. ~30 is fully famous (Multnomah 29, Vista House 24, Haystack Rock 18); city spots
 // count fully only if they stand out from their surroundings (lift >= 15x the 5 km ring), so Times Square and a convention
-// centre don't win on crowds. Not in the feed = nobody photographs the area: unknown, median of measured spots nearby.
-// undefined: feed not loaded (old measure); null: unknown here; else 0..1. (Nov 23: replaced the hand-spot-only Commons
+// centre don't win on crowds. Not in the feed, or none at the point: unknown, the old record alone.
+// undefined: feed not loaded; null: no photographers at the point (unknown); else 0..1. (Nov 23: replaced the hand-spot-only Commons
 // counts, which put Haystack Rock level with an unknown waterfall.)
 let PHOTOQ_OFF = false; try { PHOTOQ_OFF = localStorage.getItem("ss2:photoq") === "0"; } catch (e) { }   // A/B: "0" = old quality measure
 function photoQ(s) {
   if (PHOTOQ_OFF) return undefined;
   const f = fd("spotphotos"); if (!f || !f.spots) return undefined;
   const v = f.spots[s.id]; if (!v) return null;
-  const eff = v[0] * Math.min(1, v[1] / 150);
-  return v[0] ? clamp(Math.log2(1 + eff) / Math.log2(31), 0.1, 1) : 0.05;
-}
-let __pqMed = { k: "", v: 0.3, n: 0 };
-function photoMedian() {
-  const k = LOC ? LOC.lat.toFixed(1) + "," + LOC.lon.toFixed(1) : ""; if (__pqMed.k === k && __pqMed.n >= 200) return __pqMed.v;
-  const qs = SPOTS.filter(s => !tooFar(s)).map(photoQ).filter(q => q != null).sort((a, b) => a - b);
-  __pqMed = { k, v: qs.length >= 20 ? Math.round(qs[qs.length >> 1] * 100) / 100 : 0.3, n: qs.length }; return __pqMed.v;
+  if (!v[0]) return null;   // none within 500 m is not "nobody comes": map points sit off where people stand (Mormon Row: 0 here, 42 within 5 km)
+  const eff = v[0] * Math.min(1, v[1] / 400);   // city crowds count fully only at 40x their surroundings (a Balboa Park deck had 93 at 15x)
+  return clamp(Math.log2(1 + eff) / Math.log2(31), 0.1, 1);
 }
 function spotQuality(s) {
   if (!s.seed && s.pop == null) setHandPop(s);
   const pq = photoQ(s);
-  const q = pq === undefined ? (hasRecord(s) ? clamp((viewFame(s) + 2) / 12, 0, 1) : medianQuality()) : pq === null ? photoMedian() : pq;
+  const old = hasRecord(s) ? clamp((viewFame(s) + 2) / 12, 0, 1) : medianQuality();
+  // photographers averaged with the old record (Wikipedia, OSM, Commons), not replacing it: either alone mis-ranked as many
+  // places as it fixed in the Nov 23 A/B (16 places, same weather)
+  const q = pq == null ? old : (old + pq) / 2;
   return /landmark|bridge/.test(s.kind || "") ? q * 0.75 : q;   // Wikipedia-famous buildings are not automatically photo spots
 }
 const _fitV1 = fitFor;
