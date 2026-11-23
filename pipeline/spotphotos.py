@@ -52,7 +52,7 @@ def _load():
                 continue
             grid[(int(math.floor(la / CELL)), int(math.floor(lo / CELL)))].append((la, lo, r.get("who") or "", r.get("taken") or ""))
             n += 1
-    log(f"spotphotos: {n:,} photos in {len(grid):,} cells from {f.name}")
+    log.info(f"spotphotos: {n:,} photos in {len(grid):,} cells from {f.name}")
     return grid, idx.get("dump")
 
 
@@ -126,11 +126,11 @@ def run():
         except Exception as e:
             soft_fail(f"spotphotos {s.get('id')}", e)
         if i % 10000 == 0:
-            log(f"spotphotos: {i:,}/{len(sp):,}")
+            log.info(f"spotphotos: {i:,}/{len(sp):,}")
     write_json("spotphotos.json", {"gen": iso(utcnow()), "dump": dump, "fields": ["who", "lift_x10", "am_pct", "pm_pct", "night_pct", "area_who"], "spots": out})
-    log(f"spotphotos: {len(out):,} spots written")
+    log.info(f"spotphotos: {len(out):,} spots written")
     # spot check for the log: famous, odd leaders and obscure ones from the Nov 19 tests
     for s in sp:
         if any(k in s.get("name", "") for k in ("Multnomah", "Haystack", "Hug Point", "Blumenthal", "Freedom Tower", "Vista House", "Bonneville", "Control Tower", "Cadillac", "Mille Creek", "Jenny Lake", "Cape Florida")):
-            log(f"  {s['name'][:40]:40} {s['id'][:22]:22} who/lift10/am/pm/night/area = {out.get(s['id'])}")
+            log.info(f"  {s['name'][:40]:40} {s['id'][:22]:22} who/lift10/am/pm/night/area = {out.get(s['id'])}")
     return out
