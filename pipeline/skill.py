@@ -49,8 +49,9 @@ def _layers(r):
         if cov is None: continue
         any_ = True
         if cov == 0: low = low or 0; mid = mid or 0; continue
+        if h in ("M", "", None): continue   # cover reported without a height (common, e.g. sky obscured): skipped as before, not an error
         try: base = float(h)
-        except Exception as e: soft_fail("skill: forecast hour: non-numeric", e); continue
+        except Exception as e: soft_fail("skill: cloud layer height: non-numeric", e); continue
         if base < 6500: low = max(low or 0, cov)
         elif base < 12000: mid = max(mid or 0, cov)
     if not any_: return None

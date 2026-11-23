@@ -37,7 +37,7 @@ async function readPhotos(files) {
         t = new Date(wall - sign * (h * 60 + m) * 6e4);
       }
       out.push({ t, lat: x.latitude, lon: x.longitude, lens: lensName(x), fl: x.FocalLength, cam: x.Model || "", f, dir: x.GPSImgDirection != null ? Math.round(x.GPSImgDirection) % 360 : null });
-    } catch (e) { }
+    } catch (e) { noteErr("photo log: EXIF", e); }
   }
   return out.sort((a, b) => a.t - b.t);
 }
@@ -93,7 +93,7 @@ function renderImport(el) {
 /* automatic scoring: read sky, fog and colour from the middle photo of each outing (the same reading as the conditions camera) */
 async function autoRead(ss) {
   for (const s of ss) { const p = s.photos[Math.floor(s.photos.length / 2)];
-    try { const im = await loadImg(p.f), a = analyse(im); s.sky = a.sky; s.fog = a.fog; s.color = a.colour; s.auto = a.m; URL.revokeObjectURL(im.src); } catch (e) { }
+    try { const im = await loadImg(p.f), a = analyse(im); s.sky = a.sky; s.fog = a.fog; s.color = a.colour; s.auto = a.m; URL.revokeObjectURL(im.src); } catch (e) { noteErr("photo log: image analysis", e); }
     const d = s.photos.map(q => q.dir).filter(x => x != null); s.dir = d.length ? d[Math.floor(d.length / 2)] : null; }
 }
 async function importFiles(files) {

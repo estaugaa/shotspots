@@ -35,7 +35,7 @@ async function loadExtras(force, mtnOnly) {
     const r = await omFetch(`https://api.open-meteo.com/v1/forecast?latitude=${LOC.lat.toFixed(3)}&longitude=${LOC.lon.toFixed(3)}&minutely_15=precipitation&forecast_minutely_15=12&past_minutely_15=2` +
       `&hourly=cape,snowfall,snow_depth,temperature_2m,relative_humidity_2m,wind_speed_10m&past_days=2&forecast_days=3&timeformat=unixtime&timezone=GMT`);
     LOCAL = { key, at: Date.now(), ...(await r.json()) }; changed = true;
-  } catch (e) { }
+  } catch (e) { noteErr("local weather (rain, snow)", e); }
   try {
     const near = peaksNear(LOC), names = near.map(p => p.name).join("|");
     if (near.length) {
@@ -52,11 +52,11 @@ async function loadExtras(force, mtnOnly) {
     const r = await omFetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${coast.lat.toFixed(3)}&longitude=${coast.lon.toFixed(3)}&hourly=wave_height,wave_period&forecast_days=3&timeformat=unixtime&timezone=GMT`);
     const j = await r.json(); const off = j.latitude != null ? km(coast, { lat: j.latitude, lon: j.longitude }) : 99;
     SEA = j.hourly && off < 15 && (j.hourly.wave_height || []).some(v => v != null) ? { key, at: Date.now(), h: j.hourly, near: coast.name } : null; changed = true;
-  } catch (e) { }
+  } catch (e) { noteErr("marine forecast", e); }
   try {
     const r = await omFetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LOC.lat.toFixed(2)}&longitude=${LOC.lon.toFixed(2)}&hourly=aerosol_optical_depth,dust,pm2_5&forecast_days=5&timeformat=unixtime&timezone=GMT`);
     const j = await r.json(); AIR = { key, at: Date.now(), h: j.hourly }; changed = true;
-  } catch (e) { }
+  } catch (e) { noteErr("air quality", e); }
   return changed;
 }
 function _idx(h, t) { if (!h || !h.time) return -1; const ts = t.getTime() / 1000; let bi = -1, bd = 1e12;
@@ -226,7 +226,7 @@ function extrasHtml() {
 const _renderNowExtras = renderNow;
 renderNow = function () {
   const r = _renderNowExtras.apply(this, arguments);
-  try { const box = document.querySelector("#v-now .sect h3"); const h = extrasHtml(); if (h) { const el = document.querySelector("#v-now .extras"); if (el) el.outerHTML = h; else { const also = [...document.querySelectorAll("#v-now .sect")].find(x => /Also worth knowing/.test(x.textContent)); (also || document.querySelector("#v-now")).insertAdjacentHTML(also ? "beforebegin" : "beforeend", h); } } } catch (e) { }
+  try { const box = document.querySelector("#v-now .sect h3"); const h = extrasHtml(); if (h) { const el = document.querySelector("#v-now .extras"); if (el) el.outerHTML = h; else { const also = [...document.querySelectorAll("#v-now .sect")].find(x => /Also worth knowing/.test(x.textContent)); (also || document.querySelector("#v-now")).insertAdjacentHTML(also ? "beforebegin" : "beforeend", h); } } } catch (e) { noteErr("extras panel", e); }
   return r;
 };
 setTimeout(() => loadExtras().then(ch => { if (ch) { __topsKey = ""; render(); } }).catch(() => { }), 2500);

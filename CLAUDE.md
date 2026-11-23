@@ -1,7 +1,8 @@
 # ShotSpots: working notes for Claude
 
-Read this first, then docs/STATUS.md. Decisions and their reasons are in docs/DECISIONS.md, tests in docs/TESTING.md.
-Keep all four short and current: update them in the same commit as the change they describe.
+Read this first, then docs/STATUS.md and docs/ROADMAP.md (the plan: claim an item before starting, update it in the same
+commit as the work, one item per session). Decisions and their reasons are in docs/DECISIONS.md, tests in docs/TESTING.md.
+Keep all five short and current: update them in the same commit as the change they describe.
 
 ## What it is
 A free photo-planning web app (landscape, wildlife, night sky) by Eric (GitHub estaugaa, Washougal WA).
@@ -36,8 +37,8 @@ Live at https://estaugaa.github.io/shotspots/ (GitHub Pages). It must work as we
   `diag-<script name>` (`diag-out` for diag.py).
 
 ## Scoring (v2, app/score2.js)
-score = conditions (0-100, light/weather fit for what the spot is for) x quality (0.5-1.12 from measured fame, same for every
-spot; landmarks x0.75) ; ranking then x (1 - 0.1 x share of the travel range used). Night and the Wildlife filter keep v1.
+score = conditions (0-100, light/weather fit for what the spot is for) x quality (0.5-1.12 from distinct Commons photographers
+at the spot, feed/spotphotos.json, same for every spot; landmarks x0.75) x photo timing (phototime.js) ; ranking then x (1 - 0.1 x share of the travel range used). Night and the Wildlife filter keep v1.
 `localStorage ss2:scorev = "1"` switches back to v1 for comparison.
 Every file that adjusts the score wraps `fitFor`; list it in `SCORE_LAYERS` (app/score2.js) so the spot page's
 "Why this score" and the tests can show what each layer did.
