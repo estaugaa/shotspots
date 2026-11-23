@@ -16,7 +16,7 @@ All of these run on GitHub Actions against the live site. Run one with
 | Expectations: pass/fail on real situations | `tools/expect.py` | nightly; history in `data/test_history.jsonl` |
 | 30 situation walkthroughs (full list text) | diag.yml `tools/diag.py [numbers]` -> branch `diag-out`, `scenarios.txt` | after ranking changes |
 | Old vs new scoring, same forecast | diag.yml `tools/scorecmp.py` -> branch `diag-scorecmp` | after scoring changes |
-| Seasonal planner (this checkout's app/ with the data branch's feed/, spots at Moab, Yosemite, Acadia, Smokies) | diag.yml `tools/seasonprobe.py` (any branch) -> branch `diag-seasonprobe` | after planner changes |
+| Seasonal planner (this checkout's app/ with the data branch's feed/, spots at Moab, Yosemite, Acadia, Smokies) | season-check.yml on any branch push touching it (or diag.yml `tools/seasonprobe.py`) -> branch `diag-seasonprobe` | after planner changes |
 | Why a spot ranks where it does | diag.yml `tools/whyprobe.py <place words>` -> branch `diag-whyprobe` | debugging |
 | Smoke (site up, page doesn't jump while loading) | smoke.yml | every 30 min |
 | Webcam truth: real sunrise/sunset colour vs the sky formula | camtruth.yml (after every GOES run) -> feed/camtruth.json | continuous |
