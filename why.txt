@@ -1,0 +1,115 @@
+[
+ {
+  "case": "Cannon Beach sunset",
+  "r": {
+   "top": [
+    "31 r29 Seaside Beach [beach/sunset] d19",
+    "30 r28 Short Sand Beach (Oswald West State Park) [undefined/sunset] d16",
+    "25 r25 Cannon Beach & Haystack Rock [undefined/sunset] d2",
+    "25 r24 Blumenthal Falls [waterfall/overcast] d16",
+    "22 r21 Hug Point [undefined/sunset] d8",
+    "20 r19 Arch Cape View [viewpoint/sunset] d22"
+   ],
+   "Haystack Rock": [
+    "cannon-beach [undefined/sunset] score=undefined views=0 fame=- d=2 far=false grp=true fit=25 sky=q3 blk100 cc100 can100 showers ptNorth Coast cats=coast chain=app:34,live:34,sky:34,feed:28,alerts:16,access:16,extras:21,hours:25 rank=2 :: flat light: long exposures of the surf and rocks; open view toward the west; the hour-by-hour model sees little colour here; low cloud deck toward the setting sun (path 17% open); big surf: 4.3 m waves; stay well back fr"
+   ],
+   "Ecola": [
+    "ecola [undefined/sunrise] score=undefined views=0 fame=- d=13 far=false grp=true fit=15 sky=q3 blk100 cc100 can100 showers ptHere cats=coast/vista chain=app:30,live:30,sky:30,feed:24,alerts:12,access:12,extras:17,hours:15 rank=7 :: flat light: long exposures of the surf and rocks; sun behind you: warm light on the view; the hour-by-hour model sees little colour here; low cloud deck toward the setting sun (path 17% open); big surf: 4.3 m waves; stay",
+    "multnomah-creek-falls [undefined/overcast] score=undefined views=0 fame=- d=120 far=true grp=true fit=19 sky=q6 blk100 cc100 can100 showers ptWest Gorge cats=waterfall chain=app:36,live:36,sky:36,feed:36,alerts:36,access:36,extras:36,hours:19 rank=-1 :: waterfalls shoot best in daytime shade or overcast, not at sunset; soft overcast light"
+   ],
+   "Hug Point": [
+    "hug-point [undefined/sunset] score=undefined views=0 fame=- d=8 far=false grp=true fit=22 sky=q3 blk100 cc100 can100 showers ptNorth Coast cats=coast/waterfall chain=app:46,live:46,sky:46,feed:40,alerts:28,access:28,extras:33,hours:22 rank=4 :: 0.5 in of rain in 2 days: falls running big; flat light: long exposures of the surf and rocks; soft overcast light; open view toward the west; the hour-by-hour model sees little colour here; low cloud deck toward the set"
+   ],
+   "Blumenthal Falls": [
+    "seed-n4232922938 [waterfall/overcast] score=4 views=0 fame=-0.4 d=16 far=false grp=true fit=25 sky=q3 blk100 cc100 can100 showers ptNorth Coast cats=waterfall chain=app:36,live:36,sky:36,feed:36,alerts:36,access:36,extras:36,hours:25 rank=3 :: 0.5 in of rain in 2 days: falls running big; waterfalls shoot best in daytime shade or overcast, not at sunset; soft overcast light; few photographers shoot here at sunset (0% of 3, measured)"
+   ],
+   "Necanicum": [
+    "seed-eL164411 [hotspot/sunrise] score=8 views=0 fame=0.8 d=23 far=false grp=true fit=10 sky=q3 blk100 cc100 can100 showers ptHere cats=wildlife/birds chain=app:17,live:20,sky:20,feed:20,alerts:20,access:20,extras:20,hours:10 rank=12 :: 8 bird sightings logged here in 10 days",
+    "seed-eL1740648 [hotspot/sunrise] score=7.8 views=0 fame=0.8 d=23 far=false grp=true fit=10 sky=q3 blk100 cc100 can100 showers ptHere cats=wildlife/birds chain=app:17,live:20,sky:20,feed:20,alerts:20,access:20,extras:20,hours:10 rank=13 :: 9 bird sightings logged here in 10 days",
+    "seed-eL2344471 [hotspot/sunrise] score=7.5 views=0 fame=0.7 d=20 far=false grp=true fit=10 sky=q3 blk100 cc100 can100 showers ptHere cats=wildlife/birds chain=app:17,live:20,sky:20,feed:20,alerts:20,access:20,extras:20,hours:10 rank=11 :: 8 bird sightings logged here in 10 days"
+   ]
+  }
+ },
+ {
+  "case": "Washougal sunrise",
+  "r": {
+   "top": [
+    "41 r38 Multnomah Falls [undefined/overcast] d40",
+    "40 r38 Crystal Springs Rhododendron Garden [undefined/overcast] d34",
+    "40 r37 Willamette Falls overlook (Hwy 99E, Oregon City) [undefined/overcast] d40",
+    "35 r33 Lewisville Regional Park (East Fork Lewis River) [undefined/overcast] d35",
+    "33 r32 Blue Lake Regional Park (west shore, Mt. Hood down the lake) [undefined/sunrise] d17",
+    "32 r30 Downtown ginkgo gold (SW Salmon & SW Alder) + Reed's heritage ginkgos [undefined/overcast] d35"
+   ],
+   "Vista House": [
+    "vista-house [undefined/sunrise] score=undefined views=0 fame=- d=35 far=false grp=true fit=18 sky=q14 blk60 cc100 can100 wind ptHere cats=vista chain=app:29,live:29,sky:29,feed:23,alerts:11,access:11,extras:19,hours:18 rank=172 :: flat light: moody, even light on the view; open view toward the east; the hour-by-hour model sees little colour here; sun clears the ridge at 9:42 AM; low cloud deck toward the rising sun (path 17% open); Mt. Hood should",
+    "scout-vista-hood [undefined/sunrise] score=undefined views=0 fame=- d=5 far=false grp=true fit=16 sky=q14 blk60 cc100 can100 wind ptCamas\u2013Washougal cats=alignment/mountain/vista chain=app:29,live:29,sky:29,feed:23,alerts:11,access:11,extras:22,hours:16 rank=195 :: flat light: moody, even light on the view; open view toward the east; the hour-by-hour model sees little colour here; sun clears the ridge at 7:38 AM; \u26a0\ufe0f Current fire closures on Mt. Hood National Forest; low cloud deck "
+   ],
+   "Crystal Springs": [
+    "crystal-springs [undefined/overcast] score=undefined views=0 fame=- d=34 far=false grp=true fit=40 sky=q14 blk60 cc100 can100 overcast ptPortland cats=garden/birds/fallcolor/wildflowers chain=app:56,live:66,sky:66,feed:76,alerts:76,access:76,extras:66,hours:40 rank=1 :: soft overcast light; 10 bird sightings logged here in 10 days; sun clears the ridge at 8:00 AM; satellite: near peak (10-31); Mt. Adams likely hidden in cloud; few photographers shoot here at sunrise (0% of 6, measured)"
+   ],
+   "Multnomah": [
+    "multnomah [undefined/overcast] score=undefined views=0 fame=- d=40 far=false grp=true fit=41 sky=q14 blk60 cc100 can100 overcast ptWest Gorge cats=waterfall chain=app:36,live:36,sky:36,feed:36,alerts:36,access:36,extras:36,hours:41 rank=0 :: waterfalls shoot best in daytime shade or overcast, not at sunrise; soft overcast light; 14% of its 29 photographers shoot at sunrise (measured)",
+    "multnomah-creek-falls [undefined/overcast] score=undefined views=0 fame=- d=35 far=false grp=true fit=19 sky=q14 blk60 cc100 can100 overcast ptWest Gorge cats=waterfall chain=app:36,live:36,sky:36,feed:36,alerts:36,access:36,extras:36,hours:19 rank=153 :: waterfalls shoot best in daytime shade or overcast, not at sunrise; soft overcast light; sun clears the ridge at 8:14 AM",
+    "r-edgefield-historic-multnomah-county-poor-farm-tr [undefined/both] score=undefined views=0 fame=- d=15 far=false grp=true fit=19 sky=q14 blk60 cc100 can100 wind ptCamas\u2013Washougal cats=historic/garden/fallcolor chain=app:44,live:44,sky:44,feed:42,alerts:30,access:30,extras:30,hours:19 rank=134 :: soft overcast light; wind will blur leaves and flowers; open view toward the east; the hour-by-hour model sees little colour here; sun clears the ridge at 8:00 AM; satellite: turning (11-04); low cloud deck toward the ri"
+   ],
+   "Crown Point": [
+    "vista-house [undefined/sunrise] score=undefined views=0 fame=- d=35 far=false grp=true fit=18 sky=q14 blk60 cc100 can100 wind ptHere cats=vista chain=app:29,live:29,sky:29,feed:23,alerts:11,access:11,extras:19,hours:18 rank=172 :: flat light: moody, even light on the view; open view toward the east; the hour-by-hour model sees little colour here; sun clears the ridge at 9:42 AM; low cloud deck toward the rising sun (path 17% open); Mt. Hood should",
+    "scout-crown-glow [undefined/sunset] score=undefined views=0 fame=- d=5 far=false grp=true fit=4 sky=q14 blk60 cc100 can100 wind ptHere cats=vista chain=app:10,live:10,sky:10,feed:4,alerts:0,access:0,extras:8,hours:4 rank=462 :: flat light: moody, even light on the view; out of season; faces west: a sunset spot; the hour-by-hour model sees little colour here; sun clears the ridge at 7:48 AM; low cloud deck toward the rising sun (path 17% open); ",
+    "seed-n356539916 [peak/both/hz] score=5 views=0 fame=0.0 d=92 far=true grp=true fit=13 sky=q14 blk60 cc100 can100 overcast ptLake Sacajawea Park (Longview) cats=mountain/vista chain=app:23,live:23,sky:23,feed:23,alerts:23,access:23,extras:23,hours:13 rank=-1 :: flat light: moody, even light on the view; open view toward the east"
+   ],
+   "Larch": [
+    "larch-mtn [undefined/both] score=undefined views=0 fame=- d=65 far=true grp=true fit=5 sky=q14 blk60 cc100 can100 overcast ptLarch Mountain cats=mountain/vista/aurora chain=app:15,live:15,sky:15,feed:9,alerts:0,access:0,extras:8,hours:5 rank=-1 :: flat light: moody, even light on the view; out of season; open view toward the east; the hour-by-hour model sees little colour here; low cloud deck toward the rising sun (path 17% open); Mt. Hood should be out (summit 0%",
+    "scout-hood-hides [undefined/both] score=undefined views=0 fame=- d=10 far=false grp=true fit=10 sky=q14 blk60 cc100 can100 wind ptHere cats=mountain chain=app:29,live:29,sky:29,feed:13,alerts:1,access:1,extras:18,hours:10 rank=306 :: flat light: moody, even light on the view; open view toward the east; the hour-by-hour model sees little colour here; terrain blocks the rising sun here; \u26a0\ufe0f Current fire closures on Mt. Hood National Forest; low cloud de",
+    "larch-wa-migration [undefined/sunrise] score=undefined views=0 fame=- d=45 far=false grp=true fit=5 sky=q14 blk60 cc100 can100 wind ptCamas\u2013Washougal cats=birds/wildlife/vista chain=app:10,live:10,sky:10,feed:4,alerts:0,access:0,extras:11,hours:5 rank=459 :: flat light: moody, even light on the view; out of season; open view toward the east; the hour-by-hour model sees little colour here; sun clears the ridge at 9:22 AM; low cloud deck toward the rising sun (path 17% open); "
+   ],
+   "Women's Forum": [
+    "womens-forum [undefined/sunrise] score=undefined views=0 fame=- d=32 far=false grp=true fit=12 sky=q14 blk60 cc100 can100 wind ptHere cats=vista/aurora chain=app:29,live:29,sky:29,feed:23,alerts:11,access:11,extras:19,hours:12 rank=280 :: flat light: moody, even light on the view; open view toward the east; the hour-by-hour model sees little colour here; sun clears the ridge at 7:52 AM; low cloud deck toward the rising sun (path 17% open); Mt. Hood should",
+    "scout-womens-forum-sunrise [undefined/sunrise] score=undefined views=0 fame=- d=32 far=false grp=true fit=5 sky=q14 blk60 cc100 can100 wind ptHere cats=alignment/vista chain=app:15,live:15,sky:15,feed:9,alerts:0,access:0,extras:8,hours:5 rank=452 :: flat light: moody, even light on the view; out of season; open view toward the east; the hour-by-hour model sees little colour here; sun clears the ridge at 7:52 AM; \u26a0\ufe0f Current fire closures on Mt. Hood National Forest; "
+   ],
+   "Rooster Rock": [
+    "rooster-rock [undefined/sunrise] score=undefined views=0 fame=- d=30 far=false grp=true fit=12 sky=q14 blk60 cc100 can100 wind ptHere cats=vista/night chain=app:29,live:29,sky:29,feed:23,alerts:11,access:11,extras:19,hours:12 rank=278 :: flat light: moody, even light on the view; open view toward the east; the hour-by-hour model sees little colour here; sun clears the ridge at 9:00 AM; low cloud deck toward the rising sun (path 33% open); Mt. Hood should",
+    "scout-rooster-hood [undefined/sunrise] score=undefined views=0 fame=- d=5 far=false grp=true fit=12 sky=q14 blk60 cc100 can100 wind ptHere cats=alignment/mountain chain=app:29,live:29,sky:29,feed:23,alerts:11,access:11,extras:22,hours:12 rank=268 :: flat light: moody, even light on the view; open view toward the east; the hour-by-hour model sees little colour here; sun clears the ridge at 7:48 AM; \u26a0\ufe0f Current fire closures on Mt. Hood National Forest; low cloud deck ",
+    "seed-n348190243 [peak/both/hz] score=5 views=0 fame=0.0 d=98 far=true grp=true fit=13 sky=q14 blk60 cc100 can100 overcast ptSt. Helens cats=mountain/vista chain=app:23,live:23,sky:23,feed:23,alerts:23,access:23,extras:23,hours:13 rank=-1 :: flat light: moody, even light on the view; open view toward the east"
+   ]
+  }
+ },
+ {
+  "case": "Acadia sunrise",
+  "r": {
+   "top": [
+    "26 r25 Sand Beach [beach/blocked] d12",
+    "21 r20 Baker Island Light [lighthouse/both] d17",
+    "19 r18 Hawk Watch [viewpoint/both] d17",
+    "18 r17 Sunset view [viewpoint/both] d16",
+    "17 r17 Duck Brook Waterfall [waterfall/overcast] d8",
+    "17 r16 Hadlock Falls [waterfall/overcast] d15"
+   ],
+   "Cadillac": [
+    "seed-w1104353820 [refuge/sunrise] score=3 views=0 fame=1.5 d=63 far=true grp=true fit=21 sky=- cats=wildlife/birds chain=app:40,live:40,sky:40,feed:40,alerts:40,access:40,extras:40,hours:21 rank=-1 :: no forecast point near here yet",
+    "seed-n358212834 [peak/both] score=19.6 views=31808 fame=10.0 d=17 far=false grp=true fit=13 sky=q12 blk100 cc0 can0 clear ptHere cats=mountain/vista chain=app:16,live:16,sky:16,feed:16,alerts:16,access:16,extras:16,hours:13 rank=18 :: peaks likely out; flat light: moody, even light on the view; few photographers shoot here at sunrise (7% of 14, measured)",
+    "seed-eL159030 [hotspot/sunrise] score=7.4 views=0 fame=0.7 d=17 far=false grp=true fit=14 sky=q12 blk100 cc0 can0 clear ptHere cats=wildlife/birds chain=app:18,live:18,sky:18,feed:18,alerts:18,access:18,extras:18,hours:14 rank=15 :: few photographers shoot here at sunrise (8% of 13, measured)"
+   ],
+   "Otter": [
+    "seed-eL781797 [hotspot/sunrise] score=8.2 views=0 fame=0.9 d=16 far=false grp=true fit=12 sky=q12 blk100 cc0 can0 clear ptHere cats=wildlife/birds chain=app:18,live:19,sky:19,feed:19,alerts:19,access:19,extras:19,hours:12 rank=22 :: grey seal seen here 1\u00d7 this month, plus harbor seal; few photographers shoot here at sunrise (0% of 5, measured)",
+    "seed-n2932887309 [viewpoint/both] score=4 views=0 fame=-0.4 d=95 far=true grp=true fit=16 sky=q12 blk100 cc0 can0 clear ptHere cats=vista chain=app:25,live:25,sky:25,feed:25,alerts:25,access:25,extras:25,hours:16 rank=-1 :: flat light: moody, even light on the view",
+    "seed-n5064985123 [viewpoint/both] score=4 views=0 fame=-0.4 d=16 far=false grp=true fit=17 sky=q12 blk100 cc0 can0 clear ptHere cats=vista chain=app:25,live:25,sky:25,feed:25,alerts:25,access:25,extras:25,hours:17 rank=6 :: flat light: moody, even light on the view; few photographers shoot here at sunrise (0% of 4, measured)"
+   ],
+   "Sand Beach": [
+    "short-sand [undefined/sunset] score=undefined views=0 fame=- d=3128 far=true grp=true fit=31 sky=- cats=coast/waterfall chain=app:40,live:40,sky:40,feed:40,alerts:40,access:40,extras:40,hours:31 rank=-1 :: no forecast point near here yet; few photographers shoot here at sunrise (0% of 6, measured)",
+    "seed-eL486275 [hotspot/sunrise] score=7.7 views=0 fame=0.8 d=12 far=false grp=true fit=14 sky=q12 blk100 cc0 can0 clear ptHere cats=wildlife/birds chain=app:18,live:19,sky:19,feed:19,alerts:19,access:19,extras:19,hours:14 rank=14 :: river otter seen here 1\u00d7 this month, plus harbor seal; few photographers shoot here at sunrise (0% of 14, measured)",
+    "seed-w128573658 [beach/blocked] score=7 views=0 fame=2.2 d=12 far=false grp=true fit=26 sky=q12 blk100 cc0 can0 clear ptHere cats=coast/reflection chain=app:30,live:30,sky:30,feed:30,alerts:30,access:30,extras:30,hours:26 rank=0 :: flat light: long exposures of the surf and rocks; sun behind you: warm light on the view; sun clears the ridge at 7:14 AM; few photographers shoot here at sunrise (0% of 14, measured)"
+   ],
+   "Jordan Pond": [
+    "seed-w38791185 [lake/blocked] score=12 views=4434 fame=2.3 d=15 far=false grp=true fit=12 sky=q12 blk100 cc0 can0 clear ptHere cats=reflection/vista chain=app:25,live:25,sky:25,feed:15,alerts:15,access:15,extras:15,hours:12 rank=21 :: flat light: moody, even light on the view; sun behind you: warm light on the view; terrain blocks the rising sun here; few photographers shoot here at sunrise (0% of 9, measured)"
+   ],
+   "Beech Mountain": [
+    "seed-n358231332 [lookout/both] score=0 views=0 fame=-2.0 d=28 far=false grp=true fit=14 sky=q12 blk100 cc0 can0 clear ptHere cats=vista/mountain chain=app:25,live:25,sky:25,feed:25,alerts:25,access:25,extras:25,hours:14 rank=16 :: peaks likely out; flat light: moody, even light on the view"
+   ],
+   "Bass Harbor": [
+    "seed-w1056193780 [lighthouse/both] score=16.8 views=5361 fame=10.0 d=37 far=true grp=true fit=26 sky=q12 blk100 cc0 can0 clear ptHere cats=coast/historic chain=app:30,live:30,sky:30,feed:30,alerts:30,access:30,extras:30,hours:26 rank=-1 :: flat light: long exposures of the surf and rocks; few photographers shoot here at sunrise (0% of 14, measured)",
+    "seed-n13978317354 [viewpoint/both] score=5 views=0 fame=2.6 d=36 far=true grp=true fit=22 sky=q12 blk100 cc0 can0 clear ptHere cats=vista chain=app:25,live:25,sky:25,feed:25,alerts:25,access:25,extras:25,hours:22 rank=-1 :: flat light: moody, even light on the view; few photographers shoot here at sunrise (0% of 14, measured)"
+   ]
+  }
+ }
+]
