@@ -1,7 +1,8 @@
 # ShotSpots: working notes for Claude
 
-Read this first, then docs/STATUS.md. Decisions and their reasons are in docs/DECISIONS.md, tests in docs/TESTING.md.
-Keep all four short and current: update them in the same commit as the change they describe.
+Read this first, then docs/STATUS.md and docs/ROADMAP.md (the plan: claim an item before starting, update it in the same
+commit as the work, one item per session). Decisions and their reasons are in docs/DECISIONS.md, tests in docs/TESTING.md.
+Keep all five short and current: update them in the same commit as the change they describe.
 
 ## What it is
 A free photo-planning web app (landscape, wildlife, night sky) by Eric (GitHub estaugaa, Washougal WA).
