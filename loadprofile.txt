@@ -1,0 +1,117 @@
+Load profile https://estaugaa.github.io/shotspots/ (live build ss2-v389b55b2b3) at 45.582,-122.353: Chromium, 150 ms RTT, 1.6 Mbit/s, CPU x4, 375x812
+
+=== cold (first visit) ===
+first paint 1432 ms | picks shown 7048 ms | forecast 7045 ms | core data 5121 ms | picks changed 0x, moved 0x (last - ms) | other cards changed 2x | list redraws 13 | layout shift 0.005
+187 requests, 1098 KB transferred (scripts 346, feed 738, other sites 40); last request done 21635 ms | long script tasks 43 totalling 8855 ms
+largest downloads: 224KB feed/spotphotos.json (done 10354 ms); 179KB feed/light.json (done 9687 ms); 106KB feed/hrrr.json (done 8187 ms); 101KB data.js (done 2532 ms); 73KB feed/nps.json (done 7175 ms); 45KB app.js (done 2240 ms); 36KB cdnjs.cloudflare.com (done 2157 ms); 32KB feed/darkgrid.json (done 5389 ms); 16KB feed/trails.json (done 4527 ms); 15KB sky.js (done 1639 ms)
+timeline:
+  2739ms long task 252ms
+  2752ms page height 812 -> 1383
+  3481ms page height 1472 -> 1958
+  5121ms long task 239ms
+  5121ms core data ready (BOOT.core)
+  5121ms page height 1958 -> 2424
+  6234ms page height 2424 -> 2741
+  7044ms long task 737ms
+  7045ms forecast loaded
+  7048ms picks shown: multnomah | lan-su-garden | mt-tabor (first at y=637)
+  7048ms page height 2741 -> 3101
+  7771ms long task 664ms
+  8223ms long task 314ms
+  8224ms page height 3101 -> 3279
+  11868ms long task 511ms
+  13201ms long task 505ms
+  13201ms long task 314ms
+  14101ms long task 531ms
+  14595ms long task 436ms
+  15534ms long task 419ms
+  16280ms long task 417ms
+  17064ms long task 433ms
+  17803ms long task 397ms
+layout shifts:
+  2738ms 0.004 top>topr y8->8 h36->36 'Loading weather…
+    ⚙
+    ◐'
+
+=== warm (returning, service worker) ===
+first paint 124 ms | picks shown 2408 ms | forecast 189 ms | core data 817 ms | picks changed 0x, moved 0x (last - ms) | other cards changed 2x | list redraws 15 | layout shift 0
+171 requests, 0 KB transferred (scripts 0, feed 0, other sites 0); last request done 4757 ms | long script tasks 46 totalling 5789 ms
+largest downloads: 0KB fonts.googleapis.com (done 97 ms); 0KB cdnjs.cloudflare.com (done 60 ms); 0KB style.css (done 60 ms); 0KB astro.js (done 60 ms); 0KB data.js (done 62 ms); 0KB cdnjs.cloudflare.com (done 78 ms); 0KB app.js (done 85 ms); 0KB live.js (done 85 ms); 0KB sky.js (done 88 ms); 0KB stars.js (done 89 ms)
+timeline:
+  189ms forecast loaded
+  445ms long task 249ms
+  471ms page height 812 -> 1583
+  817ms long task 252ms
+  817ms core data ready (BOOT.core)
+  1468ms page height 1583 -> 2156
+  2401ms long task 848ms
+  2408ms picks shown: multnomah | lan-su-garden | r-benson-lake-mist (first at y=637)
+  2408ms page height 2156 -> 2826
+  2989ms long task 389ms
+  3490ms long task 315ms
+  4517ms long task 340ms
+  4525ms page height 2826 -> 3121
+  5077ms long task 356ms
+  5078ms page height 3121 -> 3299
+CPU, warm load (self time = in the function itself; total = including what it calls):
+  self     767 ms  nearestPt app.js:206
+  self     684 ms  km app.js:79
+  self     203 ms  cosd astro.js:5
+  self     195 ms  driveMin app.js:104
+  self     194 ms  scrollIntoView
+  self     167 ms  fitFor app.js:550
+  self     161 ms  atan2d astro.js:5
+  self     150 ms  sind astro.js:5
+  self     133 ms  fitFor live.js:169
+  self     120 ms  hourAt app.js:223
+  self     118 ms  fitFor feed.js:111
+  self     111 ms  hourAt nowcast.js:90
+  self     101 ms  skyAt app.js:354
+  self      94 ms  laYMD astro.js:72
+  self      92 ms  fitFor perf.js:9
+  self      90 ms  (anonymous) app.js:461
+  self      87 ms  alignOn app.js:461
+  self      81 ms  hasRecord score2.js:23
+  self      71 ms  dest app.js:87
+  self      71 ms  (anonymous) live.js:35
+  self      69 ms  terrainLightDay terrainsun.js:8
+  self      64 ms  rankFor app.js:670
+  self      61 ms  liveFacts live.js:158
+  self      58 ms  renderNow app.js:803
+  self      57 ms  rev astro.js:4
+  self      56 ms  fitFor extras.js:174
+  self      54 ms  rainbowAt extras.js:137
+  self      53 ms  topSpecies feed.js:95
+  self      50 ms  fetch
+  self      50 ms  tick
+  total   5481 ms  rankFor app.js:670
+  total   5021 ms  fitFor perf.js:9
+  total   4929 ms  fitFor phototime.js:21
+  total   4924 ms  __topsOne app.js:738
+  total   4906 ms  fitFor score2.js:57
+  total   4566 ms  fitFor nowcast.js:107
+  total   4400 ms  fitFor hours.js:39
+  total   4243 ms  fitFor extras.js:174
+  total   3475 ms  renderNow confidence.js:42
+  total   3471 ms  renderNow extras.js:227
+  total   3399 ms  renderNow now.js:39
+  total   3393 ms  renderNow seed.js:69
+  total   3389 ms  renderNow camera.js:128
+  total   3385 ms  renderNow nearby.js:72
+  total   3359 ms  renderNow forms.js:84
+  total   3356 ms  renderNow alerts.js:187
+  total   3324 ms  renderNow alerts.js:56
+  total   3285 ms  renderNow shots.js:185
+  total   3281 ms  renderNow app.js:1233
+  total   3280 ms  renderNow app.js:803
+  total   3252 ms  fitFor access.js:22
+  total   3211 ms  (anonymous) app.js:1145
+  total   3210 ms  paint perf.js:17
+  total   3209 ms  paint live.js:167
+  total   3208 ms  paint app.js:1147
+  total   3177 ms  fitFor alerts.js:11
+  total   3124 ms  fitFor feed.js:111
+  total   2666 ms  step app.js:744
+  total   2366 ms  fitFor sky.js:144
+  total   2280 ms  windowTops app.js:730
+  garbage collection 380 ms
