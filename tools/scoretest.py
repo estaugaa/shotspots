@@ -41,6 +41,8 @@ CASES = [
 
 RANK = """(async ([kind]) => {
   for (let i = 0; i < 120 && !WX; i++) await new Promise(r => setTimeout(r, 250));
+  // and the eager feeds, as the app's first list does (Nov 24: a capture ranked before spotphotos arrived in one run)
+  for (let i = 0; i < 120 && typeof FEED !== "undefined" && !FEED.eager; i++) await new Promise(r => setTimeout(r, 250));
   if (!WX) return { err: "no forecast loaded" };
   const all = allWindows(LOC, PLAN_HOURS), want = laYMD(new Date(Date.now() + 864e5));
   const w = all.find(x => winDay(x) === want && x.kind === kind); if (!w) return { err: "no " + kind + " window" };
@@ -75,6 +77,8 @@ SKY_PICK = """const pick = k => k && { q: k.q, cc: k.cc, low: k.low, mid: k.mid,
 
 LIVE_RANK = """(async ([kinds]) => {
   for (let i = 0; i < 120 && !WX; i++) await new Promise(r => setTimeout(r, 250));
+  // and the eager feeds, as the app's first list does (Nov 24: a capture ranked before spotphotos arrived in one run)
+  for (let i = 0; i < 120 && typeof FEED !== "undefined" && !FEED.eager; i++) await new Promise(r => setTimeout(r, 250));
   if (!WX) return { err: "no forecast loaded" };
   const iso = d => d && new Date(d).toISOString(), labels = SCORE_LAYERS.map(l => l[0]), out = [];
   """ + SKY_PICK + """

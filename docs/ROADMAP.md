@@ -33,7 +33,10 @@ Status: `todo`, `doing (<branch>)`, `done (<date>: <result>)`, `dropped (<reason
   baselines and runs daily (job_daily, ~30 s). Next: after the Nov 24 rebuild, re-record the scoring-test data, then
   switch phototime.js to the per-event baseline with shrinkage (tested Nov 23 on the old data: changes small, but the
   old data can't judge it). Lift: an 'urban only' rule (300-1,000 photographers within 5 km) put Crystal Springs
-  Rhododendron Garden first at sunrise and sunset, so it was not shipped; to be fitted on data (5.1). todo
+  Rhododendron Garden first at sunrise and sunset, so it was not shipped; to be fitted on data (5.1).
+  Nov 24: per-event baseline (sunrise 5%, sunset 20%) with shrinkage shipped; #1 unchanged in all 6 scoring-test cases
+  (Mather Point sunrise 90->99, Multnomah 39->44; sunset boosts shrink: Tunnel View 77->70). Scoring test now waits for
+  the eager feeds (a capture had ranked before spotphotos arrived). Lift: still open (5.1). done
 - 1.2 Curate spots by data (non-photo places out; birding hotspots to the Wildlife filter only). done Nov 23 (claude/gifted-sanderson-3f3abb):
   of 75,346 starter spots, 19 control towers and 13 park-ride towers dropped, 785 lose fame borrowed from another Wikidata item
   (job=seedclean, monthly); Denver sunset top 8 all views on the same forecast (was a ride tower #1). Birding hotspots unchanged
