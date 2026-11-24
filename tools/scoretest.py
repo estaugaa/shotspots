@@ -16,9 +16,11 @@ frozen clock; the baseline was re-recorded then (8 far spots changed, every top 
     python tools/scoretest.py --live     prediction log (nightly, regress.yml): the LIVE site at the real time ranks the
                                          next sunrise and sunset for LIVE_CASES; the top 20 (score, score after each layer,
                                          drive time) per case are appended to data/archive/predictions/<YYYY-MM>.jsonl.gz
-                                         so rankings can later be checked against outcomes (tools/predeval.py).
+                                         so rankings can later be checked against outcomes (tools/predeval.py), each spot
+                                         with the sky model's inputs (sk). Then the sky model at every webcam that showed
+                                         sky lately, forecast at the camera -> data/archive/predcams/<YYYY-MM>.jsonl.gz.
 """
-import asyncio, base64, datetime as dt, functools, gzip, hashlib, http.server, json, os, pathlib, re, sys, threading, urllib.parse
+import asyncio, base64, csv, datetime as dt, functools, gzip, hashlib, http.server, io, json, math, os, pathlib, re, sys, threading, urllib.parse
 from playwright.async_api import async_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -66,10 +68,15 @@ LIVE_CASES = [
 ]
 LIVE_KINDS = ("sunrise", "sunset")
 
+# the app's sky model at a point (skyCalc): its inputs and the colour score q, so weights can be refitted offline
+SKY_PICK = """const pick = k => k && { q: k.q, cc: k.cc, low: k.low, mid: k.mid, high: k.high, pop: k.pop, vis: k.vis, wind: k.wind,
+    canvas: k.canvas, block: k.block, fog: !!k.fog, mode: k.mode };"""
+
 LIVE_RANK = """(async ([kinds]) => {
   for (let i = 0; i < 120 && !WX; i++) await new Promise(r => setTimeout(r, 250));
   if (!WX) return { err: "no forecast loaded" };
   const iso = d => d && new Date(d).toISOString(), labels = SCORE_LAYERS.map(l => l[0]), out = [];
+  """ + SKY_PICK + """
   for (const kind of kinds) {
     const w = allWindows(LOC, PLAN_HOURS).find(x => x.kind === kind && !x.live);   // the next one that hasn't started
     if (!w) { out.push({ kind, err: "no " + kind + " window" }); continue; }
@@ -77,14 +84,41 @@ LIVE_RANK = """(async ([kinds]) => {
     out.push({ kind, window: { start: iso(w.start), peak: iso(w.peak), end: iso(w.end) }, labels, n_ranked: R.length,
       scorev: typeof SCORE_V !== "undefined" ? SCORE_V : null,
       top: R.slice(0, 20).map((x, i) => ({ rank: i + 1, id: x.s.id, name: x.s.name, lat: x.s.lat, lon: x.s.lon, cats: (x.s.cats || []).slice(0, 2),
-        score: x.f.n, r: Math.round(x.r * 10) / 10, drive_min: Math.round(x.d), layers: scoreLayers(x.s, w).map(l => l.n) })) });
+        score: x.f.n, r: Math.round(x.r * 10) / 10, drive_min: Math.round(x.d), layers: scoreLayers(x.s, w).map(l => l.n), sk: pick(skyAt(x.s, w)) })) });
   }
   return { cases: out }; })"""
 
+# Webcam points: the app's sky model (skyAt) at every camera that showed sky lately, for its next sunrise and sunset.
+# Cameras are grouped (within CAM_KM); for each group the page plans from the group's centre with forecast points AT the
+# cameras (wxPoints replaced for the run) and loads the forecast, HRRR and the cloud path toward the sun as the app does.
+CAM_KM, CAM_DAYS = 110, 14
+CAM_SKY = """(async ([groups, kinds]) => {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  for (let i = 0; i < 120 && !WX; i++) await sleep(250);
+  if (!WX) return { err: "no forecast loaded" };
+  const iso = d => d && new Date(d).toISOString(), out = [], errs = [];
+  """ + SKY_PICK + """
+  const _wxp = wxPoints, _render = render; render = () => {};
+  try {
+    for (const g of groups) {
+      LOC = { lat: g.lat, lon: g.lon, label: "cameras", src: "search", at: Date.now() };
+      wxPoints = () => [{ id: "me", n: "Here", lat: g.lat, lon: g.lon }, ...g.cams.map(c => ({ id: "c:" + c.id, n: c.id, lat: c.lat, lon: c.lon }))];
+      const t0 = Date.now(); await loadWx(true);
+      if (!WX || WX.at < t0) { errs.push(g.cams.length + " cameras: forecast failed (" + WXERR + ")"); continue; }
+      for (let i = 0; i < 60 && !(HZN && HZN.at >= t0); i++) await sleep(250);
+      for (let i = 0; i < 60 && typeof HRRR !== "undefined" && !(HRRR && HRRR.key === WX.at); i++) await sleep(250);
+      for (const c of g.cams) for (const kind of kinds) {
+        const w = allWindows(c, PLAN_HOURS).find(x => x.kind === kind && !x.live); if (!w) continue;
+        const sk = pick(skyAt(c, w)); if (sk) out.push({ cam: c.id, kind, peak: iso(w.peak), start: iso(w.start), sk });
+      }
+      await sleep(1500);   // stay well under Open-Meteo's free per-minute limit
+    }
+  } finally { wxPoints = _wxp; render = _render; }
+  return { cams: out, errs }; })"""
 
-async def live_case(br, case):
+
+async def open_live(br, name, lat, lon, prefs):
     """The live site, real clock, real data: nothing is replayed (only images and form posts are blocked)."""
-    name, (lat, lon), prefs = case
     c = await br.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, timezone_id="America/Los_Angeles",
                              service_workers="block")
     st = {"ss2:loc": {"lat": lat, "lon": lon, "label": name, "src": "search", "at": 9e12},
@@ -100,14 +134,71 @@ async def live_case(br, case):
         if rq.resource_type in SKIP or "/f/" in rq.url: return await rt.abort()
         await rt.continue_()
     await pg.route("**/*", route)
+    await pg.goto(LIVE, wait_until="load", timeout=60000)
+    await settle(pg, inflight, quiet=5.0, least=10.0, limit=90)
+    return c, pg
+
+
+async def live_eval(br, name, lat, lon, prefs, js, arg):
+    c = None
     try:
-        await pg.goto(LIVE, wait_until="load", timeout=60000)
-        await settle(pg, inflight, quiet=5.0, least=10.0, limit=90)
-        r = await pg.evaluate(LIVE_RANK, [list(LIVE_KINDS)])
+        c, pg = await open_live(br, name, lat, lon, prefs)
+        r = await pg.evaluate(js, arg)
     except Exception as e:
         r = {"err": f"error: {str(e)[:200]}"}
-    await c.close()
+    if c: await c.close()
     return r
+
+
+async def live_case(br, case):
+    name, (lat, lon), prefs = case
+    return await live_eval(br, name, lat, lon, prefs, LIVE_RANK, [list(LIVE_KINDS)])
+
+
+def _km(a, b):
+    return 6371 * math.hypot(math.radians(b[1] - a[1]) * math.cos(math.radians((a[0] + b[0]) / 2)), math.radians(b[0] - a[0]))
+
+
+def cam_groups():
+    """Cameras whose frames showed sky in the last CAM_DAYS days with the current colour measure (data/archive/camtruth),
+    grouped greedily within CAM_KM of each group's first camera."""
+    cut = str((dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=CAM_DAYS)).date())
+    rows = []
+    for f in sorted((ROOT / "data" / "archive" / "camtruth").glob("*.csv.gz"))[-2:]:
+        rows += [r for r in csv.DictReader(io.StringIO(gzip.decompress(f.read_bytes()).decode("utf-8"))) if r["date"] >= cut]
+    if not rows: return []
+    mv = max(r.get("mv") or "" for r in rows)
+    num = lambda x: float(x) if x not in (None, "", "None") else 0.0
+    cams = {}
+    for r in rows:
+        if (r.get("mv") or "") == mv and num(r["sky_blue"]) + num(r["sky_grey"]) >= 25:
+            cams[r["cam"]] = {"id": r["cam"], "lat": round(num(r["lat"]), 4), "lon": round(num(r["lon"]), 4)}
+    left, groups = sorted(cams.values(), key=lambda c: (-c["lat"], c["lon"])), []
+    while left:
+        seed = left[0]; g = [c for c in left if _km((seed["lat"], seed["lon"]), (c["lat"], c["lon"])) <= CAM_KM]
+        ids = {c["id"] for c in g}; left = [c for c in left if c["id"] not in ids]
+        groups.append({"lat": round(sum(c["lat"] for c in g) / len(g), 3), "lon": round(sum(c["lon"] for c in g) / len(g), 3), "cams": g})
+    return groups
+
+
+async def live_cams(br, at):
+    groups = cam_groups()
+    if not groups: print("cameras: no recent webcam frames with sky: skipped"); return None
+    r = await live_eval(br, "Portland", 45.52, -122.68, {}, CAM_SKY, [groups, list(LIVE_KINDS)])
+    n = sum(len(g["cams"]) for g in groups)
+    print(f"cameras: {len(groups)} groups, {n} cameras -> {len(r.get('cams') or [])} sky predictions" + (f"; {r['err']}" if r.get("err") else "")
+          + "".join(f"\n  {e}" for e in (r.get("errs") or [])[:5]), flush=True)
+    if not r.get("cams"): return None
+    return {"at": at.isoformat().replace("+00:00", "Z"), "forecast": "at the camera point", "n_cams": n, "rows": r["cams"], "errs": r.get("errs") or []}
+
+
+def _append(kind, recs, at):
+    f = ROOT / "data" / "archive" / kind / f"{at:%Y-%m}.jsonl.gz"
+    f.parent.mkdir(parents=True, exist_ok=True)
+    old = gzip.decompress(f.read_bytes()).decode("utf-8") if f.exists() else ""
+    new = "".join(json.dumps(r, separators=(",", ":"), ensure_ascii=False) + "\n" for r in recs)
+    f.write_bytes(gzip.compress((old + new).encode("utf-8"), 9, mtime=0))
+    return f
 
 
 async def live():
@@ -122,12 +213,11 @@ async def live():
                 rec = {"at": at.isoformat().replace("+00:00", "Z"), "case": name, "lat": lat, "lon": lon, "group": "all", **prefs, **x}
                 recs.append(rec); bad += bool(x.get("err"))
                 print(f"{name} {x['kind']}: " + (x.get("err") or f"{x['n_ranked']} ranked; " + "; ".join(f"{t['score']} {t['name']}" for t in x["top"][:3])), flush=True)
+        cams = await live_cams(br, at)
         await br.close()
-    f = ROOT / "data" / "archive" / "predictions" / f"{at:%Y-%m}.jsonl.gz"
-    f.parent.mkdir(parents=True, exist_ok=True)
-    old = gzip.decompress(f.read_bytes()).decode("utf-8") if f.exists() else ""
-    new = "".join(json.dumps(r, separators=(",", ":"), ensure_ascii=False) + "\n" for r in recs)
-    f.write_bytes(gzip.compress((old + new).encode("utf-8"), 9, mtime=0))
+    if cams:
+        fc = _append("predcams", [cams], at); print(f"camera sky predictions logged to {fc.relative_to(ROOT)} ({fc.stat().st_size / 1e3:.0f} kB)")
+    f = _append("predictions", recs, at)
     print(f"{len(recs) - bad}/{len(recs)} predictions logged to {f.relative_to(ROOT)} ({f.stat().st_size / 1e3:.0f} kB)")
     return 0 if recs and bad < len(recs) else 1
 
