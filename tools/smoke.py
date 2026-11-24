@@ -27,6 +27,7 @@ async def main():
             pg = await c.new_page(); errs = []
             pg.on("pageerror", lambda e: errs.append("PAGEERROR " + str(e)[:300]))
             pg.on("console", lambda m: errs.append("console." + m.type + " " + m.text[:200]) if m.type == "error" else None)
+            pg.on("response", lambda r: errs.append(f"HTTP {r.status} {r.url.split('?')[0][:120]}") if r.status >= 400 else None)   # which server said 429 (Nov 23: unnamed)
             await pg.goto(URL); await pg.wait_for_timeout(10500)
             j = await pg.evaluate("window.__jumps"); out.append(f"{eng} first load: jumps={j['n']} cls={j['cls']} paints={await pg.evaluate('window.__paints')} {' ; '.join(j['log'][:6])}")
             for i in range(2):

@@ -43,6 +43,8 @@ def job_daily():
     from . import terrain, light, obs, sentinel, access, wildlife
     run_module("terrain", lambda: terrain.run(budget_min=25), "MODELED", "USGS 3DEP horizons")
     run_module("light", light.daily, "MODELED", "terrain-aware sun/moon/Milky Way, 14 days")
+    from . import spotphotos
+    run_module("spotphotos", spotphotos.run, "MEASURED", "photographers at each spot and when they shoot, from the Commons photo history")   # ~30 s; daily so fixes and new dumps apply
     run_module("sounding", obs.sounding, "MEASURED", "Salem radiosonde")
     run_module("flow", obs.flow, "MEASURED", "USGS discharge vs daily percentiles")
     run_module("sentinel", sentinel.run, "ESTIMATED", "Sentinel-2 colour/snow vs summer baseline")

@@ -445,3 +445,15 @@ details>summary{padding-top:10px;padding-bottom:10px}
 /* the forecast headline and its reasons keep two lines' height on phones, so the picks below don't move when the
    camera button (floats beside the verdict) or a longer reason arrives */
 @media (max-width:600px){#winDetail > .verdict,#winDetail > .why:not(.forhere){min-height:2lh}}
+/* seasonal planner (season.js): 52 weekly cells per row, darker = clearer */
+.seas{margin:6px 0 2px;font-size:11px}
+.seasrow{display:flex;align-items:center;gap:6px;margin:2px 0}
+.seasrow>span{width:46px;flex:none;color:var(--muted)}
+.seascells{flex:1;display:grid;grid-template-columns:repeat(52,1fr);gap:1px;height:18px}
+.seascells i{display:block;background:var(--gold);opacity:var(--a,1);border-radius:1px;cursor:pointer}
+.seascells i.none{background:var(--line);opacity:.35}
+.seascells i.fog{background:var(--muted)}
+.seascells i.best{outline:2px solid var(--ink);outline-offset:-1px;opacity:1}
+.seascells i.cur{box-shadow:0 4px 0 0 var(--river)}
+.seasticks{flex:1;position:relative;height:12px;color:var(--muted)}
+.seasticks b{position:absolute;font-weight:400}

@@ -485,11 +485,12 @@ def settings():
     if subs:
         d = subs[-1].get("data", {})
         for k in ("min_prob", "quiet_start", "quiet_end", "max_per_day", "max_km", "max_km_dark", "aurora_kp"):
+            if d.get(k) in (None, ""):
+                continue   # not in this (older) form: keep the default (was logged as an error every run)
             try:
                 st[k] = int(float(d[k]))
             except Exception as e:
                 soft_fail("alerts: alert settings: non-numeric value", e)
-                pass
         if "enabled" in d:
             st["enabled"] = str(d["enabled"]).lower() in ("1", "true", "on", "yes")
         for k in ("rules", "push_rules"):

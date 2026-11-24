@@ -3,7 +3,7 @@
 "use strict";
 const DESK = matchMedia("(min-width:1100px)");
 let SEL = null;
-function deskMap() { if (!DESK.matches || !window.L) return; try { renderMap(); } catch (e) { } }
+function deskMap() { if (!DESK.matches || !window.L) return; try { renderMap(); } catch (e) { noteErr("desktop map", e); } }
 const _renderD = render;
 render = function () { _renderD(); if (DESK.matches && UI.view !== "map") deskMap(); };
 const _showD = show;
