@@ -1,0 +1,7 @@
+PASS Washougal sunrise | 44 Multnomah Falls; 35 Tsuru Island Japanese Garden (Main City Park, Gresham); 35 Willamette Falls overlook (Hwy 99E, Oregon City)
+PASS Washougal sunset | 42 Hathaway & Schmid Family Parks (Washougal River bend); 45 Mt Hood view; 43 Surveyor's Ridge
+PASS Washougal night | 61 Grant Street Pier (Vancouver Waterfront); 60 Fort Vancouver (reconstructed stockade); 61 Sunrise behind Mt. Hood from Grant Street Pier
+PASS Washougal wildlife morning | 93 Ridgefield National Wildlife Refuge; 67 Oaks Bottom Wildlife Refuge; 67 Salmon Creek Greenway Trail
+PASS Grand Canyon sunrise | 99 Mather Point; 83 Hopi Point; 83 Powell Point
+PASS Yosemite sunset | 70 Tunnel View; 52 Mirror Lake; 50 El Capitan
+6/6 match. If the change is intended: run scoretest.yml with mode=update (or on a branch, push a commit whose message contains [scoretest:update]).
