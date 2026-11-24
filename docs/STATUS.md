@@ -25,7 +25,9 @@
 - Optional: an NPS_API_KEY secret (the NPS feed runs on DEMO_KEY).
 
 ## Next
-- Fog: rule changed Nov 19 (visibility only, scored up to 18 h ahead). Re-run tools/fogrule.py in ~2 weeks: the evening snapshot (data/fc_archive_eve.json) then shows how fog does ~12 h ahead, which decides FOG_LEAD_H. Low-cloud calibration turns itself on when the forecast check shows skill (~Nov 24); fog model out of shadow (~Dec 7).
+- Fog lead time (FOG_LEAD_H, now 18 h): the evening snapshot (data/fc_archive_eve.json) has 5 verifiable mornings (from Nov 20); re-run tools/fogrule.py about Dec 4 (2 weeks) and set FOG_LEAD_H from its ~12 h-ahead result.
+- Fog chance model (job=fogprob) in shadow until about Dec 7, then decide whether to show it. Nov 24: 178 dawns, Brier 0.114 vs climatology 0.140 (19% better).
+- Low-cloud calibration did NOT switch on (Nov 24, 7 days of pairs): the app applies it only if held-out MAE drops by >1, and it raises MAE everywhere (best_match west 22.7 -> 30.3, east 19.6 -> 24.6) while lowering RMSE 10-12% (42.3 -> 37.1, 37.8 -> 33.8). The bins map forecast to the observed MEAN, which suits squared error, not absolute; median bins leave MAE unchanged. Decision needed: gate on RMSE (it would switch on; clear forecasts would read ~10-16% low cloud), or keep MAE and fit medians (no change). Revisit with 2+ weeks of pairs (~Dec 2) either way: 7 days is one weather pattern.
 - Check nowcast against outing logs (verify_outcomes) as more come in; Eric's first log (Nov 16, Steamboat Landing): partly cloudy, no colour; forecast said 97% low cloud, KPDX said few low/broken mid.
 - Spot research (weekly Sunday 1:23 AM scheduled task) still uses the old Netlify app address in its prompt; harmless but update when convenient.
 - Widen deep research nationally once the test regions improve.
