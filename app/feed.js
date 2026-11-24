@@ -36,6 +36,17 @@ const SPN = { "Hen Harrier": "Northern Harrier", "Great Blue/Cocoi Heron": "Grea
 function dayWordYMD(d) { if (!d) return ""; const t = laYMD(new Date()), y = laYMD(new Date(Date.now() - 864e5)); if (d === t) return "today"; if (d === y) return "yesterday"; const x = new Date(d + "T12:00:00"); return x.toLocaleDateString("en-US", { month: "short", day: "numeric" }); }
 function spName(n) { return SPN[n] || n; }
 /* ---------- lookups ---------- */
+// The hour-by-hour model (feed/hrrr) is run only at hand-picked spots. A starter spot within 12 km borrows the nearest one's row
+// for scoring, so a measured "sunset blocked" costs both alike (Cannon Beach, Nov 24: Haystack Rock lost 18 points to it while
+// Seaside Beach, 9 km up the coast, and an offshore lighthouse lost none). Not for peaks: they can sit above a low deck.
+const HRRR_KM = 12, __hrNear = new Map();
+function hrrrId(s) {
+  const h = fd("hrrr"); if (!h || !s) return null; if (h.spots[s.id]) return s.id; if (s.cats && s.cats.includes("mountain")) return null;
+  const k = s.id + "|" + h.gen; if (__hrNear.has(k)) return __hrNear.get(k); let best = null, bd = HRRR_KM;
+  const cl = Math.cos(s.lat * Math.PI / 180) * 111.32;   // flat-earth distance: fine at 12 km and leaves km()'s memo alone
+  for (const id in h.spots) { const o = byId[id]; if (!o) continue; const d = Math.hypot((o.lat - s.lat) * 110.57, (o.lon - s.lon) * cl); if (d < bd) { bd = d; best = id; } }
+  __hrNear.set(k, best); return best;
+}
 function hrrrRow(id, t) {
   const h = fd("hrrr"); if (!h || !h.spots[id]) return null; const tm = t.getTime() / 60000; let bi = -1, bd = 1e9;
   h.t.forEach((x, i) => { const d = Math.abs(x - tm); if (d < bd) { bd = d; bi = i; } });
@@ -111,9 +122,9 @@ const _fitFeed = fitFor;
 fitFor = function (s, w) {
   const f = _fitFeed(s, w); if (!f) return f; let n = f.n; const why = f.why.slice();
   const dk = fd("darksky"); if (w.kind === "night" && dk && dk.spots[s.id] && f.sqm != null) { /* sky.js already scored darkness; VIIRS value replaces the model below */ }
-  const hr = hrrrRow(s.id, w.peak);
+  const hid = hrrrId(s), hr = hid ? hrrrRow(hid, w.peak) : null;
   if (hr && w.kind !== "night") {
-    if (GOLDK.has(w.kind) && hr.p_color != null && s.cats.some(c => SKY.includes(c))) { const adj = (hr.p_color - 40) * 0.15; n += adj; why.push(hr.p_color <= 15 ? "the hour-by-hour model sees little colour here" : `${hr.p_color}% chance of colour (hour-by-hour model)`); }
+    if (GOLDK.has(w.kind) && hr.p_color != null && s.cats.some(c => SKY.includes(c))) { const adj = (hr.p_color - 40) * 0.15; n += adj; why.push((hr.p_color <= 15 ? "the hour-by-hour model sees little colour here" : `${hr.p_color}% chance of colour (hour-by-hour model)`) + (hid !== s.id && byId[hid] ? ` (model run at ${byId[hid].name}, nearby)` : "")); }
     if (hr.p_fog >= 40 && (s.cats.includes("waterfall") || s.cats.includes("fallcolor") || LIFE.some(c => s.cats.includes(c)))) why.push(`${hr.p_fog}% chance of fog here`);
   }
   // above the fog: low spots fogged + this spot above the measured inversion top

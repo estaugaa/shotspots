@@ -37,6 +37,7 @@
 - A "view shadows" link to ShadeMap on spot pages (confirm the link format first).
 
 ## Known weak spots
-- Cannon Beach: Haystack Rock outside the top 4.
+- Starter spots more than 12 km from any hand spot get no hour-by-hour model (colour chance, sun-path cloud): neutral, not measured.
+- Fire training towers (10) leave the starter tiles at the next seedclean run (monthly, or job.yml job=seedclean).
 - Starter tiles keep orphan entries for dropped spots in feed/seedpop, feed/deep (harmless: keyed by id).
 - Displayed scores are lower under v2 (unknown spots show about half their light score).

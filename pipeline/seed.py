@@ -24,7 +24,8 @@ KIND_FLOOR = 20   # every kind keeps its best few per tile, so peaks can't crowd
 
 # Air-traffic control towers are often mapped tower:type=observation (Denver's old Stapleton tower led sunset lists, Nov 16-23):
 # a working or closed building, not a lookout. "Fire control towers" (coastal artillery spotting towers) are real lookouts.
-NOT_LOOKOUT = re.compile(r"(?<!fire )control tower|air traffic|\bATCT\b", re.I)
+# Fire-department training and drill towers are tagged the same way (Greeley's was #6 for Denver sunset, Nov 24; 10 nationally).
+NOT_LOOKOUT = re.compile(r"(?<!fire )control tower|air traffic|\bATCT\b|\btraining (tower|cent(er|re)|facility)\b|\bdrill tower\b", re.I)
 
 # [key, test, cats, light, effort, base score, tip]
 TYPES = [

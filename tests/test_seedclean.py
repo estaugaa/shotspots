@@ -12,6 +12,8 @@ def test_control_tower_is_not_a_lookout():
     fire = {"man_made": "tower", "tower:type": "observation", "name": "WWII Fire Control Tower"}
     assert kind(fire) == "lookout" and seed._wanted("n", fire)
     assert kind({"man_made": "tower", "tower:type": "fire_lookout", "name": "Red Mountain Lookout"}) == "lookout"
+    for nm in ("Training Tower", "Fire Training Tower (09-210)", "Fire Drill Tower", "WCCC Fire Training Center"):   # fire-department drill towers
+        assert kind({"man_made": "tower", "tower:type": "observation", "name": nm}) is None
 
 
 def test_borrowed_fame():

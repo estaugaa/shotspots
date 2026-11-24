@@ -9,11 +9,11 @@ const PUSH_OK = "serviceWorker" in navigator && "PushManager" in window && "Noti
 /* ---------- smoke in scoring ---------- */
 const _fitAl = fitFor;
 fitFor = function (s, w) {
-  const f = _fitAl(s, w); if (!f || w.kind === "night") return f; const hr = hrrrRow(s.id, w.peak); if (!hr) return f;
+  const f = _fitAl(s, w); if (!f || w.kind === "night") return f; const hid = hrrrId(s), hr = hid ? hrrrRow(hid, w.peak) : null; if (!hr) return f;
   const aod = hr.smoke_aod || 0, pm = hr.smoke_ugm3 || 0; let n = f.n; const why = f.why.slice();
-  const H = fd("hrrr"); if (GOLDK.has(w.kind) && H && H.rays && H.rays[s.id] && s.cats.some(c => SKY.includes(c))) {
+  const H = fd("hrrr"); if (GOLDK.has(w.kind) && H && H.rays && H.rays[hid] && s.cats.some(c => SKY.includes(c))) {
     const tm = w.peak.getTime() / 60000; let bi = 0; H.t.forEach((x, i) => { if (Math.abs(x - tm) < Math.abs(H.t[bi] - tm)) bi = i; });
-    const op = Math.abs(H.t[bi] - tm) <= 100 && H.rays[s.id][bi] ? H.rays[s.id][bi][w.kind === "sunrise" ? 0 : 1] : null;
+    const op = Math.abs(H.t[bi] - tm) <= 100 && H.rays[hid][bi] ? H.rays[hid][bi][w.kind === "sunrise" ? 0 : 1] : null;
     if (op != null && op < 40) { n -= 12; why.push(`low cloud deck toward the ${w.kind === "sunrise" ? "rising" : "setting"} sun (path ${op}% open)`); }
     else if (op != null && op < 70) { n -= 5; why.push(`path toward the sun only ${op}% open`); }
     else if (op != null) why.push(`clear path toward the sun (${op}% open)`); }
