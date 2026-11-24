@@ -33,6 +33,18 @@
 - Widen deep research nationally once the test regions improve.
 - Webcam truth: colour measure v2 from Nov 21 (v1 was fooled by signs and lights); first fair review Nov 25.
 - Tune the v2 weights against outcomes (ratings from the app's outcome button, or daily sunset-photo counts); tools/predeval.py is the start (predictions vs webcam and airport truth).
+  Nov 24 check: not enough yet, weights unchanged. Webcams (colour measure v2): 1,370 frames from 579 cameras but only 7
+  sunrise/sunset events (Nov 21 sunrise to Nov 24 sunset). Frames on one evening share the weather, so they count as one
+  test, not hundreds. The in-sample best (canvasFloor 0.6, lowBroken 0.5, lowDeck 0.4) is Spearman 0.13 vs 0.118 for the
+  defaults, too small a gain to judge on 7 events. Sun-facing ridge frames: 0, because the camera inventory is rebuilt
+  every 7 days (last built Nov 17, before ridge cameras were added); the ALERTCalifornia cameras join at the Nov 24 ~21 UTC
+  rebuild, so check camtruth.json sun_facing.n > 0 on Nov 25. Photo history (photoweather.json, 9,724 cell-days): Spearman
+  0.005, best 0.013, so the share of photographers out doesn't track sky colour; it is not a target for this fit.
+  Image ratings: webcam formula vs vivid 0.081 on 217 frames. Prediction log: 7 days.
+  Ready about Dec 8: 30+ v2 events and 300+ sun-facing frames. Fit canvasFloor, lowBroken, lowDeck (camtruth's grid) on
+  the events up to a cutoff date and test on the 10+ later events; webcam sky_warm is the main target, with CLIP vivid on
+  sun-facing frames as a cross-check. Change the weights only if the held-out Spearman beats the defaults by more than a
+  bootstrap over whole events (90%), then judge the ranking change with tools/scorecmp.py on the same forecast.
 - Finer sampling of the sun-path cloud check (model grid cells of 10-25 km cause neighbouring-spot differences).
 - A "view shadows" link to ShadeMap on spot pages (confirm the link format first).
 
