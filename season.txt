@@ -1,0 +1,226 @@
+started
+== Moab: spots ['seed-eL562359', 'seed-n9947875300']
+--- seed-eL562359
+######################**###*########################
+########################***#########################
+Clear-sky odds by week measured
+Sunrise
+Sunset
+J
+F
+M
+A
+M
+J
+J
+A
+S
+O
+N
+D
+
+Tap a week for its numbers. Palest 59% clear, darkest 96%; outlined = the 3 clearest weeks; blue tick = this week.
+
+Clearest sunsets: Jun 18 – Jul 8 (96%). Clearest sunrises: Jun 11, Jul 9, Jun 4 (96%).
+
+MOAB/CANYONLANDS (CNY), 27 km away, 2016–2026: the report nearest each sunrise and sunset (within 45 min), each week pooled with the weeks either side, 207–223 evenings a week; weeks with under 20 days left blank. Airport ceilometers see cloud only below 12,000 ft, so "clear" can still have high cloud (often the colourful kind). History, not a forecast.
+(spot line: 🌇 Clear at sunset this time of year: 77% of evenings (sunrise 79%) · overcast 17% · fog or mist 0% measured 209 evenings 2016–2026 at MOAB/CANYONLANDS (CNY), 27 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds))
+tap week 26: Week of Jul 2: sunset clear 96%, overcast 1%, fog or mist 0% (209 days); sunrise clear 95%, overcast 1%, fog or mist 0% (210 days).
+--- seed-n9947875300
+######################**###*########################
+########################***#########################
+ffffffffffffffffffffffffffffffffffffffffffffffffffff
+Clear-sky odds by week measured
+Sunrise
+Sunset
+Fog
+J
+F
+M
+A
+M
+J
+J
+A
+S
+O
+N
+D
+
+Tap a week for its numbers. Palest 59% clear, darkest 96%; outlined = the 3 clearest weeks; blue tick = this week.
+
+Clearest sunsets: Jun 18 – Jul 8 (96%). Clearest sunrises: Jun 11, Jul 9, Jun 4 (96%). Fog or mist stays under 25% of mornings at the airport every week (darker grey = more).
+
+MOAB/CANYONLANDS (CNY), 30 km away, 2016–2026: the report nearest each sunrise and sunset (within 45 min), each week pooled with the weeks either side, 207–223 evenings a week; weeks with under 20 days left blank. Airport ceilometers see cloud only below 12,000 ft, so "clear" can still have high cloud (often the colourful kind). History, not a forecast.
+(spot line: 🌇 Clear at sunset this time of year: 77% of evenings (sunrise 79%) · overcast 17% · fog or mist 0% measured 209 evenings 2016–2026 at MOAB/CANYONLANDS (CNY), 30 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds))
+tap week 26: Week of Jul 2: sunset clear 96%, overcast 1%, fog or mist 0% (209 days); sunrise clear 95%, overcast 1%, fog or mist 0% (210 days).
+page errors: []  soft errors: {"Kp forecast": {"n": 1, "first": "Cannot read properties of undefined (reading 'replace')"}, "extras panel": {"n": 9, "first": "Cannot read properties of undefined (reading 'name')"}}
+== Yosemite Valley: spots ['seed-w302327416', 'seed-n2389657981']
+--- seed-w302327416
+########################***#########################
+#########################***########################
+Clear-sky odds by week measured
+Sunrise
+Sunset
+J
+F
+M
+A
+M
+J
+J
+A
+S
+O
+N
+D
+
+Tap a week for its numbers. Palest 59% clear, darkest 94%; outlined = the 3 clearest weeks; blue tick = this week.
+
+Clearest sunsets: Jun 25 – Jul 15 (88%). Clearest sunrises: Jun 18 – Jul 8 (94%).
+
+MAMMOTH/JUNE LAKES (MMH), 68 km away, 2016–2026: the report nearest each sunrise and sunset (within 45 min), each week pooled with the weeks either side, 156–203 evenings a week; weeks with under 20 days left blank. Airport ceilometers see cloud only below 12,000 ft, so "clear" can still have high cloud (often the colourful kind). The station is 68 km away, so local cloud (mountains, coast, valleys) can differ. History, not a forecast.
+(spot line: 🌇 Clear at sunset this time of year: 77% of evenings (sunrise 74%) · overcast 15% · fog or mist 3% measured 199 evenings 2016–2026 at MAMMOTH/JUNE LAKES (MMH), 68 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds))
+tap week 26: Week of Jul 2: sunset clear 88%, overcast 4%, fog or mist 0% (179 days); sunrise clear 93%, overcast 3%, fog or mist 0% (178 days).
+--- seed-n2389657981
+########################***#########################
+#########################***########################
+ffffffffffffffffffffffffffffffffffffffffffffffffffff
+Clear-sky odds by week measured
+Sunrise
+Sunset
+Fog
+J
+F
+M
+A
+M
+J
+J
+A
+S
+O
+N
+D
+
+Tap a week for its numbers. Palest 59% clear, darkest 94%; outlined = the 3 clearest weeks; blue tick = this week.
+
+Clearest sunsets: Jun 25 – Jul 15 (88%). Clearest sunrises: Jun 18 – Jul 8 (94%). Fog or mist stays under 25% of mornings at the airport every week (darker grey = more).
+
+MAMMOTH/JUNE LAKES (MMH), 68 km away, 2016–2026: the report nearest each sunrise and sunset (within 45 min), each week pooled with the weeks either side, 156–203 evenings a week; weeks with under 20 days left blank. Airport ceilometers see cloud only below 12,000 ft, so "clear" can still have high cloud (often the colourful kind). The station is 68 km away, so local cloud (mountains, coast, valleys) can differ. History, not a forecast.
+(spot line: 🌇 Clear at sunset this time of year: 77% of evenings (sunrise 74%) · overcast 15% · fog or mist 3% measured 199 evenings 2016–2026 at MAMMOTH/JUNE LAKES (MMH), 68 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds))
+tap week 26: Week of Jul 2: sunset clear 88%, overcast 4%, fog or mist 0% (179 days); sunrise clear 93%, overcast 3%, fog or mist 0% (178 days).
+page errors: []  soft errors: {"Kp forecast": {"n": 1, "first": "Cannot read properties of undefined (reading 'replace')"}, "extras panel": {"n": 30, "first": "Cannot read properties of undefined (reading 'name')"}}
+== Acadia: spots ['seed-n358214421', 'seed-n9044587695']
+--- seed-n358214421
+###################*##########**####################
+#############################***####################
+Clear-sky odds by week measured
+Sunrise
+Sunset
+J
+F
+M
+A
+M
+J
+J
+A
+S
+O
+N
+D
+
+Tap a week for its numbers. Palest 38% clear, darkest 68%; outlined = the 3 clearest weeks; blue tick = this week.
+
+Clearest sunsets: Jul 23 – Aug 12 (68%). Clearest sunrises: Jul 30, May 14, Aug 6 (56%).
+
+Bar Habor (BHB), 16 km away, 2016–2026: the report nearest each sunrise and sunset (within 45 min), each week pooled with the weeks either side, 190–217 evenings a week; weeks with under 20 days left blank. Airport ceilometers see cloud only below 12,000 ft, so "clear" can still have high cloud (often the colourful kind). History, not a forecast.
+(spot line: 🌇 Clear at sunset this time of year: 40% of evenings (sunrise 48%) · overcast 48% · fog or mist 8% measured 193 evenings 2016–2026 at Bar Habor (BHB), 16 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds))
+tap week 26: Week of Jul 2: sunset clear 57%, overcast 31%, fog or mist 13% (201 days); sunrise clear 41%, overcast 48%, fog or mist 41% (198 days).
+--- seed-n9044587695
+###################*##########**####################
+#############################***####################
+ffffffffffffffffffffffFFFFFFFFFFFFFfffffffffffffffff
+Clear-sky odds by week measured
+Sunrise
+Sunset
+Fog
+J
+F
+M
+A
+M
+J
+J
+A
+S
+O
+N
+D
+
+Tap a week for its numbers. Palest 38% clear, darkest 68%; outlined = the 3 clearest weeks; blue tick = this week.
+
+Clearest sunsets: Jul 23 – Aug 12 (68%). Clearest sunrises: Jul 30, May 14, Aug 6 (56%). Fog or mist on 25%+ of mornings in 13 weeks (outlined in the grey row; darker = foggier).
+
+Bar Habor (BHB), 12 km away, 2016–2026: the report nearest each sunrise and sunset (within 45 min), each week pooled with the weeks either side, 190–217 evenings a week; weeks with under 20 days left blank. Airport ceilometers see cloud only below 12,000 ft, so "clear" can still have high cloud (often the colourful kind). History, not a forecast.
+(spot line: 🌇 Clear at sunset this time of year: 40% of evenings (sunrise 48%) · overcast 48% · fog or mist 8% measured 193 evenings 2016–2026 at Bar Habor (BHB), 12 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds))
+tap week 26: Week of Jul 2: sunset clear 57%, overcast 31%, fog or mist 13% (201 days); sunrise clear 41%, overcast 48%, fog or mist 41% (198 days).
+page errors: []  soft errors: {"Kp forecast": {"n": 1, "first": "Cannot read properties of undefined (reading 'replace')"}}
+== Smokies: spots ['seed-n2454879838', 'seed-n2454879775']
+--- seed-n2454879838
+###############*############**######################
+#######################*########*########*##########
+Clear-sky odds by week measured
+Sunrise
+Sunset
+J
+F
+M
+A
+M
+J
+J
+A
+S
+O
+N
+D
+
+Tap a week for its numbers. Palest 32% clear, darkest 71%; outlined = the 3 clearest weeks; blue tick = this week.
+
+Clearest sunsets: Oct 15, Aug 13, Jun 11 (71%). Clearest sunrises: Apr 16, Jul 16, Jul 23 (56%).
+
+Sevierville (GKT), 29 km away, 2016–2026: the report nearest each sunrise and sunset (within 45 min), each week pooled with the weeks either side, 186–219 evenings a week; weeks with under 20 days left blank. Airport ceilometers see cloud only below 12,000 ft, so "clear" can still have high cloud (often the colourful kind). History, not a forecast.
+(spot line: 🌇 Clear at sunset this time of year: 63% of evenings (sunrise 51%) · overcast 29% · fog or mist 6% measured 202 evenings 2016–2026 at Sevierville (GKT), 29 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds))
+tap week 26: Week of Jul 2: sunset clear 67%, overcast 14%, fog or mist 3% (190 days); sunrise clear 48%, overcast 29%, fog or mist 10% (191 days).
+--- seed-n2454879775
+###############*############**######################
+#######################*########*########*##########
+ffffffffffffffffffffffffffffffffffffffffffffffffffff
+Clear-sky odds by week measured
+Sunrise
+Sunset
+Fog
+J
+F
+M
+A
+M
+J
+J
+A
+S
+O
+N
+D
+
+Tap a week for its numbers. Palest 32% clear, darkest 71%; outlined = the 3 clearest weeks; blue tick = this week.
+
+Clearest sunsets: Oct 15, Aug 13, Jun 11 (71%). Clearest sunrises: Apr 16, Jul 16, Jul 23 (56%). Fog or mist stays under 25% of mornings at the airport every week (darker grey = more).
+
+Sevierville (GKT), 22 km away, 2016–2026: the report nearest each sunrise and sunset (within 45 min), each week pooled with the weeks either side, 186–219 evenings a week; weeks with under 20 days left blank. Airport ceilometers see cloud only below 12,000 ft, so "clear" can still have high cloud (often the colourful kind). History, not a forecast.
+(spot line: 🌇 Clear at sunset this time of year: 63% of evenings (sunrise 51%) · overcast 29% · fog or mist 6% measured 202 evenings 2016–2026 at Sevierville (GKT), 22 km away (IEM airport reports; clear = nothing below 12,000 ft but a few clouds))
+tap week 26: Week of Jul 2: sunset clear 67%, overcast 14%, fog or mist 3% (190 days); sunrise clear 48%, overcast 29%, fog or mist 10% (191 days).
+page errors: []  soft errors: {"Kp forecast": {"n": 1, "first": "Cannot read properties of undefined (reading 'replace')"}}
+planners shown: 8, missing: 0
