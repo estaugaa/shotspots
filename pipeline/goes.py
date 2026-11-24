@@ -11,24 +11,26 @@ import numpy as np
 from .common import http, spots, write_json, FEED, DATA, CACHE, log, utcnow, iso, soft_fail
 
 BUCKET = "https://noaa-goes18.s3.amazonaws.com"
+EAST = "https://noaa-goes19.s3.amazonaws.com"   # GOES-East: the gap grid east of SPLIT_LON (Nov 24; was western US only)
+SPLIT_LON = -105.0
 BBOX = (-124.4, 44.6, -120.0, 46.8)
 
 
-def latest_key(product):
+def latest_key(product, bucket=BUCKET):
     now = utcnow()
     for back in range(0, 4):
         t = now - dt.timedelta(hours=back)
         pre = f"{product}/{t:%Y}/{t.timetuple().tm_yday:03d}/{t:%H}/"
-        x = http(BUCKET + "/", params={"list-type": 2, "prefix": pre}).text
+        x = http(bucket + "/", params={"list-type": 2, "prefix": pre}).text
         keys = re.findall(r"<Key>([^<]+\.nc)</Key>", x)
         if keys:
             return sorted(keys)[-1]
     raise RuntimeError(f"no {product} files in last 4 h")
 
 
-def open_nc(key):
+def open_nc(key, bucket=BUCKET):
     import xarray as xr
-    b = http(f"{BUCKET}/{key}", timeout=180).content
+    b = http(f"{bucket}/{key}", timeout=180).content
     return xr.open_dataset(io.BytesIO(b), engine="h5netcdf")
 
 
@@ -94,17 +96,35 @@ def run():
     from PIL import Image
     Image.fromarray(img, "RGBA").save(FEED / "goes_lowcloud.png", optimize=True)
     # gap grid for the sunset/sunrise check: tenths of each 0.25° cell covered by cloud topping out below 4 km
-    # (the layer that blocks low-angle light). Western US, where GOES-18 sees well. One digit per cell.
+    # (the layer that blocks low-angle light). One digit per cell. GOES-18 west of SPLIT_LON, GOES-19 (East) east of
+    # it, so the lower 48 are covered (Nov 24: was the western US only). If the East scan can't be read, the grid is
+    # the western one as before.
+    east = None
     try:
-        G = {"w": -130.0, "s": 30.0, "e": -100.0, "n": 50.0, "d": 0.25, "sub": 4}
+        me, he = open_nc(latest_key("ABI-L2-ACMC", EAST), EAST), open_nc(latest_key("ABI-L2-ACHAC", EAST), EAST)
+        east = (me, he, me["BCM"].values, he["HT"].values)
+    except Exception as e:
+        soft_fail("goes: GOES-East scan (grid stays western)", e)
+    try:
+        G = {"w": -130.0, "s": 24.0 if east else 30.0, "e": -65.0 if east else -100.0, "n": 50.0, "d": 0.25, "sub": 4}
         nx, ny, sub = int((G["e"] - G["w"]) / G["d"]), int((G["n"] - G["s"]) / G["d"]), G["sub"]
         off = (np.arange(sub) + 0.5) / sub * G["d"]
         glon = (G["w"] + np.arange(nx)[:, None] * G["d"] + off[None, :]).ravel()
         glat = (G["n"] - np.arange(ny)[:, None] * G["d"] - off[None, :]).ravel()
         LO2, LA2 = np.meshgrid(glon, glat)
-        my, mx = to_index(m, LA2.ravel(), LO2.ravel())
-        ty, tx = to_index(h, LA2.ravel(), LO2.ravel())
-        blk = ((bcm[my, mx] == 1) & (ht[ty, tx] < 4000)).reshape(ny, sub, nx, sub).mean(axis=(1, 3))
+        def gap(mm, hh_, b_, t_):
+            my, mx = to_index(mm, LA2.ravel(), LO2.ravel()); ty, tx = to_index(hh_, LA2.ravel(), LO2.ravel())
+            return ((b_[my, mx] == 1) & (t_[ty, tx] < 4000)).reshape(ny, sub, nx, sub).mean(axis=(1, 3))
+        blk = gap(m, h, bcm, ht)
+        if east:
+            try:
+                cell_lon = G["w"] + (np.arange(nx) + 0.5) * G["d"]
+                blk = np.where(cell_lon[None, :] < SPLIT_LON, blk, gap(*east))
+                G["sats"] = f"GOES-18 west of {SPLIT_LON:g}, GOES-19 east"
+            except Exception as e:
+                soft_fail("goes: GOES-East grid (western cells only)", e)
+                keep = int((-100.0 - G["w"]) / G["d"])
+                G.update({"s": 30.0, "e": -100.0}); nx, ny = keep, int((50.0 - 30.0) / G["d"]); blk = blk[:ny, :nx]
         digits = "".join(str(min(9, int(v * 9.99))) for v in blk.ravel())
         write_json("goes_grid.json", {"gen": iso(utcnow()), "obs": tstamp, **G, "nx": nx, "ny": ny, "rows": "north to south", "d9": digits,
                                       "note": "tenths of each cell with cloud topping below 4 km (blocks low sun)"})

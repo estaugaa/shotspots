@@ -39,7 +39,10 @@ Status: `todo`, `doing (<branch>)`, `done (<date>: <result>)`, `dropped (<reason
   (job=seedclean, monthly); Denver sunset top 8 all views on the same forecast (was a ride tower #1). Birding hotspots unchanged
   (they already score x0.55 outside Wildlife).
 - 1.3 National layers: GOES grid for the lower 48, airport reports nationwide, fog model trained per region, eBird
-  notable + counts in tiles (needs an EBIRD_KEY secret, Eric). todo
+  notable + counts in tiles (needs an EBIRD_KEY secret, Eric). doing (main, Nov 24). Airport reports: already national
+  (metar.py 5-degree obsnow tiles). Satellite gap grid: GOES-19 (East) added east of 105W, grid now 130W-65W, 24N-50N (was
+  the West only); falls back to the western grid if the East scan fails (tested with stand-in data; first real run on
+  the next GOES job). Left: fog model trained per region; eBird (key).
 - 1.4 Alerts per area for every user, not per home. todo
 - 1.5 Terrain horizons for every spot with photo evidence; light.json split into tiles loaded on demand. todo
 
