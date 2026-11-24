@@ -1,0 +1,33 @@
+name: Seasonal planner check
+# A branch push that touches the planner opens it at spots outside the Gorge (tools/seasonprobe.py: this branch's app/ with
+# the data branch's feed/) and saves the text and screenshots to branch diag-seasonprobe. main is checked by hand (diag.yml).
+on:
+  push:
+    branches-ignore: [main]
+    paths: ["app/season.js", "app/feed.js", "tools/seasonprobe.py", ".github/workflows/season-check.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-24.04   # Playwright can't install its browser deps on 26.04 yet
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/data
+        with:
+          mode: setup
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install playwright && python -m playwright install --with-deps chromium
+      - name: JavaScript parses
+        run: for f in app/*.js; do node -e "new Function(require('fs').readFileSync('$f','utf8'))" || exit 1; done
+      - run: python -u tools/seasonprobe.py
+      - name: Push outputs to the diag-seasonprobe branch
+        if: always()
+        run: |
+          [ -d ux ] || exit 0
+          cd ux && git init -q && git checkout -q -b diag-seasonprobe && git add -A
+          git -c user.name=diag -c user.email=diag@users.noreply.github.com commit -qm "season probe ${{ github.sha }}"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" diag-seasonprobe
