@@ -25,6 +25,7 @@ All of these run on GitHub Actions against the live site. Run one with
 | Prediction log: live site ranks the next sunrise/sunset for 8 places, top 20 + layers archived | `tools/scoretest.py --live` -> data/archive/predictions | nightly (regress.yml) |
 | Predictions vs truth (webcam colour, airport low cloud and fog; Spearman, spot and night level) | diag.yml `tools/predeval.py [days]` -> branch `diag-predeval` | weekly, once windows are over |
 | Archive (append, de-dup, monthly files, readers' windows, old-file migration) | `pytest tests/test_archive.py` | every pipeline push |
+| Starter-spot cleaning (control towers, park rides, borrowed Wikidata fame; clean() in place and idempotent) | `pytest tests/test_seedclean.py` | every pipeline push |
 
 Weights: open the app with `#tune` for sliders (this device only; Reset restores defaults).
 Score math: open the app with `#math` at the end of the URL to show the breakdown on every card (again to hide it).
@@ -38,6 +39,7 @@ Rules
 
 ## Latest results
 - 2026-11-23: scoring test stable: 6 runs per case agree on current main (scoretest-stress, run 45269821758), and every scoretest run since Nov 19 passed. The Nov 17-19 "unstable" failures (far Mt St Helens spots 2 points apart) came from late data: drive times and forecasts replayed by exact URL (now per point), HRRR/calibration applied only if something else redrew (now redraws when it lands), summit-cloud not refetched for peaks from late tiles (now refetched), and too short a settle wait. app-publish's one retry could hide a flake, so a retry now posts a warning and diag-publish keeps `history.txt` (one line per check: first try / RETRIED).
+- 2026-11-23: starter-spot rules measured on all 75,346 seed spots (data branch tiles + Wikidata): see DECISIONS. Same forecast, live site with the clean applied in the page: Denver sunset (60 min) top 8 all views (was Elitch ride tower #1, a control tower #3); Hood River unchanged (hatchery #31, falls and viewpoints lead).
 - 2026-11-19 (night): 10 walkthroughs (Washougal, Cannon Beach, Moab, Boise, Jackson, New York, Miami, Acadia, Smokies, Sedona). Found: depth.js error on load (fixed), Jenny Lake leading Jackson with Teton Park Road closed (fixed), Haystack Rock and Hug Point ranked below an unknown waterfall at Cannon Beach because hand-researched spots' quality is Commons-only (open).
 - 2026-11-17 (early): expectations 13/13, smoke test passing on both browsers, full redraw 2.1 s (was 7.7 s).
 - 2026-11-16 (evening): expectations 12/12. Top picks now lead with views everywhere tested: Grand Canyon (Mather, Yaki, Powell, Hopi), Smokies (Le Conte, Newfound Gap), Moab (arches), Badlands (overlooks), Washougal (Willamette Falls, fall-colour streets, Multnomah).

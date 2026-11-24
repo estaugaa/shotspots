@@ -15,6 +15,7 @@ URL = "https://estaugaa.github.io/shotspots/"
 #   any_top: [n, [name substrings]]  - one of these is in the top n
 #   max_life: [n, k]                 - at most k of the top n are wildlife-led (birding hotspot/refuge, or first category wildlife/birds)
 #   max_kind: [n, kinds, k]          - at most k of the top n are of these kinds
+#   none_top: [n, [name substrings]] - none of these is in the top n
 CASES = [
  ("Grand Canyon sunrise: a rim point leads", (36.0, -112.12), {"maxDrive": 45}, "all", "sunrise", "any_top", [3, ["Mather", "Hopi", "Yaki", "Lipan", "Grandview", "Powell", "Yavapai", "Moran", "Desert View"]]),
  ("Acadia sunrise: Cadillac Mountain near the top", (44.388, -68.204), {"maxDrive": 30}, "all", "sunrise", "any_top", [5, ["Cadillac"]]),
@@ -27,6 +28,9 @@ CASES = [
  ("Washougal sunset: views lead, not wildlife spots", (45.582, -122.353), {"maxDrive": 60}, "all", "sunset", "max_life", [3, 1]),
  ("Zion sunset: not taken over by birding spots", (37.189, -112.999), {"maxDrive": 30}, "all", "sunset", "max_kind", [3, ["hotspot", "refuge"], 1]),
  ("Yosemite sunset: Yosemite Valley icons in the top 5", (37.745, -119.59), {"maxDrive": 45}, "all", "sunset", "any_top", [5, ["Yosemite Fall", "El Capitan", "Tunnel View", "Glacier Point", "Half Dome", "Vernal", "Bridalveil", "Valley View", "Sentinel"]]),
+ ("Denver sunset: no airport control tower near the top (Nov 16-23: 'Former Stapleton Airport Control Tower' led, on the airport's Wikidata fame)", (39.739, -104.99), {"maxDrive": 90}, "all", "sunset", "none_top", [5, ["Control Tower", "Stapleton"]]),
+ ("Hood River sunrise: views lead, not the fish hatchery (Nov 16: Bonneville Fish Hatchery led)", (45.709, -121.521), {"maxDrive": 45}, "all", "sunrise", "none_top", [3, ["Hatchery"]]),
+ ("Hood River sunrise: views lead, not wildlife spots", (45.709, -121.521), {"maxDrive": 45}, "all", "sunrise", "max_life", [3, 1]),
  ("Grand Canyon sunrise: nothing beyond the travel limit", (36.0, -112.12), {"maxDrive": 45}, "all", "sunrise", "none_far", 10),
  ("Jackson wildlife morning: nothing behind a closed seasonal gate in the top 5 (Nov 19: Jenny Lake led, Teton Park Road shut)", (43.48, -110.762), {"maxDrive": 60}, "life", "morning", "none_closed", 5),
  ("Washougal: no script errors on load (Nov 19: depth.js 'ns is not defined')", (45.582, -122.353), {"maxDrive": 60}, "all", "sunrise", "no_errors", 0),
@@ -50,6 +54,9 @@ def judge(rule, arg, top):
         return bool(hit), hit
     if rule == "max_life":
         n, k = arg; hit = [t["n"] for t in top[:n] if t["life"]]; return len(hit) <= k, hit
+    if rule == "none_top":
+        n, names = arg; hit = [t["n"] for t in top[:n] if any(k.lower() in t["n"].lower() for k in names)]
+        return not hit, hit
     if rule == "max_kind":
         n, kinds, k = arg; hit = [t["n"] for t in top[:n] if t["k"] in kinds]; return len(hit) <= k, hit
     if rule == "layers_ok":

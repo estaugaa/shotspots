@@ -34,7 +34,10 @@ Status: `todo`, `doing (<branch>)`, `done (<date>: <result>)`, `dropped (<reason
   switch phototime.js to the per-event baseline with shrinkage (tested Nov 23 on the old data: changes small, but the
   old data can't judge it). Lift: an 'urban only' rule (300-1,000 photographers within 5 km) put Crystal Springs
   Rhododendron Garden first at sunrise and sunset, so it was not shipped; to be fitted on data (5.1). todo
-- 1.2 Curate spots by data (non-photo places out; birding hotspots to the Wildlife filter only). doing (claude/gifted-sanderson-3f3abb)
+- 1.2 Curate spots by data (non-photo places out; birding hotspots to the Wildlife filter only). done Nov 23 (claude/gifted-sanderson-3f3abb):
+  of 75,346 starter spots, 19 control towers and 13 park-ride towers dropped, 785 lose fame borrowed from another Wikidata item
+  (job=seedclean, monthly); Denver sunset top 8 all views on the same forecast (was a ride tower #1). Birding hotspots unchanged
+  (they already score x0.55 outside Wildlife).
 - 1.3 National layers: GOES grid for the lower 48, airport reports nationwide, fog model trained per region, eBird
   notable + counts in tiles (needs an EBIRD_KEY secret, Eric). todo
 - 1.4 Alerts per area for every user, not per home. todo

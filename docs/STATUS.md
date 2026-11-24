@@ -1,6 +1,7 @@
 # Status (update at the end of every work session)
 
 ## Running
+- 2026-11-23 Starter clean (job.yml job=seedclean; scheduler, every 30 days): drops control towers and amusement-park ride towers from the live tiles and removes fame borrowed from another Wikidata item (measured: 19 + 13 dropped, 785 lose fame). First run after merge; check data/seedclean.json, then the Denver and Hood River expectations. (Nov 16 weak spots: Denver's Stapleton tower; Hood River's hatchery had already left the top 20 under v2.)
 - 2026-11-23 Spot photographers (job.yml job=spotphotos, ~20 min, rerun when a new Commons dump is extracted): feed/spotphotos.json drives spot quality and the photo-timing layer.
 - 2026-11-23 Seasonal planner on the spot page (app/season.js): 52-week strip of clear sky at sunrise and sunset from the nearest airport (80 km, 10 years, ±1 week pooled, weeks under 20 days blank), 3 clearest weeks outlined, fog row (shaded by share of foggy mornings, 25%+ outlined) for waterfalls and above-the-fog viewpoints. MEASURED; not a scoring layer. Check: diag.yml tools/seasonprobe.py -> branch diag-seasonprobe.
 - 2026-11-20 Commons photo history (job.yml job=commonsphotos; scheduler, every 30 days, chains itself): streams the Commons dumps and writes data/archive/commons/photos_<dump>.csv.gz (US photos: place, capture time, EV, name words) for the validation set. Done Nov 20: 3.08 M photos.
@@ -35,6 +36,6 @@
 - A "view shadows" link to ShadeMap on spot pages (confirm the link format first).
 
 ## Known weak spots
-- Hood River sunrise: Bonneville Fish Hatchery leads (salmon season event); Cannon Beach: Haystack Rock outside the top 4.
-- Denver sunset: an old airport control tower ranks first.
+- Cannon Beach: Haystack Rock outside the top 4.
+- Starter tiles keep orphan entries for dropped spots in feed/seedpop, feed/deep (harmless: keyed by id).
 - Displayed scores are lower under v2 (unknown spots show about half their light score).

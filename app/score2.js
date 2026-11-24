@@ -73,6 +73,7 @@ function qualityText(s) {
   if (s.views) bits.push(`${s.views >= 1000 ? Math.round(s.views / 1000) + "k" : s.views} Wikipedia views a year`);
   if (s.score) bits.push("Wikipedia/Wikidata links"); if (s._stand && s._stand.u) bits.push(`${s._stand.u} photographers' positions`);
   if (/landmark|bridge/.test(s.kind || "")) bits.push("buildings count 25% less");
+  if (s.nofame) bits.push(`its Wikidata link is not counted: ${s.nofame.replace(/^Wikidata item /, "the item ")}`);   // fame borrowed from another item (pipeline/seed.py)
   return bits.length ? bits.join(", ") + (PREFS.fame === "lesser" ? " (you favor lesser-known spots, so this counts against it)" : "") : "no photo or Wikipedia record: counted as a typical spot nearby";
 }
 function distFactor(s) { const d = driveMin(s); return 1 - TUNE.distance * Math.min(1, d / Math.max(1, maxTravel())); }
