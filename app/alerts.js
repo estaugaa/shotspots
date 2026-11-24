@@ -42,12 +42,16 @@ openSpot = function (id) {
 };
 
 /* ---------- heads-up card on Now ---------- */
-function upcoming() { const a = fd("alerts"); if (!a) return []; const now = Date.now(); // alerts are worked out for the home area: only show ones whose spots you can actually reach from here
+// pipeline alerts (worked out for the home area, so only inside coverage) plus the app's own moments (moments.js, every place)
+function upcoming() { const m = typeof momentsNow === "function" ? momentsNow() : [];
+  const srv = (typeof outsideCoverage === "function" && outsideCoverage()) ? [] : serverAlerts(); const seen = new Set(srv.flatMap(x => x.spots || []));
+  return [...srv, ...m.filter(x => !x.spots.some(id => seen.has(id)))].sort((a, b) => new Date(a.at) - new Date(b.at)); }
+function serverAlerts() { const a = fd("alerts"); if (!a) return []; const now = Date.now(); // alerts are worked out for the home area: only show ones whose spots you can actually reach from here
   const near = x => { const sp = (x.spots || []).map(id => byId[id]).filter(Boolean); return sp.length ? sp.some(s => km(LOC, s) < 150 && !tooFar(s)) : km(LOC, HOME) < 60; };
   return a.alerts.filter(x => new Date(x.at).getTime() > now - 20 * 60000 && near(x)); }
 function alertRow(a) {
   const sp = (a.spots || [])[0];
-  return `<button class="lrow alertrow r-${a.rule}" ${sp && byId[sp] ? `data-spot="${sp}"` : `data-openalerts="1"`}><span><b>${esc(a.title)}</b><small>${esc(a.body)}</small></span><span class="pct">${a.rule === "smoke" ? "!" : a.p + "%"}</span></button>`;
+  return `<button class="lrow alertrow r-${a.rule}" ${sp && byId[sp] ? `data-spot="${sp}"` : `data-openalerts="1"`}><span><b>${esc(a.title)}</b><small>${esc(a.body)}</small></span><span class="pct">${a.rule === "smoke" ? "!" : a.p == null ? "" : a.p + "%"}</span></button>`;
 }
 const _renderNowAl = renderNow;
 // shown with the list, not before: arriving with the alerts feed it pushed everything below down 54 px about 1 s in
@@ -57,13 +61,13 @@ renderNow = function () {
   _renderNowAl(); const v = $("#v-now"); if (!v) return;
   if (typeof __listOk !== "undefined" && !__listOk) {
     // keep the slot if the last visit had an alert line, or the alerts are already in and one will show
-    if (__alHad || (fd("alerts") && !(typeof outsideCoverage === "function" && outsideCoverage()) && upcoming().length)) v.insertAdjacentHTML("afterbegin", `<div class="alertline skel" aria-hidden="true"><i class="adot"></i><span><b>&nbsp;</b></span><span class="chev">›</span></div>`);
+    if (__alHad || upcoming().length) v.insertAdjacentHTML("afterbegin", `<div class="alertline skel" aria-hidden="true"><i class="adot"></i><span><b>&nbsp;</b></span><span class="chev">›</span></div>`);
     return; }
-  const u = (typeof outsideCoverage === "function" && outsideCoverage()) ? [] : upcoming();
+  const u = upcoming();
   if (!!u.length !== __alHad) { __alHad = !!u.length; store.set("alertline", __alHad); }
   if (!u.length) return;
   const a = u[0];
-  v.insertAdjacentHTML("afterbegin", `<button class="alertline r-${a.rule}" data-openalerts="1"><i class="adot"></i><span><b>${esc(a.title)}</b></span>${a.rule === "smoke" ? "" : `<b class="ap">${a.p}%</b>`}${u.length > 1 ? `<small>+${u.length - 1}</small>` : ""}<span class="chev" aria-hidden="true">›</span></button>`);
+  v.insertAdjacentHTML("afterbegin", `<button class="alertline r-${a.rule}" data-openalerts="1"><i class="adot"></i><span><b>${esc(a.title)}</b></span>${a.rule === "smoke" || a.p == null ? "" : `<b class="ap">${a.p}%</b>`}${u.length > 1 ? `<small>+${u.length - 1}</small>` : ""}<span class="chev" aria-hidden="true">›</span></button>`);
 };
 
 /* ---------- alerts sheet ---------- */

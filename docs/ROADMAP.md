@@ -46,7 +46,11 @@ Status: `todo`, `doing (<branch>)`, `done (<date>: <result>)`, `dropped (<reason
   (metar.py 5-degree obsnow tiles). Satellite gap grid: GOES-19 (East) added east of 105W, grid now 130W-65W, 24N-50N (was
   the West only); falls back to the western grid if the East scan fails (tested with stand-in data; first real run on
   the next GOES job). Left: fog model trained per region; eBird (key).
-- 1.4 Alerts per area for every user, not per home. todo
+- 1.4 Alerts per area for every user, not per home. done in the app (Nov 24: app/moments.js finds moments in the next
+  48 h from the app's own ranking, anywhere: rainbow chance, above the fog, fresh snow on a peak, moon on the horizon,
+  aurora watch; one per kind, up to 4, in the alert line and alerts sheet; outside coverage the line used to be off.
+  Checked in the scoring-test replay: Washougal moon + rainbow at Multnomah Falls, Grand Canyon and Yosemite moon.)
+  Left: push notifications still come from the pipeline's home-area alerts; grading the moments (4.1).
 - 1.5 Terrain horizons for every spot with photo evidence; light.json split into tiles loaded on demand. todo
 
 ## Phase 2: forecast accuracy
