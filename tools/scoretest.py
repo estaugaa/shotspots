@@ -9,7 +9,8 @@ of the next night on live weather (tools/expect.py).
 Fixtures: tests/score/responses.json.gz (every response the page needed, keyed by URL) and tests/score/cases.json (the
 fixed time). App code (any path that exists under app/) always comes from the working copy: that is what is tested.
 Compared: the top 10 (names, scores, score after each layer for the top 5) and the score of every ranked spot.
-Each case runs twice; differing runs fail as unstable (the ranking must not depend on load order).
+Each case runs twice (SCORETEST_RUNS, or [scoretest:runs=N] in a branch commit); differing runs fail as unstable (the
+ranking must not depend on load order).
 Nov 18: the app's forecast caches key on time plus version (wxVer), so a replaced forecast is never missed under the
 frozen clock; the baseline was re-recorded then (8 far spots changed, every top 10 unchanged).
 
