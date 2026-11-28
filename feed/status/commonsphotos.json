@@ -1,0 +1,1 @@
+{"ok":true,"kind":"MEASURED","note":"dump 20261001: 3083807 US photos with a capture time (4029348 US geotagged files in the image table, 4029359 names) in 90 min","at":"2026-11-20T19:12:27Z","secs":5397.4,"soft":{"commonsphotos: dump status":{"n":1,"first":"HTTPError: 404 Client Error: Not Found for url: https://dumps.wikimedia.org/commonswiki/20261101/dumpstatus.json"}}}

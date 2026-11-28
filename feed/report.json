@@ -1,0 +1,49 @@
+{
+ "gen": "2026-11-27T14:07:50Z",
+ "outings": 1,
+ "events": {
+  "clear": {
+   "n": 1,
+   "brier": 0.137,
+   "skill_vs_climatology": -136899999.0,
+   "reliability": [
+    {
+     "p": 0.37,
+     "obs": 0.0,
+     "n": 1
+    }
+   ]
+  },
+  "fog": {
+   "n": 1,
+   "brier": 0.0,
+   "skill_vs_climatology": 1.0,
+   "reliability": [
+    {
+     "p": 0.0,
+     "obs": 0.0,
+     "n": 1
+    }
+   ]
+  },
+  "color": {
+   "n": 1,
+   "brier": 0.0,
+   "skill_vs_climatology": 1.0,
+   "reliability": [
+    {
+     "p": 0.0,
+     "obs": 0.0,
+     "n": 1
+    }
+   ]
+  },
+  "keeper": null,
+  "species": null
+ },
+ "sqm": {
+  "n": 0,
+  "bias": null,
+  "rmse": null
+ }
+}

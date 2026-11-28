@@ -1,0 +1,293 @@
+[
+ {
+  "id": "lucia",
+  "name": "Lucia Falls",
+  "old": [
+   45.828,
+   -122.427
+  ],
+  "new": [
+   45.83954,
+   -122.44663
+  ],
+  "osm": "Lucia Falls",
+  "kind": "waterfall",
+  "off_m": 1990,
+  "at": "2026-11-06T02:06:17Z"
+ },
+ {
+  "id": "cathedral-park",
+  "name": "Cathedral Park & St. Johns Bridge",
+  "old": [
+   45.58616,
+   -122.76162
+  ],
+  "new": [
+   45.58274,
+   -122.76892
+  ],
+  "osm": "Bridge Viewpoint",
+  "kind": "viewpoint",
+  "off_m": 683,
+  "at": "2026-11-06T02:06:17Z"
+ },
+ {
+  "id": "elowah",
+  "name": "Elowah Falls",
+  "old": [
+   45.612,
+   -122.003
+  ],
+  "new": [
+   45.61187,
+   -121.99457
+  ],
+  "osm": "Elowah Falls",
+  "kind": "waterfall",
+  "off_m": 656,
+  "at": "2026-11-06T02:06:17Z"
+ },
+ {
+  "id": "wahclella",
+  "name": "Wahclella Falls",
+  "old": [
+   45.63,
+   -121.954
+  ],
+  "new": [
+   45.61818,
+   -121.95141
+  ],
+  "osm": "Wahclella Falls",
+  "kind": "waterfall",
+  "off_m": 1330,
+  "at": "2026-11-06T02:06:17Z"
+ },
+ {
+  "id": "punch-bowl",
+  "name": "Punch Bowl Falls (Eagle Creek)",
+  "old": [
+   45.617,
+   -121.892
+  ],
+  "new": [
+   45.62168,
+   -121.89464
+  ],
+  "osm": "Punch Bowl Falls",
+  "kind": "waterfall",
+  "off_m": 559,
+  "at": "2026-11-06T02:06:17Z"
+ },
+ {
+  "id": "dog-mtn",
+  "name": "Dog Mountain",
+  "old": [
+   45.699,
+   -121.708
+  ],
+  "new": [
+   45.71695,
+   -121.70045
+  ],
+  "osm": "Dog Mountain",
+  "kind": "peak",
+  "off_m": 2081,
+  "at": "2026-11-06T02:06:17Z"
+ },
+ {
+  "id": "tamanawas",
+  "name": "Tamanawas Falls",
+  "old": [
+   45.397,
+   -121.569
+  ],
+  "new": [
+   45.40101,
+   -121.58938
+  ],
+  "osm": "Tamanawas Falls",
+  "kind": "waterfall",
+  "off_m": 1652,
+  "at": "2026-11-06T02:06:17Z"
+ },
+ {
+  "id": "smith-rock",
+  "name": "Smith Rock State Park",
+  "old": [
+   44.367,
+   -121.137
+  ],
+  "new": [
+   44.36379,
+   -121.14664
+  ],
+  "osm": "Smith Rock",
+  "kind": "peak",
+  "off_m": 846,
+  "at": "2026-11-06T02:06:17Z",
+  "reverted": "2026-11-15: photo spot is the rim/pullout/main falls, not the OSM feature"
+ },
+ {
+  "id": "angels-rest",
+  "name": "Angel's Rest (and Devil's Rest viewpoints)",
+  "old": [
+   45.575,
+   -122.152
+  ],
+  "new": [
+   45.56411,
+   -122.15297
+  ],
+  "osm": "Angel's Rest",
+  "kind": "peak",
+  "off_m": 1213,
+  "at": "2026-11-07T06:12:59Z"
+ },
+ {
+  "id": "jonsrud",
+  "name": "Jonsrud Viewpoint (Sandy)",
+  "old": [
+   45.405,
+   -122.265
+  ],
+  "new": [
+   45.41029,
+   -122.27353
+  ],
+  "osm": "Jonsrud Viewpoint",
+  "kind": "viewpoint",
+  "off_m": 888,
+  "at": "2026-11-07T06:12:59Z"
+ },
+ {
+  "id": "wind-mtn",
+  "name": "Wind Mountain",
+  "old": [
+   45.716,
+   -121.789
+  ],
+  "new": [
+   45.70992,
+   -121.75577
+  ],
+  "osm": "Wind Mountain",
+  "kind": "peak",
+  "off_m": 2667,
+  "at": "2026-11-07T06:12:59Z"
+ },
+ {
+  "id": "sunset-falls",
+  "name": "Sunset Falls (East Fork Lewis)",
+  "old": [
+   45.818,
+   -122.254
+  ],
+  "new": [
+   45.8193,
+   -122.24805
+  ],
+  "osm": "Sunset Falls",
+  "kind": "waterfall",
+  "off_m": 483,
+  "at": "2026-11-07T06:12:59Z"
+ },
+ {
+  "id": "woodburn-falls",
+  "name": "Woodburn Falls (Lake to Lake Trail)",
+  "old": [
+   45.617,
+   -122.397
+  ],
+  "new": [
+   45.59903,
+   -122.39444
+  ],
+  "osm": "Woodburn Falls",
+  "kind": "waterfall",
+  "off_m": 2009,
+  "at": "2026-11-07T06:12:59Z"
+ },
+ {
+  "id": "white-river-falls",
+  "name": "White River Falls State Park",
+  "old": [
+   45.24133,
+   -121.0897
+  ],
+  "new": [
+   45.24091,
+   -121.09351
+  ],
+  "osm": "Lower White River Falls",
+  "kind": "waterfall",
+  "off_m": 302,
+  "at": "2026-11-07T06:12:59Z",
+  "reverted": "2026-11-15: photo spot is the rim/pullout/main falls, not the OSM feature"
+ },
+ {
+  "id": "stacker-butte",
+  "name": "Stacker Butte (Columbia Hills)",
+  "old": [
+   45.6949,
+   -121.0925
+  ],
+  "new": [
+   45.71346,
+   -121.10146
+  ],
+  "osm": "Stacker Butte",
+  "kind": "peak",
+  "off_m": 2177,
+  "at": "2026-11-07T21:45:33Z"
+ },
+ {
+  "id": "elk-rock",
+  "name": "Elk Rock Viewpoint (SR 504, milepost 37)",
+  "old": [
+   46.3,
+   -122.35
+  ],
+  "new": [
+   46.2965,
+   -122.34649
+  ],
+  "osm": "Elk Rock",
+  "kind": "peak",
+  "off_m": 474,
+  "at": "2026-11-07T21:45:33Z"
+ },
+ {
+  "id": "lava-canyon",
+  "name": "Lava Canyon",
+  "old": [
+   46.166,
+   -122.0883
+  ],
+  "new": [
+   46.16998,
+   -122.08288
+  ],
+  "osm": "Lava Canyon Falls",
+  "kind": "waterfall",
+  "off_m": 608,
+  "at": "2026-11-07T21:45:33Z"
+ },
+ {
+  "id": "neahkahnie",
+  "name": "Neahkahnie Viewpoint (US 101)",
+  "old": [
+   45.742,
+   -123.955
+  ],
+  "new": [
+   45.74692,
+   -123.95185
+  ],
+  "osm": "Neahkahnie Mountain",
+  "kind": "peak",
+  "off_m": 599,
+  "at": "2026-11-07T21:45:33Z",
+  "reverted": "2026-11-15: photo spot is the rim/pullout/main falls, not the OSM feature"
+ }
+]

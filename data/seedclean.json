@@ -1,0 +1,2922 @@
+{
+"at": "2026-11-24T17:20:01Z",
+"spots": 75346,
+"with_wikidata": 36026,
+"fame_removed": 795,
+"by_reason": {
+"Wikidata item has no location (a model, animal, person or organisation)": 165,
+"Wikidata item is an organisation": 18,
+"Wikidata item belongs to another spot": 321,
+"Wikidata item is a shop or restaurant": 15,
+"Wikidata item is a vehicle model": 9,
+"Wikidata item is an amusement ride": 58,
+"Wikidata item is a roller coaster": 123,
+"Wikidata item is N km away": 38,
+"Wikidata item is an event": 9,
+"Wikidata item is a school": 3,
+"Wikidata item is a hospital": 3,
+"Wikidata item is a hotel or casino": 14,
+"Wikidata item is a fish hatchery": 2,
+"Wikidata item is a power station": 3,
+"Wikidata item is an office building": 6,
+"Wikidata item is an airport": 6,
+"Wikidata item is a prison": 2
+},
+"dropped_lookouts": [
+{
+"id": "seed-w360969374",
+"name": "FAA Air Traffic Control Tower",
+"state": "FL",
+"score": 4.0
+},
+{
+"id": "seed-w1449244525",
+"name": "Sky Tower",
+"state": "FL",
+"score": 4.0
+},
+{
+"id": "seed-w547772701",
+"name": "Wonder World Observation Tower",
+"state": "TX",
+"score": 5.0
+},
+{
+"id": "seed-n4934865951",
+"name": "KTLH Air Traffic Control Tower",
+"state": "FL",
+"score": 5.0
+},
+{
+"id": "seed-w703466391",
+"name": "Albuquerque Sunport Control Tower",
+"state": "NM",
+"score": 5.0
+},
+{
+"id": "seed-w1281348097",
+"name": "Control Tower",
+"state": "NV",
+"score": 4.0
+},
+{
+"id": "seed-n3492140968",
+"name": "FAA Control Tower",
+"state": "NC",
+"score": 4.0
+},
+{
+"id": "seed-w544591953",
+"name": "Tulsa Air Traffic Control",
+"state": "OK",
+"score": 4.0
+},
+{
+"id": "seed-w1459155858",
+"name": "Control Tower",
+"state": "NV",
+"score": 5.0
+},
+{
+"id": "seed-w614129592",
+"name": "San Jose Control Tower",
+"state": "CA",
+"score": 5.0
+},
+{
+"id": "seed-n4147197336",
+"name": "Star Tower",
+"state": "CA",
+"score": 4.0
+},
+{
+"id": "seed-w940722021",
+"name": "Sacramento Control Tower",
+"state": "CA",
+"score": 4.0
+},
+{
+"id": "seed-n2290475271",
+"name": "Control Tower",
+"state": "IL",
+"score": 4.0
+},
+{
+"id": "seed-n7126526059",
+"name": "Former Stapleton Airport Control Tower",
+"state": "CO",
+"score": 20.5
+},
+{
+"id": "seed-w98224896",
+"name": "Elitch Gardens Observation Tower",
+"state": "CO",
+"score": 5.0
+},
+{
+"id": "seed-w367184318",
+"name": "Control Tower",
+"state": "CO",
+"score": 4.0
+},
+{
+"id": "seed-n5849422861",
+"name": "StratosFear",
+"state": "PA",
+"score": 5.0
+},
+{
+"id": "seed-n12141011337",
+"name": "Kisses Tower",
+"state": "PA",
+"score": 5.0
+},
+{
+"id": "seed-n12141011338",
+"name": "Reese's Tower",
+"state": "PA",
+"score": 5.0
+},
+{
+"id": "seed-n12141011339",
+"name": "Hershey Tower",
+"state": "PA",
+"score": 5.0
+},
+{
+"id": "seed-n12128965290",
+"name": "Kissing Tower",
+"state": "PA",
+"score": 4.0
+},
+{
+"id": "seed-w360939123",
+"name": "Sandefur Wetland Pavilion",
+"state": "OH",
+"score": 4.0
+},
+{
+"id": "seed-w899466604",
+"name": "David Wenzel Treehouse",
+"state": "PA",
+"score": 4.0
+},
+{
+"id": "seed-w210906706",
+"name": "CTA 61st Tower",
+"state": "IL",
+"score": 4.0
+},
+{
+"id": "seed-w672398941",
+"name": "CDF Control Tower",
+"state": "IL",
+"score": 4.0
+},
+{
+"id": "seed-n3880835352",
+"name": "Naval Air Station South Weymouth New Control Tower",
+"state": "MA",
+"score": 4.0
+},
+{
+"id": "seed-n3880835382",
+"name": "Naval Air Station South Weymouth Control Tower",
+"state": "MA",
+"score": 4.0
+},
+{
+"id": "seed-w686849633",
+"name": "Sky Trek Tower",
+"state": "IL",
+"score": 4.0
+},
+{
+"id": "seed-w1136829597",
+"name": "Hailey Air Traffic Control Tower",
+"state": "ID",
+"score": 5.0
+},
+{
+"id": "seed-w54419798",
+"name": "Control Tower",
+"state": "WI",
+"score": 4.0
+},
+{
+"id": "seed-w106174541",
+"name": "Madison Air Traffic Control Tower",
+"state": "WI",
+"score": 0.0
+},
+{
+"id": "seed-w223562285",
+"name": "Control Tower",
+"state": "WA",
+"score": 4.0
+}
+],
+"rides": 13,
+"fame_removed_top": [
+{
+"id": "seed-n869828686",
+"name": "Lions",
+"kind": "landmark",
+"state": "MO",
+"score": 30.3,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w185195882",
+"name": "Wardenclyffe Tower Base",
+"kind": "landmark",
+"state": "NY",
+"score": 29.4,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w646584842",
+"name": "Sugarloaf Mound",
+"kind": "landmark",
+"state": "MO",
+"score": 24.4,
+"now": -2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n358718721",
+"name": "Battle of Gilgal Church",
+"kind": "landmark",
+"state": "GA",
+"score": 28.3,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n4880585972",
+"name": "Polar Bears",
+"kind": "landmark",
+"state": "MO",
+"score": 28.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w34633854",
+"name": "Empire State Building",
+"kind": "landmark",
+"state": "NY",
+"score": 27.9,
+"now": 3.0,
+"why": "Wikidata item is an office building"
+},
+{
+"id": "seed-w1321812310",
+"name": "Golden Gate Bridge",
+"kind": "bridge",
+"state": "CA",
+"score": 26.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n4886573536",
+"name": "Dromedary Camels",
+"kind": "landmark",
+"state": "MO",
+"score": 26.1,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w1081041690",
+"name": "Bears",
+"kind": "landmark",
+"state": "TN",
+"score": 25.9,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n9287454135",
+"name": "Tiger Woods Point",
+"kind": "landmark",
+"state": "CA",
+"score": 25.8,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n4886573591",
+"name": "Emus",
+"kind": "landmark",
+"state": "MO",
+"score": 25.8,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w550692883",
+"name": "Mount Rushmore National Memorial",
+"kind": "landmark",
+"state": "SD",
+"score": 25.8,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w713565776",
+"name": "One World Trade Center",
+"kind": "landmark",
+"state": "NY",
+"score": 25.7,
+"now": 3.0,
+"why": "Wikidata item is an office building"
+},
+{
+"id": "seed-n9938108069",
+"name": "M1",
+"kind": "landmark",
+"state": "GA",
+"score": 24.1,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n9991859094",
+"name": "F/A-18",
+"kind": "landmark",
+"state": "VA",
+"score": 24.1,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n13425505263",
+"name": "Grumman F-14 Tomcat",
+"kind": "landmark",
+"state": "SC",
+"score": 24.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n12889677376",
+"name": "Bornean Orangutans",
+"kind": "landmark",
+"state": "MO",
+"score": 23.6,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n5401536922",
+"name": "Begin Route 66",
+"kind": "landmark",
+"state": "IL",
+"score": 23.6,
+"now": 2.0,
+"why": "Wikidata item is 368 km away"
+},
+{
+"id": "seed-n4886557189",
+"name": "Lion-Tailed Macaque",
+"kind": "landmark",
+"state": "MO",
+"score": 23.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w264768896",
+"name": "Flatiron Building",
+"kind": "landmark",
+"state": "NY",
+"score": 24.0,
+"now": 3.0,
+"why": "Wikidata item is an office building"
+},
+{
+"id": "seed-w8028082",
+"name": "George Washington Bridge Upper Level",
+"kind": "bridge",
+"state": "NJ",
+"score": 23.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w8028082",
+"name": "George Washington Bridge Upper Level",
+"kind": "bridge",
+"state": "NY",
+"score": 23.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w48869328",
+"name": "United Nations Headquarters",
+"kind": "landmark",
+"state": "NY",
+"score": 23.0,
+"now": 2.0,
+"why": "Wikidata item is an office building"
+},
+{
+"id": "seed-n7512978677",
+"name": "Boston Marathon Starting Line",
+"kind": "landmark",
+"state": "MA",
+"score": 23.9,
+"now": 3.0,
+"why": "Wikidata item is an event"
+},
+{
+"id": "seed-n7644779165",
+"name": "Boston Marathon Finish Line",
+"kind": "landmark",
+"state": "MA",
+"score": 23.9,
+"now": 3.0,
+"why": "Wikidata item is an event"
+},
+{
+"id": "seed-r11680552",
+"name": "Boston Marathon",
+"kind": "landmark",
+"state": "MA",
+"score": 22.9,
+"now": 2.0,
+"why": "Wikidata item is an event"
+},
+{
+"id": "seed-n12879458585",
+"name": "Sea Lion Exhibit",
+"kind": "landmark",
+"state": "MO",
+"score": 22.8,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n4880585973",
+"name": "North American River Otters",
+"kind": "landmark",
+"state": "MO",
+"score": 22.7,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n4097207416",
+"name": "One World Observatory",
+"kind": "viewpoint",
+"state": "NY",
+"score": 24.7,
+"now": 4.0,
+"why": "Wikidata item is an office building"
+},
+{
+"id": "seed-n4886573550",
+"name": "Red Kangaroo",
+"kind": "landmark",
+"state": "MO",
+"score": 22.6,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n10034721097",
+"name": "M60A1 Patton",
+"kind": "landmark",
+"state": "AL",
+"score": 22.5,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n9936151476",
+"name": "M-60",
+"kind": "landmark",
+"state": "NC",
+"score": 22.5,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n10001358186",
+"name": "M60",
+"kind": "landmark",
+"state": "SC",
+"score": 22.5,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n10001378186",
+"name": "M60",
+"kind": "landmark",
+"state": "GA",
+"score": 22.5,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n10001289048",
+"name": "M60",
+"kind": "landmark",
+"state": "MD",
+"score": 22.5,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n12361950615",
+"name": "M60",
+"kind": "landmark",
+"state": "IN",
+"score": 22.5,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n4886573548",
+"name": "Merino sheep",
+"kind": "landmark",
+"state": "MO",
+"score": 22.5,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w559191344",
+"name": "M60A3 Patton Tank",
+"kind": "landmark",
+"state": "WI",
+"score": 22.5,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n10032267048",
+"name": "M113",
+"kind": "landmark",
+"state": "SC",
+"score": 22.2,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n9938106857",
+"name": "M113",
+"kind": "landmark",
+"state": "GA",
+"score": 22.2,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n9936151477",
+"name": "M113",
+"kind": "landmark",
+"state": "NC",
+"score": 22.2,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n7152627918",
+"name": "AH-1",
+"kind": "landmark",
+"state": "SC",
+"score": 22.2,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n9991960878",
+"name": "M113",
+"kind": "landmark",
+"state": "TN",
+"score": 22.2,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n2384221575",
+"name": "Middle Cascades",
+"kind": "waterfall",
+"state": "CA",
+"score": 25.1,
+"now": 5.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n2389657981",
+"name": "Lower Yosemite Fall",
+"kind": "waterfall",
+"state": "CA",
+"score": 25.1,
+"now": 5.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w24222973",
+"name": "Transamerica Pyramid",
+"kind": "landmark",
+"state": "CA",
+"score": 23.0,
+"now": 3.0,
+"why": "Wikidata item is an office building"
+},
+{
+"id": "seed-n12468845907",
+"name": "M3 Stuart",
+"kind": "landmark",
+"state": "IN",
+"score": 21.9,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n10914540154",
+"name": "M3 Light Tank",
+"kind": "landmark",
+"state": "IN",
+"score": 21.9,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n2327750884",
+"name": "Bliss Hill",
+"kind": "peak",
+"state": "CA",
+"score": 21.7,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w1266435590",
+"name": "Baltimore Beltway",
+"kind": "bridge",
+"state": "MD",
+"score": 17.6,
+"now": -2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n2545885633",
+"name": "Anchor from the U.S.S. Maine",
+"kind": "landmark",
+"state": "PA",
+"score": 21.5,
+"now": 2.0,
+"why": "Wikidata item is 1999 km away"
+},
+{
+"id": "seed-w1529031261",
+"name": "MIM-23 HAWK",
+"kind": "landmark",
+"state": "CO",
+"score": 21.1,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n12795033156",
+"name": "Lime Kiln",
+"kind": "landmark",
+"state": "NY",
+"score": 21.1,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n12879737395",
+"name": "Trumpeter Swans",
+"kind": "landmark",
+"state": "MO",
+"score": 20.8,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n9991960879",
+"name": "Jeep",
+"kind": "landmark",
+"state": "TN",
+"score": 20.7,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n1930884163",
+"name": "Jack Daniel",
+"kind": "landmark",
+"state": "TN",
+"score": 20.6,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w179685272",
+"name": "Cleopatra's Needle",
+"kind": "landmark",
+"state": "NY",
+"score": 21.6,
+"now": 3.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n11370405017",
+"name": "Badwater Basin panorama",
+"kind": "viewpoint",
+"state": "CA",
+"score": 22.3,
+"now": 4.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n5146842521",
+"name": "Badwater Basin",
+"kind": "landmark",
+"state": "CA",
+"score": 20.3,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n9938106858",
+"name": "Bradley",
+"kind": "landmark",
+"state": "GA",
+"score": 20.1,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n10170416743",
+"name": "M103",
+"kind": "landmark",
+"state": "AL",
+"score": 19.8,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n366690870",
+"name": "International Tennis Hall of Fame",
+"kind": "landmark",
+"state": "RI",
+"score": 19.6,
+"now": 2.0,
+"why": "Wikidata item is an organisation"
+},
+{
+"id": "seed-n7761802282",
+"name": "U.S. Coast Guard Grumman HU-16E Albatross",
+"kind": "landmark",
+"state": "FL",
+"score": 19.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n9938106856",
+"name": "Half-Track",
+"kind": "landmark",
+"state": "GA",
+"score": 19.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n7761822280",
+"name": "U.S. Coast Guard Grumman HU-16E Albatross",
+"kind": "landmark",
+"state": "NC",
+"score": 19.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w1023818561",
+"name": "MIM-14 Nike Hercules",
+"kind": "landmark",
+"state": "CO",
+"score": 19.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w5669174",
+"name": "Robert F. Kennedy Bridge",
+"kind": "bridge",
+"state": "NY",
+"score": 19.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w5699313",
+"name": "Robert F. Kennedy Bridge",
+"kind": "bridge",
+"state": "NY",
+"score": 19.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w46421548",
+"name": "Robert F. Kennedy Bridge",
+"kind": "bridge",
+"state": "NY",
+"score": 19.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w122625716",
+"name": "Robert F. Kennedy Bridge",
+"kind": "bridge",
+"state": "NY",
+"score": 19.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w374433288",
+"name": "Grand Central Parkway",
+"kind": "bridge",
+"state": "NY",
+"score": 19.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w524630433",
+"name": "RFK south side walkway",
+"kind": "bridge",
+"state": "NY",
+"score": 19.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w808614669",
+"name": "Robert F. Kennedy Bridge",
+"kind": "bridge",
+"state": "NY",
+"score": 19.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w808614670",
+"name": "Robert F. Kennedy Bridge",
+"kind": "bridge",
+"state": "NY",
+"score": 19.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n13425505268",
+"name": "S3-B Viking",
+"kind": "landmark",
+"state": "SC",
+"score": 18.7,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n12387534741",
+"name": "USS New Mexico Bell",
+"kind": "landmark",
+"state": "NM",
+"score": 18.7,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w1091749579",
+"name": "Ambulance",
+"kind": "landmark",
+"state": "SC",
+"score": 18.5,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w845508169",
+"name": "Top Thrill 2",
+"kind": "landmark",
+"state": "OH",
+"score": 14.5,
+"now": -2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n5196897404",
+"name": "Mast of the USS Portland",
+"kind": "landmark",
+"state": "ME",
+"score": 18.5,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n13425505275",
+"name": "SH-3G Sea King",
+"kind": "landmark",
+"state": "SC",
+"score": 18.4,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n10032267049",
+"name": "M42 Duster",
+"kind": "landmark",
+"state": "SC",
+"score": 18.3,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n6974989333",
+"name": "Mormon Battallion Christmas Camp",
+"kind": "landmark",
+"state": "AZ",
+"score": 18.3,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n4451144258",
+"name": "Temple of Dendur",
+"kind": "landmark",
+"state": "NY",
+"score": 18.3,
+"now": 2.0,
+"why": "Wikidata item is 9644 km away"
+},
+{
+"id": "seed-n9920037094",
+"name": "M42 Duster",
+"kind": "landmark",
+"state": "OH",
+"score": 18.3,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n12834502584",
+"name": "M42",
+"kind": "landmark",
+"state": "ND",
+"score": 18.3,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w12698943",
+"name": "Bourbon Street",
+"kind": "landmark",
+"state": "LA",
+"score": 17.7,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w723811692",
+"name": "Bourbon Street",
+"kind": "landmark",
+"state": "LA",
+"score": 17.7,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n10034721099",
+"name": "LVTP5A1",
+"kind": "landmark",
+"state": "AL",
+"score": 17.7,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w5941511",
+"name": "Route 75",
+"kind": "bridge",
+"state": "CA",
+"score": 17.7,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w6055495",
+"name": "4th Street",
+"kind": "bridge",
+"state": "CA",
+"score": 13.7,
+"now": -2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w153343716",
+"name": "Route 75",
+"kind": "bridge",
+"state": "CA",
+"score": 13.7,
+"now": -2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w824031784",
+"name": "Pirates of the Caribbean",
+"kind": "landmark",
+"state": "CA",
+"score": 18.7,
+"now": 3.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n11349046661",
+"name": "155 mm gun M1",
+"kind": "landmark",
+"state": "GA",
+"score": 17.7,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n12041513028",
+"name": "155mm Gun M1",
+"kind": "landmark",
+"state": "PA",
+"score": 17.7,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w38325130",
+"name": "Hoover Dam Bypass",
+"kind": "bridge",
+"state": "NV",
+"score": 17.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w126301445",
+"name": "Hoover Dam Bypass",
+"kind": "bridge",
+"state": "AZ",
+"score": 17.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w164547966",
+"name": "Devil's Hole",
+"kind": "lake",
+"state": "NV",
+"score": 17.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w5671573",
+"name": "Roosevelt Island Bridge",
+"kind": "bridge",
+"state": "NY",
+"score": 17.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n320948228",
+"name": "South Street Seaport",
+"kind": "landmark",
+"state": "NY",
+"score": 17.4,
+"now": 2.0,
+"why": "Wikidata item is a shop or restaurant"
+},
+{
+"id": "seed-w842877486",
+"name": "Millennium Force",
+"kind": "landmark",
+"state": "OH",
+"score": 17.4,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n4799717921",
+"name": "Ceremonial Start of Iditarod Trail Sled Dog Race",
+"kind": "landmark",
+"state": "AK",
+"score": 17.2,
+"now": 2.0,
+"why": "Wikidata item is an event"
+},
+{
+"id": "seed-w699034483",
+"name": "\"it's a small world\"",
+"kind": "landmark",
+"state": "FL",
+"score": 17.1,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w499783300",
+"name": "\"it's a small world\"",
+"kind": "landmark",
+"state": "CA",
+"score": 18.1,
+"now": 3.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w218658749",
+"name": "Major Rudolf Anderson, Jr. Memorial",
+"kind": "landmark",
+"state": "SC",
+"score": 17.1,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n3687262960",
+"name": "John Hart Monument",
+"kind": "landmark",
+"state": "NJ",
+"score": 17.1,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n10034721098",
+"name": "M75 APC",
+"kind": "landmark",
+"state": "AL",
+"score": 16.8,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n3283274184",
+"name": "USS Norfolk Bell",
+"kind": "landmark",
+"state": "VA",
+"score": 16.8,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w33117572",
+"name": "Cross Bronx Expressway",
+"kind": "bridge",
+"state": "NY",
+"score": 16.8,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w40595062",
+"name": "Throgs Neck Bridge",
+"kind": "bridge",
+"state": "NY",
+"score": 16.8,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w40595084",
+"name": "Throgs Neck Bridge",
+"kind": "bridge",
+"state": "NY",
+"score": 16.8,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w42435675",
+"name": "Trans-Manhattan Expressway Upper Level",
+"kind": "bridge",
+"state": "NY",
+"score": 16.8,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w121787381",
+"name": "Cross Bronx Expressway",
+"kind": "bridge",
+"state": "NY",
+"score": 16.8,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w126140593",
+"name": "Broadway",
+"kind": "bridge",
+"state": "NY",
+"score": 16.8,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w833386642",
+"name": "Broadway Sidewalk (west side)",
+"kind": "bridge",
+"state": "NY",
+"score": 16.8,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w1312944862",
+"name": "Throgs Neck Bridge",
+"kind": "bridge",
+"state": "NY",
+"score": 16.8,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w1504770029",
+"name": "Trans-Manhattan Expressway Lower Level",
+"kind": "bridge",
+"state": "NY",
+"score": 16.8,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w121516748",
+"name": "Cinderella Castle",
+"kind": "landmark",
+"state": "FL",
+"score": 16.5,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w41831418",
+"name": "The Haunted Mansion",
+"kind": "landmark",
+"state": "FL",
+"score": 16.4,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w178254960",
+"name": "The Haunted Mansion",
+"kind": "landmark",
+"state": "CA",
+"score": 17.4,
+"now": 3.0,
+"why": "Wikidata item is 3493 km away"
+},
+{
+"id": "seed-w194261873",
+"name": "Jungle Cruise",
+"kind": "landmark",
+"state": "CA",
+"score": 16.4,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n7152627919",
+"name": "M106A1",
+"kind": "landmark",
+"state": "SC",
+"score": 16.4,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w120480164",
+"name": "San Francisco Botanical Garden",
+"kind": "landmark",
+"state": "CA",
+"score": 16.4,
+"now": 2.0,
+"why": "Wikidata item is an organisation"
+},
+{
+"id": "seed-n3678120252",
+"name": "Discovery",
+"kind": "landmark",
+"state": "VA",
+"score": 16.4,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w8119396",
+"name": "Henry Hudson Parkway",
+"kind": "bridge",
+"state": "NY",
+"score": 16.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w33117592",
+"name": "East 138th Street",
+"kind": "bridge",
+"state": "NY",
+"score": 16.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w29328400",
+"name": "Massachusetts Avenue",
+"kind": "bridge",
+"state": "MA",
+"score": 16.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w961263635",
+"name": "Massachusetts Avenue",
+"kind": "bridge",
+"state": "MA",
+"score": 16.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w1545225837",
+"name": "Rt. Hon. Herb Gray Parkway",
+"kind": "bridge",
+"state": "MI",
+"score": 16.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w8994290",
+"name": "Copper River Highway",
+"kind": "bridge",
+"state": "AK",
+"score": 16.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n8248132721",
+"name": "Hagrid\u2019s Magical Creatures Motorbike Adventure",
+"kind": "landmark",
+"state": "FL",
+"score": 16.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w294905178",
+"name": "Toy Story Mania!",
+"kind": "landmark",
+"state": "FL",
+"score": 16.0,
+"now": 2.0,
+"why": "Wikidata item is 3497 km away"
+},
+{
+"id": "seed-w324922684",
+"name": "Big Thunder Mountain Railroad",
+"kind": "landmark",
+"state": "FL",
+"score": 16.0,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-n4368187191",
+"name": "Chinati Foundation",
+"kind": "landmark",
+"state": "TX",
+"score": 16.0,
+"now": 2.0,
+"why": "Wikidata item is an organisation"
+},
+{
+"id": "seed-w113878103",
+"name": "Toy Story Midway Mania!",
+"kind": "landmark",
+"state": "CA",
+"score": 17.0,
+"now": 3.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w266074156",
+"name": "Big Thunder Mountain Railroad",
+"kind": "landmark",
+"state": "CA",
+"score": 17.0,
+"now": 3.0,
+"why": "Wikidata item is 3492 km away"
+},
+{
+"id": "seed-n632049634",
+"name": "Peter Pan's Flight",
+"kind": "landmark",
+"state": "CA",
+"score": 16.0,
+"now": 2.0,
+"why": "Wikidata item is 9111 km away"
+},
+{
+"id": "seed-w312369808",
+"name": "Soarin' Around the World",
+"kind": "landmark",
+"state": "CA",
+"score": 16.0,
+"now": 2.0,
+"why": "Wikidata item is 8845 km away"
+},
+{
+"id": "seed-n358822899",
+"name": "Esalen Institute",
+"kind": "landmark",
+"state": "CA",
+"score": 16.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w194716932",
+"name": "Mark Twain House",
+"kind": "landmark",
+"state": "CT",
+"score": 16.0,
+"now": 2.0,
+"why": "Wikidata item is an organisation"
+},
+{
+"id": "seed-n12047040773",
+"name": "Sloulin Field International Airport (historic)",
+"kind": "landmark",
+"state": "ND",
+"score": 16.0,
+"now": 2.0,
+"why": "Wikidata item is an airport"
+},
+{
+"id": "seed-w29856512",
+"name": "Connecticut River Greenway State Park",
+"kind": "refuge",
+"state": "MA",
+"score": 16.7,
+"now": 3.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w146221550",
+"name": "Spaceship Earth",
+"kind": "landmark",
+"state": "FL",
+"score": 16.5,
+"now": 3.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w168833464",
+"name": "Autopia",
+"kind": "landmark",
+"state": "CA",
+"score": 16.5,
+"now": 3.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-n632049635",
+"name": "Mr. Toad's Wild Ride",
+"kind": "landmark",
+"state": "CA",
+"score": 15.5,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w313039853",
+"name": "Guardians of the Galaxy: Mission Breakout",
+"kind": "landmark",
+"state": "CA",
+"score": 15.5,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-n1223042462",
+"name": "Superman: Escape from Krypton",
+"kind": "landmark",
+"state": "CA",
+"score": 15.5,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n1223071564",
+"name": "Tatsu",
+"kind": "landmark",
+"state": "CA",
+"score": 15.5,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n1484288463",
+"name": "Batman: The Ride",
+"kind": "landmark",
+"state": "CA",
+"score": 15.5,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w34003453",
+"name": "Bitter Springs\u2013Utah State Line Highway",
+"kind": "bridge",
+"state": "AZ",
+"score": 15.5,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w11758242",
+"name": "Delaware Memorial Bridge",
+"kind": "bridge",
+"state": "DE",
+"score": 15.5,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w488884376",
+"name": "Delaware Memorial Bridge",
+"kind": "bridge",
+"state": "DE",
+"score": 15.5,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n2758138737",
+"name": "The Genius of Water",
+"kind": "landmark",
+"state": "OH",
+"score": 16.5,
+"now": 3.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n2485104787",
+"name": "USS Grenadier (SS210)",
+"kind": "landmark",
+"state": "NY",
+"score": 15.5,
+"now": 2.0,
+"why": "Wikidata item is 14513 km away"
+},
+{
+"id": "seed-w378090317",
+"name": "Aurora Avenue North",
+"kind": "bridge",
+"state": "WA",
+"score": 15.5,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n2491185802",
+"name": "Maid of the Mist",
+"kind": "landmark",
+"state": "NY",
+"score": 15.4,
+"now": 2.0,
+"why": "Wikidata item is an organisation"
+},
+{
+"id": "seed-n8142408514",
+"name": "Little house on the prairie - House of the Ingalls family",
+"kind": "landmark",
+"state": "CA",
+"score": 15.2,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n8142408515",
+"name": "Little house on the prairie - Walnut Grove Village Centre",
+"kind": "landmark",
+"state": "CA",
+"score": 15.2,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w779986016",
+"name": "Buzz Lightyear's Space Ranger Spin",
+"kind": "landmark",
+"state": "FL",
+"score": 16.0,
+"now": 3.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n2985093314",
+"name": "Fantasmic!",
+"kind": "landmark",
+"state": "FL",
+"score": 15.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n3000151783",
+"name": "Astro Orbiter",
+"kind": "landmark",
+"state": "FL",
+"score": 15.0,
+"now": 2.0,
+"why": "Wikidata item is 11673 km away"
+},
+{
+"id": "seed-w357021885",
+"name": "Rock \u2019n\u2019 Roller Coaster Starring The Muppets",
+"kind": "landmark",
+"state": "FL",
+"score": 15.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n331257382",
+"name": "Andrew Jackson",
+"kind": "landmark",
+"state": "LA",
+"score": 15.0,
+"now": 2.0,
+"why": "Wikidata item is 1551 km away"
+},
+{
+"id": "seed-w123138989",
+"name": "Pixar Pal-A-Round",
+"kind": "landmark",
+"state": "CA",
+"score": 16.0,
+"now": 3.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w363559932",
+"name": "Buzz Lightyear Astro Blasters",
+"kind": "landmark",
+"state": "CA",
+"score": 16.0,
+"now": 3.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n632049636",
+"name": "Snow White's Enchanted Wish",
+"kind": "landmark",
+"state": "CA",
+"score": 15.0,
+"now": 2.0,
+"why": "Wikidata item is 8845 km away"
+},
+{
+"id": "seed-n1232033966",
+"name": "Casey Jr. Circus Train",
+"kind": "landmark",
+"state": "CA",
+"score": 15.0,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-n1444178750",
+"name": "Alice in Wonderland",
+"kind": "landmark",
+"state": "CA",
+"score": 15.0,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w761611922",
+"name": "Astro Orbitor",
+"kind": "landmark",
+"state": "CA",
+"score": 15.0,
+"now": 2.0,
+"why": "Wikidata item is 8845 km away"
+},
+{
+"id": "seed-w420317805",
+"name": "Randy\u2019s Donuts",
+"kind": "landmark",
+"state": "CA",
+"score": 16.0,
+"now": 3.0,
+"why": "Wikidata item is an organisation"
+},
+{
+"id": "seed-w111252264",
+"name": "Xcelerator",
+"kind": "landmark",
+"state": "CA",
+"score": 15.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n12770479839",
+"name": "Amboy Crater National Natural Landmark",
+"kind": "landmark",
+"state": "CA",
+"score": 15.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n3678120250",
+"name": "Susan Constant",
+"kind": "landmark",
+"state": "VA",
+"score": 15.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w235158854",
+"name": "Pantherian",
+"kind": "landmark",
+"state": "VA",
+"score": 15.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w147794018",
+"name": "Covered Bridge Road",
+"kind": "bridge",
+"state": "PA",
+"score": 15.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n3588657606",
+"name": "DSRV Mystic",
+"kind": "landmark",
+"state": "WA",
+"score": 15.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n2697485593",
+"name": "NAS Alameda (abandoned)",
+"kind": "landmark",
+"state": "CA",
+"score": 14.8,
+"now": 2.0,
+"why": "Wikidata item is an airport"
+},
+{
+"id": "seed-w29896225",
+"name": "Connecticut River Greenway State Park",
+"kind": "refuge",
+"state": "MA",
+"score": 15.7,
+"now": 3.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w889586018",
+"name": "Allegheny National Fish Hatchery",
+"kind": "refuge",
+"state": "PA",
+"score": 15.6,
+"now": 3.0,
+"why": "Wikidata item is a fish hatchery"
+},
+{
+"id": "seed-w296367720",
+"name": "Mad Tea Party",
+"kind": "landmark",
+"state": "FL",
+"score": 15.4,
+"now": 3.0,
+"why": "Wikidata item is 3492 km away"
+},
+{
+"id": "seed-n4213210754",
+"name": "Frozen Ever After",
+"kind": "landmark",
+"state": "FL",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-n9109632917",
+"name": "Flight of the Hippogriff",
+"kind": "landmark",
+"state": "FL",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w295315993",
+"name": "Test Track",
+"kind": "landmark",
+"state": "FL",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w295316766",
+"name": "Mission: SPACE",
+"kind": "landmark",
+"state": "FL",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w296376464",
+"name": "The Many Adventures of Winnie the Pooh",
+"kind": "landmark",
+"state": "FL",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is 12949 km away"
+},
+{
+"id": "seed-w1313879104",
+"name": "Dumbo the Flying Elephant",
+"kind": "landmark",
+"state": "FL",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is 3493 km away"
+},
+{
+"id": "seed-w859154009",
+"name": "Ring of Honor",
+"kind": "landmark",
+"state": "FL",
+"score": 15.4,
+"now": 3.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n1207178486",
+"name": "New Texas Giant",
+"kind": "landmark",
+"state": "TX",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n1209123963",
+"name": "Titan",
+"kind": "landmark",
+"state": "TX",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w188171538",
+"name": "Monsters, Inc. Mike & Sulley to the Rescue!",
+"kind": "landmark",
+"state": "CA",
+"score": 15.4,
+"now": 3.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w753161662",
+"name": "Radiator Springs Racers",
+"kind": "landmark",
+"state": "CA",
+"score": 15.4,
+"now": 3.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w824031782",
+"name": "Indiana Jones Adventure",
+"kind": "landmark",
+"state": "CA",
+"score": 15.4,
+"now": 3.0,
+"why": "Wikidata item is 8845 km away"
+},
+{
+"id": "seed-n632049645",
+"name": "Finding Nemo Submarine Voyage",
+"kind": "landmark",
+"state": "CA",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w109506979",
+"name": "Mad Tea Party",
+"kind": "landmark",
+"state": "CA",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w194882116",
+"name": "Incredicoaster",
+"kind": "landmark",
+"state": "CA",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w929404855",
+"name": "Superman: Ultimate Flight",
+"kind": "landmark",
+"state": "GA",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n1223042672",
+"name": "Revolution",
+"kind": "landmark",
+"state": "CA",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n1223043009",
+"name": "Scream!",
+"kind": "landmark",
+"state": "CA",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n1223071796",
+"name": "Viper",
+"kind": "landmark",
+"state": "CA",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n3667903821",
+"name": "Ninja",
+"kind": "landmark",
+"state": "CA",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n11977670048",
+"name": "Shuttle Training Aircraft",
+"kind": "landmark",
+"state": "AL",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w1062354766",
+"name": "Hibriten Mountain",
+"kind": "refuge",
+"state": "NC",
+"score": 11.4,
+"now": -1.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n1595578349",
+"name": "East Mitten",
+"kind": "peak",
+"state": "AZ",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w20606621",
+"name": "Carrollton Boulevard",
+"kind": "bridge",
+"state": "VA",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w20310743",
+"name": "West Mercury Boulevard",
+"kind": "bridge",
+"state": "VA",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w495571290",
+"name": "West Mercury Boulevard",
+"kind": "bridge",
+"state": "VA",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w495571291",
+"name": "West Mercury Boulevard",
+"kind": "bridge",
+"state": "VA",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w235037210",
+"name": "Flight of Fear",
+"kind": "landmark",
+"state": "VA",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w223802670",
+"name": "Denver Botanic Gardens",
+"kind": "landmark",
+"state": "CO",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is an organisation"
+},
+{
+"id": "seed-n12583439141",
+"name": "Great Bear",
+"kind": "landmark",
+"state": "PA",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w106372938",
+"name": "Corkscrew",
+"kind": "landmark",
+"state": "OH",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w841971409",
+"name": "Raptor",
+"kind": "landmark",
+"state": "OH",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w842583873",
+"name": "Steel Vengeance",
+"kind": "landmark",
+"state": "OH",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w686849641",
+"name": "Goliath",
+"kind": "landmark",
+"state": "IL",
+"score": 14.4,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w82987903",
+"name": "Price Tower",
+"kind": "landmark",
+"state": "OK",
+"score": 14.0,
+"now": 2.0,
+"why": "Wikidata item is a hotel or casino"
+},
+{
+"id": "seed-n2989757939",
+"name": "Living With The Land",
+"kind": "landmark",
+"state": "FL",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w296373910",
+"name": "Under the Sea: Journey of the Little Mermaid",
+"kind": "landmark",
+"state": "FL",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w699096734",
+"name": "The Magic Carpets of Aladdin",
+"kind": "landmark",
+"state": "FL",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w751722737",
+"name": "Star Wars: Rise of the Resistance",
+"kind": "landmark",
+"state": "FL",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n7852121583",
+"name": "Journey to Atlantis",
+"kind": "landmark",
+"state": "TX",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is 1799 km away"
+},
+{
+"id": "seed-w317274179",
+"name": "Picacho Peak State Park Visitor Center",
+"kind": "landmark",
+"state": "AZ",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n1207178466",
+"name": "Shock Wave",
+"kind": "landmark",
+"state": "TX",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w95188098",
+"name": "Pinnacle Peak Park",
+"kind": "refuge",
+"state": "AZ",
+"score": 14.8,
+"now": 3.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n632049610",
+"name": "Davy Crockett Explorer Canoes",
+"kind": "landmark",
+"state": "CA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-n632049642",
+"name": "Storybook Land Canal Boats",
+"kind": "landmark",
+"state": "CA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-n3167856921",
+"name": "Grizzly River Run",
+"kind": "landmark",
+"state": "CA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w107280551",
+"name": "Chip \u2018n\u2019 Dale\u2019s GADGETcoaster",
+"kind": "landmark",
+"state": "CA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w361504826",
+"name": "Tiana's Bayou Adventure",
+"kind": "landmark",
+"state": "CA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w607524502",
+"name": "Star Wars: Rise of the Resistance",
+"kind": "landmark",
+"state": "CA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w28909768",
+"name": "Atlanta Botanical Garden",
+"kind": "landmark",
+"state": "GA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is an organisation"
+},
+{
+"id": "seed-w929382642",
+"name": "The Riddler Mindbender",
+"kind": "landmark",
+"state": "GA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w929404859",
+"name": "Great American Scream Machine",
+"kind": "landmark",
+"state": "GA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w472671743",
+"name": "X2",
+"kind": "landmark",
+"state": "CA",
+"score": 14.8,
+"now": 3.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n1223042893",
+"name": "Goliath",
+"kind": "landmark",
+"state": "CA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n1223043134",
+"name": "The Riddler's Revenge",
+"kind": "landmark",
+"state": "CA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n1223043142",
+"name": "Apocalypse: The Ride",
+"kind": "landmark",
+"state": "CA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w1068713290",
+"name": "ATLAS-I Wedge",
+"kind": "landmark",
+"state": "NM",
+"score": 14.8,
+"now": 3.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w1415965389",
+"name": "Petit Jean State Park",
+"kind": "refuge",
+"state": "AR",
+"score": 14.8,
+"now": 3.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w1415965390",
+"name": "Petit Jean State Park",
+"kind": "refuge",
+"state": "AR",
+"score": 14.8,
+"now": 3.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n358925609",
+"name": "Lookout Mountain",
+"kind": "peak",
+"state": "CO",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n263024202",
+"name": "Altamont Pass",
+"kind": "pass",
+"state": "CA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w116671307",
+"name": "Flight Deck",
+"kind": "landmark",
+"state": "CA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n3678120251",
+"name": "Godspeed",
+"kind": "landmark",
+"state": "VA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w1211354440",
+"name": "Fourteen Foot Bank Lighthouse",
+"kind": "lighthouse",
+"state": "DE",
+"score": 17.8,
+"now": 6.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w232828917",
+"name": "Hydra: The Revenge",
+"kind": "landmark",
+"state": "PA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n11044014059",
+"name": "Skyrush",
+"kind": "landmark",
+"state": "PA",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w106358223",
+"name": "Gemini",
+"kind": "landmark",
+"state": "OH",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w106358228",
+"name": "Magnum XL-200",
+"kind": "landmark",
+"state": "OH",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w846745437",
+"name": "Blue Streak",
+"kind": "landmark",
+"state": "OH",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n9106402578",
+"name": "Chicago Pile 1 Plot M",
+"kind": "landmark",
+"state": "IL",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n1301291752",
+"name": "Taughannock Falls",
+"kind": "waterfall",
+"state": "NY",
+"score": 16.8,
+"now": 5.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w25032277",
+"name": "The Flash: Vertical Velocity",
+"kind": "landmark",
+"state": "IL",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w163759313",
+"name": "Medieval Times",
+"kind": "landmark",
+"state": "IL",
+"score": 13.8,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w653773261",
+"name": "Fort Clatsop - Netul Landing - Lewis and Clark National Historical Park",
+"kind": "refuge",
+"state": "OR",
+"score": 14.8,
+"now": 3.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-r3738461",
+"name": "Fort Casey State Park",
+"kind": "refuge",
+"state": "WA",
+"score": 14.8,
+"now": 3.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n4694549375",
+"name": "Harry Potter and the Escape from Gringotts",
+"kind": "landmark",
+"state": "FL",
+"score": 13.5,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-n4945023404",
+"name": "El Toro",
+"kind": "landmark",
+"state": "NJ",
+"score": 13.5,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n5538824736",
+"name": "USS Parche Sail",
+"kind": "landmark",
+"state": "WA",
+"score": 13.5,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w732730820",
+"name": "Starhopper",
+"kind": "landmark",
+"state": "TX",
+"score": 10.0,
+"now": -1.0,
+"why": "Wikidata item is a vehicle model"
+},
+{
+"id": "seed-w1218660816",
+"name": "Playalinda Beach (Nudist Area)",
+"kind": "beach",
+"state": "FL",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-n2724827340",
+"name": "Ariel's Grotto",
+"kind": "landmark",
+"state": "FL",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-n5077621689",
+"name": "Skull Island: Reign of Kong",
+"kind": "landmark",
+"state": "FL",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w294883724",
+"name": "Theater of the Stars",
+"kind": "landmark",
+"state": "FL",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w294899629",
+"name": "Star Tours: The Adventures Continue",
+"kind": "landmark",
+"state": "FL",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w685092734",
+"name": "Alien Swirling Saucers",
+"kind": "landmark",
+"state": "FL",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w685092736",
+"name": "Slinky Dog Dash",
+"kind": "landmark",
+"state": "FL",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w688994559",
+"name": "Remy\u2019s Ratatouille Adventure",
+"kind": "landmark",
+"state": "FL",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is 7281 km away"
+},
+{
+"id": "seed-n7855978974",
+"name": "Steel Eel",
+"kind": "landmark",
+"state": "TX",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w27920821",
+"name": "Chef Menteur Highway",
+"kind": "bridge",
+"state": "LA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w27884235",
+"name": "CPKC Vicksburg Subdivision",
+"kind": "bridge",
+"state": "LA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w1081840820",
+"name": "Old Vicksburg Bridge",
+"kind": "bridge",
+"state": "LA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w27884235",
+"name": "CPKC Vicksburg Subdivision",
+"kind": "bridge",
+"state": "MS",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w1081840813",
+"name": "CPKC Vicksburg Subdivision",
+"kind": "bridge",
+"state": "MS",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w1081840820",
+"name": "Old Vicksburg Bridge",
+"kind": "bridge",
+"state": "MS",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w167104435",
+"name": "Old Vicksburg Bridge",
+"kind": "bridge",
+"state": "LA",
+"score": 9.0,
+"now": -2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w167104435",
+"name": "Old Vicksburg Bridge",
+"kind": "bridge",
+"state": "MS",
+"score": 9.0,
+"now": -2.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w129691054",
+"name": "King Arthur Carrousel",
+"kind": "landmark",
+"state": "CA",
+"score": 14.0,
+"now": 3.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w169215396",
+"name": "Star Tours: The Adventures Continue",
+"kind": "landmark",
+"state": "CA",
+"score": 14.0,
+"now": 3.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w342771469",
+"name": "Golden Zephyr",
+"kind": "landmark",
+"state": "CA",
+"score": 14.0,
+"now": 3.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w111252260",
+"name": "Sierra Sidewinder",
+"kind": "landmark",
+"state": "CA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w120639750",
+"name": "Jessie\u2019s Critter Carousel",
+"kind": "landmark",
+"state": "CA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w133337113",
+"name": "Roger Rabbit's Car Toon Spin",
+"kind": "landmark",
+"state": "CA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is an amusement ride"
+},
+{
+"id": "seed-w258863339",
+"name": "GhostRider",
+"kind": "landmark",
+"state": "CA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w761044633",
+"name": "HangTime",
+"kind": "landmark",
+"state": "CA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n4757126982",
+"name": "Jurassic World-The Ride",
+"kind": "landmark",
+"state": "CA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w603521013",
+"name": "Justice League: Battle for Metropolis",
+"kind": "landmark",
+"state": "CA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item has no location (a model, animal, person or organisation)"
+},
+{
+"id": "seed-w239268383",
+"name": "Thunder Striker",
+"kind": "landmark",
+"state": "SC",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w239268383",
+"name": "Thunder Striker",
+"kind": "landmark",
+"state": "NC",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w34300977",
+"name": "Giant Dipper",
+"kind": "landmark",
+"state": "CA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w723349402",
+"name": "Demon",
+"kind": "landmark",
+"state": "CA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is 2936 km away"
+},
+{
+"id": "seed-w1378422800",
+"name": "Patriot",
+"kind": "landmark",
+"state": "CA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w86431151",
+"name": "Verbolten",
+"kind": "landmark",
+"state": "VA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n5384040298",
+"name": "Madonna of the Trail",
+"kind": "landmark",
+"state": "MD",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is 586 km away"
+},
+{
+"id": "seed-w238911424",
+"name": "Casa Bonita",
+"kind": "landmark",
+"state": "CO",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is a shop or restaurant"
+},
+{
+"id": "seed-w1213774356",
+"name": "McCook Army Airfield",
+"kind": "landmark",
+"state": "NE",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is an airport"
+},
+{
+"id": "seed-w32333198",
+"name": "Joseph Smith Memorial Building",
+"kind": "landmark",
+"state": "UT",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is a hotel or casino"
+},
+{
+"id": "seed-w940995632",
+"name": "Cape Mendocino Light",
+"kind": "lighthouse",
+"state": "CA",
+"score": 16.0,
+"now": 5.0,
+"why": "Wikidata item is 55 km away"
+},
+{
+"id": "seed-w1572035864",
+"name": "Hickory Run State Park",
+"kind": "refuge",
+"state": "PA",
+"score": 14.0,
+"now": 3.0,
+"why": "Wikidata item belongs to another spot"
+},
+{
+"id": "seed-w232726099",
+"name": "Talon",
+"kind": "landmark",
+"state": "PA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-w285500237",
+"name": "Steel Force",
+"kind": "landmark",
+"state": "PA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+},
+{
+"id": "seed-n3700461509",
+"name": "Impulse",
+"kind": "landmark",
+"state": "PA",
+"score": 13.0,
+"now": 2.0,
+"why": "Wikidata item is a roller coaster"
+}
+]
+}

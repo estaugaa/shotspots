@@ -1,0 +1,1 @@
+{"ok":true,"kind":"MEASURED","note":"30 cells of weather fetched (169 left, ~261 units each); 10112 cell-day events, Spearman formula vs golden-hour share 0.005, best 0.013","at":"2026-11-28T09:34:19Z","secs":5028.6,"soft":{"photoweather: weather":{"n":1,"first":"HTTPError: HTTP 429"}}}
