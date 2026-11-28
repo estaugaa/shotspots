@@ -1,1 +1,1 @@
-{"ok":true,"kind":"MODELED","note":"1125 hours saved for 75 airports","at":"2026-11-28T03:41:48Z","secs":0.5}
+{"ok":true,"kind":"MODELED","note":"0 hours saved for 75 airports","at":"2026-11-28T12:01:58Z","secs":120.8,"soft":{"fcsnap_eve":{"n":2,"first":"HTTPError: HTTP 429"}}}
